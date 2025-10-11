@@ -52,8 +52,9 @@ Developers who know C, Python, Assembly, Java, Haskell, IDRIS2, and LISP but lac
 - Docker Desktop (with gVisor runtime)
 - Bazel 6.4.0+
 - Python 3.11+
-- Node.js 18+ with pnpm
+- Node.js 20+ with pnpm
 - Git
+- make (GNU Make)
 
 ### Installation
 
@@ -62,23 +63,74 @@ Developers who know C, Python, Assembly, Java, Haskell, IDRIS2, and LISP but lac
 git clone https://github.com/yourusername/ancient_compute.git
 cd ancient_compute
 
-# Windows setup
-./scripts/setup-windows.ps1
+# Windows setup (PowerShell)
+.\scripts\setup-windows.ps1
 
-# OR Debian setup
+# OR Debian setup (Bash)
 ./scripts/setup-debian.sh
 
-# Start development environment
-docker-compose up -d
+# Initial setup (installs dependencies and pre-commit hooks)
+make setup
+
+# Start development environment with Docker
+make docker-up
 
 # Build project
-bazel build //...
+make build
 
 # Run tests
-bazel test //...
+make test
 ```
 
 ## Development
+
+### Quick Commands
+
+```bash
+# Start all services (Docker Compose)
+make dev
+
+# Start backend only (local development)
+make dev-backend
+
+# Start frontend only (local development)
+make dev-frontend
+
+# Run tests
+make test                # All tests
+make test-backend        # Backend only
+make test-frontend       # Frontend only
+make test-coverage       # With coverage report
+
+# Code quality
+make lint                # Run all linters
+make format              # Format all code
+make type-check          # Run type checkers
+
+# Build
+make build               # Build all
+make build-backend       # Backend only
+make build-frontend      # Frontend only
+make build-docker        # Docker images
+
+# Docker operations
+make docker-up           # Start services
+make docker-down         # Stop services
+make docker-logs         # View logs
+make docker-clean        # Clean up
+
+# Database operations
+make db-migrate          # Apply migrations
+make db-rollback         # Rollback last migration
+make db-reset            # Reset database
+
+# Utilities
+make clean               # Clean build artifacts
+make deps                # Update dependencies
+make help                # Show all commands
+```
+
+### Manual Development Setup
 
 ```bash
 # Backend development
@@ -86,18 +138,22 @@ cd backend
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
-uvicorn main:app --reload
+uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
 
 # Frontend development
 cd frontend
 pnpm install
 pnpm dev
-
-# Access services
-# Frontend: http://localhost:3000
-# Backend API: http://localhost:8000
-# API Docs: http://localhost:8000/docs
 ```
+
+### Access Services
+
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:8000
+- **API Documentation**: http://localhost:8000/docs
+- **API Redoc**: http://localhost:8000/redoc
+- **PostgreSQL**: localhost:5432 (user: ancient, db: ancient_compute)
+- **Redis**: localhost:6379
 
 ## Project Structure
 
@@ -169,6 +225,25 @@ See the following for detailed information:
 - [TYPE_THEORY_CURRICULUM.md](./TYPE_THEORY_CURRICULUM.md) - Type theory content
 - [WEEK_1_CHECKLIST.md](./WEEK_1_CHECKLIST.md) - Implementation guide
 
+## Week 1 Progress
+
+Week 1 implementation complete! Established:
+
+- [x] Git repository with cross-platform configuration
+- [x] Bazel build system for polyglot builds
+- [x] Docker Compose environment with PostgreSQL and Redis
+- [x] FastAPI backend with SQLAlchemy ORM and Alembic migrations
+- [x] SvelteKit frontend with TypeScript and type-safe API client
+- [x] Database models for Users, Modules, Lessons, and Progress tracking
+- [x] Complete test suite for backend with pytest
+- [x] Frontend routes for landing, modules, timeline, and about pages
+- [x] Pre-commit hooks with Python and TypeScript linters
+- [x] GitHub Actions CI/CD pipeline
+- [x] VS Code workspace configuration
+- [x] Comprehensive Makefile for development tasks
+
+**Next**: Week 2 will implement language services (C, Python, etc.) with security sandboxing.
+
 ## Contributing
 
 This is an educational project demonstrating the complete history of computation. Contributions welcome for:
@@ -178,6 +253,16 @@ This is an educational project demonstrating the complete history of computation
 - Educational content enhancements
 - Performance optimizations
 - Security hardening
+
+### Development Workflow
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/your-feature`
+3. Install pre-commit hooks: `make install-hooks`
+4. Make your changes and ensure tests pass: `make test`
+5. Ensure code quality: `make lint && make format`
+6. Commit with descriptive messages
+7. Push and create a pull request
 
 ## License
 

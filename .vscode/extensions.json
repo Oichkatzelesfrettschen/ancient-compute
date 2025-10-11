@@ -1,0 +1,30 @@
+{
+	// Ancient Compute - Recommended VS Code Extensions
+	"recommendations": [
+		// Python
+		"ms-python.python",
+		"ms-python.vscode-pylance",
+		"ms-python.black-formatter",
+		"ms-python.isort",
+
+		// TypeScript / JavaScript
+		"dbaeumer.vscode-eslint",
+		"esbenp.prettier-vscode",
+
+		// Svelte
+		"svelte.svelte-vscode",
+
+		// Docker
+		"ms-azuretools.vscode-docker",
+
+		// Bazel
+		"BazelBuild.vscode-bazel",
+
+		// General
+		"editorconfig.editorconfig",
+		"mhutchie.git-graph",
+		"eamodio.gitlens",
+		"streetsidesoftware.code-spell-checker",
+		"yzhang.markdown-all-in-one"
+	]
+}

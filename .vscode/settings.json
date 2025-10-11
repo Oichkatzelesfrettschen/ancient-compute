@@ -1,0 +1,79 @@
+{
+	// Ancient Compute - VS Code Workspace Settings
+
+	// Editor
+	"editor.formatOnSave": true,
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": "explicit",
+		"source.organizeImports": "explicit"
+	},
+	"editor.rulers": [100],
+	"files.eol": "\n",
+	"files.insertFinalNewline": true,
+	"files.trimTrailingWhitespace": true,
+
+	// Python
+	"python.defaultInterpreterPath": "${workspaceFolder}/backend/venv/bin/python",
+	"python.linting.enabled": true,
+	"python.linting.pylintEnabled": true,
+	"python.linting.flake8Enabled": true,
+	"python.linting.mypyEnabled": true,
+	"python.formatting.provider": "black",
+	"python.formatting.blackArgs": ["--line-length=100"],
+	"python.sortImports.args": ["--profile", "black"],
+	"python.analysis.typeCheckingMode": "strict",
+	"python.testing.pytestEnabled": true,
+	"python.testing.pytestArgs": ["backend/tests"],
+
+	// TypeScript / JavaScript
+	"typescript.tsdk": "frontend/node_modules/typescript/lib",
+	"typescript.preferences.importModuleSpecifier": "non-relative",
+	"javascript.preferences.importModuleSpecifier": "non-relative",
+
+	// Svelte
+	"svelte.enable-ts-plugin": true,
+
+	// ESLint
+	"eslint.workingDirectories": [{ "directory": "./frontend", "changeProcessCWD": true }],
+	"eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact", "svelte"],
+
+	// Prettier
+	"prettier.configPath": "./frontend/.prettierrc",
+
+	// File associations
+	"files.associations": {
+		"*.bazel": "python",
+		"*.bzl": "python",
+		"BUILD": "python",
+		"WORKSPACE": "python",
+		"Dockerfile*": "dockerfile"
+	},
+
+	// Exclusions
+	"files.exclude": {
+		"**/__pycache__": true,
+		"**/*.pyc": true,
+		"**/node_modules": true,
+		"**/.svelte-kit": true,
+		"**/bazel-*": true
+	},
+
+	"search.exclude": {
+		"**/node_modules": true,
+		"**/bazel-*": true,
+		"**/.svelte-kit": true,
+		"**/build": true,
+		"**/dist": true
+	},
+
+	// Git
+	"git.ignoreLimitWarning": true,
+
+	// Terminal
+	"terminal.integrated.env.windows": {
+		"PATH": "${env:PATH};${workspaceFolder}/backend/venv/Scripts"
+	},
+	"terminal.integrated.env.linux": {
+		"PATH": "${env:PATH}:${workspaceFolder}/backend/venv/bin"
+	}
+}

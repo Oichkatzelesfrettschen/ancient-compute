@@ -1,0 +1,55 @@
+{
+	// Ancient Compute - VS Code Debug Configurations
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Python: FastAPI Backend",
+			"type": "python",
+			"request": "launch",
+			"module": "uvicorn",
+			"args": [
+				"src.main:app",
+				"--reload",
+				"--host",
+				"0.0.0.0",
+				"--port",
+				"8000"
+			],
+			"cwd": "${workspaceFolder}/backend",
+			"env": {
+				"PYTHONPATH": "${workspaceFolder}/backend"
+			},
+			"console": "integratedTerminal",
+			"justMyCode": false
+		},
+		{
+			"name": "Python: Backend Tests",
+			"type": "python",
+			"request": "launch",
+			"module": "pytest",
+			"args": [
+				"tests/",
+				"-v",
+				"--tb=short"
+			],
+			"cwd": "${workspaceFolder}/backend",
+			"env": {
+				"PYTHONPATH": "${workspaceFolder}/backend"
+			},
+			"console": "integratedTerminal",
+			"justMyCode": false
+		},
+		{
+			"name": "Frontend: SvelteKit Dev Server",
+			"type": "node",
+			"request": "launch",
+			"runtimeExecutable": "pnpm",
+			"runtimeArgs": [
+				"dev"
+			],
+			"cwd": "${workspaceFolder}/frontend",
+			"console": "integratedTerminal",
+			"internalConsoleOptions": "neverOpen"
+		}
+	]
+}

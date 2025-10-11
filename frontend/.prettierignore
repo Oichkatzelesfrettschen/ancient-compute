@@ -1,0 +1,10 @@
+# Prettier Ignore
+
+.svelte-kit/
+build/
+dist/
+node_modules/
+package-lock.json
+pnpm-lock.yaml
+*.min.js
+*.min.css
