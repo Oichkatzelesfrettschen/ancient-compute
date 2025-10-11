@@ -1,0 +1,112 @@
+version: '3.9'
+
+# Development environment for Ancient Compute
+# Full production configuration in docker-compose.prod.yml
+
+x-common-variables: &common-variables
+  NODE_ENV: development
+  LOG_LEVEL: debug
+  TZ: UTC
+
+services:
+  # Core Infrastructure
+  redis:
+    image: redis:7-alpine
+    container_name: ancient-redis
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    networks:
+      - backend-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: ancient-postgres
+    environment:
+      POSTGRES_DB: ancient_compute
+      POSTGRES_USER: ${DB_USER:-ancient}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-development_password}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --locale=C"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - backend-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-ancient}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
+
+  # Application Services
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: development
+    container_name: ancient-backend
+    environment:
+      <<: *common-variables
+      DATABASE_URL: postgresql://${DB_USER:-ancient}:${DB_PASSWORD:-development_password}@postgres:5432/ancient_compute
+      REDIS_URL: redis://redis:6379
+      SECRET_KEY: ${SECRET_KEY:-development-secret-key-change-in-production}
+    volumes:
+      - ./backend:/app
+    networks:
+      - backend-network
+      - language-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: development
+    container_name: ancient-frontend
+    environment:
+      <<: *common-variables
+      PUBLIC_API_URL: http://localhost:8000
+      VITE_API_URL: http://localhost:8000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - frontend-network
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    command: npm run dev -- --host 0.0.0.0
+
+networks:
+  frontend-network:
+    driver: bridge
+    name: ancient-frontend
+  backend-network:
+    driver: bridge
+    name: ancient-backend
+  language-network:
+    driver: bridge
+    internal: true
+    name: ancient-language
+
+volumes:
+  postgres-data:
+    name: ancient-postgres-data
+  redis-data:
+    name: ancient-redis-data

@@ -10,7 +10,9 @@
       "Bash(git init:*)",
       "Bash(git config:*)",
       "Bash(bazel:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(chmod:*)"
     ],
     "deny": [],
     "ask": []

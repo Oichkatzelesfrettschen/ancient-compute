@@ -1,0 +1,36 @@
+{
+  "defaultAction": "SCMP_ACT_ERRNO",
+  "architectures": [
+    "SCMP_ARCH_X86_64",
+    "SCMP_ARCH_X86"
+  ],
+  "syscalls": [
+    {
+      "names": [
+        "read", "write", "open", "close", "stat", "fstat",
+        "mmap", "mprotect", "munmap", "brk", "rt_sigaction",
+        "rt_sigprocmask", "ioctl", "access", "execve", "getuid",
+        "getgid", "geteuid", "getegid", "fcntl", "dup", "dup2",
+        "pipe", "select", "sched_yield", "mremap", "msync",
+        "mincore", "madvise", "shmget", "shmat", "shmctl",
+        "dup", "nanosleep", "getitimer", "setitimer", "alarm",
+        "getpid", "sendfile", "socket", "connect", "accept",
+        "sendto", "recvfrom", "sendmsg", "recvmsg", "shutdown",
+        "bind", "listen", "getsockname", "getpeername", "clone",
+        "fork", "vfork", "exit", "wait4", "kill", "newuname",
+        "semget", "semop", "semctl", "shmdt", "msgget", "msgsnd",
+        "msgrcv", "msgctl", "getpgrp", "setsid", "sigaltstack",
+        "arch_prctl", "mount", "umount", "prctl", "gettid",
+        "futex", "set_thread_area", "get_thread_area",
+        "set_tid_address", "restart_syscall", "exit_group",
+        "epoll_wait", "epoll_ctl", "tgkill", "mbind",
+        "set_mempolicy", "get_mempolicy", "openat", "mkdirat",
+        "fstatat", "unlinkat", "readlinkat", "fchmodat",
+        "faccessat", "pselect6", "ppoll", "set_robust_list",
+        "get_robust_list", "epoll_pwait", "epoll_create1",
+        "pipe2", "getrandom"
+      ],
+      "action": "SCMP_ACT_ALLOW"
+    }
+  ]
+}
