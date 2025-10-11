@@ -1,0 +1,51 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Bazel
+bazel-*
+.bazelrc.user
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.venv
+venv/
+ENV/
+env/
+
+# Node
+node_modules/
+npm-debug.log*
+.pnpm-store/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Testing
+.coverage
+.pytest_cache/
+htmlcov/
+
+# Docs
+docs/generated/
+*.pdf
+
+# Misc
+README.md
+LICENSE
+*.md
+!CLAUDE.md
+.env
+.env.local
+*.log
+*.tmp
+*.bak

@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/mnt/c/Users/ericj/**)",
+      "Bash(wsl.exe ls:*)",
+      "Bash(wsl.exe find:*)",
+      "Read(//c/Users/ericj/.claude/**)",
+      "Bash(wsl.exe:*)",
+      "Read(//c/Users/ericj/**)",
+      "Bash(git init:*)",
+      "Bash(git config:*)",
+      "Bash(bazel:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

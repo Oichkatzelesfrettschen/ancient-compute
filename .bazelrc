@@ -1,0 +1,35 @@
+# Ancient Compute Bazel Configuration
+
+# Common settings
+build --enable_platform_specific_config
+build --incompatible_strict_action_env
+
+# Windows-specific settings
+build:windows --enable_runfiles
+build:windows --python_path=python
+
+# Linux-specific settings
+build:linux --python_path=/usr/bin/python3
+
+# Build mode optimizations
+build:opt --compilation_mode=opt
+build:dbg --compilation_mode=dbg
+
+# Test configuration
+test --test_output=errors
+test --test_summary=detailed
+
+# Performance
+build --jobs=auto
+build --experimental_remote_cache_compression
+
+# Error handling
+build --verbose_failures
+build --announce_rc
+
+# Cross-platform compatibility
+build --incompatible_disallow_empty_glob=false
+common --experimental_repo_remote_exec
+
+# Caching
+build --disk_cache=~/.cache/bazel
