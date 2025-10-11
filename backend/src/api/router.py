@@ -1,9 +1,13 @@
 # Ancient Compute Backend - Main API Router
 
 from fastapi import APIRouter
+from .code_execution import router as execution_router
 
 # Create main API router
 api_router = APIRouter()
+
+# Include code execution routes
+api_router.include_router(execution_router)
 
 
 @api_router.get("/status")
