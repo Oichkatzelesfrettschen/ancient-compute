@@ -1,0 +1,19 @@
+Ancient Compute - Database Migrations
+
+This directory contains Alembic migration scripts for the Ancient Compute database schema.
+
+Usage:
+  # Create a new migration
+  alembic revision --autogenerate -m "Description of changes"
+
+  # Apply migrations
+  alembic upgrade head
+
+  # Rollback one migration
+  alembic downgrade -1
+
+  # View migration history
+  alembic history
+
+  # View current version
+  alembic current

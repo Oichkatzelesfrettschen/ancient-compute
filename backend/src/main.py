@@ -49,6 +49,19 @@ async def readiness_check():
     # TODO: Add database and redis connection checks
     return {"status": "ready", "service": "ancient-compute-backend"}
 
+@app.get("/metrics")
+async def metrics():
+    """Basic metrics endpoint for monitoring"""
+    # TODO: Add Prometheus-style metrics
+    return {
+        "service": "ancient-compute-backend",
+        "uptime_seconds": 0,  # TODO: Implement actual uptime tracking
+        "requests_total": 0,  # TODO: Implement request counting
+        "active_users": 0,  # TODO: Query from database
+        "modules_count": 0,  # TODO: Query from database
+        "lessons_count": 0,  # TODO: Query from database
+    }
+
 @app.get("/")
 async def root():
     """Root endpoint"""

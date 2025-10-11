@@ -1,23 +1,20 @@
 <script lang="ts">
 	// Ancient Compute - Landing Page
 	import { onMount } from 'svelte';
+	import { moduleApi } from '$lib/api';
+	import type { Module } from '$lib/api';
 
-	let modules: any[] = [];
+	let modules: Module[] = [];
 	let loading = true;
 	let error = '';
 
 	onMount(async () => {
 		try {
-			const response = await fetch('/api/v1/modules');
-			if (response.ok) {
-				const data = await response.json();
-				modules = data.modules || [];
-			} else {
-				error = 'Failed to load modules';
-			}
-		} catch (e) {
-			error = 'Error connecting to backend';
-			console.error(e);
+			const data = await moduleApi.list();
+			modules = data.modules || [];
+		} catch (e: any) {
+			error = e.message || 'Error connecting to backend';
+			console.error('Failed to load modules:', e);
 		} finally {
 			loading = false;
 		}
