@@ -1,12 +1,12 @@
 # Ancient Compute - Language Service Implementations
 from .c_service import CService
-from .python_service import PythonExecutor
+from .python_service import PythonService
 from .haskell_service import HaskellService
 from .babbage_assembly_service import BabbageAssemblyService
 
 __all__ = [
     'CService',
-    'PythonExecutor',
+    'PythonService',
     'HaskellService',
     'BabbageAssemblyService',
 ]
@@ -16,7 +16,7 @@ def get_executor(language: str):
     """Factory function to get executor for a language"""
     executors = {
         "c": CService,
-        "python": PythonExecutor,
+        "python": PythonService,
         "haskell": HaskellService,
         "babbage-assembly": BabbageAssemblyService,
     }
