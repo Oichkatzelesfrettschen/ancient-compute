@@ -3,7 +3,9 @@
     "allow": [
       "Bash(__NEW_LINE__ python3 VALIDATE_LINKS.py)",
       "Bash(do echo '=== $(basename $dir) ===')",
-      "Bash(pkill:*)"
+      "Bash(pkill:*)",
+      "Bash(do echo \"=== $file ===\" grep \"^class\" \"$file\")",
+      "Bash(pip install:*)"
     ],
     "deny": [],
     "ask": []

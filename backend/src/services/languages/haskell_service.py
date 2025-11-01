@@ -18,8 +18,6 @@ from dataclasses import dataclass
 from typing import Optional, List
 
 from backend.src.compilers.haskell_compiler import HaskellCompiler
-from backend.src.codegen.codegen import CodeGenerator
-from backend.src.codegen.emitter import Assembler
 
 
 class ExecutionStatus(Enum):

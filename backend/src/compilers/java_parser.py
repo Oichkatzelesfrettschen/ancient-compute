@@ -251,20 +251,28 @@ class JavaParser:
                 # Field
                 return self._parse_field_decl(modifiers)
         else:
-            # Method with explicit return type
+            # Method with explicit return type or field
             return_type = self._parse_type()
             name = self._expect(TokenType.IDENTIFIER).value
-            type_parameters = self._parse_type_parameters()
-            self._expect(TokenType.LPAREN)
-            parameters = self._parse_parameters()
-            self._expect(TokenType.RPAREN)
-            exceptions = self._parse_throws()
-            if self._match(TokenType.LBRACE):
-                body = self._parse_block_stmt()
+
+            # Check if this is a field (SEMICOLON) or method (LPAREN)
+            if self._match(TokenType.SEMICOLON):
+                # Field declaration (without initializer)
+                from backend.src.compilers.java_ast import FieldDecl
+                return FieldDecl(name, return_type, None, modifiers)
             else:
-                body = None
-                self._expect(TokenType.SEMICOLON)
-            return MethodDecl(name, return_type, parameters, body, type_parameters, modifiers, exceptions)
+                # Method declaration
+                type_parameters = self._parse_type_parameters()
+                self._expect(TokenType.LPAREN)
+                parameters = self._parse_parameters()
+                self._expect(TokenType.RPAREN)
+                exceptions = self._parse_throws()
+                if self._match(TokenType.LBRACE):
+                    body = self._parse_block_stmt()
+                else:
+                    body = None
+                    self._expect(TokenType.SEMICOLON)
+                return MethodDecl(name, return_type, parameters, body, type_parameters, modifiers, exceptions)
 
     def _parse_interface_member(self) -> object:
         """Parse interface member: method or field"""
