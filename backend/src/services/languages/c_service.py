@@ -137,10 +137,11 @@ class CService:
             assembler = Assembler(complete_assembly)
             assembler_result = assembler.assemble()
 
-            if not assembler_result.success:
+            if assembler_result.error_count > 0:
+                error_text = "\n".join(assembler_result.errors)
                 return CompilationResult(
                     status=ExecutionStatus.COMPILE_ERROR,
-                    stderr=assembler_result.error_message,
+                    stderr=error_text,
                     assembly_text=complete_assembly,
                     compilation_time=time.time() - start_time
                 )
