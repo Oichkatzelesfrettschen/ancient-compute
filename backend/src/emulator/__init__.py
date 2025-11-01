@@ -49,7 +49,15 @@ from backend.src.emulator.types import (
     DEFAULT_TIMING_SPEC,
 )
 
+from backend.src.emulator.analytical_engine import (
+    BabbageNumber,
+    Instruction,
+    Engine,
+    TIMING_TABLE,
+)
+
 __all__ = [
+    # Type system
     "DebugSnapshot",
     "TimeEvent",
     "CarryState",
@@ -60,6 +68,11 @@ __all__ = [
     "TimingSpec",
     "MachineConfig",
     "DEFAULT_TIMING_SPEC",
+    # Analytical Engine
+    "BabbageNumber",
+    "Instruction",
+    "Engine",
+    "TIMING_TABLE",
 ]
 
 __version__ = "0.1.0"
