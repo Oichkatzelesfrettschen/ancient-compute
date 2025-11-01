@@ -94,6 +94,14 @@ services:
       - "3000:3000"
     command: npm run dev -- --host 0.0.0.0
 
+  lisp-service:
+    build:
+      context: ./services/lisp
+    container_name: ancient-lisp-service
+    networks:
+      - language-network
+    restart: unless-stopped
+
 networks:
   frontend-network:
     driver: bridge
