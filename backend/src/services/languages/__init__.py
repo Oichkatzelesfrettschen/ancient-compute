@@ -5,6 +5,7 @@ from .haskell_service import HaskellService
 from .babbage_assembly_service import BabbageAssemblyService
 from .lisp_service import LISPService
 from .idris_service import IDRISService
+from .systemf_service import SystemFService
 
 __all__ = [
     'CService',
@@ -13,6 +14,7 @@ __all__ = [
     'BabbageAssemblyService',
     'LISPService',
     'IDRISService',
+    'SystemFService',
 ]
 
 
@@ -26,6 +28,8 @@ def get_executor(language: str):
         "lisp": LISPService,
         "idris2": IDRISService,
         "idris": IDRISService,
+        "systemf": SystemFService,
+        "system-f": SystemFService,
     }
     executor_class = executors.get(language.lower())
     if executor_class:
