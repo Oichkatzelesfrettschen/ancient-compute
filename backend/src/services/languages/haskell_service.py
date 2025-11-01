@@ -1,178 +1,286 @@
-# Ancient Compute - Haskell Language Service (GHC + Stack)
 """
-Haskell Language Service for ancient_compute.
+Haskell Language Service
 
-Executes Haskell code in a sandboxed Docker container with:
-- GHC compiler with warning flags
-- Stack build system
-- QuickCheck property testing support
-- Memory and CPU limits via cgroups
+Provides FastAPI endpoints for Haskell code compilation and execution.
+Integrates with the Haskell compiler pipeline.
+
+Endpoints:
+  POST /execute     - Compile and execute Haskell code
+  POST /validate    - Validate Haskell code without execution
+  GET /capabilities - Service metadata
 """
-
-from __future__ import annotations
 
 import asyncio
-import re
-import tempfile
 import time
-from typing import Any
+from concurrent.futures import ThreadPoolExecutor
+from enum import Enum
+from dataclasses import dataclass
+from typing import Optional, List
 
-from ..base_executor import (
-    BaseExecutor,
-    ContainerConfig,
-    ExecutionResult,
-    ExecutionStatus,
-)
+from backend.src.compilers.haskell_compiler import HaskellCompiler
+from backend.src.codegen.codegen import CodeGenerator
+from backend.src.codegen.emitter import Assembler
 
 
-class HaskellService(BaseExecutor):
-    """Haskell language executor using GHC with type-safe execution"""
+class ExecutionStatus(Enum):
+    """Execution result status"""
+    SUCCESS = "success"
+    COMPILE_ERROR = "compile_error"
+    RUNTIME_ERROR = "runtime_error"
+    TIMEOUT = "timeout"
 
-    def __init__(self, timeout: int = 15) -> None:
-        """Initialize Haskell service with GHC image"""
-        super().__init__(
-            language="haskell",
-            docker_image="ancient-compute/haskell:latest",
-            timeout=timeout,
-        )
-        self.compile_flags = [
-            "-Wall",  # All warnings
-            "-Werror",  # Warnings as errors
-            "-O2",  # Optimize
-            "-fforce-recomp",  # Force recompilation
-        ]
 
-    def _get_command(self, code_path: str) -> str:
-        """Get command to compile and run Haskell code"""
-        compile_cmd = " ".join([
-            "ghc",
-            *self.compile_flags,
-            "/workspace/Main.hs",
-            "-o /tmp/program",
-            "2>&1",
-        ])
-        run_cmd = "/tmp/program < /workspace/input.txt 2>&1"
-        return f"({compile_cmd} && {run_cmd}) || echo '[COMPILATION_FAILED]'"
+@dataclass
+class CompilationResult:
+    """Haskell compilation result"""
+    status: ExecutionStatus
+    output: str
+    errors: str
+    ir: str
+    assembly: str
+    machine_code: str
+    compile_time_ms: float
+    codegen_time_ms: float
+    assembly_time_ms: float
 
-    async def execute(self, code: str, input_data: str = "") -> ExecutionResult:
-        """Execute Haskell code with proper error classification"""
-        # Security: Check for unsafe functions
-        unsafe_patterns = [
-            "System.IO.Unsafe",
-            "unsafePerformIO",
-            "unsafeInterleaveIO",
-            "unsafeDupablePerformIO",
-            "reallyUnsafePtrEquality",
-        ]
 
-        for pattern in unsafe_patterns:
-            if pattern in code:
-                return ExecutionResult(
-                    status=ExecutionStatus.SECURITY_VIOLATION,
-                    stdout="",
-                    stderr=f"Security violation: '{pattern}' is not allowed",
-                    execution_time=0,
-                )
+class HaskellService:
+    """Haskell language compilation service"""
 
-        if not self.docker_available or not self.client:
-            return ExecutionResult(
-                status=ExecutionStatus.RUNTIME_ERROR,
-                stdout="",
-                stderr="Docker is not available for Haskell service",
-                execution_time=0,
+    def __init__(self, executor: Optional[ThreadPoolExecutor] = None, verbose: bool = False) -> None:
+        """Initialize service"""
+        self.executor = executor or ThreadPoolExecutor(max_workers=4)
+        self.verbose = verbose
+
+    async def execute(self, source: str, timeout_seconds: float = 10.0) -> CompilationResult:
+        """
+        Compile and execute Haskell code
+
+        Args:
+            source: Haskell source code
+            timeout_seconds: Execution timeout
+
+        Returns:
+            CompilationResult with status and outputs
+        """
+        try:
+            result = await asyncio.wait_for(
+                self._compile_and_assemble(source),
+                timeout=timeout_seconds
+            )
+            return result
+        except asyncio.TimeoutError:
+            return CompilationResult(
+                status=ExecutionStatus.TIMEOUT,
+                output="",
+                errors="Compilation timeout",
+                ir="",
+                assembly="",
+                machine_code="",
+                compile_time_ms=0,
+                codegen_time_ms=0,
+                assembly_time_ms=0
             )
 
-        start_time = time.time()
+    async def _compile_and_assemble(self, source: str) -> CompilationResult:
+        """Compile Haskell source through full pipeline"""
+        loop = asyncio.get_event_loop()
 
-        with tempfile.TemporaryDirectory() as tmpdir:
-            code_file = f"{tmpdir}/Main.hs"
-            input_file = f"{tmpdir}/input.txt"
+        # Phase 1: Haskell compilation (in thread pool)
+        compile_start = time.time()
+        try:
+            compiler = HaskellCompiler(verbose=self.verbose)
+            program = await loop.run_in_executor(
+                self.executor,
+                lambda: compiler.compile(source)
+            )
+            compile_time = (time.time() - compile_start) * 1000
 
-            with open(code_file, "w", encoding="utf-8") as f:
-                f.write(code)
-            with open(input_file, "w", encoding="utf-8") as f:
-                f.write(input_data)
+            ir_output = self._ir_to_string(program)
 
-            try:
-                container = self.client.containers.run(
-                    **self._get_container_config(tmpdir)
-                )
+        except Exception as e:
+            return CompilationResult(
+                status=ExecutionStatus.COMPILE_ERROR,
+                output="",
+                errors=str(e),
+                ir="",
+                assembly="",
+                machine_code="",
+                compile_time_ms=(time.time() - compile_start) * 1000,
+                codegen_time_ms=0,
+                assembly_time_ms=0
+            )
 
-                try:
-                    exit_code = await self._wait_container(container)
-                except asyncio.TimeoutError:
-                    return ExecutionResult(
-                        status=ExecutionStatus.TIMEOUT,
-                        stdout="",
-                        stderr=f"Timeout after {self.timeout}s",
-                        execution_time=self.timeout,
-                    )
+        # Phase 2: Code generation (in thread pool)
+        codegen_start = time.time()
+        try:
+            codegen = CodeGenerator()
+            asm_code = await loop.run_in_executor(
+                self.executor,
+                lambda: codegen.generate(program)
+            )
+            codegen_time = (time.time() - codegen_start) * 1000
 
-                logs = container.logs(stdout=True, stderr=True)
-                output = logs.decode("utf-8", errors="replace")
-                execution_time = time.time() - start_time
+        except Exception as e:
+            return CompilationResult(
+                status=ExecutionStatus.COMPILE_ERROR,
+                output="",
+                errors=f"Code generation error: {str(e)}",
+                ir=ir_output,
+                assembly="",
+                machine_code="",
+                compile_time_ms=compile_time,
+                codegen_time_ms=(time.time() - codegen_start) * 1000,
+                assembly_time_ms=0
+            )
 
-                if "[COMPILATION_FAILED]" in output:
-                    return ExecutionResult(
-                        status=ExecutionStatus.COMPILE_ERROR,
-                        stdout="",
-                        stderr=self._extract_error(output),
-                        execution_time=execution_time,
-                    )
+        # Phase 3: Assembly (in thread pool)
+        assembly_start = time.time()
+        try:
+            assembler = Assembler()
+            machine_code = await loop.run_in_executor(
+                self.executor,
+                lambda: assembler.assemble(asm_code)
+            )
+            assembly_time = (time.time() - assembly_start) * 1000
 
-                if exit_code != 0:
-                    return ExecutionResult(
-                        status=ExecutionStatus.RUNTIME_ERROR,
-                        stdout=output[:5000],
-                        stderr=f"Exit code: {exit_code}",
-                        execution_time=execution_time,
-                        exit_code=exit_code,
-                    )
+        except Exception as e:
+            return CompilationResult(
+                status=ExecutionStatus.COMPILE_ERROR,
+                output="",
+                errors=f"Assembly error: {str(e)}",
+                ir=ir_output,
+                assembly=asm_code,
+                machine_code="",
+                compile_time_ms=compile_time,
+                codegen_time_ms=codegen_time,
+                assembly_time_ms=(time.time() - assembly_start) * 1000
+            )
 
-                return ExecutionResult(
-                    status=ExecutionStatus.SUCCESS,
-                    stdout=output[:10000],
-                    stderr="",
-                    execution_time=execution_time,
-                    exit_code=0,
-                )
+        machine_code_hex = self._format_hex_dump(machine_code)
 
-            except Exception as exc:
-                return ExecutionResult(
-                    status=ExecutionStatus.RUNTIME_ERROR,
-                    stdout="",
-                    stderr=f"Error: {exc}",
-                    execution_time=time.time() - start_time,
-                )
+        return CompilationResult(
+            status=ExecutionStatus.SUCCESS,
+            output="Compilation successful",
+            errors="",
+            ir=ir_output,
+            assembly=asm_code,
+            machine_code=machine_code_hex,
+            compile_time_ms=compile_time,
+            codegen_time_ms=codegen_time,
+            assembly_time_ms=assembly_time
+        )
 
-    def _extract_error(self, output: str) -> str:
-        """Extract GHC error from compilation output"""
-        lines = output.split("\n")
+    async def validate(self, source: str) -> CompilationResult:
+        """Validate Haskell code without full assembly"""
+        loop = asyncio.get_event_loop()
+        compile_start = time.time()
 
-        # Look for error: lines first
-        errors = [line for line in lines if re.search(r"error:", line, re.IGNORECASE)]
-        if errors:
-            return "\n".join(errors)
+        try:
+            compiler = HaskellCompiler(verbose=self.verbose)
+            program = await loop.run_in_executor(
+                self.executor,
+                lambda: compiler.compile(source)
+            )
+            compile_time = (time.time() - compile_start) * 1000
 
-        # Look for type error patterns
-        type_errors = [line for line in lines if re.search(
-            r"(Couldn't match|No instance|Ambiguous|Type mismatch)", line
-        )]
-        if type_errors:
-            return "\n".join(type_errors)
+            return CompilationResult(
+                status=ExecutionStatus.SUCCESS,
+                output="Validation successful",
+                errors="",
+                ir=self._ir_to_string(program),
+                assembly="",
+                machine_code="",
+                compile_time_ms=compile_time,
+                codegen_time_ms=0,
+                assembly_time_ms=0
+            )
 
-        # Look for syntax errors
-        syntax_errors = [line for line in lines if re.search(
-            r"(parse error|unexpected|expecting)", line, re.IGNORECASE
-        )]
-        if syntax_errors:
-            return "\n".join(syntax_errors)
+        except Exception as e:
+            return CompilationResult(
+                status=ExecutionStatus.COMPILE_ERROR,
+                output="",
+                errors=str(e),
+                ir="",
+                assembly="",
+                machine_code="",
+                compile_time_ms=(time.time() - compile_start) * 1000,
+                codegen_time_ms=0,
+                assembly_time_ms=0
+            )
 
-        # Return last few lines of output if no specific error found
-        return "\n".join(lines[-5:])
+    async def get_capabilities(self) -> dict:
+        """Get service capabilities"""
+        return {
+            "language": "Haskell",
+            "version": "1.0.0",
+            "features": [
+                "function_definitions",
+                "pattern_matching",
+                "lambda_expressions",
+                "let_bindings",
+                "case_expressions",
+                "polymorphic_types",
+                "type_inference",
+                "guards",
+            ],
+            "maxCodeSize": 1_000_000,
+            "timeoutSeconds": 10.0,
+            "supportsValidation": True,
+            "supportsDebug": False,
+        }
 
-    def _get_container_config(self, code_path: str) -> ContainerConfig:
-        """Get container config with security settings"""
-        config = super()._get_container_config(code_path)
-        config["security_opt"] = ["no-new-privileges"]
-        return config
+    def _ir_to_string(self, program) -> str:
+        """Format IR for display"""
+        lines = []
+        lines.append("=== Haskell Intermediate Representation ===\n")
+
+        for func_name, func in program.functions.items():
+            lines.append(f"Function: {func_name}")
+            lines.append(f"  Parameters: {func.parameters}")
+
+            for block_name, block in func.basic_blocks.items():
+                lines.append(f"  Block: {block_name}")
+
+                for instr in block.instructions:
+                    lines.append(f"    {instr}")
+
+                if block.terminator:
+                    lines.append(f"    {block.terminator}")
+
+            lines.append("")
+
+        return "\n".join(lines)
+
+    def _format_hex_dump(self, data: str) -> str:
+        """Format machine code as hex dump"""
+        lines = []
+        lines.append("=== Machine Code (Babbage ISA) ===\n")
+
+        # Parse hex string into bytes and format
+        if isinstance(data, str):
+            hex_str = data.replace("0x", "").replace(" ", "")
+            for i in range(0, len(hex_str), 32):
+                chunk = hex_str[i:i+32]
+                offset = i // 2
+                formatted = " ".join(chunk[j:j+2] for j in range(0, len(chunk), 2))
+                lines.append(f"  {offset:04x}: {formatted}")
+        else:
+            lines.append("  (binary format)")
+
+        return "\n".join(lines)
+
+
+# =============================================================================
+# Service Factory
+# =============================================================================
+
+_service_instance: Optional[HaskellService] = None
+
+
+def get_haskell_service(verbose: bool = False) -> HaskellService:
+    """Get or create Haskell service instance"""
+    global _service_instance
+    if _service_instance is None:
+        _service_instance = HaskellService(verbose=verbose)
+    return _service_instance
