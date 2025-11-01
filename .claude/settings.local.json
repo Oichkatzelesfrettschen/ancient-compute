@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(__NEW_LINE__ python3 VALIDATE_LINKS.py)",
-      "Bash(do echo '=== $(basename $dir) ===')"
+      "Bash(do echo '=== $(basename $dir) ===')",
+      "Bash(pkill:*)"
     ],
     "deny": [],
     "ask": []
