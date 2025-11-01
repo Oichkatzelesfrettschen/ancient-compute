@@ -12,7 +12,7 @@ Key concepts:
 from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Dict, Set, List, Tuple, Optional
-from ir_types import (
+from backend.src.ir_types import (
     Function, BasicBlock, Instruction, Operand,
     Assignment, BinaryOp, Load, Store, Call, Return,
     VariableValue, RegisterValue, Constant, MemoryValue,

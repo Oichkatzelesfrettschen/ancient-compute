@@ -9,11 +9,11 @@ Coordinates all code generation phases to produce Babbage assembly.
 from __future__ import annotations
 from dataclasses import dataclass
 from typing import Dict, Optional, List
-from ir_types import Function, BasicBlock, Program
-from liveness import LivenessAnalyzer
-from regalloc import LinearScanAllocator, AllocationMap
-from selector import InstructionSelector
-from emitter import CodeEmitter, AssemblyOutput
+from backend.src.ir_types import Function, BasicBlock, Program
+from backend.src.codegen.liveness import LivenessAnalyzer
+from backend.src.codegen.regalloc import LinearScanAllocator, AllocationMap
+from backend.src.codegen.selector import InstructionSelector
+from backend.src.codegen.emitter import CodeEmitter, AssemblyOutput
 
 
 @dataclass

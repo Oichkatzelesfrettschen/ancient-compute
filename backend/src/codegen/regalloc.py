@@ -19,8 +19,8 @@ Babbage constraints:
 from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Dict, Set, List, Optional, Tuple
-from ir_types import Register, Function
-from liveness import LivenessAnalyzer, LiveInterval
+from backend.src.ir_types import Register, Function
+from backend.src.codegen.liveness import LivenessAnalyzer, LiveInterval
 
 
 @dataclass

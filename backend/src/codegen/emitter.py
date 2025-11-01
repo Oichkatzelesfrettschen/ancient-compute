@@ -13,7 +13,7 @@ Responsibilities:
 from __future__ import annotations
 from dataclasses import dataclass
 from typing import List, Dict, Optional
-from selector import AsmInstruction, AsmOperand
+from backend.src.codegen.selector import AsmInstruction, AsmOperand
 
 
 @dataclass

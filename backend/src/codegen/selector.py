@@ -12,12 +12,12 @@ Key responsibility:
 from __future__ import annotations
 from dataclasses import dataclass
 from typing import List, Optional
-from ir_types import (
+from backend.src.ir_types import (
     Instruction, Assignment, BinaryOp, Load, Store, Call, Return,
     VariableValue, RegisterValue, Constant, MemoryValue,
     BranchTerminator, JumpTerminator, ReturnTerminator,
 )
-from regalloc import AllocationMap
+from backend.src.codegen.regalloc import AllocationMap
 
 
 @dataclass

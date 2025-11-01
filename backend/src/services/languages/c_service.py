@@ -1,179 +1,306 @@
-# Ancient Compute - C Language Service (GCC + Sandbox)
-"""
-C Language Service for ancient_compute.
+"""C Language Service - compiles C code to Babbage IR and machine code.
 
-Executes C code in a sandboxed Docker container with:
-- GCC compiler with all warning flags
-- seccomp-bpf sandboxing
-- Memory and CPU limits via cgroups
-- AddressSanitizer (ASAN) for memory safety
-- UndefinedBehaviorSanitizer (UBSAN) for undefined behavior detection
+This service integrates the C compiler with the FastAPI framework,
+providing REST endpoints for C code compilation and execution.
+
+Features:
+  - Full C code parsing and semantic analysis
+  - Type checking and type system validation
+  - Compilation to Babbage IR
+  - Code generation and assembly
+  - Fast execution (no Docker containerization needed)
+  - Comprehensive error reporting
 """
 
 from __future__ import annotations
-
+from typing import Dict, List, Optional, Any
+from dataclasses import dataclass
+from enum import Enum
 import asyncio
-import re
-import tempfile
-import time
-from typing import Any
+from concurrent.futures import ThreadPoolExecutor
+import sys
 
-from ..base_executor import (
-    BaseExecutor,
-    ContainerConfig,
-    ExecutionResult,
-    ExecutionStatus,
-)
+from backend.src.compilers.c_compiler import CCompiler
+from backend.src.codegen.codegen import CodeGenerator
+from backend.src.assembler.assembler import Assembler
 
 
-class CService(BaseExecutor):
-    """C language executor using GCC with comprehensive safety checks"""
+class ExecutionStatus(str, Enum):
+    """Execution status enumeration."""
+    SUCCESS = "success"
+    COMPILE_ERROR = "compile_error"
+    RUNTIME_ERROR = "runtime_error"
+    TIMEOUT = "timeout"
 
-    def __init__(self, timeout: int = 10) -> None:
-        """Initialize C service with GCC image"""
-        super().__init__(
-            language="c",
-            docker_image="ancient-compute/c-service:latest",
-            timeout=timeout,
-        )
-        self.compile_flags = [
-            "-Wall",  # All warnings
-            "-Wextra",  # Extra warnings
-            "-Werror",  # Warnings as errors
-            "-std=c99",  # C99 standard
-            "-O2",  # Optimize
-            "-fstack-protector-all",  # Stack protection
-            "-D_FORTIFY_SOURCE=2",  # Fortify source
-        ]
-        self.sanitizers = [
-            "-fsanitize=address",  # Address Sanitizer
-            "-fsanitize=undefined",  # UB Sanitizer
-        ]
 
-    def _get_command(self, code_path: str) -> str:
-        """Get command to compile and run C code"""
-        compile_cmd = " ".join([
-            "gcc",
-            *self.compile_flags,
-            *self.sanitizers,
-            "/workspace/main.c",
-            "-o /tmp/program",
-            "2>&1",
-        ])
-        run_cmd = "/tmp/program < /workspace/input.txt 2>&1"
-        return f"({compile_cmd} && {run_cmd}) || echo '[COMPILATION_FAILED]'"
+@dataclass
+class CompilationResult:
+    """Result of C code compilation."""
+    status: ExecutionStatus
+    stdout: str = ""  # Assembly text or hex dump
+    stderr: str = ""  # Error messages
+    ir_text: str = ""  # Intermediate representation (debug)
+    assembly_text: str = ""  # Assembly code
+    machine_code: str = ""  # Hex-encoded machine code
+    compilation_time: float = 0.0  # Seconds
 
-    async def execute(self, code: str, input_data: str = "") -> ExecutionResult:
-        """Execute C code with proper error classification"""
-        # Security: Check for forbidden patterns
-        forbidden_patterns = [
-            "#include <sys/",
-            "system(",
-            "exec",
-            "fork(",
-            "socket(",
-        ]
 
-        for pattern in forbidden_patterns:
-            if pattern in code:
-                return ExecutionResult(
-                    status=ExecutionStatus.SECURITY_VIOLATION,
-                    stdout="",
-                    stderr=f"Security violation: '{pattern}' is not allowed",
-                    execution_time=0,
-                )
+class CService:
+    """C Language Service for compiling and executing C code targeting Babbage ISA."""
 
-        if not self.docker_available or not self.client:
-            return ExecutionResult(
-                status=ExecutionStatus.RUNTIME_ERROR,
-                stdout="",
-                stderr="Docker is not available for C service",
-                execution_time=0,
+    def __init__(self, timeout_seconds: int = 30, verbose: bool = False) -> None:
+        """Initialize C service.
+
+        Args:
+            timeout_seconds: Maximum execution time
+            verbose: Enable verbose compilation output
+        """
+        self.timeout_seconds = timeout_seconds
+        self.verbose = verbose
+        self.c_compiler = CCompiler(verbose=verbose)
+        self.code_generator = CodeGenerator()
+        self.executor = ThreadPoolExecutor(max_workers=4)
+
+    async def execute(self, code: str, input_data: str = "") -> CompilationResult:
+        """Execute C code by compiling to IR, generating assembly, and assembling.
+
+        Args:
+            code: C source code
+            input_data: Input data for the program (not used in pure compilation)
+
+        Returns:
+            CompilationResult with status, output, errors, and timing
+        """
+        loop = asyncio.get_event_loop()
+
+        try:
+            # Run compilation in thread pool to avoid blocking
+            result = await asyncio.wait_for(
+                loop.run_in_executor(self.executor, self._compile_and_assemble, code),
+                timeout=self.timeout_seconds
+            )
+            return result
+
+        except asyncio.TimeoutError:
+            return CompilationResult(
+                status=ExecutionStatus.TIMEOUT,
+                stderr=f"Compilation timed out after {self.timeout_seconds} seconds"
+            )
+        except Exception as e:
+            return CompilationResult(
+                status=ExecutionStatus.COMPILE_ERROR,
+                stderr=str(e)
             )
 
+    def _compile_and_assemble(self, code: str) -> CompilationResult:
+        """Internal method: compile C code to machine code.
+
+        Args:
+            code: C source code
+
+        Returns:
+            CompilationResult with compiled output
+        """
+        import time
         start_time = time.time()
 
-        with tempfile.TemporaryDirectory() as tmpdir:
-            code_file = f"{tmpdir}/main.c"
-            input_file = f"{tmpdir}/input.txt"
+        try:
+            # Phase 1: C → IR compilation
+            if self.verbose:
+                print("[C SERVICE] Phase 1: C → IR compilation...")
 
-            with open(code_file, "w", encoding="ascii", errors="replace") as f:
-                f.write(code)
-            with open(input_file, "w", encoding="ascii", errors="replace") as f:
-                f.write(input_data)
+            ir_program = self.c_compiler.compile(code)
+            ir_text = self._ir_to_string(ir_program)
 
-            try:
-                container = self.client.containers.run(
-                    **self._get_container_config(tmpdir)
+            if self.verbose:
+                print(f"[C SERVICE]   IR functions: {len(ir_program.functions)}")
+
+            # Phase 2: IR → Assembly code generation
+            if self.verbose:
+                print("[C SERVICE] Phase 2: IR → Assembly code generation...")
+
+            assembly_outputs = []
+            for func_name, ir_func in ir_program.functions.items():
+                codegen_result = self.code_generator.generate_function(ir_func)
+                assembly_text = codegen_result.get_assembly_text()
+                assembly_outputs.append(assembly_text)
+
+            complete_assembly = "\n".join(assembly_outputs)
+
+            if self.verbose:
+                print("[C SERVICE]   Assembly generated")
+
+            # Phase 3: Assembly → Machine code
+            if self.verbose:
+                print("[C SERVICE] Phase 3: Assembly → Machine code...")
+
+            assembler = Assembler(complete_assembly)
+            assembler_result = assembler.assemble()
+
+            if not assembler_result.success:
+                return CompilationResult(
+                    status=ExecutionStatus.COMPILE_ERROR,
+                    stderr=assembler_result.error_message,
+                    assembly_text=complete_assembly,
+                    compilation_time=time.time() - start_time
                 )
 
-                try:
-                    exit_code = await self._wait_container(container)
-                except asyncio.TimeoutError:
-                    return ExecutionResult(
-                        status=ExecutionStatus.TIMEOUT,
-                        stdout="",
-                        stderr=f"Timeout after {self.timeout}s",
-                        execution_time=self.timeout,
-                    )
+            # Format machine code as hex dump
+            machine_code_hex = self._format_hex_dump(assembler_result.machine_code)
 
-                logs = container.logs(stdout=True, stderr=True)
-                output = logs.decode("ascii", errors="replace")
-                execution_time = time.time() - start_time
+            if self.verbose:
+                print("[C SERVICE] Compilation COMPLETE")
 
-                if "[COMPILATION_FAILED]" in output:
-                    return ExecutionResult(
-                        status=ExecutionStatus.COMPILE_ERROR,
-                        stdout="",
-                        stderr=self._extract_error(output),
-                        execution_time=execution_time,
-                    )
+            return CompilationResult(
+                status=ExecutionStatus.SUCCESS,
+                stdout=machine_code_hex,
+                ir_text=ir_text,
+                assembly_text=complete_assembly,
+                machine_code=machine_code_hex,
+                compilation_time=time.time() - start_time
+            )
 
-                if "AddressSanitizer" in output or "UndefinedBehaviorSanitizer" in output:
-                    return ExecutionResult(
-                        status=ExecutionStatus.RUNTIME_ERROR,
-                        stdout=output[:5000],
-                        stderr="Memory safety violation detected",
-                        execution_time=execution_time,
-                    )
+        except Exception as e:
+            import traceback
+            error_msg = f"{str(e)}\n\n{traceback.format_exc()}"
+            return CompilationResult(
+                status=ExecutionStatus.COMPILE_ERROR,
+                stderr=error_msg,
+                compilation_time=time.time() - start_time
+            )
 
-                if exit_code != 0:
-                    return ExecutionResult(
-                        status=ExecutionStatus.RUNTIME_ERROR,
-                        stdout=output[:5000],
-                        stderr=f"Exit code: {exit_code}",
-                        execution_time=execution_time,
-                        exit_code=exit_code,
-                    )
+    def _ir_to_string(self, ir_program: Any) -> str:
+        """Convert IR program to readable string format.
 
-                return ExecutionResult(
-                    status=ExecutionStatus.SUCCESS,
-                    stdout=output[:10000],
-                    stderr="",
-                    execution_time=execution_time,
-                    exit_code=0,
-                )
+        Args:
+            ir_program: IR Program object
 
-            except Exception as exc:
-                return ExecutionResult(
-                    status=ExecutionStatus.RUNTIME_ERROR,
-                    stdout="",
-                    stderr=f"Error: {exc}",
-                    execution_time=time.time() - start_time,
-                )
+        Returns:
+            Formatted IR representation
+        """
+        lines = []
+        lines.append("=== BABBAGE IR PROGRAM ===\n")
 
-    def _extract_error(self, output: str) -> str:
-        """Extract GCC error from compilation output"""
-        lines = output.split("\n")
-        errors = [line for line in lines if re.search(r"error:", line)]
-        return "\n".join(errors) if errors else "\n".join(lines[-5:])
+        # Global variables
+        if ir_program.global_variables:
+            lines.append("GLOBAL VARIABLES:")
+            for name, var in ir_program.global_variables.items():
+                lines.append(f"  {name}: {var.ir_type}")
+            lines.append("")
 
-    def _get_container_config(self, code_path: str) -> ContainerConfig:
-        """Get container config with security settings"""
-        config = super()._get_container_config(code_path)
-        config["environment"] = {
-            "ASAN_OPTIONS": "detect_leaks=1:halt_on_error=0",
-            "UBSAN_OPTIONS": "halt_on_error=0:print_stacktrace=1",
+        # Functions
+        if ir_program.functions:
+            lines.append("FUNCTIONS:")
+            for func_name, func in ir_program.functions.items():
+                lines.append(f"  {func_name}({', '.join(func.parameters)}):")
+                for block in func.basic_blocks:
+                    lines.append(f"    {block.label}:")
+                    for instr in block.instructions:
+                        lines.append(f"      {instr}")
+                    if block.terminator:
+                        lines.append(f"      {block.terminator}")
+                lines.append("")
+
+        return "\n".join(lines)
+
+    def _format_hex_dump(self, machine_code: List[int]) -> str:
+        """Format machine code as hex dump.
+
+        Args:
+            machine_code: List of 50-bit instruction words
+
+        Returns:
+            Formatted hex dump string
+        """
+        lines = ["=== MACHINE CODE (HEX) ===", ""]
+        lines.append("Address  | Instruction (Hex)")
+        lines.append("-" * 40)
+
+        for addr, word in enumerate(machine_code):
+            # Format as 12 hex digits (48 bits visible, fits in typical display)
+            hex_str = f"{word:012x}"
+            lines.append(f"{addr:08x}  | {hex_str}")
+
+        return "\n".join(lines)
+
+    async def validate(self, code: str) -> Dict[str, Any]:
+        """Validate C code without full compilation.
+
+        Args:
+            code: C source code
+
+        Returns:
+            Dictionary with validation results
+        """
+        loop = asyncio.get_event_loop()
+
+        try:
+            result = await asyncio.wait_for(
+                loop.run_in_executor(self.executor, self._validate_code, code),
+                timeout=self.timeout_seconds
+            )
+            return result
+
+        except asyncio.TimeoutError:
+            return {
+                "valid": False,
+                "error": f"Validation timed out after {self.timeout_seconds} seconds"
+            }
+        except Exception as e:
+            return {
+                "valid": False,
+                "error": str(e)
+            }
+
+    def _validate_code(self, code: str) -> Dict[str, Any]:
+        """Internal method: validate C code.
+
+        Args:
+            code: C source code
+
+        Returns:
+            Dictionary with validation results
+        """
+        try:
+            # Try to compile - if it succeeds, code is valid
+            ir_program = self.c_compiler.compile(code)
+            return {
+                "valid": True,
+                "functions": list(ir_program.functions.keys()),
+                "error": None
+            }
+        except Exception as e:
+            return {
+                "valid": False,
+                "error": str(e)
+            }
+
+    async def get_capabilities(self) -> Dict[str, Any]:
+        """Get service capabilities and metadata.
+
+        Returns:
+            Dictionary with service information
+        """
+        return {
+            "language": "C",
+            "target_isa": "Babbage",
+            "features": [
+                "Basic data types (int, float, void)",
+                "Functions with parameters",
+                "Local and global variables",
+                "Arithmetic and logical operations",
+                "Control flow (if/else, while, for)",
+                "Function calls",
+                "Array access (basic)",
+            ],
+            "limitations": [
+                "No structures or unions",
+                "No pointers (except function pointers)",
+                "No macros or preprocessing",
+                "Limited standard library",
+                "No dynamic memory allocation",
+            ],
+            "execution_model": "Compile to IR → Assembly → Machine Code",
+            "timeout_seconds": self.timeout_seconds,
+            "response_format": "JSON with compilation output and errors"
         }
-        config["security_opt"] = ["no-new-privileges"]
-        return config
