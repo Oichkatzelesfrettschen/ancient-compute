@@ -196,9 +196,10 @@ class IDRISService:
             lines.append(f"@function {func.name}({', '.join(func.parameters)})")
 
             # Generate blocks
-            if func.blocks:
-                for block in func.blocks:
-                    lines.append(f"  @block {block.name}:")
+            if func.basic_blocks:
+                blocks = func.basic_blocks.values() if isinstance(func.basic_blocks, dict) else func.basic_blocks
+                for block in blocks:
+                    lines.append(f"  @block {block.label}:")
                     # Generate instructions
                     if hasattr(block, 'instructions') and block.instructions:
                         for instr in block.instructions:

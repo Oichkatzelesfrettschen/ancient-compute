@@ -136,9 +136,10 @@ class JavaService:
 
         for func in ir_program.functions:
             lines.append(f"@function {func.name}()")
-            if func.blocks:
-                for block in func.blocks:
-                    lines.append(f"  @block {block.name}:")
+            if func.basic_blocks:
+                blocks = func.basic_blocks.values() if isinstance(func.basic_blocks, dict) else func.basic_blocks
+                for block in blocks:
+                    lines.append(f"  @block {block.label}:")
             else:
                 lines.append("  ; (empty function)")
 
