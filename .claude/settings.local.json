@@ -5,7 +5,18 @@
       "Bash(do echo '=== $(basename $dir) ===')",
       "Bash(pkill:*)",
       "Bash(do echo \"=== $file ===\" grep \"^class\" \"$file\")",
-      "Bash(pip install:*)"
+      "Bash(pip install:*)",
+      "Bash(backend/tests/unit/test_analytical_engine.py )",
+      "Bash(backend/tests/unit/test_digit_column.py )",
+      "Bash(backend/tests/unit/test_column_bank.py )",
+      "Bash(backend/tests/unit/test_anticipating_carriage.py )",
+      "Bash(backend/tests/unit/test_timing_controller.py )",
+      "Bash(backend/tests/unit/test_demachine.py )",
+      "Bash(backend/tests/integration/test_phase_3_w2_1_polynomial_evaluation.py )",
+      "Bash(backend/tests/integration/test_phase_3_w2_2_advanced_polynomials.py )",
+      "Bash(backend/tests/unit/test_card_reader.py )",
+      "Bash(backend/tests/unit/test_printer.py )",
+      "Bash(backend/tests/unit/test_debugger.py )"
     ],
     "deny": [],
     "ask": []
