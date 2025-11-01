@@ -1,18 +1,20 @@
 # Ancient Compute - Code Execution API
-from fastapi import APIRouter, HTTPException, Depends
+from typing import Literal, Optional
+
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
-from typing import Optional, Literal
 from sqlalchemy.orm import Session
 
-from ...services.languages import get_executor
 from ..database import get_db
-from ..models import CodeSubmission, Lesson
+from ..models import CodeSubmission
+from ..services.languages import get_executor
 
 router = APIRouter(prefix="/execute", tags=["code-execution"])
 
 
 class ExecutionRequest(BaseModel):
     """Request model for code execution"""
+
     language: Literal["c", "python", "haskell", "idris", "lisp", "assembly", "java", "systemf"]
     code: str = Field(..., max_length=50000, description="Source code to execute")
     input_data: str = Field(default="", max_length=10000, description="Input data for program")
@@ -21,6 +23,7 @@ class ExecutionRequest(BaseModel):
 
 class ExecutionResponse(BaseModel):
     """Response model for code execution"""
+
     status: str
     stdout: str
     stderr: str
@@ -30,10 +33,7 @@ class ExecutionResponse(BaseModel):
 
 
 @router.post("/run", response_model=ExecutionResponse)
-async def execute_code(
-    request: ExecutionRequest,
-    db: Session = Depends(get_db)
-):
+async def execute_code(request: ExecutionRequest, db: Session = Depends(get_db)):
     """
     Execute code in a sandboxed environment.
 
@@ -54,8 +54,7 @@ async def execute_code(
 
     if not executor:
         raise HTTPException(
-            status_code=400,
-            detail=f"Language '{request.language}' is not currently supported"
+            status_code=400, detail=f"Language '{request.language}' is not currently supported"
         )
 
     # Execute code in sandboxed container
@@ -82,7 +81,7 @@ async def execute_code(
         stderr=result.stderr,
         compile_output=result.compile_output,
         execution_time=result.execution_time,
-        memory_used=result.memory_used
+        memory_used=result.memory_used,
     )
 
 
@@ -101,7 +100,7 @@ async def get_supported_languages():
                 "version": "GCC 12.2",
                 "description": "C language with GCC compiler",
                 "timeout": 10,
-                "memory_limit_mb": 128
+                "memory_limit_mb": 128,
             },
             {
                 "id": "python",
@@ -109,7 +108,7 @@ async def get_supported_languages():
                 "version": "3.11 (Restricted)",
                 "description": "Python with RestrictedPython sandboxing",
                 "timeout": 5,
-                "memory_limit_mb": 256
+                "memory_limit_mb": 256,
             },
             {
                 "id": "haskell",
@@ -117,7 +116,7 @@ async def get_supported_languages():
                 "version": "GHC 9.2",
                 "description": "Haskell with Glasgow Haskell Compiler",
                 "timeout": 15,
-                "memory_limit_mb": 512
+                "memory_limit_mb": 512,
             },
             {
                 "id": "idris",
@@ -125,7 +124,7 @@ async def get_supported_languages():
                 "version": "0.6.0",
                 "description": "IDRIS2 with dependent types",
                 "timeout": 20,
-                "memory_limit_mb": 512
+                "memory_limit_mb": 512,
             },
             {
                 "id": "lisp",
@@ -133,7 +132,7 @@ async def get_supported_languages():
                 "version": "SBCL 2.3",
                 "description": "Common LISP with SBCL",
                 "timeout": 10,
-                "memory_limit_mb": 256
+                "memory_limit_mb": 256,
             },
             {
                 "id": "assembly",
@@ -141,7 +140,7 @@ async def get_supported_languages():
                 "version": "NASM x86-64",
                 "description": "x86-64 Assembly with NASM",
                 "timeout": 5,
-                "memory_limit_mb": 64
+                "memory_limit_mb": 64,
             },
             {
                 "id": "java",
@@ -149,7 +148,7 @@ async def get_supported_languages():
                 "version": "OpenJDK 17",
                 "description": "Java with OpenJDK",
                 "timeout": 15,
-                "memory_limit_mb": 256
+                "memory_limit_mb": 256,
             },
             {
                 "id": "systemf",
@@ -157,8 +156,8 @@ async def get_supported_languages():
                 "version": "Academic",
                 "description": "System F polymorphic lambda calculus",
                 "timeout": 10,
-                "memory_limit_mb": 128
-            }
+                "memory_limit_mb": 128,
+            },
         ]
     }
 
@@ -169,5 +168,5 @@ async def execution_service_health():
     return {
         "status": "healthy",
         "service": "code-execution",
-        "languages_available": 3  # C, Python, Haskell currently implemented
+        "languages_available": 3,  # C, Python, Haskell currently implemented
     }

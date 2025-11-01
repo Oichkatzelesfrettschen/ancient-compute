@@ -1,16 +1,14 @@
+---
 # Ancient Compute - CI/CD Pipeline
 name: CI
-
 on:
   push:
-    branches: [ master, main, develop ]
+    branches: [master, main, develop]
   pull_request:
-    branches: [ master, main, develop ]
-
+    branches: [master, main, develop]
 env:
-  PYTHON_VERSION: '3.11'
-  NODE_VERSION: '20'
-
+  PYTHON_VERSION: "3.11"
+  NODE_VERSION: "20"
 jobs:
   lint-backend:
     name: Lint Backend
@@ -22,7 +20,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-          cache: 'pip'
+          cache: pip
 
       - name: Install dependencies
         run: |
@@ -82,7 +80,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-          cache: 'pip'
+          cache: pip
 
       - name: Install dependencies
         run: |
@@ -114,7 +112,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+          cache: pnpm
           cache-dependency-path: frontend/pnpm-lock.yaml
 
       - name: Install pnpm
@@ -142,7 +140,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+          cache: pnpm
           cache-dependency-path: frontend/pnpm-lock.yaml
 
       - name: Install pnpm

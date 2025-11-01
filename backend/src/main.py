@@ -1,17 +1,18 @@
 # Ancient Compute Backend - FastAPI Application
 
+import logging
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-import logging
 
-from .config import settings
 from .api.router import api_router
+from .config import settings
 
 # Configure logging
 logging.basicConfig(
     level=logging.DEBUG if settings.DEBUG else logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 
 logger = logging.getLogger(__name__)
@@ -37,17 +38,20 @@ app.add_middleware(
 # Include API router
 app.include_router(api_router, prefix="/api/v1")
 
+
 # Health check endpoints
 @app.get("/health")
 async def health_check():
     """Basic health check endpoint"""
     return {"status": "healthy", "service": "ancient-compute-backend"}
 
+
 @app.get("/ready")
 async def readiness_check():
     """Readiness check - verifies dependencies are available"""
     # TODO: Add database and redis connection checks
     return {"status": "ready", "service": "ancient-compute-backend"}
+
 
 @app.get("/metrics")
 async def metrics():
@@ -62,6 +66,7 @@ async def metrics():
         "lessons_count": 0,  # TODO: Query from database
     }
 
+
 @app.get("/")
 async def root():
     """Root endpoint"""
@@ -69,8 +74,9 @@ async def root():
         "service": "Ancient Compute API",
         "version": "0.1.0",
         "description": "Teaching 12,500 years of computational history",
-        "docs": "/docs" if settings.DEBUG else "Documentation disabled in production"
+        "docs": "/docs" if settings.DEBUG else "Documentation disabled in production",
     }
+
 
 # Startup event
 @app.on_event("startup")
@@ -78,6 +84,7 @@ async def startup_event():
     logger.info("Ancient Compute Backend starting...")
     logger.info(f"Environment: {settings.ENVIRONMENT}")
     logger.info(f"Debug mode: {settings.DEBUG}")
+
 
 # Shutdown event
 @app.on_event("shutdown")

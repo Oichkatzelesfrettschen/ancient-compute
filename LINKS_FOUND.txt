@@ -1,0 +1,466 @@
+./ARCHITECTURE_AND_DESIGN/ARCHITECTURE.md:- [BACKEND_ARCHITECTURE.md](BACKEND_ARCHITECTURE.md) - FastAPI details
+./ARCHITECTURE_AND_DESIGN/ARCHITECTURE.md:- [FRONTEND_ARCHITECTURE.md](FRONTEND_ARCHITECTURE.md) - SvelteKit details
+./ARCHITECTURE_AND_DESIGN/ARCHITECTURE.md:- [IMPLEMENTATION_ROADMAP.md](IMPLEMENTATION_ROADMAP.md) - 52-week development plan
+./ARCHITECTURE_AND_DESIGN/ARCHITECTURE.md:- [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) - Directory organization
+./ARCHITECTURE_AND_DESIGN/ARCHITECTURE.md:- [SECURITY_ARCHITECTURE.md](SECURITY_ARCHITECTURE.md) - Security model
+./ARCHITECTURE_AND_DESIGN/ARCHITECTURE.md:- [WEEK_1_COMPLETION_STATUS.md](WEEK_1_COMPLETION_STATUS.md) - Current progress
+./ARCHITECTURE_AND_DESIGN/IMPLEMENTATION_ROADMAP.md:- [ARCHITECTURE.md](ARCHITECTURE.md) - Technical architecture
+./ARCHITECTURE_AND_DESIGN/IMPLEMENTATION_ROADMAP.md:- [STRATEGIC_ROADMAP.md](STRATEGIC_ROADMAP.md) - Next phases and evolution
+./ARCHITECTURE_AND_DESIGN/IMPLEMENTATION_ROADMAP.md:- [WEEK_1_COMPLETION_STATUS.md](WEEK_1_COMPLETION_STATUS.md) - Current progress
+./ARCHITECTURE_AND_DESIGN/PROJECT_STRUCTURE.md:- [ARCHITECTURE.md](ARCHITECTURE.md) - Technical architecture details
+./ARCHITECTURE_AND_DESIGN/PROJECT_STRUCTURE.md:- [IMPLEMENTATION_ROADMAP.md](IMPLEMENTATION_ROADMAP.md) - Development timeline
+./ARCHITECTURE_AND_DESIGN/PROJECT_STRUCTURE.md:- [README.md](../GETTING_STARTED/README.md) - Main entry point
+./ARCHITECTURE_AND_DESIGN/README.md:- [../GETTING_STARTED/README.md](../GETTING_STARTED/README.md) - Entry point for all users
+./ARCHITECTURE_AND_DESIGN/README.md:- [IMPLEMENTATION_ROADMAP.md](./IMPLEMENTATION_ROADMAP.md) - 52-week phased plan
+./ARCHITECTURE_AND_DESIGN/README.md:- [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md) - File organization
+./ARCHITECTURE_AND_DESIGN/README.md:- [STRATEGIC_ROADMAP.md](./STRATEGIC_ROADMAP.md) - Strategic direction and planning
+./ARCHITECTURE_AND_DESIGN/STRATEGIC_ROADMAP.md:- [ARCHITECTURE.md](ARCHITECTURE.md) - Complete technical specification
+./ARCHITECTURE_AND_DESIGN/STRATEGIC_ROADMAP.md:- [DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md](../DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md) - Complete file inventory
+./ARCHITECTURE_AND_DESIGN/STRATEGIC_ROADMAP.md:- [../GETTING_STARTED/DOCUMENT_FINDER.md](../GETTING_STARTED/DOCUMENT_FINDER.md) - Searchable index
+./ARCHITECTURE_AND_DESIGN/STRATEGIC_ROADMAP.md:- [../GETTING_STARTED/README.md](../GETTING_STARTED/README.md) - Main entry point
+./ARCHITECTURE_AND_DESIGN/STRATEGIC_ROADMAP.md:- [../GETTING_STARTED/SITE_MAP.md](../GETTING_STARTED/SITE_MAP.md) - Visual hierarchy
+./ARCHITECTURE_AND_DESIGN/STRATEGIC_ROADMAP.md:- [IMPLEMENTATION_ROADMAP.md](IMPLEMENTATION_ROADMAP.md) - 52-week phased plan
+./ARCHITECTURE_AND_DESIGN/STRATEGIC_ROADMAP.md:- [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) - Directory organization
+./ARCHITECTURE_AND_DESIGN/STRATEGIC_ROADMAP.md:**Questions?** See [GETTING_STARTED/README.md](../GETTING_STARTED/README.md) for guidance by role and audience.
+./ARCHITECTURE_AND_DESIGN/STRATEGIC_ROADMAP.md:- [SOURCE_CODE_AND_BUILD_AUDIT.md](../SOURCE_CODE_AND_BUILD_AUDIT.md) - Detailed code analysis
+./ARCHIVED_AND_LEGACY/README.md:- [../ARCHITECTURE_AND_DESIGN/PROJECT_STRUCTURE.md](../ARCHITECTURE_AND_DESIGN/PROJECT_STRUCTURE.md) - Current structure (replaces MVP_FILE_STRUCTURE.md)
+./ARCHIVED_AND_LEGACY/README.md:- [../BABBAGE_ANALYTICAL_ENGINE/EMULATOR_SPECIFICATION.md](../BABBAGE_ANALYTICAL_ENGINE/EMULATOR_SPECIFICATION.md) - Formalized emulator spec (from SIMULATOR_RESEARCH_NOTES.md)
+./ARCHIVED_AND_LEGACY/README.md:- [../GETTING_STARTED/DOCUMENT_FINDER.md](../GETTING_STARTED/DOCUMENT_FINDER.md) - Current index (replaces 00_REVIEW_INDEX.md)
+./ARCHIVED_AND_LEGACY/README.md:- [../IMPLEMENTATION_PHASES/README.md](../IMPLEMENTATION_PHASES/README.md) - Current phase docs
+./BABBAGE_ANALYTICAL_ENGINE/README.md:1. Start: [BABBAGE_README.md](./BABBAGE_README.md)
+./BABBAGE_ANALYTICAL_ENGINE/README.md:1. Start: [OPTIMAL_BABBAGE_SPECIFICATION.md](./OPTIMAL_BABBAGE_SPECIFICATION.md)
+./BABBAGE_ANALYTICAL_ENGINE/README.md:1. Start: [whitepaper/WHITEPAPER_README.md](./whitepaper/WHITEPAPER_README.md)
+./BABBAGE_ANALYTICAL_ENGINE/README.md:2. Feasibility: [whitepaper/WHITEPAPER_DELIVERY_SUMMARY.md](./whitepaper/WHITEPAPER_DELIVERY_SUMMARY.md)
+./BABBAGE_ANALYTICAL_ENGINE/README.md:2. Overview: [BABBAGE_PROJECT_SUMMARY.md](./BABBAGE_PROJECT_SUMMARY.md)
+./BABBAGE_ANALYTICAL_ENGINE/README.md:2. Sourcing: [SUPPLY_CHAIN_PROCUREMENT_GUIDE.md](./SUPPLY_CHAIN_PROCUREMENT_GUIDE.md)
+./BABBAGE_ANALYTICAL_ENGINE/README.md:3. Assembly: [ASSEMBLY_INSTRUCTIONS_PART1.md](./ASSEMBLY_INSTRUCTIONS_PART1.md)
+./BABBAGE_ANALYTICAL_ENGINE/README.md:3. How it works: [EMULATOR_USER_GUIDE.md](./EMULATOR_USER_GUIDE.md)
+./BABBAGE_ANALYTICAL_ENGINE/README.md:3. Regional Analysis: [whitepaper/MANUFACTURING_THIRD_WORLD.md](./whitepaper/MANUFACTURING_THIRD_WORLD.md)
+./BABBAGE_ANALYTICAL_ENGINE/README.md:4. Critical Review: [BABBAGE_CRITICAL_REVIEW.md](./BABBAGE_CRITICAL_REVIEW.md)
+./BABBAGE_ANALYTICAL_ENGINE/README.md:4. Economics: [ECONOMIC_MODELS_MASS_PRODUCTION.md](./ECONOMIC_MODELS_MASS_PRODUCTION.md)
+./BABBAGE_ANALYTICAL_ENGINE/README.md:4. Operations: [OPERATIONS_AND_MAINTENANCE.md](./OPERATIONS_AND_MAINTENANCE.md)
+./BABBAGE_ANALYTICAL_ENGINE/README.md:A: £7,700-13,000 per unit (including facility setup). See [ECONOMIC_MODELS_MASS_PRODUCTION.md](./ECONOMIC_MODELS_MASS_PRODUCTION.md).
+./BABBAGE_ANALYTICAL_ENGINE/README.md:A: See [SUPPLY_CHAIN_PROCUREMENT_GUIDE.md](./SUPPLY_CHAIN_PROCUREMENT_GUIDE.md). All suppliers are historically verified for existence in 1930-1960.
+./BABBAGE_ANALYTICAL_ENGINE/README.md:A: Yes, if you have the resources and expertise. Start with [OPTIMAL_BABBAGE_SPECIFICATION.md](./OPTIMAL_BABBAGE_SPECIFICATION.md) and [SUPPLY_CHAIN_PROCUREMENT_GUIDE.md](./SUPPLY_CHAIN_PROCUREMENT_GUIDE.md).
+./.backup_20251031_192302/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Build and test](../DEVELOPMENT_GUIDES/BUILD_AND_TEST.md)
+./.backup_20251031_192302/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Build system documentation](../DEVELOPMENT_GUIDES/BUILD_AND_TEST.md)
+./.backup_20251031_192302/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Complete engineering specification](../BABBAGE_ENGINE_SPECIFICATION/PHASE_1_ENGINEERING/ENGINEERING_SPECIFICATION.md)
+./.backup_20251031_192302/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Contributing code](../DEVELOPMENT_GUIDES/CONTRIBUTING_CODE.md)
+./.backup_20251031_192302/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Database schema design](../ARCHITECTURE_AND_DESIGN/DATA_SCHEMA.md)
+./.backup_20251031_192302/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Engineering specification](../BABBAGE_ENGINE_SPECIFICATION/PHASE_1_ENGINEERING/ENGINEERING_SPECIFICATION.md)
+./.backup_20251031_192302/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Full technical architecture](../ARCHITECTURE_AND_DESIGN/SYSTEM_ARCHITECTURE.md)
+./.backup_20251031_192302/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Glossary of terms](../REFERENCE_AND_SPECIFICATIONS/GLOSSARY.md)
+./.backup_20251031_192302/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Historical research](../BABBAGE_ENGINE_SPECIFICATION/HISTORICAL_RESEARCH/HISTORICAL_AUDIT.md)
+./.backup_20251031_192302/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Key documents by topic](DOCUMENT_FINDER.md)
+./.backup_20251031_192302/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Language services](../ARCHITECTURE_AND_DESIGN/LANGUAGE_SERVICES_ARCHITECTURE.md)
+./.backup_20251031_192302/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Language services interface](../ARCHITECTURE_AND_DESIGN/LANGUAGE_SERVICE_INTERFACE.md)
+./.backup_20251031_192302/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Manufacturing procedures](../BABBAGE_ENGINE_SPECIFICATION/PHASE_3_MANUFACTURING/MANUFACTURING_PROCEDURES.md)
+./.backup_20251031_192302/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:New: "See [Language Services Architecture](../ARCHITECTURE_AND_DESIGN/LANGUAGE_SERVICES_ARCHITECTURE.md) for details on Phase 2 language services"
+./.backup_20251031_192302/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Operations manual](../BABBAGE_ENGINE_SPECIFICATION/OPERATIONS_AND_MAINTENANCE/OPERATIONS_GUIDE.md)
+./.backup_20251031_192302/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Project overview](../BABBAGE_ENGINE_SPECIFICATION/PROJECT_OVERVIEW.md)
+./.backup_20251031_192302/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Project structure](../ARCHITECTURE_AND_DESIGN/PROJECT_STRUCTURE.md)
+./.backup_20251031_192302/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Project summary](../BABBAGE_ENGINE_SPECIFICATION/PROJECT_OVERVIEW.md)
+./.backup_20251031_192302/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Repository workflow](../DEVELOPMENT_GUIDES/REPOSITORY_WORKFLOW.md)
+./.backup_20251031_192302/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Security architecture](../ARCHITECTURE_AND_DESIGN/SECURITY_ARCHITECTURE.md)
+./.backup_20251031_192302/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Security design](../ARCHITECTURE_AND_DESIGN/SECURITY_ARCHITECTURE.md)
+./.backup_20251031_192302/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:[See SITE_MAP.md](SITE_MAP.md) for full documentation tree
+./.backup_20251031_192302/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Setup development environment](../DEVELOPMENT_GUIDES/SETUP_DEVELOPMENT_ENV.md)
+./.backup_20251031_192302/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Setup your environment](../DEVELOPMENT_GUIDES/SETUP_DEVELOPMENT_ENV.md)
+./.backup_20251031_192302/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:Start here → [QUICK_START_5_MINUTES.md](QUICK_START_5_MINUTES.md)
+./.backup_20251031_192302/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [System architecture](../ARCHITECTURE_AND_DESIGN/SYSTEM_ARCHITECTURE.md)
+./.backup_20251031_192302/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [System architecture overview](../ARCHITECTURE_AND_DESIGN/ARCHITECTURE_OVERVIEW.md)
+./.backup_20251031_192302/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Testing specifications](../BABBAGE_ENGINE_SPECIFICATION/PHASE_4_VALIDATION/COMPONENT_TESTING.md)
+./.backup_20251031_192302/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Timeline system design](../ARCHITECTURE_AND_DESIGN/TIMELINE_SYSTEM.md)
+./.backup_20251031_192302/README.md:- [ARCHITECTURE.md](./ARCHITECTURE.md) - System architecture
+./.backup_20251031_192302/README.md:- [CLAUDE.md](./CLAUDE.md) - Development guide for AI assistants
+./.backup_20251031_192302/README.md:- [DOCKER_INFRASTRUCTURE.md](./DOCKER_INFRASTRUCTURE.md) - Container setup
+./.backup_20251031_192302/README.md:- [TYPE_THEORY_CURRICULUM.md](./TYPE_THEORY_CURRICULUM.md) - Type theory content
+./.backup_20251031_192302/README.md:- [WEEK_1_CHECKLIST.md](./WEEK_1_CHECKLIST.md) - Implementation guide
+./CURRICULUM_AND_CONTENT/README.md:- [CONTENT_SCHEMA_DESIGN.md](./CONTENT_SCHEMA_DESIGN.md) - Database schema
+./CURRICULUM_AND_CONTENT/README.md:- [../CURRICULUM_AND_CONTENT/PEDAGOGICAL_WHITEPAPER_COMPLETION_SUMMARY.md](./PEDAGOGICAL_WHITEPAPER_COMPLETION_SUMMARY.md) - Learning theory
+./CURRICULUM_AND_CONTENT/README.md:- [EXAMPLE_PROGRAMS.md](./EXAMPLE_PROGRAMS.md) - Code examples
+./CURRICULUM_AND_CONTENT/README.md:- [TYPE_THEORY_CURRICULUM.md](./TYPE_THEORY_CURRICULUM.md) - Type systems
+./DEVELOPMENT_GUIDES/README.md:- [../ARCHITECTURE_AND_DESIGN/ARCHITECTURE.md](../ARCHITECTURE_AND_DESIGN/ARCHITECTURE.md) - System architecture
+./DEVELOPMENT_GUIDES/README.md:- [../ARCHITECTURE_AND_DESIGN/SECURITY_LAYERS_IMPLEMENTATION.md](../ARCHITECTURE_AND_DESIGN/SECURITY_LAYERS_IMPLEMENTATION.md) - Security design
+./DEVELOPMENT_GUIDES/README.md:- [BUILD.md](./BUILD.md) - Build instructions
+./DEVELOPMENT_GUIDES/README.md:- [LANGUAGE_SERVICE_SPECIFICATION.md](./LANGUAGE_SERVICE_SPECIFICATION.md) - Service API
+./DOCUMENTATION_AND_ORGANIZATION/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Build and test](../DEVELOPMENT_GUIDES/BUILD_AND_TEST.md)
+./DOCUMENTATION_AND_ORGANIZATION/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Build system documentation](../DEVELOPMENT_GUIDES/BUILD_AND_TEST.md)
+./DOCUMENTATION_AND_ORGANIZATION/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Complete engineering specification](../BABBAGE_ENGINE_SPECIFICATION/PHASE_1_ENGINEERING/ENGINEERING_SPECIFICATION.md)
+./DOCUMENTATION_AND_ORGANIZATION/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Contributing code](../DEVELOPMENT_GUIDES/CONTRIBUTING_CODE.md)
+./DOCUMENTATION_AND_ORGANIZATION/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Database schema design](../ARCHITECTURE_AND_DESIGN/DATA_SCHEMA.md)
+./DOCUMENTATION_AND_ORGANIZATION/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Engineering specification](../BABBAGE_ENGINE_SPECIFICATION/PHASE_1_ENGINEERING/ENGINEERING_SPECIFICATION.md)
+./DOCUMENTATION_AND_ORGANIZATION/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Full technical architecture](../ARCHITECTURE_AND_DESIGN/SYSTEM_ARCHITECTURE.md)
+./DOCUMENTATION_AND_ORGANIZATION/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Glossary of terms](../REFERENCE_AND_SPECIFICATIONS/GLOSSARY.md)
+./DOCUMENTATION_AND_ORGANIZATION/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Historical research](../BABBAGE_ENGINE_SPECIFICATION/HISTORICAL_RESEARCH/HISTORICAL_AUDIT.md)
+./DOCUMENTATION_AND_ORGANIZATION/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Key documents by topic](DOCUMENT_FINDER.md)
+./DOCUMENTATION_AND_ORGANIZATION/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Language services](../ARCHITECTURE_AND_DESIGN/LANGUAGE_SERVICES_ARCHITECTURE.md)
+./DOCUMENTATION_AND_ORGANIZATION/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Language services interface](../ARCHITECTURE_AND_DESIGN/LANGUAGE_SERVICE_INTERFACE.md)
+./DOCUMENTATION_AND_ORGANIZATION/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Manufacturing procedures](../BABBAGE_ENGINE_SPECIFICATION/PHASE_3_MANUFACTURING/MANUFACTURING_PROCEDURES.md)
+./DOCUMENTATION_AND_ORGANIZATION/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:New: "See [Language Services Architecture](../ARCHITECTURE_AND_DESIGN/LANGUAGE_SERVICES_ARCHITECTURE.md) for details on Phase 2 language services"
+./DOCUMENTATION_AND_ORGANIZATION/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Operations manual](../BABBAGE_ENGINE_SPECIFICATION/OPERATIONS_AND_MAINTENANCE/OPERATIONS_GUIDE.md)
+./DOCUMENTATION_AND_ORGANIZATION/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Project overview](../BABBAGE_ENGINE_SPECIFICATION/PROJECT_OVERVIEW.md)
+./DOCUMENTATION_AND_ORGANIZATION/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Project structure](../ARCHITECTURE_AND_DESIGN/PROJECT_STRUCTURE.md)
+./DOCUMENTATION_AND_ORGANIZATION/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Project summary](../BABBAGE_ENGINE_SPECIFICATION/PROJECT_OVERVIEW.md)
+./DOCUMENTATION_AND_ORGANIZATION/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Repository workflow](../DEVELOPMENT_GUIDES/REPOSITORY_WORKFLOW.md)
+./DOCUMENTATION_AND_ORGANIZATION/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Security architecture](../ARCHITECTURE_AND_DESIGN/SECURITY_ARCHITECTURE.md)
+./DOCUMENTATION_AND_ORGANIZATION/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Security design](../ARCHITECTURE_AND_DESIGN/SECURITY_ARCHITECTURE.md)
+./DOCUMENTATION_AND_ORGANIZATION/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:[See SITE_MAP.md](SITE_MAP.md) for full documentation tree
+./DOCUMENTATION_AND_ORGANIZATION/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Setup development environment](../DEVELOPMENT_GUIDES/SETUP_DEVELOPMENT_ENV.md)
+./DOCUMENTATION_AND_ORGANIZATION/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Setup your environment](../DEVELOPMENT_GUIDES/SETUP_DEVELOPMENT_ENV.md)
+./DOCUMENTATION_AND_ORGANIZATION/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:Start here → [QUICK_START_5_MINUTES.md](QUICK_START_5_MINUTES.md)
+./DOCUMENTATION_AND_ORGANIZATION/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [System architecture](../ARCHITECTURE_AND_DESIGN/SYSTEM_ARCHITECTURE.md)
+./DOCUMENTATION_AND_ORGANIZATION/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [System architecture overview](../ARCHITECTURE_AND_DESIGN/ARCHITECTURE_OVERVIEW.md)
+./DOCUMENTATION_AND_ORGANIZATION/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Testing specifications](../BABBAGE_ENGINE_SPECIFICATION/PHASE_4_VALIDATION/COMPONENT_TESTING.md)
+./DOCUMENTATION_AND_ORGANIZATION/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md:- [Timeline system design](../ARCHITECTURE_AND_DESIGN/TIMELINE_SYSTEM.md)
+./DOCUMENTATION_AND_ORGANIZATION/README.md:- [DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md](./DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md) - Strategy document
+./DOCUMENTATION_AND_ORGANIZATION/README.md:- [WEEK_3_TASK_1_FILE_MIGRATION_AUDIT.md](./WEEK_3_TASK_1_FILE_MIGRATION_AUDIT.md) - Complete file inventory
+./DOCUMENTATION_AND_ORGANIZATION/README.md:- [WEEKS_3_4_DOCUMENTATION_COMPLETION_PLAN.md](../ARCHITECTURE_AND_DESIGN/WEEKS_3_4_DOCUMENTATION_COMPLETION_PLAN.md) - Complete task breakdown
+./frontend/node_modules/.pnpm/ajv@6.12.6/node_modules/ajv/README.md:  - all validation keywords (see [JSON Schema validation keywords](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md))
+./frontend/node_modules/.pnpm/ajv@6.12.6/node_modules/ajv/README.md:- _coerceTypes_: change data type of data to match `type` keyword. See the example in [Coercing data types](#coercing-data-types) and [coercion rules](https://github.com/ajv-validator/ajv/blob/master/COERCION.md). Option values:
+./frontend/node_modules/.pnpm/ajv@6.12.6/node_modules/ajv/README.md:- [Frequently Asked Questions](https://github.com/ajv-validator/ajv/blob/master/FAQ.md)
+./frontend/node_modules/.pnpm/ajv@6.12.6/node_modules/ajv/README.md:Please review and follow the [Code of conduct](https://github.com/ajv-validator/ajv/blob/master/CODE_OF_CONDUCT.md).
+./frontend/node_modules/.pnpm/ajv@6.12.6/node_modules/ajv/README.md:Please see [Contributing guidelines](https://github.com/ajv-validator/ajv/blob/master/CONTRIBUTING.md)
+./frontend/node_modules/.pnpm/ajv@6.12.6/node_modules/ajv/README.md:See [Coercion rules](https://github.com/ajv-validator/ajv/blob/master/COERCION.md) for details.
+./frontend/node_modules/.pnpm/ajv@6.12.6/node_modules/ajv/README.md:See [Defining custom keywords](https://github.com/ajv-validator/ajv/blob/master/CUSTOM.md) for more details.
+./frontend/node_modules/.pnpm/ajv@6.12.6/node_modules/ajv/README.md:See [JSON Schema validation keywords](https://github.com/ajv-validator/ajv/blob/master/KEYWORDS.md) for more details.
+./frontend/node_modules/.pnpm/ajv@6.12.6/node_modules/ajv/README.md:- to make code injection from untrusted schemas impossible, [code generation](./docs/codegen.md) is fully re-written to be safe.
+./frontend/node_modules/.pnpm/ajv@6.12.6/node_modules/ajv/README.md:- to reduce the mistakes in JSON schemas and unexpected validation results, [strict mode](./docs/strict-mode.md) is added - it prohibits ignored or ambiguous JSON Schema elements.
+./frontend/node_modules/.pnpm/braces@3.0.3/node_modules/braces/README.md:See the [changelog](CHANGELOG.md) for details.
+./frontend/node_modules/.pnpm/braces@3.0.3/node_modules/braces/README.md:_(This project's readme.md is generated by [verb](https://github.com/verbose/verb-generate-readme), please don't edit the readme directly. Any changes to the readme must be made in the [.verb.md](.verb.md) readme template.)_
+./frontend/node_modules/.pnpm/chai@4.5.0/node_modules/chai/README.md:Please make sure you follow our [Code Of Conduct](https://github.com/chaijs/chai/blob/master/CODE_OF_CONDUCT.md) and we also strongly recommend reading our [Contributing Guide](https://github.com/chaijs/chai/blob/master/CONTRIBUTING.md).
+./frontend/node_modules/.pnpm/chokidar@3.6.0/node_modules/chokidar/README.md:For more detailed changelog, see [`full_changelog.md`](.github/full_changelog.md).
+./frontend/node_modules/.pnpm/commander@7.2.0/node_modules/commander/CHANGELOG.md:* [0.x](./changelogs/CHANGELOG-0.md)
+./frontend/node_modules/.pnpm/commander@7.2.0/node_modules/commander/CHANGELOG.md:* [1.x](./changelogs/CHANGELOG-1.md)
+./frontend/node_modules/.pnpm/commander@7.2.0/node_modules/commander/CHANGELOG.md:* [2.x](./changelogs/CHANGELOG-2.md)
+./frontend/node_modules/.pnpm/commander@7.2.0/node_modules/commander/CHANGELOG.md:* [3.x](./changelogs/CHANGELOG-3.md)
+./frontend/node_modules/.pnpm/commander@7.2.0/node_modules/commander/CHANGELOG.md:* [4.x](./changelogs/CHANGELOG-4.md)
+./frontend/node_modules/.pnpm/commander@7.2.0/node_modules/commander/Readme.md:- [deprecated](./docs/deprecated.md) features still supported for backwards compatibility
+./frontend/node_modules/.pnpm/commander@7.2.0/node_modules/commander/Readme.md:For information about possible ambiguous cases, see [options taking varying arguments](./docs/options-taking-varying-arguments.md).
+./frontend/node_modules/.pnpm/commander@7.2.0/node_modules/commander/Readme.md:For information about terms used in this document see: [terminology](./docs/terminology.md)
+./frontend/node_modules/.pnpm/commander@7.2.0/node_modules/commander/Readme.md:- [options taking varying arguments](./docs/options-taking-varying-arguments.md)
+./frontend/node_modules/.pnpm/commander@7.2.0/node_modules/commander/Readme.md:Read this in other languages: English | [简体中文](./Readme_zh-CN.md)
+./frontend/node_modules/.pnpm/css-tree@2.3.1/node_modules/css-tree/README.md:- [AST format](docs/ast.md)
+./frontend/node_modules/.pnpm/css-tree@2.3.1/node_modules/css-tree/README.md:- [AST traversal](docs/traversal.md)
+./frontend/node_modules/.pnpm/css-tree@2.3.1/node_modules/css-tree/README.md:  By default CSSTree parses CSS as detailed as possible, i.e. each single logical part is representing with its own AST node (see [AST format](docs/ast.md) for all possible node types). The parsing detail level can be changed through [parser options](docs/parsing.md#parsesource-options), for example, you can disable parsing of selectors or declaration values for component parts.
+./frontend/node_modules/.pnpm/css-tree@2.3.1/node_modules/css-tree/README.md:- [Parsing CSS → AST](docs/parsing.md)
+./frontend/node_modules/.pnpm/css-tree@2.3.1/node_modules/css-tree/README.md:- [Serialization AST → CSS](docs/generate.md)
+./frontend/node_modules/.pnpm/css-tree@2.3.1/node_modules/css-tree/README.md:- [Util functions](docs/utils.md)
+./frontend/node_modules/.pnpm/css-tree@2.3.1/node_modules/css-tree/README.md:- [Value Definition Syntax](docs/definition-syntax.md)
+./frontend/node_modules/.pnpm/d3-array@3.2.4/node_modules/d3-array/README.md:See [mourner/quickselect](https://github.com/mourner/quickselect/blob/master/README.md).
+./frontend/node_modules/.pnpm/eslint@8.57.1/node_modules/eslint/README.md:ESLint takes security seriously. We work hard to ensure that ESLint is safe for everyone and that security issues are addressed quickly and responsibly. Read the full [security policy](https://github.com/eslint/.github/blob/master/SECURITY.md).
+./frontend/node_modules/.pnpm/eslint-plugin-svelte@2.46.1_eslint@8.57.1_svelte@4.2.20/node_modules/eslint-plugin-svelte/README.md:See also [CONTRIBUTING.md](./CONTRIBUTING.md)
+./frontend/node_modules/.pnpm/espree@9.6.1/node_modules/espree/README.md:See [finished-proposals.md](https://github.com/tc39/proposals/blob/master/finished-proposals.md) to know what features are finalized.
+./frontend/node_modules/.pnpm/espree@9.6.1/node_modules/espree/README.md:We work hard to ensure that Espree is safe for everyone and that security issues are addressed quickly and responsibly. Read the full [security policy](https://github.com/eslint/.github/blob/master/SECURITY.md).
+./frontend/node_modules/.pnpm/@fastify+busboy@2.1.1/node_modules/@fastify/busboy/README.md:[Changelog](https://github.com/fastify/busboy/blob/master/CHANGELOG.md) since busboy 0.31.
+./frontend/node_modules/.pnpm/@fastify+busboy@2.1.1/node_modules/@fastify/busboy/README.md:[![Security Responsible Disclosure](https://img.shields.io/badge/Security-Responsible%20Disclosure-yellow.svg)](https://github.com/fastify/.github/blob/main/SECURITY.md)
+./frontend/node_modules/.pnpm/fast-levenshtein@2.0.6/node_modules/fast-levenshtein/README.md:MIT - see [LICENSE.md](https://github.com/hiddentao/fast-levenshtein/blob/master/LICENSE.md)
+./frontend/node_modules/.pnpm/fast-levenshtein@2.0.6/node_modules/fast-levenshtein/README.md:See [CONTRIBUTING.md](https://github.com/hiddentao/fast-levenshtein/blob/master/CONTRIBUTING.md) for details.
+./frontend/node_modules/.pnpm/fflate@0.6.10/node_modules/fflate/README.md:See the [documentation](https://github.com/101arrowz/fflate/blob/master/docs/README.md) for more detailed information about the API.
+./frontend/node_modules/.pnpm/fill-range@7.1.1/node_modules/fill-range/README.md:_(This project's readme.md is generated by [verb](https://github.com/verbose/verb-generate-readme), please don't edit the readme directly. Any changes to the readme must be made in the [.verb.md](.verb.md) readme template.)_
+./frontend/node_modules/.pnpm/flat-cache@3.2.0/node_modules/flat-cache/README.md:[changelog](./changelog.md)
+./frontend/node_modules/.pnpm/graphemer@1.4.0/node_modules/graphemer/README.md:See [Contribution Guide](./CONTRIBUTING.md).
+./frontend/node_modules/.pnpm/ignore@5.3.2/node_modules/ignore/README.md:Since `4.0.0`, ignore will no longer support `node < 6` by default, to use in node < 6, `require('ignore/legacy')`. For details, see [CHANGELOG](https://github.com/kaelzhang/node-ignore/blob/master/CHANGELOG.md).
+./frontend/node_modules/.pnpm/is-extglob@2.1.1/node_modules/is-extglob/README.md:_(This document was generated by [verb-generate-readme](https://github.com/verbose/verb-generate-readme) (a [verb](https://github.com/verbose/verb) generator), please don't edit the readme directly. Any changes to the readme must be made in [.verb.md](.verb.md).)_
+./frontend/node_modules/.pnpm/is-glob@4.0.3/node_modules/is-glob/README.md:_(This project's readme.md is generated by [verb](https://github.com/verbose/verb-generate-readme), please don't edit the readme directly. Any changes to the readme must be made in the [.verb.md](.verb.md) readme template.)_
+./frontend/node_modules/.pnpm/is-number@7.0.0/node_modules/is-number/README.md:_(This project's readme.md is generated by [verb](https://github.com/verbose/verb-generate-readme), please don't edit the readme directly. Any changes to the readme must be made in the [.verb.md](.verb.md) readme template.)_
+./frontend/node_modules/.pnpm/js-yaml@4.1.0/node_modules/js-yaml/CHANGELOG.md:- Check [migration guide](migrate_v3_to_v4.md) to see details for all breaking changes.
+./frontend/node_modules/.pnpm/mdn-data@2.0.30/node_modules/mdn-data/css/readme.md:[docs](https://github.com/mdn/data/blob/master/css/at-rules.md)
+./frontend/node_modules/.pnpm/mdn-data@2.0.30/node_modules/mdn-data/css/readme.md:[docs](https://github.com/mdn/data/blob/master/css/properties.md)
+./frontend/node_modules/.pnpm/mdn-data@2.0.30/node_modules/mdn-data/css/readme.md:[docs](https://github.com/mdn/data/blob/master/css/selectors.md)
+./frontend/node_modules/.pnpm/mdn-data@2.0.30/node_modules/mdn-data/css/readme.md:[docs](https://github.com/mdn/data/blob/master/css/syntaxes.md)
+./frontend/node_modules/.pnpm/mdn-data@2.0.30/node_modules/mdn-data/css/readme.md:[docs](https://github.com/mdn/data/blob/master/css/types.md)
+./frontend/node_modules/.pnpm/mdn-data@2.0.30/node_modules/mdn-data/css/readme.md:[docs](https://github.com/mdn/data/blob/master/css/units.md)
+./frontend/node_modules/.pnpm/mdn-data@2.0.30/node_modules/mdn-data/README.md:Read more about [CSS data](https://github.com/mdn/data/blob/master/css/readme.md) and the format of the files.
+./frontend/node_modules/.pnpm/mdn-data@2.0.30/node_modules/mdn-data/README.md:with the schema for the data you're editing, and send us a pull request. See also the [Contributing file](https://github.com/mdn/data/blob/master/CONTRIBUTING.md) for more information.
+./frontend/node_modules/.pnpm/meshoptimizer@0.18.1/node_modules/meshoptimizer/README.md:When decoding attribute (vertex) data, additionally one of the decoding filters can be applied to further post-process the decoded data. `filter` must be equal to `"OCTAHEDRAL"`, `"QUATERNION"` or `"EXPONENTIAL"` to activate this extra step. The description of filters can be found in [the specification for EXT_meshopt_compression](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Vendor/EXT_meshopt_compression/README.md).
+./frontend/node_modules/.pnpm/micromatch@4.0.8/node_modules/micromatch/README.md:All contributions are welcome! Please read [the contributing guide](.github/contributing.md) to get started.
+./frontend/node_modules/.pnpm/micromatch@4.0.8/node_modules/micromatch/README.md:Please read the [contributing guide](.github/contributing.md) for advice on opening issues, pull requests, and coding standards.
+./frontend/node_modules/.pnpm/micromatch@4.0.8/node_modules/micromatch/README.md:_(This project's readme.md is generated by [verb](https://github.com/verbose/verb-generate-readme), please don't edit the readme directly. Any changes to the readme must be made in the [.verb.md](.verb.md) readme template.)_
+./frontend/node_modules/.pnpm/monaco-editor@0.44.0/node_modules/monaco-editor/README.md:  - [Integrate the AMD version](./docs/integrate-amd.md).
+./frontend/node_modules/.pnpm/monaco-editor@0.44.0/node_modules/monaco-editor/README.md:  - [Integrate the ESM version](./docs/integrate-esm.md)
+./frontend/node_modules/.pnpm/monaco-editor@0.44.0/node_modules/monaco-editor/README.md:Please see [CONTRIBUTING](./CONTRIBUTING.md) for details how you can contribute effectively, how you can run the editor from sources and how you can debug and fix issues.
+./frontend/node_modules/.pnpm/nanoid@3.3.11/node_modules/nanoid/README.md:**English** | [Русский](./README.ru.md) | [简体中文](./README.zh-CN.md) | [Bahasa Indonesia](./README.id-ID.md)
+./frontend/node_modules/.pnpm/normalize-path@3.0.0/node_modules/normalize-path/README.md:_(This project's readme.md is generated by [verb](https://github.com/verbose/verb-generate-readme), please don't edit the readme directly. Any changes to the readme must be made in the [.verb.md](.verb.md) readme template.)_
+./frontend/node_modules/.pnpm/picomatch@2.3.1/node_modules/picomatch/README.md:Please read the [contributing guide](.github/contributing.md) for advice on opening issues, pull requests, and coding standards.
+./frontend/node_modules/.pnpm/picomatch@2.3.1/node_modules/picomatch/README.md:_(This project's readme.md is generated by [verb](https://github.com/verbose/verb-generate-readme), please don't edit the readme directly. Any changes to the readme must be made in the [.verb.md](.verb.md) readme template.)_
+./frontend/node_modules/.pnpm/picomatch@4.0.3/node_modules/picomatch/README.md:Please read the [contributing guide](.github/contributing.md) for advice on opening issues, pull requests, and coding standards.
+./frontend/node_modules/.pnpm/picomatch@4.0.3/node_modules/picomatch/README.md:_(This project's readme.md is generated by [verb](https://github.com/verbose/verb-generate-readme), please don't edit the readme directly. Any changes to the readme must be made in the [.verb.md](.verb.md) readme template.)_
+./frontend/node_modules/.pnpm/postcss-load-config@3.1.4_postcss@8.5.6/node_modules/postcss-load-config/README.md:### [**`map`**](https://github.com/postcss/postcss/blob/master/docs/source-maps.md)
+./frontend/node_modules/.pnpm/postcss-selector-parser@6.1.2/node_modules/postcss-selector-parser/README.md:Please see [API.md](API.md).
+./frontend/node_modules/.pnpm/prettier@3.6.2/node_modules/prettier/README.md:See [CONTRIBUTING.md](CONTRIBUTING.md).
+./frontend/node_modules/.pnpm/rollup@3.29.5/node_modules/rollup/README.md:[MIT](https://github.com/rollup/rollup/blob/master/LICENSE.md)
+./frontend/node_modules/.pnpm/rollup@3.29.5/node_modules/rollup/README.md:This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)]. <a href="https://github.com/rollup/rollup/graphs/contributors"><img src="https://opencollective.com/rollup/contributors.svg?width=890" /></a>
+./frontend/node_modules/.pnpm/@rollup+plugin-commonjs@25.0.8_rollup@3.29.5/node_modules/@rollup/plugin-commonjs/README.md:[CONTRIBUTING](/.github/CONTRIBUTING.md)
+./frontend/node_modules/.pnpm/@rollup+plugin-json@6.1.0_rollup@3.29.5/node_modules/@rollup/plugin-json/README.md:[CONTRIBUTING](/.github/CONTRIBUTING.md)
+./frontend/node_modules/.pnpm/@rollup+plugin-node-resolve@15.3.1_rollup@3.29.5/node_modules/@rollup/plugin-node-resolve/README.md:[CONTRIBUTING](/.github/CONTRIBUTING.md)
+./frontend/node_modules/.pnpm/@rollup+pluginutils@5.3.0_rollup@3.29.5/node_modules/@rollup/pluginutils/README.md:[CONTRIBUTING](/.github/CONTRIBUTING.md)
+./frontend/node_modules/.pnpm/safer-buffer@2.1.2/node_modules/safer-buffer/Porting-Buffer.md:[node/no-deprecated-api](https://github.com/mysticatea/eslint-plugin-node/blob/master/docs/rules/no-deprecated-api.md)
+./frontend/node_modules/.pnpm/safer-buffer@2.1.2/node_modules/safer-buffer/Readme.md:[porting Buffer](https://github.com/ChALkeR/safer-buffer/blob/master/Porting-Buffer.md) guide.
+./frontend/node_modules/.pnpm/safer-buffer@2.1.2/node_modules/safer-buffer/Readme.md:See the [porting guide](https://github.com/ChALkeR/safer-buffer/blob/master/Porting-Buffer.md)
+./frontend/node_modules/.pnpm/svelte@4.2.20/node_modules/svelte/README.md:[![npm version](https://img.shields.io/npm/v/svelte.svg)](https://www.npmjs.com/package/svelte) [![license](https://img.shields.io/npm/l/svelte.svg)](LICENSE.md) [![Chat](https://img.shields.io/discord/457912077277855764?label=chat&logo=discord)](https://svelte.dev/chat)
+./frontend/node_modules/.pnpm/svelte@4.2.20/node_modules/svelte/README.md:[The Changelog for this package is available on GitHub](https://github.com/sveltejs/svelte/blob/master/packages/svelte/CHANGELOG.md).
+./frontend/node_modules/.pnpm/svelte-check@3.8.6_postcss-_337a6d34d807986bea16a5ff3a9c5951/node_modules/svelte-check/README.md:[See here](/docs/README.md).
+./frontend/node_modules/.pnpm/svelte-eslint-parser@0.43.0_svelte@4.2.20/node_modules/svelte-eslint-parser/README.md:- [AST.md](./docs/AST.md) is AST specification. You can check it on the [Online DEMO](https://sveltejs.github.io/svelte-eslint-parser/).
+./frontend/node_modules/.pnpm/svelte-eslint-parser@0.43.0_svelte@4.2.20/node_modules/svelte-eslint-parser/README.md:- [internal-mechanism.md](./docs/internal-mechanism.md)
+./frontend/node_modules/.pnpm/@sveltejs+adapter-node@1.3._2952b1070c291bf15266f0fb41afd5c5/node_modules/@sveltejs/adapter-node/README.md:[The Changelog for this package is available on GitHub](https://github.com/sveltejs/kit/blob/master/packages/adapter-node/CHANGELOG.md).
+./frontend/node_modules/.pnpm/@sveltejs+kit@1.30.4_svelte_9a2a02e12ea57160e200dd4cbc49da27/node_modules/@sveltejs/kit/README.md:[The Changelog for this package is available on GitHub](https://github.com/sveltejs/kit/blob/master/packages/kit/CHANGELOG.md).
+./frontend/node_modules/.pnpm/@sveltejs+vite-plugin-svelt_d368931cf119c226732a9df470ff390a/node_modules/@sveltejs/vite-plugin-svelte/README.md:- [FAQ](../../docs/faq.md)
+./frontend/node_modules/.pnpm/@sveltejs+vite-plugin-svelt_d368931cf119c226732a9df470ff390a/node_modules/@sveltejs/vite-plugin-svelte/README.md:- [Plugin options](../../docs/config.md)
+./frontend/node_modules/.pnpm/svelte-preprocess@5.1.4_pos_48a24692c262a63c98ce7c20b251ccf6/node_modules/svelte-preprocess/README.md:### [Getting started](/docs/getting-started.md)
+./frontend/node_modules/.pnpm/svelte-preprocess@5.1.4_pos_48a24692c262a63c98ce7c20b251ccf6/node_modules/svelte-preprocess/README.md:- [Getting Started](docs/getting-started.md)
+./frontend/node_modules/.pnpm/svelte-preprocess@5.1.4_pos_48a24692c262a63c98ce7c20b251ccf6/node_modules/svelte-preprocess/README.md:### [Migration Guide](/docs/migration-guide.md)
+./frontend/node_modules/.pnpm/svelte-preprocess@5.1.4_pos_48a24692c262a63c98ce7c20b251ccf6/node_modules/svelte-preprocess/README.md:- [Migration Guide](docs/migration-guide.md)
+./frontend/node_modules/.pnpm/svelte-preprocess@5.1.4_pos_48a24692c262a63c98ce7c20b251ccf6/node_modules/svelte-preprocess/README.md:- [Preprocessing](docs/preprocessing.md)
+./frontend/node_modules/.pnpm/svelte-preprocess@5.1.4_pos_48a24692c262a63c98ce7c20b251ccf6/node_modules/svelte-preprocess/README.md:### [Preprocessing documentation](/docs/preprocessing.md)
+./frontend/node_modules/.pnpm/svelte-preprocess@5.1.4_pos_48a24692c262a63c98ce7c20b251ccf6/node_modules/svelte-preprocess/README.md:- [Usage](docs/usage.md)
+./frontend/node_modules/.pnpm/svelte-preprocess@5.1.4_pos_48a24692c262a63c98ce7c20b251ccf6/node_modules/svelte-preprocess/README.md:### [Usage documentation](/docs/usage.md)
+./frontend/node_modules/.pnpm/to-regex-range@5.0.1/node_modules/to-regex-range/README.md:_(This project's readme.md is generated by [verb](https://github.com/verbose/verb-generate-readme), please don't edit the readme directly. Any changes to the readme must be made in the [.verb.md](.verb.md) readme template.)_
+./frontend/node_modules/.pnpm/ts-api-utils@1.4.3_typescript@5.9.3/node_modules/ts-api-utils/README.md:See [`.github/CONTRIBUTING.md`](./.github/CONTRIBUTING.md).
+./frontend/node_modules/.pnpm/tslib@2.8.1/node_modules/tslib/README.md:* [Contribute bug fixes](https://github.com/Microsoft/TypeScript/blob/master/CONTRIBUTING.md).
+./frontend/node_modules/.pnpm/tslib@2.8.1/node_modules/tslib/README.md:There are many ways to [contribute](https://github.com/Microsoft/TypeScript/blob/master/CONTRIBUTING.md) to TypeScript.
+./frontend/node_modules/.pnpm/type-fest@0.20.2/node_modules/type-fest/readme.md:Many of the types here should have been built-in. You can help by suggesting some of them to the [TypeScript project](https://github.com/Microsoft/TypeScript/blob/master/CONTRIBUTING.md).
+./frontend/node_modules/.pnpm/type-fest@0.20.2/node_modules/type-fest/readme.md:PR welcome for additional commonly needed types and docs improvements. Read the [contributing guidelines](.github/contributing.md) first.
+./frontend/node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/README.md:* [Contribute bug fixes](https://github.com/microsoft/TypeScript/blob/main/CONTRIBUTING.md).
+./frontend/node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/README.md:There are many ways to [contribute](https://github.com/microsoft/TypeScript/blob/main/CONTRIBUTING.md) to TypeScript.
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/adjacent-overload-signatures.md:- [`unified-signatures`](./unified-signatures.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/camelcase.md:This rule has been deprecated in favour of the [`naming-convention`](./naming-convention.md) rule.
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/class-literal-property-style.md:This style pairs well with the [`@typescript-eslint/prefer-readonly`](prefer-readonly.md) rule,
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/consistent-type-imports.md:- [`import/consistent-type-specifier-style`](https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/consistent-type-specifier-style.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/consistent-type-imports.md:- [`no-import-type-side-effects`](./no-import-type-side-effects.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/explicit-module-boundary-types.md:- [explicit-function-return-type](./explicit-function-return-type.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-base-to-string.md:- [`restrict-plus-operands`](./restrict-plus-operands.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-base-to-string.md:- [`restrict-template-expressions`](./restrict-template-expressions.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-duplicate-imports.md:This rule has been deprecated in favour of the [`import/no-duplicates`](https://github.com/import-js/eslint-plugin-import/blob/HEAD/docs/rules/no-duplicates.md) rule.
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-explicit-any.md:- [`no-unsafe-argument`](./no-unsafe-argument.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-explicit-any.md:- [`no-unsafe-assignment`](./no-unsafe-assignment.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-explicit-any.md:- [`no-unsafe-call`](./no-unsafe-call.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-explicit-any.md:- [`no-unsafe-member-access`](./no-unsafe-member-access.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-explicit-any.md:- [`no-unsafe-return`](./no-unsafe-return.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-floating-promises.md:- [`no-misused-promises`](./no-misused-promises.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-floating-promises.md:See [`no-misused-promises`](./no-misused-promises.md) for detecting code that provides Promises to _logical_ locations such as if statements.
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-import-type-side-effects.md:- [`consistent-type-imports`](./consistent-type-imports.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-import-type-side-effects.md:- [`import/consistent-type-specifier-style`](https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/consistent-type-specifier-style.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-meaningless-void-operator.md:For example, it is recommended as one way of suppressing [`@typescript-eslint/no-floating-promises`](./no-floating-promises.md) instead of adding `.catch()` to a promise.
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-misused-promises.md:- [`no-floating-promises`](./no-floating-promises.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-misused-promises.md:See [`no-floating-promises`](./no-floating-promises.md) for detecting unhandled Promise _statements_.
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-require-imports.md:- [`no-var-requires`](./no-var-requires.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-shadow.md:_Shadowing_ specifically refers to two identical identifiers that are in different, nested scopes. This is different from _redeclaration_, which is when two identical identifiers are in the same scope. Redeclaration is covered by the [`no-redeclare`](./no-redeclare.md) rule instead.
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-type-alias.md:This rule has been deprecated in favour of the [`@typescript-eslint/consistent-type-definitions`](./consistent-type-definitions.md) rule.
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-unnecessary-condition.md:- [strict-boolean-expressions](./strict-boolean-expressions.md) - a more opinionated version of `no-unnecessary-condition`. `strict-boolean-expressions` enforces a specific code style, while `no-unnecessary-condition` is about correctness.
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-unsafe-argument.md:- [`no-explicit-any`](./no-explicit-any.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-unsafe-argument.md:- [`no-unsafe-assignment`](./no-unsafe-assignment.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-unsafe-argument.md:- [`no-unsafe-call`](./no-unsafe-call.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-unsafe-argument.md:- [`no-unsafe-member-access`](./no-unsafe-member-access.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-unsafe-argument.md:- [`no-unsafe-return`](./no-unsafe-return.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-unsafe-assignment.md:- [`no-explicit-any`](./no-explicit-any.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-unsafe-assignment.md:- [`no-unsafe-argument`](./no-unsafe-argument.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-unsafe-assignment.md:- [`no-unsafe-call`](./no-unsafe-call.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-unsafe-assignment.md:- [`no-unsafe-member-access`](./no-unsafe-member-access.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-unsafe-assignment.md:- [`no-unsafe-return`](./no-unsafe-return.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-unsafe-call.md:- [`no-explicit-any`](./no-explicit-any.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-unsafe-call.md:- [`no-unsafe-argument`](./no-unsafe-argument.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-unsafe-call.md:- [`no-unsafe-assignment`](./no-unsafe-assignment.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-unsafe-call.md:- [`no-unsafe-member-access`](./no-unsafe-member-access.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-unsafe-call.md:- [`no-unsafe-return`](./no-unsafe-return.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-unsafe-member-access.md:- [`no-explicit-any`](./no-explicit-any.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-unsafe-member-access.md:- [`no-unsafe-argument`](./no-unsafe-argument.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-unsafe-member-access.md:- [`no-unsafe-assignment`](./no-unsafe-assignment.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-unsafe-member-access.md:- [`no-unsafe-call`](./no-unsafe-call.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-unsafe-member-access.md:- [`no-unsafe-return`](./no-unsafe-return.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-unsafe-return.md:- [`no-explicit-any`](./no-explicit-any.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-unsafe-return.md:- [`no-unsafe-argument`](./no-unsafe-argument.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-unsafe-return.md:- [`no-unsafe-assignment`](./no-unsafe-assignment.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-unsafe-return.md:- [`no-unsafe-call`](./no-unsafe-call.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-unsafe-return.md:- [`no-unsafe-member-access`](./no-unsafe-member-access.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-useless-template-literals.md:- [`restrict-template-expressions`](./restrict-template-expressions.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/no-var-requires.md:- [`no-require-imports`](./no-require-imports.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/restrict-plus-operands.md:- [`no-base-to-string`](./no-base-to-string.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/restrict-plus-operands.md:- [`restrict-template-expressions`](./restrict-template-expressions.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/restrict-template-expressions.md:- [`no-base-to-string`](./no-base-to-string.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/restrict-template-expressions.md:- [`restrict-plus-operands`](./restrict-plus-operands.md)
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/restrict-template-expressions.md:The [`no-base-to-string`](./no-base-to-string.md) rule can be used to guard this case against producing `"[object Object]"` by accident.
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/semi.md:See also the [`@typescript-eslint/member-delimiter-style`](member-delimiter-style.md) rule, which allows you to specify the delimiter for `type` and `interface` members.
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/strict-boolean-expressions.md:- [no-unnecessary-condition](./no-unnecessary-condition.md) - Similar rule which reports always-truthy and always-falsy values in conditions
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/typedef.md:> To enforce type definitions existing on call signatures, use [`explicit-function-return-type`](./explicit-function-return-type.md), or [`explicit-module-boundary-types`](./explicit-module-boundary-types.md).
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/unbound-method.md:If you're wanting to use `toBeCalled` and similar matches in `jest` tests, you can disable this rule for your test files in favor of [`eslint-plugin-jest`'s version of this rule](https://github.com/jest-community/eslint-plugin-jest/blob/main/docs/rules/unbound-method.md).
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/unbound-method.md:If you're working with `jest`, you can use [`eslint-plugin-jest`'s version of this rule](https://github.com/jest-community/eslint-plugin-jest/blob/main/docs/rules/unbound-method.md) to lint your test files, which knows when it's ok to pass an unbound method to `expect` calls.
+./frontend/node_modules/.pnpm/@typescript-eslint+eslint-p_e71729c91ed704194fd56f343f4beb02/node_modules/@typescript-eslint/eslint-plugin/docs/rules/unified-signatures.md:- [`adjacent-overload-signatures`](./adjacent-overload-signatures.md)
+./frontend/node_modules/.pnpm/undici@5.29.0/node_modules/undici/docs/api/api-lifecycle.md:An Undici [Client](Client.md) can be best described as a state machine. The following list is a summary of the various state transitions the `Client` will go through in its lifecycle. This document also contains detailed breakdowns of each state.
+./frontend/node_modules/.pnpm/undici@5.29.0/node_modules/undici/docs/api/BalancedPool.md:A pool of [Pool](Pool.md) instances connected to multiple upstreams.
+./frontend/node_modules/.pnpm/undici@5.29.0/node_modules/undici/docs/api/BalancedPool.md:Returns [`PoolStats`](PoolStats.md) instance for this pool.
+./frontend/node_modules/.pnpm/undici@5.29.0/node_modules/undici/docs/api/MockClient.md:A mock client class that implements the same api as [MockPool](MockPool.md).
+./frontend/node_modules/.pnpm/undici@5.29.0/node_modules/undici/docs/api/Pool.md:A pool of [Client](Client.md) instances connected to the same upstream target.
+./frontend/node_modules/.pnpm/undici@5.29.0/node_modules/undici/docs/api/Pool.md:Returns [`PoolStats`](PoolStats.md) instance for this pool.
+./frontend/node_modules/.pnpm/undici@5.29.0/node_modules/undici/docs/api/PoolStats.md:Aggregate stats for a [Pool](Pool.md) or [BalancedPool](BalancedPool.md).
+./frontend/node_modules/.pnpm/undici@5.29.0/node_modules/undici/docs/api/WebSocket.md:* **protocol** `string | string[] | WebSocketInit` (optional) - Subprotocol(s) to request the server use, or a [`Dispatcher`](./Dispatcher.md).
+./frontend/node_modules/.pnpm/undici@5.29.0/node_modules/undici/docs/best-practices/mocking-request.md:Explore other MockAgent functionality [here](../api/MockAgent.md)
+./frontend/node_modules/.pnpm/undici@5.29.0/node_modules/undici/docs/best-practices/mocking-request.md:Undici has its own mocking [utility](../api/MockAgent.md). It allow us to intercept undici HTTP requests and return mocked values instead. It can be useful for testing purposes.
+./frontend/node_modules/.pnpm/undici@5.29.0/node_modules/undici/docs/best-practices/proxy.md:- Using [AgentProxy](../api/ProxyAgent.md).
+./frontend/node_modules/.pnpm/word-wrap@1.2.5/node_modules/word-wrap/README.md:_(This project's readme.md is generated by [verb](https://github.com/verbose/verb-generate-readme), please don't edit the readme directly. Any changes to the readme must be made in the [.verb.md](.verb.md) readme template.)_
+./GETTING_STARTED/DOCUMENT_FINDER.md:1. [ARCHITECTURE_AND_DESIGN/ARCHITECTURE.md](../ARCHITECTURE_AND_DESIGN/ARCHITECTURE.md) - System overview
+./GETTING_STARTED/DOCUMENT_FINDER.md:1. [ARCHITECTURE_AND_DESIGN/WEEK_1_COMPLETION_STATUS.md](../ARCHITECTURE_AND_DESIGN/WEEK_1_COMPLETION_STATUS.md)
+./GETTING_STARTED/DOCUMENT_FINDER.md:1. [BABBAGE_ENGINE_SPECIFICATION/01_COMPLETE_TECHNICAL_SPECIFICATION.md](../BABBAGE_ENGINE_SPECIFICATION/01_COMPLETE_TECHNICAL_SPECIFICATION.md)
+./GETTING_STARTED/DOCUMENT_FINDER.md:1. [BABBAGE_ENGINE_SPECIFICATION/02_MANUFACTURING_PROCEDURES.md](../BABBAGE_ENGINE_SPECIFICATION/02_MANUFACTURING_PROCEDURES.md)
+./GETTING_STARTED/DOCUMENT_FINDER.md:1. [DEPLOYMENT_AND_DEVOPS/DEPLOYMENT_GUIDE.md](../DEPLOYMENT_AND_DEVOPS/DEPLOYMENT_GUIDE.md)
+./GETTING_STARTED/DOCUMENT_FINDER.md:1. [DEVELOPMENT_GUIDES/01_SETUP_AND_INSTALLATION.md](../DEVELOPMENT_GUIDES/01_SETUP_AND_INSTALLATION.md)
+./GETTING_STARTED/DOCUMENT_FINDER.md:1. [DEVELOPMENT_GUIDES/02_CODE_STANDARDS_AND_STYLE.md](../DEVELOPMENT_GUIDES/02_CODE_STANDARDS_AND_STYLE.md)
+./GETTING_STARTED/DOCUMENT_FINDER.md:1. [DEVELOPMENT_GUIDES/03_BUILD_SYSTEM_AND_TOOLS.md](../DEVELOPMENT_GUIDES/03_BUILD_SYSTEM_AND_TOOLS.md)
+./GETTING_STARTED/DOCUMENT_FINDER.md:1. [DEVELOPMENT_GUIDES/06_CONTRIBUTION_GUIDELINES.md](../DEVELOPMENT_GUIDES/06_CONTRIBUTION_GUIDELINES.md)
+./GETTING_STARTED/DOCUMENT_FINDER.md:1. [README.md](README.md) - Welcome & orientation
+./GETTING_STARTED/DOCUMENT_FINDER.md:2. [ARCHITECTURE_AND_DESIGN/BACKEND_ARCHITECTURE.md](../ARCHITECTURE_AND_DESIGN/BACKEND_ARCHITECTURE.md) - Backend details
+./GETTING_STARTED/DOCUMENT_FINDER.md:2. [ARCHITECTURE_AND_DESIGN/IMPLEMENTATION_ROADMAP.md](../ARCHITECTURE_AND_DESIGN/IMPLEMENTATION_ROADMAP.md) - Full timeline
+./GETTING_STARTED/DOCUMENT_FINDER.md:2. [ARCHITECTURE_AND_DESIGN/SECURITY_ARCHITECTURE.md](../ARCHITECTURE_AND_DESIGN/SECURITY_ARCHITECTURE.md)
+./GETTING_STARTED/DOCUMENT_FINDER.md:2. [BABBAGE_ENGINE_SPECIFICATION/04_REGIONAL_IMPLEMENTATIONS.md](../BABBAGE_ENGINE_SPECIFICATION/04_REGIONAL_IMPLEMENTATIONS.md) - Choose your region
+./GETTING_STARTED/DOCUMENT_FINDER.md:2. [DEVELOPMENT_GUIDES/04_TESTING_AND_QA.md](../DEVELOPMENT_GUIDES/04_TESTING_AND_QA.md)
+./GETTING_STARTED/DOCUMENT_FINDER.md:2. [QUICK_START_5_MINUTES.md](QUICK_START_5_MINUTES.md) - Fast path to running the app
+./GETTING_STARTED/DOCUMENT_FINDER.md:2. [QUICK_START_5_MINUTES.md](QUICK_START_5_MINUTES.md) - Run locally
+./GETTING_STARTED/DOCUMENT_FINDER.md:2. [REFERENCE_MATERIALS/GIT_WORKFLOW.md](../REFERENCE_MATERIALS/GIT_WORKFLOW.md)
+./GETTING_STARTED/DOCUMENT_FINDER.md:2. [REFERENCE_MATERIALS/PYTHON_STANDARDS.md](../REFERENCE_MATERIALS/PYTHON_STANDARDS.md)
+./GETTING_STARTED/DOCUMENT_FINDER.md:3. [ARCHITECTURE_AND_DESIGN/FRONTEND_ARCHITECTURE.md](../ARCHITECTURE_AND_DESIGN/FRONTEND_ARCHITECTURE.md) - Frontend details
+./GETTING_STARTED/DOCUMENT_FINDER.md:3. [CURRICULUM_AND_CONTENT/00_PLATFORM_OVERVIEW.md](../CURRICULUM_AND_CONTENT/00_PLATFORM_OVERVIEW.md) - Curriculum structure
+./GETTING_STARTED/DOCUMENT_FINDER.md:3. [DEVELOPMENT_GUIDES/02_CODE_STANDARDS_AND_STYLE.md](../DEVELOPMENT_GUIDES/02_CODE_STANDARDS_AND_STYLE.md)
+./GETTING_STARTED/DOCUMENT_FINDER.md:3. [DEVELOPMENT_GUIDES/04_TESTING_AND_QA.md](../DEVELOPMENT_GUIDES/04_TESTING_AND_QA.md) - Run tests before PR
+./GETTING_STARTED/DOCUMENT_FINDER.md:3. [REFERENCE_MATERIALS/TYPESCRIPT_STANDARDS.md](../REFERENCE_MATERIALS/TYPESCRIPT_STANDARDS.md)
+./GETTING_STARTED/DOCUMENT_FINDER.md:4. [ARCHITECTURE_AND_DESIGN/API_SPECIFICATION.md](../ARCHITECTURE_AND_DESIGN/API_SPECIFICATION.md) - API endpoints
+./GETTING_STARTED/DOCUMENT_FINDER.md:4. [REFERENCE_MATERIALS/GIT_WORKFLOW.md](../REFERENCE_MATERIALS/GIT_WORKFLOW.md)
+./GETTING_STARTED/DOCUMENT_FINDER.md:- [ARCHITECTURE_AND_DESIGN/API_SPECIFICATION.md](../ARCHITECTURE_AND_DESIGN/API_SPECIFICATION.md)
+./GETTING_STARTED/DOCUMENT_FINDER.md:- [ARCHITECTURE_AND_DESIGN/ARCHITECTURE.md](../ARCHITECTURE_AND_DESIGN/ARCHITECTURE.md)
+./GETTING_STARTED/DOCUMENT_FINDER.md:- [ARCHITECTURE_AND_DESIGN/ARCHITECTURE.md](../ARCHITECTURE_AND_DESIGN/ARCHITECTURE.md) - Multi-language section
+./GETTING_STARTED/DOCUMENT_FINDER.md:- [ARCHITECTURE_AND_DESIGN/ARCHITECTURE.md](../ARCHITECTURE_AND_DESIGN/ARCHITECTURE.md) - Performance section
+./GETTING_STARTED/DOCUMENT_FINDER.md:- [ARCHITECTURE_AND_DESIGN/BACKEND_ARCHITECTURE.md](../ARCHITECTURE_AND_DESIGN/BACKEND_ARCHITECTURE.md)
+./GETTING_STARTED/DOCUMENT_FINDER.md:- [ARCHITECTURE_AND_DESIGN/DATABASE_SCHEMA.md](../ARCHITECTURE_AND_DESIGN/DATABASE_SCHEMA.md)
+./GETTING_STARTED/DOCUMENT_FINDER.md:- [ARCHITECTURE_AND_DESIGN/FRONTEND_ARCHITECTURE.md](../ARCHITECTURE_AND_DESIGN/FRONTEND_ARCHITECTURE.md)
+./GETTING_STARTED/DOCUMENT_FINDER.md:- [ARCHITECTURE_AND_DESIGN/IMPLEMENTATION_ROADMAP.md](../ARCHITECTURE_AND_DESIGN/IMPLEMENTATION_ROADMAP.md)
+./GETTING_STARTED/DOCUMENT_FINDER.md:- [ARCHITECTURE_AND_DESIGN/IMPLEMENTATION_ROADMAP.md](../ARCHITECTURE_AND_DESIGN/IMPLEMENTATION_ROADMAP.md) - Phase 29-32
+./GETTING_STARTED/DOCUMENT_FINDER.md:- [ARCHITECTURE_AND_DESIGN/PROJECT_SUMMARY_FOR_STAKEHOLDERS.md](../ARCHITECTURE_AND_DESIGN/PROJECT_SUMMARY_FOR_STAKEHOLDERS.md)
+./GETTING_STARTED/DOCUMENT_FINDER.md:- [ARCHITECTURE_AND_DESIGN/PROJECT_SUMMARY_FOR_STAKEHOLDERS.md](../ARCHITECTURE_AND_DESIGN/PROJECT_SUMMARY_FOR_STAKEHOLDERS.md) - Includes resource estimates
+./GETTING_STARTED/DOCUMENT_FINDER.md:- [ARCHITECTURE_AND_DESIGN/RISK_MANAGEMENT.md](../ARCHITECTURE_AND_DESIGN/RISK_MANAGEMENT.md)
+./GETTING_STARTED/DOCUMENT_FINDER.md:- [ARCHITECTURE_AND_DESIGN/SECURITY_ARCHITECTURE.md](../ARCHITECTURE_AND_DESIGN/SECURITY_ARCHITECTURE.md)
+./GETTING_STARTED/DOCUMENT_FINDER.md:- [ARCHITECTURE_AND_DESIGN/STRATEGIC_ROADMAP.md](../ARCHITECTURE_AND_DESIGN/STRATEGIC_ROADMAP.md)
+./GETTING_STARTED/DOCUMENT_FINDER.md:- [ARCHITECTURE_AND_DESIGN/WEEK_1_COMPLETION_STATUS.md](../ARCHITECTURE_AND_DESIGN/WEEK_1_COMPLETION_STATUS.md)
+./GETTING_STARTED/DOCUMENT_FINDER.md:- [BABBAGE_ENGINE_SPECIFICATION/00_QUICK_FACTS_AND_OVERVIEW.md](../BABBAGE_ENGINE_SPECIFICATION/00_QUICK_FACTS_AND_OVERVIEW.md)
+./GETTING_STARTED/DOCUMENT_FINDER.md:- [BABBAGE_ENGINE_SPECIFICATION/01_COMPLETE_TECHNICAL_SPECIFICATION.md](../BABBAGE_ENGINE_SPECIFICATION/01_COMPLETE_TECHNICAL_SPECIFICATION.md)
+./GETTING_STARTED/DOCUMENT_FINDER.md:- [BABBAGE_ENGINE_SPECIFICATION/01_COMPLETE_TECHNICAL_SPECIFICATION.md](../BABBAGE_ENGINE_SPECIFICATION/01_COMPLETE_TECHNICAL_SPECIFICATION.md) - Bill of materials
+./GETTING_STARTED/DOCUMENT_FINDER.md:- [BABBAGE_ENGINE_SPECIFICATION/03_HISTORICAL_AUDIT_AND_CORRECTIONS.md](../BABBAGE_ENGINE_SPECIFICATION/03_HISTORICAL_AUDIT_AND_CORRECTIONS.md)
+./GETTING_STARTED/DOCUMENT_FINDER.md:- [BABBAGE_ENGINE_SPECIFICATION/03_HISTORICAL_AUDIT_AND_CORRECTIONS.md](../BABBAGE_ENGINE_SPECIFICATION/03_HISTORICAL_AUDIT_AND_CORRECTIONS.md) - Verified suppliers
+./GETTING_STARTED/DOCUMENT_FINDER.md:- [DEPLOYMENT_AND_DEVOPS/DEPLOYMENT_GUIDE.md](../DEPLOYMENT_AND_DEVOPS/DEPLOYMENT_GUIDE.md)
+./GETTING_STARTED/DOCUMENT_FINDER.md:- [DEVELOPMENT_GUIDES/01_SETUP_AND_INSTALLATION.md](../DEVELOPMENT_GUIDES/01_SETUP_AND_INSTALLATION.md)
+./GETTING_STARTED/DOCUMENT_FINDER.md:- [DEVELOPMENT_GUIDES/02_CODE_STANDARDS_AND_STYLE.md](../DEVELOPMENT_GUIDES/02_CODE_STANDARDS_AND_STYLE.md)
+./GETTING_STARTED/DOCUMENT_FINDER.md:- [DEVELOPMENT_GUIDES/02_CODE_STANDARDS_AND_STYLE.md](../DEVELOPMENT_GUIDES/02_CODE_STANDARDS_AND_STYLE.md) - Auth section
+./GETTING_STARTED/DOCUMENT_FINDER.md:- [DEVELOPMENT_GUIDES/03_BUILD_SYSTEM_AND_TOOLS.md](../DEVELOPMENT_GUIDES/03_BUILD_SYSTEM_AND_TOOLS.md)
+./GETTING_STARTED/DOCUMENT_FINDER.md:- [DEVELOPMENT_GUIDES/03_BUILD_SYSTEM_AND_TOOLS.md](../DEVELOPMENT_GUIDES/03_BUILD_SYSTEM_AND_TOOLS.md) - Docker section
+./GETTING_STARTED/DOCUMENT_FINDER.md:- [DEVELOPMENT_GUIDES/04_TESTING_AND_QA.md](../DEVELOPMENT_GUIDES/04_TESTING_AND_QA.md)
+./GETTING_STARTED/DOCUMENT_FINDER.md:- [DEVELOPMENT_GUIDES/06_CONTRIBUTION_GUIDELINES.md](../DEVELOPMENT_GUIDES/06_CONTRIBUTION_GUIDELINES.md)
+./GETTING_STARTED/DOCUMENT_FINDER.md:→ Go to [README.md](README.md) and follow the path for your role
+./GETTING_STARTED/DOCUMENT_FINDER.md:- [QUICK_START_5_MINUTES.md](QUICK_START_5_MINUTES.md)
+./GETTING_STARTED/DOCUMENT_FINDER.md:- [REFERENCE_MATERIALS/GIT_WORKFLOW.md](../REFERENCE_MATERIALS/GIT_WORKFLOW.md)
+./GETTING_STARTED/DOCUMENT_FINDER.md:- [REFERENCE_MATERIALS/PYTHON_STANDARDS.md](../REFERENCE_MATERIALS/PYTHON_STANDARDS.md)
+./GETTING_STARTED/DOCUMENT_FINDER.md:- [REFERENCE_MATERIALS/SQL_BEST_PRACTICES.md](../REFERENCE_MATERIALS/SQL_BEST_PRACTICES.md)
+./GETTING_STARTED/DOCUMENT_FINDER.md:- [REFERENCE_MATERIALS/TESTING_BEST_PRACTICES.md](../REFERENCE_MATERIALS/TESTING_BEST_PRACTICES.md)
+./GETTING_STARTED/DOCUMENT_FINDER.md:- [REFERENCE_MATERIALS/TYPESCRIPT_STANDARDS.md](../REFERENCE_MATERIALS/TYPESCRIPT_STANDARDS.md)
+./GETTING_STARTED/QUICK_START_5_MINUTES.md:If missing, see [DEVELOPMENT_GUIDES/01_SETUP_AND_INSTALLATION.md](../DEVELOPMENT_GUIDES/01_SETUP_AND_INSTALLATION.md)
+./GETTING_STARTED/QUICK_START_5_MINUTES.md:I'm stuck / have questions | [README.md](README.md) - "Getting Help" section
+./GETTING_STARTED/QUICK_START_5_MINUTES.md:I want to find a specific document | [DOCUMENT_FINDER.md](DOCUMENT_FINDER.md)
+./GETTING_STARTED/QUICK_START_5_MINUTES.md:I want to set up development | [DEVELOPMENT_GUIDES/01_SETUP_AND_INSTALLATION.md](../DEVELOPMENT_GUIDES/01_SETUP_AND_INSTALLATION.md)
+./GETTING_STARTED/QUICK_START_5_MINUTES.md:I want to understand the architecture | [ARCHITECTURE_AND_DESIGN/ARCHITECTURE.md](../ARCHITECTURE_AND_DESIGN/ARCHITECTURE.md)
+./GETTING_STARTED/QUICK_START_5_MINUTES.md:**Questions?** See [README.md](README.md) for more guidance.
+./GETTING_STARTED/QUICK_START_5_MINUTES.md:- Read [02_MANUFACTURING_PROCEDURES.md](../BABBAGE_ENGINE_SPECIFICATION/02_MANUFACTURING_PROCEDURES.md)
+./GETTING_STARTED/QUICK_START_5_MINUTES.md:- Read: [ARCHITECTURE_AND_DESIGN/ARCHITECTURE.md](../ARCHITECTURE_AND_DESIGN/ARCHITECTURE.md)
+./GETTING_STARTED/QUICK_START_5_MINUTES.md:- Read: [BABBAGE_ENGINE_SPECIFICATION/00_QUICK_FACTS_AND_OVERVIEW.md](../BABBAGE_ENGINE_SPECIFICATION/00_QUICK_FACTS_AND_OVERVIEW.md)
+./GETTING_STARTED/QUICK_START_5_MINUTES.md:- Start: [01_COMPLETE_TECHNICAL_SPECIFICATION.md](../BABBAGE_ENGINE_SPECIFICATION/01_COMPLETE_TECHNICAL_SPECIFICATION.md)
+./GETTING_STARTED/QUICK_START_5_MINUTES.md:- Verify suppliers via [03_HISTORICAL_AUDIT_AND_CORRECTIONS.md](../BABBAGE_ENGINE_SPECIFICATION/03_HISTORICAL_AUDIT_AND_CORRECTIONS.md)
+./GETTING_STARTED/README.md:1. **[QUICK_START_5_MINUTES.md](QUICK_START_5_MINUTES.md)** - Orientation & first steps
+./GETTING_STARTED/README.md:2. **[ARCHITECTURE_AND_DESIGN/ARCHITECTURE.md](../ARCHITECTURE_AND_DESIGN/ARCHITECTURE.md)** - System design overview
+./GETTING_STARTED/README.md:3. **[BABBAGE_ENGINE_SPECIFICATION/01_COMPLETE_TECHNICAL_SPECIFICATION.md](../BABBAGE_ENGINE_SPECIFICATION/01_COMPLETE_TECHNICAL_SPECIFICATION.md)** - If manufacturing Babbage
+./GETTING_STARTED/README.md:4. **[DEVELOPMENT_GUIDES/01_SETUP_AND_INSTALLATION.md](../DEVELOPMENT_GUIDES/01_SETUP_AND_INSTALLATION.md)** - If setting up locally
+./GETTING_STARTED/README.md:- [52-Week Roadmap](../ARCHITECTURE_AND_DESIGN/IMPLEMENTATION_ROADMAP.md)
+./GETTING_STARTED/README.md:5. **[CURRICULUM_AND_CONTENT/00_PLATFORM_OVERVIEW.md](../CURRICULUM_AND_CONTENT/00_PLATFORM_OVERVIEW.md)** - If learning history of computation
+./GETTING_STARTED/README.md:- [Architecture Deep Dive](../ARCHITECTURE_AND_DESIGN/ARCHITECTURE.md)
+./GETTING_STARTED/README.md:- [Babbage Overview & Quick Facts](../BABBAGE_ENGINE_SPECIFICATION/00_QUICK_FACTS_AND_OVERVIEW.md)
+./GETTING_STARTED/README.md:- Build: [Build System Guide](../DEVELOPMENT_GUIDES/03_BUILD_SYSTEM_AND_TOOLS.md)
+./GETTING_STARTED/README.md:- [Build System Guide](../DEVELOPMENT_GUIDES/03_BUILD_SYSTEM_AND_TOOLS.md)
+./GETTING_STARTED/README.md:- **Can't find a document?** → Use [DOCUMENT_FINDER.md](DOCUMENT_FINDER.md)
+./GETTING_STARTED/README.md:- [Code Quality Standards](../DEVELOPMENT_GUIDES/02_CODE_STANDARDS_AND_STYLE.md)
+./GETTING_STARTED/README.md:- [Complete Technical Specification](../BABBAGE_ENGINE_SPECIFICATION/01_COMPLETE_TECHNICAL_SPECIFICATION.md)
+./GETTING_STARTED/README.md:- [Curriculum Overview](../CURRICULUM_AND_CONTENT/00_PLATFORM_OVERVIEW.md)
+./GETTING_STARTED/README.md:- Deep Dive: [Backend Architecture](../ARCHITECTURE_AND_DESIGN/BACKEND_ARCHITECTURE.md) and [Frontend Architecture](../ARCHITECTURE_AND_DESIGN/FRONTEND_ARCHITECTURE.md)
+./GETTING_STARTED/README.md:- Deep Dive: [Manufacturing Procedures](../BABBAGE_ENGINE_SPECIFICATION/02_MANUFACTURING_PROCEDURES.md)
+./GETTING_STARTED/README.md:- [Deployment Guide](../DEPLOYMENT_AND_DEVOPS/DEPLOYMENT_GUIDE.md)
+./GETTING_STARTED/README.md:- [Executive Summary](../ARCHITECTURE_AND_DESIGN/PROJECT_SUMMARY_FOR_STAKEHOLDERS.md)
+./GETTING_STARTED/README.md:- **First time?** → Read [QUICK_START_5_MINUTES.md](QUICK_START_5_MINUTES.md)
+./GETTING_STARTED/README.md:- **For Developers**: [DEVELOPMENT_GUIDES/01_SETUP_AND_INSTALLATION.md](../DEVELOPMENT_GUIDES/01_SETUP_AND_INSTALLATION.md)
+./GETTING_STARTED/README.md:- **For Project Managers**: [ARCHITECTURE_AND_DESIGN/PROJECT_SUMMARY_FOR_STAKEHOLDERS.md](../ARCHITECTURE_AND_DESIGN/PROJECT_SUMMARY_FOR_STAKEHOLDERS.md)
+./GETTING_STARTED/README.md:- **For Students**: [QUICK_START_5_MINUTES.md](QUICK_START_5_MINUTES.md) → [CURRICULUM_AND_CONTENT/](../CURRICULUM_AND_CONTENT/)
+./GETTING_STARTED/README.md:- **Found an issue?** → Check [REFERENCE_MATERIALS/ISSUE_REPORTING.md](../REFERENCE_MATERIALS/ISSUE_REPORTING.md)
+./GETTING_STARTED/README.md:- [Historical Verification](../BABBAGE_ENGINE_SPECIFICATION/03_HISTORICAL_AUDIT_AND_CORRECTIONS.md)
+./GETTING_STARTED/README.md:- [Manufacturing Procedures](../BABBAGE_ENGINE_SPECIFICATION/02_MANUFACTURING_PROCEDURES.md)
+./GETTING_STARTED/README.md:- **Need a specific document?** → Use [DOCUMENT_FINDER.md](DOCUMENT_FINDER.md) to search by topic
+./GETTING_STARTED/README.md:- Next: [Module 0: Prehistory of Counting](../CURRICULUM_AND_CONTENT/module-0-prehistory/README.md)
+./GETTING_STARTED/README.md:**Next**: See [STRATEGIC_ROADMAP.md](../ARCHITECTURE_AND_DESIGN/STRATEGIC_ROADMAP.md) for upcoming phases.
+./GETTING_STARTED/README.md:- Next Steps: [Strategic Roadmap and Next Phases](../ARCHITECTURE_AND_DESIGN/STRATEGIC_ROADMAP.md)
+./GETTING_STARTED/README.md:- **Quick References**: See [DOCUMENT_FINDER.md](DOCUMENT_FINDER.md)
+./GETTING_STARTED/README.md:- [Quick Start (5 min)](QUICK_START_5_MINUTES.md)
+./GETTING_STARTED/README.md:- Read: [52-Week Implementation Roadmap](../ARCHITECTURE_AND_DESIGN/IMPLEMENTATION_ROADMAP.md)
+./GETTING_STARTED/README.md:- Read: [Architecture Overview](../ARCHITECTURE_AND_DESIGN/ARCHITECTURE.md)
+./GETTING_STARTED/README.md:- Read: [Complete Technical Specification](../BABBAGE_ENGINE_SPECIFICATION/01_COMPLETE_TECHNICAL_SPECIFICATION.md)
+./GETTING_STARTED/README.md:- [Regional Implementation Plans](../BABBAGE_ENGINE_SPECIFICATION/04_REGIONAL_IMPLEMENTATIONS.md)
+./GETTING_STARTED/README.md:- [Risk Management & Mitigation](../ARCHITECTURE_AND_DESIGN/RISK_MANAGEMENT.md)
+./GETTING_STARTED/README.md:See [REFERENCE_MATERIALS/LICENSE_AND_ATTRIBUTION.md](../REFERENCE_MATERIALS/LICENSE_AND_ATTRIBUTION.md) for full attribution and licensing.
+./GETTING_STARTED/README.md:- See: [Week 1-2 Completion Status](../ARCHITECTURE_AND_DESIGN/WEEK_1_COMPLETION_STATUS.md)
+./GETTING_STARTED/README.md:- [Setup and Installation](../DEVELOPMENT_GUIDES/01_SETUP_AND_INSTALLATION.md)
+./GETTING_STARTED/README.md:- Start: [Ancient Compute Platform Overview](../CURRICULUM_AND_CONTENT/00_PLATFORM_OVERVIEW.md)
+./GETTING_STARTED/README.md:- Start: [Babbage Engine Quick Facts](../BABBAGE_ENGINE_SPECIFICATION/00_QUICK_FACTS_AND_OVERVIEW.md)
+./GETTING_STARTED/README.md:- Start: [Development Environment Setup](../DEVELOPMENT_GUIDES/01_SETUP_AND_INSTALLATION.md)
+./GETTING_STARTED/README.md:- [Strategic Roadmap (Next Phases)](../ARCHITECTURE_AND_DESIGN/STRATEGIC_ROADMAP.md)
+./GETTING_STARTED/README.md:- [Testing and QA](../DEVELOPMENT_GUIDES/04_TESTING_AND_QA.md)
+./GETTING_STARTED/README.md:- Test: [Testing Strategy](../DEVELOPMENT_GUIDES/04_TESTING_AND_QA.md)
+./GETTING_STARTED/README.md:- Verify: [Historical Audit and Corrections](../BABBAGE_ENGINE_SPECIFICATION/03_HISTORICAL_AUDIT_AND_CORRECTIONS.md)
+./GETTING_STARTED/README.md:- **Visual learner?** → Start with the [Project Structure Overview](../ARCHITECTURE_AND_DESIGN/PROJECT_STRUCTURE.md)
+./GETTING_STARTED/README.md:- **Want to contribute?** → See [DEVELOPMENT_GUIDES/06_CONTRIBUTION_GUIDELINES.md](../DEVELOPMENT_GUIDES/06_CONTRIBUTION_GUIDELINES.md)
+./GETTING_STARTED/README.md:- [Week 1-2 Completion Report](../ARCHITECTURE_AND_DESIGN/WEEK_1_COMPLETION_STATUS.md)
+./HISTORICAL_CONTEXT/README.md:- [../CURRICULUM_AND_CONTENT/TYPE_THEORY_CURRICULUM.md](../CURRICULUM_AND_CONTENT/TYPE_THEORY_CURRICULUM.md) - Type systems history
+./HISTORICAL_CONTEXT/README.md:- [HISTORICAL_AUDIT_AND_CORRECTIONS.md](./HISTORICAL_AUDIT_AND_CORRECTIONS.md) - Detailed verification
+./HISTORICAL_CONTEXT/README.md:- [HISTORICAL_FICTION_NARRATIVES.md](./HISTORICAL_FICTION_NARRATIVES.md) - Engaging stories
+./HISTORICAL_CONTEXT/README.md:- [TIMELINE_VISUALIZATION.md](./TIMELINE_VISUALIZATION.md) - Timeline structure
+./IMPLEMENTATION_PHASES/README.md:- [../ARCHITECTURE_AND_DESIGN/IMPLEMENTATION_ROADMAP.md](../ARCHITECTURE_AND_DESIGN/IMPLEMENTATION_ROADMAP.md) - 52-week plan
+./IMPLEMENTATION_PHASES/README.md:- [../BABBAGE_ANALYTICAL_ENGINE/OPTIMAL_BABBAGE_SPECIFICATION.md](../BABBAGE_ANALYTICAL_ENGINE/OPTIMAL_BABBAGE_SPECIFICATION.md) - Technical specification
+./IMPLEMENTATION_PHASES/README.md:- [../BABBAGE_ANALYTICAL_ENGINE/SUPPLY_CHAIN_PROCUREMENT_GUIDE.md](../BABBAGE_ANALYTICAL_ENGINE/SUPPLY_CHAIN_PROCUREMENT_GUIDE.md) - Sourcing guide
+./INFRASTRUCTURE_AND_DEPLOYMENT/README.md:- [../ARCHITECTURE_AND_DESIGN/ARCHITECTURE.md](../ARCHITECTURE_AND_DESIGN/ARCHITECTURE.md) - System architecture
+./INFRASTRUCTURE_AND_DEPLOYMENT/README.md:- [BSD_INTEGRATION_SPEC.md](./BSD_INTEGRATION_SPEC.md) - BSD support research
+./INFRASTRUCTURE_AND_DEPLOYMENT/README.md:- [DOCKER_INFRASTRUCTURE.md](./DOCKER_INFRASTRUCTURE.md) - Docker/container guide
+./INFRASTRUCTURE_AND_DEPLOYMENT/README.md:- [INFRASTRUCTURE_STRATEGY.md](./INFRASTRUCTURE_STRATEGY.md) - Long-term planning
+./README.md:- [ARCHITECTURE.md](./ARCHITECTURE.md) - System architecture
+./README.md:- [CLAUDE.md](./CLAUDE.md) - Development guide for AI assistants
+./README.md:- [DOCKER_INFRASTRUCTURE.md](./DOCKER_INFRASTRUCTURE.md) - Container setup
+./README.md:- [TYPE_THEORY_CURRICULUM.md](./TYPE_THEORY_CURRICULUM.md) - Type theory content
+./README.md:- [WEEK_1_CHECKLIST.md](./WEEK_1_CHECKLIST.md) - Implementation guide
+./WEEK_3_TASK_2_DIRECTORY_README_COMPLETION_SUMMARY.md:[ARCHITECTURE.md](./ARCHITECTURE.md)
+./WEEK_3_TASK_2_DIRECTORY_README_COMPLETION_SUMMARY.md:[../GETTING_STARTED/README.md](../GETTING_STARTED/README.md)
+./WEEK_3_TASK_2_DIRECTORY_README_COMPLETION_SUMMARY.md:[./HISTORICAL_AUDIT_AND_CORRECTIONS.md](./HISTORICAL_AUDIT_AND_CORRECTIONS.md)
+./WEEK_3_TASK_3_LINK_MAPPING_AND_UPDATE_PLAN.md:[Check ARCHITECTURE.md](../ARCHITECTURE_AND_DESIGN/ARCHITECTURE.md)
+./WEEK_3_TASK_3_LINK_MAPPING_AND_UPDATE_PLAN.md:[Check ARCHITECTURE.md](../ARCHITECTURE.md)
+./WEEK_3_TASK_3_LINK_MAPPING_AND_UPDATE_PLAN.md:**Current**: `[File](../BUILD.md)`
+./WEEK_3_TASK_3_LINK_MAPPING_AND_UPDATE_PLAN.md:**Current**: `[File](/docs/OPTIMAL_BABBAGE_SPECIFICATION.md)`
+./WEEK_3_TASK_3_LINK_MAPPING_AND_UPDATE_PLAN.md:**Current**: `[File](./DOCUMENT_FINDER.md)`
+./WEEK_3_TASK_3_LINK_MAPPING_AND_UPDATE_PLAN.md:**Current**: `[File](../GETTING_STARTED/DOCUMENT_FINDER.md)`
+./WEEK_3_TASK_3_LINK_MAPPING_AND_UPDATE_PLAN.md:[Curriculum](../CURRICULUM_AND_CONTENT/EDUCATIONAL_CURRICULUM_MATERIALS.md)
+./WEEK_3_TASK_3_LINK_MAPPING_AND_UPDATE_PLAN.md:[Curriculum](../../docs/EDUCATIONAL_CURRICULUM_MATERIALS.md)
+./WEEK_3_TASK_3_LINK_MAPPING_AND_UPDATE_PLAN.md:  grep -o '\[.*\](.*\.md)' "$file" | sed 's/.*(\(.*\)).*/\1/' | while read path; do
+./WEEK_3_TASK_3_LINK_MAPPING_AND_UPDATE_PLAN.md:grep -r '\[.*\](.*\.md)' . --include="*.md" | sort | uniq > LINKS_FOUND.txt
+./WEEK_3_TASK_3_LINK_MAPPING_AND_UPDATE_PLAN.md:[Infrastructure guide](../INFRASTRUCTURE_AND_DEPLOYMENT/INFRASTRUCTURE_STRATEGY.md)
+./WEEK_3_TASK_3_LINK_MAPPING_AND_UPDATE_PLAN.md:[Infrastructure guide](../../infrastructure/INFRASTRUCTURE_STRATEGY.md)
+./WEEK_3_TASK_3_LINK_MAPPING_AND_UPDATE_PLAN.md:[Manufacturing specs](../BABBAGE_ANALYTICAL_ENGINE/OPTIMAL_BABBAGE_SPECIFICATION.md)
+./WEEK_3_TASK_3_LINK_MAPPING_AND_UPDATE_PLAN.md:[Manufacturing specs](../../docs/OPTIMAL_BABBAGE_SPECIFICATION.md)
+./WEEK_3_TASK_3_LINK_MAPPING_AND_UPDATE_PLAN.md:[Phase 3 procedures](../IMPLEMENTATION_PHASES/PHASE_3/PHASE3_MANUFACTURING_PROCEDURES.md)
+./WEEK_3_TASK_3_LINK_MAPPING_AND_UPDATE_PLAN.md:[Phase 3 procedures](../../phase3/PHASE3_MANUFACTURING_PROCEDURES.md)
+./WEEK_3_TASK_3_LINK_MAPPING_AND_UPDATE_PLAN.md:[Phase 4 validation](../IMPLEMENTATION_PHASES/PHASE_4/PHASE4_SYSTEM_OPERATIONAL_VALIDATION.md)
+./WEEK_3_TASK_3_LINK_MAPPING_AND_UPDATE_PLAN.md:[Phase 4 validation](../../phase4/PHASE4_SYSTEM_OPERATIONAL_VALIDATION.md)
+./WEEK_3_TASK_3_LINK_MAPPING_AND_UPDATE_PLAN.md:[See BUILD.md](../BUILD.md)
+./WEEK_3_TASK_3_LINK_MAPPING_AND_UPDATE_PLAN.md:[See BUILD.md](../DEVELOPMENT_GUIDES/BUILD.md)
+./WEEK_3_TASK_3_LINK_MAPPING_AND_UPDATE_PLAN.md:**Updated**: `[File](/BABBAGE_ANALYTICAL_ENGINE/OPTIMAL_BABBAGE_SPECIFICATION.md)`
+./WEEK_3_TASK_3_LINK_MAPPING_AND_UPDATE_PLAN.md:**Updated**: `[File](../DEVELOPMENT_GUIDES/BUILD.md)`
+./WEEK_3_TASK_3_LINK_MAPPING_AND_UPDATE_PLAN.md:**Updated**: `[File](./DOCUMENT_FINDER.md)` (no change)
+./WEEK_3_TASK_3_LINK_MAPPING_AND_UPDATE_PLAN.md:**Updated**: `[File](../GETTING_STARTED/DOCUMENT_FINDER.md)` (may need depth adjustment)
+./WEEK_3_TASK_3_LINK_MAPPING_AND_UPDATE_PLAN.md:[Whitepaper summary](../BABBAGE_ANALYTICAL_ENGINE/whitepaper/WHITEPAPER_DELIVERY_SUMMARY.md)
+./WEEK_3_TASK_3_LINK_MAPPING_AND_UPDATE_PLAN.md:[Whitepaper summary](../../whitepaper/WHITEPAPER_DELIVERY_SUMMARY.md)

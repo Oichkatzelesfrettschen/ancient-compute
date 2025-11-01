@@ -5,9 +5,9 @@
 FROM node:20-alpine AS base
 
 # Set environment variables
-ENV NODE_ENV=development \
-    PNPM_HOME="/pnpm" \
-    PATH="$PNPM_HOME:$PATH"
+ENV NODE_ENV=development
+ENV PNPM_HOME="/pnpm"
+ENV PATH="${PNPM_HOME}:${PATH}"
 
 # Install pnpm
 RUN corepack enable && corepack prepare pnpm@latest --activate

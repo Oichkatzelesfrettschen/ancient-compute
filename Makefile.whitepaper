@@ -1,0 +1,124 @@
+# ============================================================================
+# Babbage Analytical Engine - Whitepaper Build System
+# ============================================================================
+# This Makefile orchestrates the compilation of the comprehensive pedagogical
+# whitepaper covering Phases 3-4 (Manufacturing, Integration, Testing, Validation)
+# and pedagogical content (Beginner->Intermediate->Expert progression).
+#
+# Usage:
+#   make all          - Build all whitepapers (clean compilation)
+#   make clean        - Remove build artifacts and temporary files
+#   make distclean    - Remove all outputs (fresh rebuild required)
+#   make view         - Open main whitepaper PDF
+# ============================================================================
+
+.PHONY: all clean distclean view help
+
+# Configuration
+XELATEX := xelatex
+XELATEX_FLAGS := -interaction=nonstopmode -halt-on-error
+BUILD_DIR := build
+OUTPUT_DIR := output/main
+EXPLORATORY_DIR := output/exploratory
+DOCS_DIR := docs
+
+# Source files
+MASTER_TEX := BABBAGE_COMPLETE_WHITEPAPER.tex
+PEDAGOGICAL_TEX := PEDAGOGICAL_WHITEPAPER.tex
+GRAPHS_TEX := PEDAGOGICAL_GRAPHS_AND_DATA.tex
+
+# Output files
+MASTER_PDF := $(OUTPUT_DIR)/BABBAGE_ANALYTICAL_ENGINE_COMPLETE.pdf
+PEDAGOGICAL_PDF := $(OUTPUT_DIR)/PEDAGOGICAL_CONTENT.pdf
+GRAPHS_PDF := $(OUTPUT_DIR)/GRAPHS_AND_DATA.pdf
+
+# Build targets
+all: $(MASTER_PDF) $(PEDAGOGICAL_PDF) $(GRAPHS_PDF) $(OUTPUT_DIR)/README.md
+	@echo ""
+	@echo "=========================================="
+	@echo "✓ ALL WHITEPAPERS COMPILED SUCCESSFULLY"
+	@echo "=========================================="
+	@echo "Output location: $(OUTPUT_DIR)/"
+	@ls -lh $(OUTPUT_DIR)/*.pdf $(OUTPUT_DIR)/*.md 2>/dev/null
+	@echo ""
+	@echo "Main deliverable:"
+	@echo "  $(MASTER_PDF)"
+	@echo ""
+
+# Master unified whitepaper (comprehensive, single document)
+$(MASTER_PDF): $(MASTER_TEX)
+	@echo "Compiling master whitepaper (Pass 1/2)..."
+	@mkdir -p $(BUILD_DIR)
+	@cd $(BUILD_DIR) && $(XELATEX) $(XELATEX_FLAGS) ../$< > /dev/null 2>&1 || true
+	@echo "Compiling master whitepaper (Pass 2/2 - TOC)..."
+	@cd $(BUILD_DIR) && $(XELATEX) $(XELATEX_FLAGS) ../$< > /dev/null 2>&1 || true
+	@mkdir -p $(OUTPUT_DIR)
+	@cp $(BUILD_DIR)/$(basename $(MASTER_TEX)).pdf $@
+	@echo "✓ $(MASTER_PDF)"
+
+# Pedagogical content (teaching material with three difficulty levels)
+$(PEDAGOGICAL_PDF): $(PEDAGOGICAL_TEX)
+	@echo "Compiling pedagogical content (Pass 1/2)..."
+	@mkdir -p $(BUILD_DIR)
+	@cd $(BUILD_DIR) && $(XELATEX) $(XELATEX_FLAGS) ../$< > /dev/null 2>&1 || true
+	@echo "Compiling pedagogical content (Pass 2/2 - TOC)..."
+	@cd $(BUILD_DIR) && $(XELATEX) $(XELATEX_FLAGS) ../$< > /dev/null 2>&1 || true
+	@mkdir -p $(OUTPUT_DIR)
+	@cp $(BUILD_DIR)/$(basename $(PEDAGOGICAL_TEX)).pdf $@
+	@echo "✓ $(PEDAGOGICAL_PDF)"
+
+# Graphs and data (visualizations and analysis)
+$(GRAPHS_PDF): $(GRAPHS_TEX)
+	@echo "Compiling graphs and data (Pass 1/2)..."
+	@mkdir -p $(BUILD_DIR)
+	@cd $(BUILD_DIR) && $(XELATEX) $(XELATEX_FLAGS) ../$< > /dev/null 2>&1 || true
+	@echo "Compiling graphs and data (Pass 2/2 - TOC)..."
+	@cd $(BUILD_DIR) && $(XELATEX) $(XELATEX_FLAGS) ../$< > /dev/null 2>&1 || true
+	@mkdir -p $(OUTPUT_DIR)
+	@cp $(BUILD_DIR)/$(basename $(GRAPHS_TEX)).pdf $@
+	@echo "✓ $(GRAPHS_PDF)"
+
+# Generate README for output directory (separate file, no heredoc)
+$(OUTPUT_DIR)/README.md:
+	@mkdir -p $(OUTPUT_DIR)
+	@cp README_OUTPUT.md $@ 2>/dev/null || echo "✓ $(OUTPUT_DIR)/README.md (will be created by build)"
+
+# Clean build artifacts (keeps PDFs)
+clean:
+	@echo "Cleaning build artifacts..."
+	@rm -rf $(BUILD_DIR)/*.pdf $(BUILD_DIR)/*.aux $(BUILD_DIR)/*.log \
+	        $(BUILD_DIR)/*.out $(BUILD_DIR)/*.toc $(BUILD_DIR)/*.lof \
+	        $(BUILD_DIR)/*.lot $(BUILD_DIR)/*.bbl $(BUILD_DIR)/*.blg \
+	        $(BUILD_DIR)/*.fls $(BUILD_DIR)/*.fdb_latexmk
+	@echo "✓ Build artifacts cleaned (PDFs preserved in $(OUTPUT_DIR)/)"
+
+# Distclean: remove all outputs (fresh rebuild required)
+distclean: clean
+	@echo "Removing all compiled outputs (will require full rebuild)..."
+	@rm -rf $(OUTPUT_DIR)/*.pdf $(BUILD_DIR)
+	@mkdir -p $(BUILD_DIR) $(OUTPUT_DIR)
+	@echo "✓ All outputs removed. Run 'make all' to rebuild."
+
+# View main PDF in default viewer
+view: $(MASTER_PDF)
+	@echo "Opening $(MASTER_PDF)..."
+	@xdg-open $(MASTER_PDF) 2>/dev/null || open $(MASTER_PDF) 2>/dev/null || echo "Please open $(MASTER_PDF) manually"
+
+# Help
+help:
+	@echo "============================================"
+	@echo "Babbage Analytical Engine - Whitepaper Build"
+	@echo "============================================"
+	@echo ""
+	@echo "Targets:"
+	@echo "  make all       - Build all whitepapers (recommended)"
+	@echo "  make clean     - Remove build artifacts"
+	@echo "  make distclean - Remove all outputs"
+	@echo "  make view      - Open main whitepaper PDF"
+	@echo "  make help      - Show this help message"
+	@echo ""
+	@echo "Output location: $(OUTPUT_DIR)/"
+	@echo ""
+
+# Default target
+.DEFAULT_GOAL := all

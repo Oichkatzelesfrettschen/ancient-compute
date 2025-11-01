@@ -1,13 +1,13 @@
 # Ancient Compute - Database Models
-from .user import User
+from .lesson import CodeSubmission, Lesson, LessonProgress
 from .module import Module, ModuleProgress
-from .lesson import Lesson, LessonProgress, CodeSubmission
+from .user import User
 
 __all__ = [
-    'User',
-    'Module',
-    'ModuleProgress',
-    'Lesson',
-    'LessonProgress',
-    'CodeSubmission',
+    "User",
+    "Module",
+    "ModuleProgress",
+    "Lesson",
+    "LessonProgress",
+    "CodeSubmission",
 ]

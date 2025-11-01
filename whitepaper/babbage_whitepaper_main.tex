@@ -1,0 +1,266 @@
+% ============================================================================
+% APPENDIX C: COST MODELS AND DETAILED BUDGET ANALYSIS
+% ============================================================================
+
+\chapter{Cost Models and Detailed Budget Analysis}
+
+\section{India Cost Model (Base Case)}
+
+\subsection{Fixed Costs (One-Time Investment)}
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular}{lr}
+\toprule
+\textbf{Item} & \textbf{Cost (£)} \\
+\midrule
+\rowcolor{lightblue}
+Workshop facility (rent 6 months) & 1,200 \\
+\rowcolor{lightblue}
+Machine tools (lathe, mill, grinder) & 15,000 \\
+\rowcolor{lightgreen}
+Precision measurement equipment & 1,800 \\
+\rowcolor{lightyellow}
+Technical documentation and blueprints & 500 \\
+\rowcolor{lightyellow}
+Workforce training (6 weeks) & 800 \\
+\midrule
+\textbf{FIXED COSTS TOTAL} & \textbf{£19,300} \\
+\bottomrule
+\end{tabular}
+\caption{One-time fixed costs to establish manufacturing capability.}
+\label{tab:fixed_costs}
+\end{table}
+
+\subsection{Variable Costs Per Unit}
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular}{llr}
+\toprule
+\textbf{Category} & \textbf{Items} & \textbf{Cost/Unit (£)} \\
+\midrule
+\multicolumn{3}{c}{\textbf{Materials}} \\
+\rowcolor{lightblue}
+Raw materials & Steel, brass, castings & 2,850 \\
+\rowcolor{lightblue}
+Imported precision components & SKF, David Brown, etc. & 2,563 \\
+\rowcolor{lightgreen}
+Fasteners, lubricants, misc. & Hardware, oil, cleaning & 85 \\
+\multicolumn{3}{c}{\textbf{Labor (India rates, ~£0.50/hour)}} \\
+\rowcolor{lightyellow}
+Component manufacturing & Shafts, wheels, levers & 280 \\
+\rowcolor{lightyellow}
+Subassembly & Mill, Store, Barrel, I/O & 180 \\
+\rowcolor{lightyellow}
+Integration and testing & Assembly + QA & 160 \\
+\multicolumn{3}{c}{\textbf{Overhead}} \\
+\rowcolor{lightyellow}
+Supervision (10\%) & Engineering oversight & 560 \\
+\rowcolor{lightyellow}
+Rework/scrap allowance (5\%) & Expected failures/rework & 280 \\
+\midrule
+\textbf{VARIABLE COSTS PER UNIT} & & \textbf{£7,758} \\
+\bottomrule
+\end{tabular}
+\caption{Variable costs per manufactured unit (India scenario).}
+\label{tab:variable_costs}
+\end{table}
+
+\subsection{Total Project Cost: Single vs. Multiple Units}
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Quantity} & \textbf{Fixed Cost (£)} & \textbf{Variable (£/unit)} & \textbf{Total (£)} & \textbf{Cost/Unit (£)} \\
+\midrule
+\rowcolor{lightblue}
+1 unit & 19,300 & 7,758 & 27,058 & 27,058 \\
+\rowcolor{lightgreen}
+5 units & 19,300 & 38,790 & 58,090 & 11,618 \\
+\rowcolor{lightyellow}
+10 units & 19,300 & 77,580 & 96,880 & 9,688 \\
+\rowcolor{lightyellow}
+25 units & 19,300 & 193,950 & 213,250 & 8,530 \\
+\rowcolor{lightyellow}
+100 units & 19,300 & 775,800 & 795,100 & 7,951 \\
+\bottomrule
+\end{tabular}
+\caption{Total and per-unit costs based on manufacturing volume (India scenario).}
+\label{tab:volume_costs}
+\end{table}
+
+\section{Comparative Regional Cost Models}
+
+\subsection{Brazil Cost Model (Higher Uncertainty)}
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular}{lrr}
+\toprule
+\textbf{Cost Component} & \textbf{India (£)} & \textbf{Brazil (£)} \\
+\midrule
+\rowcolor{lightblue}
+Materials & 5,498 & 5,800 \\
+\rowcolor{lightgreen}
+Labor (higher rates + lower efficiency) & 1,200 & 2,100 \\
+\rowcolor{lightyellow}
+Supervision/rework (higher risk) & 840 & 1,200 \\
+\rowcolor{lightyellow}
+Imported components & 2,563 & 2,700 \\
+\midrule
+\textbf{Per-Unit Total} & \textbf{10,101} & \textbf{11,800} \\
+\bottomrule
+\end{tabular}
+\caption{Cost comparison: India vs. Brazil manufacturing.}
+\label{tab:cost_india_vs_brazil}
+\end{table}
+
+\subsection{China Mass-Production Scenario}
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Production Volume} & \textbf{Fixed (£)} & \textbf{Variable (£)} & \textbf{Total (£)} & \textbf{Per-Unit (£)} \\
+\midrule
+\rowcolor{lightblue}
+1 unit (prototype) & 25,000 & 8,500 & 33,500 & 33,500 \\
+\rowcolor{lightgreen}
+10 units (pilot) & 25,000 & 85,000 & 110,000 & 11,000 \\
+\rowcolor{lightyellow}
+100 units (small batch) & 25,000 & 850,000 & 875,000 & 8,750 \\
+\rowcolor{lightyellow}
+1,000 units (mass production) & 35,000 & 6,200,000 & 6,235,000 & 6,235 \\
+\bottomrule
+\end{tabular}
+\caption{China manufacturing cost models at different production scales.}
+\label{tab:china_scale}
+\end{table}
+
+\section{Cost Sensitivity Analysis}
+
+\begin{figure}[h!]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  xlabel=Labor cost adjustment (\%),
+  ylabel=Total cost per unit (£),
+  width=12cm,
+  height=6cm,
+  grid=major,
+  legend pos=north west,
+]
+
+% Base cost: 7,758 GBP (India)
+% Labor component: 620/7758 = 8% of total
+% 10% labor adjustment = 0.1 * 620 = 62 GBP change
+
+\addplot[color=darkblue, thick, mark=*] coordinates {
+  (-50, 7447)   % 50% labor cost reduction
+  (-25, 7602)
+  (0, 7758)     % Baseline
+  (25, 7914)
+  (50, 8069)    % 50% labor cost increase
+  (100, 8380)   % 100% labor cost increase (doubling)
+};
+\addlegendentry{Total Cost (India base)}
+
+\addplot[color=darkgreen, thick, mark=square] coordinates {
+  (-50, 10390)
+  (-25, 10595)
+  (0, 10800)
+  (25, 11005)
+  (50, 11210)
+  (100, 11620)
+};
+\addlegendentry{Total Cost (Brazil base)}
+
+\end{axis}
+\end{tikzpicture}
+\caption{Cost sensitivity to labor rate changes: India cost less sensitive than Brazil.}
+\label{fig:cost_sensitivity}
+\end{figure}
+
+\section{Break-Even Analysis: When to Invest}
+
+\textbf{QUESTION}: How many units must be manufactured to justify the initial £19,300 facility investment?
+
+\textbf{ANSWER}: Approximately 3 units (£23,274 total cost for 3 units = £7,758 each).
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Units} & \textbf{Fixed Cost (£)} & \textbf{Variable Cost (£)} & \textbf{Average Cost/Unit (£)} \\
+\midrule
+\rowcolor{lightblue}
+1 & 19,300 & 7,758 & 27,058 \\
+\rowcolor{lightgreen}
+2 & 19,300 & 15,516 & 17,408 \\
+\rowcolor{lightyellow}
+3 & 19,300 & 23,274 & 14,191 \\
+\rowcolor{lightyellow}
+5 & 19,300 & 38,790 & 11,618 \\
+\bottomrule
+\end{tabular}
+\caption{Cost per unit decreases as fixed costs are amortized across more units.}
+\label{tab:breakeven}
+\end{table}
+
+% ============================================================================
+% REFERENCES AND HISTORICAL SOURCES
+% ============================================================================
+
+\chapter*{References and Historical Sources}
+\addcontentsline{toc}{chapter}{References and Historical Sources}
+
+\section*{Primary Sources}
+
+\begin{itemize}
+  \item \textbf{Babbage, Charles} (1832--1871). Original Analytical Engine drawings and notes. Science Museum London.
+  \item \textbf{Lovelace, Ada} (1843). ``Sketch of the Analytical Engine with Notes.'' Taylor's Scientific Memoirs.
+  \item \textbf{Hollerith, Herman} (1889). U.S. Patent 395,781: ``Art of Compiling Statistics.'' U.S. Patent Office.
+\end{itemize}
+
+\section*{Secondary Sources and Historical References}
+
+\begin{itemize}
+  \item Swade, Doron K. (2001). \textit{The Cogwheel Brain: Charles Babbage and the Quest to Build the First Computer}. Little, Brown.
+  \item Science Museum London. ``Babbage's Difference Engine No. 2 Reconstruction Project'' (2002).
+  \item Tata Steel. \textit{Tata Steel Heritage Archives}. Founded August 26, 1907; Production 1912.
+  \item SKF (Svenska Kullager Fabrikat). \textit{Company History: 1907--2000}. Swedish precision bearings.
+  \item David Brown Ltd. \textit{Sheffield Gear Heritage} (archived). Founded 1860s; Worm gear specialty.
+  \item Timken Company. \textit{Rolling Bearing Timeline and History}. Tapered roller bearings from 1899.
+  \item International Labour Organization (ILO). \textit{Industrial Statistics Database 1930--1960}. Manufacturing capacity surveys.
+\end{itemize}
+
+\section*{Regional Industrialization References}
+
+\begin{itemize}
+  \item \textbf{India}: Tata Steel official history. Founded 1907; Production 1912; Capacity 1930s onwards.
+  \item \textbf{Brazil}: Simonsen, Roberto C. \textit{A Industrialização do Brasil} (1939). Brazil's industrialization 1930s--1950s.
+  \item \textbf{Argentina}: Rapoport, Mario. \textit{Historia Económica, Política y Social de la Argentina (1880--2000)} (2000).
+  \item \textbf{China}: Li, Dongjian. \textit{The Ageless Chinese} (1978). China's First Five-Year Plan 1953--1957 with Soviet assistance.
+\end{itemize}
+
+\section*{Manufacturing Technology References}
+
+\begin{itemize}
+  \item Brown \& Sharpe Manufacturing. \textit{Gear Hobbing Machines: History and Development}. Machines available 1920s onwards.
+  \item Pratt \& Whitney. \textit{Precision Grinding and Cylindrical Grinder Manuals} (1930s--1950s).
+  \item Ferranti Ltd. \textit{Coordinate Measuring Machine Development} (1950s). First CMM invented 1950s; public 1959.
+\end{itemize}
+
+% ============================================================================
+% END DOCUMENT
+% ============================================================================
+
+\end{document}

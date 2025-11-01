@@ -1,7 +1,8 @@
 # Ancient Compute - User Model
-from sqlalchemy import Column, Integer, String, DateTime, Boolean
+from sqlalchemy import Boolean, Column, DateTime, Integer, String
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
+
 from ..database import Base
 
 
@@ -10,7 +11,8 @@ class User(Base):
 
     Tracks user identity, authentication, and learning progress.
     """
-    __tablename__ = 'users'
+
+    __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String(255), unique=True, index=True, nullable=False)
@@ -26,9 +28,15 @@ class User(Base):
     last_login_at = Column(DateTime(timezone=True), nullable=True)
 
     # Relationships
-    module_progress = relationship('ModuleProgress', back_populates='user', cascade='all, delete-orphan')
-    lesson_progress = relationship('LessonProgress', back_populates='user', cascade='all, delete-orphan')
-    code_submissions = relationship('CodeSubmission', back_populates='user', cascade='all, delete-orphan')
+    module_progress = relationship(
+        "ModuleProgress", back_populates="user", cascade="all, delete-orphan"
+    )
+    lesson_progress = relationship(
+        "LessonProgress", back_populates="user", cascade="all, delete-orphan"
+    )
+    code_submissions = relationship(
+        "CodeSubmission", back_populates="user", cascade="all, delete-orphan"
+    )
 
     def __repr__(self):
-        return f'<User {self.username}>'
+        return f"<User {self.username}>"

@@ -1,5 +1,4 @@
 {
-	// Ancient Compute - VS Code Debug Configurations
 	"version": "0.2.0",
 	"configurations": [
 		{
@@ -27,11 +26,7 @@
 			"type": "python",
 			"request": "launch",
 			"module": "pytest",
-			"args": [
-				"tests/",
-				"-v",
-				"--tb=short"
-			],
+			"args": ["tests/", "-v", "--tb=short"],
 			"cwd": "${workspaceFolder}/backend",
 			"env": {
 				"PYTHONPATH": "${workspaceFolder}/backend"
@@ -44,9 +39,7 @@
 			"type": "node",
 			"request": "launch",
 			"runtimeExecutable": "pnpm",
-			"runtimeArgs": [
-				"dev"
-			],
+			"runtimeArgs": ["dev"],
 			"cwd": "${workspaceFolder}/frontend",
 			"console": "integratedTerminal",
 			"internalConsoleOptions": "neverOpen"

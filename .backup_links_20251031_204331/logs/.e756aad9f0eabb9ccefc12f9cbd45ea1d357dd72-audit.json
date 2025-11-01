@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "/home/eirikr/Playground/ancient_compute/logs/.e756aad9f0eabb9ccefc12f9cbd45ea1d357dd72-audit.json",
+    "files": [
+        {
+            "date": 1761947328133,
+            "name": "/home/eirikr/Playground/ancient_compute/logs/mcp-puppeteer-2025-10-31.log",
+            "hash": "bae2124f6c0a868f49f081ca9eb7c615d51263a3260814f3d5fbe14aecc6d4a7"
+        }
+    ],
+    "hashType": "sha256"
+}

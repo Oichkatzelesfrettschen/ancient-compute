@@ -1,0 +1,47 @@
+# FACTORIAL PROGRAM: Calculate N! where N is input value
+# Input:  Memory[0] = N (e.g., 5 for 5!)
+# Output: Memory[1] = N! (e.g., 120)
+# Expected execution time: ~2,400 seconds (40 minutes)
+#
+# Algorithm: Iterative multiplication
+#   result = 1
+#   for i in range(2, N+1):
+#       result = result * i
+#   Memory[1] = result
+
+START:
+    LOAD    A, [0]          # A = N (input)
+    CMP     A, #1           # Compare A to 1
+    JLE     BASE_CASE       # If N <= 1, use base case (result = 1)
+    
+    # Initialize: result = 1, counter = 2
+    LOAD    A, #1           # A = 1 (initial result)
+    STOR    A, [1]          # Memory[1] = 1
+    LOAD    C, #2           # C = counter = 2
+    LOAD    A, [1]          # A = current result
+    
+LOOP:
+    CMP     C, [0]          # Compare counter to N
+    JGT     DONE            # If counter > N, we're done
+    
+    # Multiply: result = result * counter
+    LOAD    B, C            # B = counter
+    MULT                    # A = A * B (result *= counter)
+    STOR    A, [1]          # Store updated result
+    
+    # Increment counter
+    LOAD    A, C            # Load counter into A
+    ADD     A, #1           # A = counter + 1
+    LOAD    C, A            # C = new counter
+    JMP     LOOP            # Loop back
+    
+BASE_CASE:
+    # N <= 1, so N! = 1
+    LOAD    A, #1           # A = 1
+    STOR    A, [1]          # Memory[1] = 1
+    
+DONE:
+    # Write result
+    LOAD    A, [1]          # Load result into A
+    WRPCH                   # Punch result card
+    HALT                    # End program

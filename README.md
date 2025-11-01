@@ -220,10 +220,10 @@ All code execution occurs in multi-layer sandboxed environments:
 See the following for detailed information:
 
 - [CLAUDE.md](./CLAUDE.md) - Development guide for AI assistants
-- [ARCHITECTURE.md](./ARCHITECTURE.md) - System architecture
-- [DOCKER_INFRASTRUCTURE.md](./DOCKER_INFRASTRUCTURE.md) - Container setup
-- [TYPE_THEORY_CURRICULUM.md](./TYPE_THEORY_CURRICULUM.md) - Type theory content
-- [WEEK_1_CHECKLIST.md](./WEEK_1_CHECKLIST.md) - Implementation guide
+- [../ARCHITECTURE_AND_DESIGN/ARCHITECTURE.md]../../ARCHITECTURE_AND_DESIGN/ARCHITECTURE.md) - System architecture
+- [../INFRASTRUCTURE_AND_DEPLOYMENT/DOCKER_INFRASTRUCTURE.md]../../INFRASTRUCTURE_AND_DEPLOYMENT/DOCKER_INFRASTRUCTURE.md) - Container setup
+- [../CURRICULUM_AND_CONTENT/TYPE_THEORY_CURRICULUM.md]../../CURRICULUM_AND_CONTENT/TYPE_THEORY_CURRICULUM.md) - Type theory content
+- [DEVELOPMENT_GUID../DEVELOPMENT_GUIDES/DEVELOPMENT_GUIDES/WEEK_1_CHECKLIST.md]../DEVELOPMENT_GUIDES/DEVELOPMENT_GUID../DEVELOPMENT_GUIDES/DEVELOPMENT_GUIDES/WEEK_1_CHECKLIST.md) - Implementation guide
 
 ## Week 1 Progress
 

@@ -1,0 +1,333 @@
+%% Section: Manufacturing Specifications and Bill of Materials
+%% Detailed component specifications, sourcing, and labor estimates for 1910s construction
+
+\subsection{Physical Specifications}
+
+\begin{table}[h]
+    \centering
+    \small
+    \begin{tabular}{ll}
+    \toprule
+    \textbf{Dimension} & \textbf{Value} \\
+    \midrule
+    Length & 4.0 m \\
+    Width & 2.5 m \\
+    Height & 2.0 m \\
+    Floor footprint & 10 m$^2$ \\
+    Weight (mechanical) & 760 kg \\
+    Weight (with steam engine) & $\sim$1,200 kg \\
+    Operating temperature & 15--30°C (indoor workshop) \\
+    Vibration tolerance & $< 0.5$ mm at 10 Hz \\
+    \bottomrule
+    \end{tabular}
+    \caption{Physical specifications for complete Babbage engine.}
+    \label{tab:physical-specs}
+\end{table}
+
+\subsection{Component Bill of Materials}
+
+\subsubsection{Gears and Wheels}
+
+\begin{table}[h]
+    \centering
+    \small
+    \begin{tabular}{llrrr}
+    \toprule
+    \textbf{Component} & \textbf{Type} & \textbf{Qty} & \textbf{Unit Cost (GBP)} & \textbf{Total (GBP)} \\
+    \midrule
+    Digit wheels & 12 mm diameter, 10-tooth gears & 4,035 & 0.05 & 200 \\
+    Drive gears (large) & 50--100 mm diameter & 300 & 1.50 & 450 \\
+    Drive gears (medium) & 30--50 mm diameter & 600 & 0.80 & 480 \\
+    Drive gears (small) & 10--30 mm diameter & 300 & 0.40 & 120 \\
+    Cam gears & Specialized profiles & 100 & 2.00 & 200 \\
+    Worm gears (if used) & For address decoding & 20 & 3.00 & 60 \\
+    \midrule
+    \textbf{Gears subtotal} &  &  &  & 1,510 \\
+    \bottomrule
+    \end{tabular}
+    \caption{Gear and wheel specifications and costs.}
+    \label{tab:gears-bom}
+\end{table}
+
+**Notes on gear sourcing (1910s)**:
+
+\begin{itemize}
+    \item \textbf{Digit wheels}: Smallest gears, mass-produced for clock mechanisms. Suppliers: London clock manufacturers, Swiss gear makers.
+    \item \textbf{Drive gears}: Medium to large gears, custom hobbed. In-house hobbing machine (Maag or Gleason, cost $\sim$5,000 GBP) required for quantity. Alternatively, commission from specialized gear makers (Gleason Works, Rochester, NY, or Maag, Zurich).
+    \item \textbf{Material}: Hardened steel (0.5--1.0\% carbon), case-hardened for wear resistance. Cost includes material and cutting tools.
+\end{itemize}
+
+\subsubsection{Shafts and Bearings}
+
+\begin{table}[h]
+    \centering
+    \small
+    \begin{tabular}{llrrr}
+    \toprule
+    \textbf{Component} & \textbf{Specification} & \textbf{Qty} & \textbf{Unit Cost (GBP)} & \textbf{Total (GBP)} \\
+    \midrule
+    Drive shafts & 8--12 mm diameter, 500--2000 mm length & 400 & 0.50 & 200 \\
+    Gear shafts & 6--10 mm diameter, 200--1000 mm & 200 & 0.30 & 60 \\
+    \midrule
+    Roller bearings & Timken tapered roller (1906+) & 500 & 1.50 & 750 \\
+    Journal bearings & Bronze sleeve, self-aligning & 1,000 & 0.60 & 600 \\
+    Thrust bearings & For carry propagation mechanisms & 200 & 0.80 & 160 \\
+    Bearing housings & Cast iron, machined bores & 600 & 0.20 & 120 \\
+    \midrule
+    \textbf{Shafts \& bearings subtotal} &  &  &  & 1,890 \\
+    \bottomrule
+    \end{tabular}
+    \caption{Shafts, bearings, and support specifications.}
+    \label{tab:bearings-bom}
+\end{table}
+
+**Notes on bearing sourcing (1910s)**:
+
+\begin{itemize}
+    \item \textbf{Roller bearings}: Timken tapered roller bearings (patented 1898, mass-produced by 1905+) provide superior performance to Babbage-era journal bearings. Import from USA (\$0.75 USD $\approx$ 0.15 GBP at 1910 exchange rates).
+    \item \textbf{Journal bearings}: Traditional bronze sleeves, locally cast and machine-fitted. Acceptable for lower-speed applications (carry propagation, control mechanisms).
+    \item \textbf{Lead time}: Timken bearings require 4--6 week import time. Journal bearings can be made locally in 2--3 weeks.
+\end{itemize}
+
+\subsubsection{Structural and Fastening}
+
+\begin{table}[h]
+    \centering
+    \small
+    \begin{tabular}{llrrr}
+    \toprule
+    \textbf{Component} & \textbf{Specification} & \textbf{Qty} & \textbf{Unit Cost (GBP)} & \textbf{Total (GBP)} \\
+    \midrule
+    Frame steel & Structural steel angles/channels & 2,000 kg & 0.80/kg & 1,600 \\
+    Baseplate & Cast iron, precision-ground & 1 & 200 & 200 \\
+    Fasteners & Screws, bolts, nuts (steel) & Set & 150 & 150 \\
+    Linkages & Rods, cranks, levers (steel) & Set & 100 & 100 \\
+    Pawls and latches & Specialized parts, cast steel & 200 & 0.20 & 40 \\
+    Adjustment screws & For precision tuning & 500 & 0.05 & 25 \\
+    \midrule
+    \textbf{Structural subtotal} &  &  &  & 2,115 \\
+    \bottomrule
+    \end{tabular}
+    \caption{Structural and fastening components.}
+    \label{tab:structural-bom}
+\end{table}
+
+\subsubsection{I/O Devices}
+
+\begin{table}[h]
+    \centering
+    \small
+    \begin{tabular}{llrrr}
+    \toprule
+    \textbf{Component} & \textbf{Specification} & \textbf{Qty} & \textbf{Unit Cost (GBP)} & \textbf{Total (GBP)} \\
+    \midrule
+    Card reader & Hollerith-compatible, mechanical feed & 1 & 300 & 300 \\
+    Card punch & Hollerith-compatible, electric punch & 1 & 400 & 400 \\
+    Printer & Number printer for paper tape & 1 & 200 & 200 \\
+    \midrule
+    \textbf{I/O subtotal} &  &  &  & 900 \\
+    \bottomrule
+    \end{tabular}
+    \caption{Input/output device costs.}
+    \label{tab:io-bom}
+\end{table}
+
+**Notes on I/O sourcing**:
+
+\begin{itemize}
+    \item \textbf{Card reader/punch}: Hollerith Electric Tabulating Company (1896--1930) manufactured punches and readers. Compatible with 80-column Hollerith cards. Cost: \$200--300 USD $\approx$ 40--60 GBP for basic model.
+    \item \textbf{Printer}: Custom-built mechanical printer using solenoid or lever-based type mechanism. Cost estimate for custom fabrication: 200 GBP.
+\end{itemize}
+
+\subsubsection{Lubrication and Maintenance}
+
+\begin{table}[h]
+    \centering
+    \small
+    \begin{tabular}{llrrr}
+    \toprule
+    \textbf{Component} & \textbf{Specification} & \textbf{Qty} & \textbf{Unit Cost (GBP)} & \textbf{Total (GBP)} \\
+    \midrule
+    Mineral oil (clock oil) & Refined, 30 cSt @ 40°C & 20 liters & 0.30/liter & 6 \\
+    Oil can and maintenance tools & Various & Set & 10 & 10 \\
+    \midrule
+    \textbf{Lubrication subtotal} &  &  &  & 16 \\
+    \bottomrule
+    \end{tabular}
+    \caption{Lubrication and maintenance supplies.}
+    \label{tab:lubrication-bom}
+\end{table}
+
+\subsubsection{Materials Total}
+
+\begin{table}[h]
+    \centering
+    \small
+    \begin{tabular}{lr}
+    \toprule
+    \textbf{Category} & \textbf{Cost (GBP)} \\
+    \midrule
+    Gears and wheels & 1,510 \\
+    Shafts and bearings & 1,890 \\
+    Structural and fastening & 2,115 \\
+    I/O devices & 900 \\
+    Lubrication and maintenance & 16 \\
+    \midrule
+    \textbf{MATERIALS TOTAL} & \textbf{6,431 GBP} \\
+    \bottomrule
+    \end{tabular}
+    \caption{Summary of material costs.}
+    \label{tab:materials-total}
+\end{table}
+
+\subsection{Labour Estimate and Manufacturing Timeline}
+
+\subsubsection{Work Breakdown Structure}
+
+\begin{table}[h]
+    \centering
+    \small
+    \begin{tabular}{llrr}
+    \toprule
+    \textbf{Task} & \textbf{Description} & \textbf{Hours} & \textbf{Cost @ 1.80 GBP/hr} \\
+    \midrule
+    Gear hobbing & Cut, finish 5,235 gears on hobbing machine & 5,200 & 9,360 \\
+    Shaft/bearing machining & Machine shafts, fit bearings, align & 3,000 & 5,400 \\
+    Assembly and integration & Mount gears/shafts, integrate subsystems & 8,000 & 14,400 \\
+    Testing and calibration & Verify operation, adjust tolerances & 2,000 & 3,600 \\
+    Documentation & Record design, manufacturing notes & 1,000 & 1,800 \\
+    Engineering overhead & Design review, problem-solving & 800 & 1,440 \\
+    \midrule
+    \textbf{LABOUR SUBTOTAL} & & 20,000 & 35,600 \\
+    \midrule
+    Overhead (25\%) & Rent, utilities, management & & 9,150 \\
+    Contingency (10\%) & Unexpected delays, rework & & 3,660 \\
+    \midrule
+    \textbf{TOTAL PROJECT COST} &  &  & 48,410 \\
+    \bottomrule
+    \end{tabular}
+    \caption{Complete labour and overhead breakdown.}
+    \label{tab:labour-breakdown}
+\end{table}
+
+\subsubsection{Manufacturing Timeline}
+
+With a team of 8--10 machinists working 10 hours/day, 6 days/week:
+
+\begin{table}[h]
+    \centering
+    \small
+    \begin{tabular}{llr}
+    \toprule
+    \textbf{Phase} & \textbf{Duration} & \textbf{Cumulative} \\
+    \midrule
+    Setup and tooling & 4 weeks & 4 weeks \\
+    Gear hobbing (parallel, 5 workers) & 8 weeks & 12 weeks \\
+    Shaft/bearing machining (3 workers) & 6 weeks & 18 weeks \\
+    Assembly (5 workers) & 12 weeks & 30 weeks \\
+    Testing and calibration & 4 weeks & 34 weeks \\
+    \midrule
+    \textbf{TOTAL} &  & \textbf{34 weeks $\approx$ 8 months} \\
+    \bottomrule
+    \end{tabular}
+    \caption{Manufacturing timeline with team parallelization.}
+    \label{tab:timeline}
+\end{table}
+
+With contingencies (weather delays, supply chain, rework): **10--12 months realistic estimate**.
+
+Compared to original specification claim of 54 months, this is **5.4$\times$ faster** due to:
+
+\begin{itemize}
+    \item Modern hobbing machines (1910 vs. Babbage's 1840s hand-fitting).
+    \item Smaller tolerances (±0.1 mm vs. ±0.5 mm in Babbage era).
+    \item Parallel work (multiple teams on different subsystems).
+    \item Established manufacturing methods (no experimental design).
+\end{itemize}
+
+\subsection{Alternative Manufacturing Scenarios}
+
+\subsubsection{Scenario A: Premium Rapid Build (Minimum Time)}
+
+**Assumptions**: Money unconstrained, all parallel work, best tools.
+
+\begin{itemize}
+    \item Dedicated hobbing machine (owned, not rented): saves 4 weeks setup.
+    \item Maximum team size (20 workers): reduces assembly time from 12 to 4 weeks.
+    \item Premium materials and expedited sourcing: cost increase $\sim$50\%.
+    \item **Timeline**: 6 months, **Cost**: 72,600 GBP.
+\end{itemize}
+
+\subsubsection{Scenario B: Conservative Build (Cost-Optimized)}
+
+**Assumptions**: Minimal team, sequential work, maximum reuse.
+
+\begin{itemize}
+    \item Reduce team to 4--5 workers: increases timeline.
+    \item Outsource some gear work to external shops (longer lead time).
+    \item Use lower-grade materials where possible: cost reduction $\sim$15\%.
+    \item **Timeline**: 18 months, **Cost**: 36,000 GBP.
+\end{itemize}
+
+\subsection{Precision and Tolerances}
+
+Machine tolerances must be consistent with 1910s manufacturing:
+
+\begin{table}[h]
+    \centering
+    \small
+    \begin{tabular}{llll}
+    \toprule
+    \textbf{Component} & \textbf{Dimension} & \textbf{Tolerance} & \textbf{Method} \\
+    \midrule
+    Digit wheels & 12 mm diameter & ±0.15 mm & Hobbing machine \\
+    Shafts & 8--12 mm diameter & ±0.05 mm & Cylindrical grinder \\
+    Bores (for shafts) & 8--12 mm & ±0.10 mm & Reamer/boring bar \\
+    Gear tooth depth & Involute profile & ±0.10 mm & Hobbing cutter \\
+    Cam profiles & Custom shape & ±0.15 mm & Manual grinding \\
+    \bottomrule
+    \end{tabular}
+    \caption{Precision tolerances achievable with 1910s machinery.}
+    \label{tab:tolerances}
+\end{table}
+
+All tolerances are conservative estimates based on documented 1910s machine tool capabilities (Marks' Mechanical Engineers' Handbook, 1911).
+
+\subsection{Sourcing Timeline (From Order to Delivery)}
+
+\begin{table}[h]
+    \centering
+    \small
+    \begin{tabular}{lll}
+    \toprule
+    \textbf{Material} & \textbf{Source} & \textbf{Lead Time} \\
+    \midrule
+    Raw steel (plate, bar, round) & Sheffield mills & 3--4 weeks \\
+    Timken roller bearings & USA import & 4--6 weeks \\
+    Bronze for journal bearings & Local casting & 2--3 weeks \\
+    Cast iron (frame) & Local foundry & 3--4 weeks \\
+    Hollerith card equipment & New York factory & 6--8 weeks \\
+    \bottomrule
+    \end{tabular}
+    \caption{Material sourcing timeline (1910s era).}
+    \label{tab:sourcing-timeline}
+\end{table}
+
+Critical path: Hollerith card equipment (6--8 weeks). Overall procurement timeline: **8--10 weeks** with parallel ordering.
+
+\subsection{Quality Assurance and Testing}
+
+After assembly, validation ensures proper operation:
+
+\begin{enumerate}
+    \item \textbf{Static test}: Verify all mechanical components move freely, no binding.
+    \item \textbf{Dry run}: Operate without computation, check for noise/vibration.
+    \item \textbf{Carry propagation test}: Verify carry mechanism across all 50 digit positions.
+    \item \textbf{Arithmetic validation}: Execute known computations (factorial, Fibonacci), verify results.
+    \item \textbf{I/O validation}: Read/write test cards, verify card handling.
+    \item \textbf{Process management test}: Execute multi-process programs, verify context switching.
+    \item \textbf{Stress test}: Long-duration operation (12+ hours), monitor for wear/drift.
+\end{enumerate}
+
+Total validation time: **2--4 weeks**.
+

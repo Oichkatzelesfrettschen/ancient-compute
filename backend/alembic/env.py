@@ -1,20 +1,17 @@
 # Ancient Compute - Alembic Environment Configuration
+import sys
 from logging.config import fileConfig
-
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
+from pathlib import Path
 
 from alembic import context
-
-import sys
-from pathlib import Path
+from sqlalchemy import engine_from_config, pool
 
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from src.database import Base
-from src.models import User, Module, ModuleProgress, Lesson, LessonProgress, CodeSubmission
 from src.config import settings
+from src.database import Base
+from src.models import CodeSubmission, Lesson, LessonProgress, Module, ModuleProgress, User
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -22,7 +19,7 @@ config = context.config
 
 # Override sqlalchemy.url from settings if available
 if settings.DATABASE_URL:
-    config.set_main_option('sqlalchemy.url', settings.DATABASE_URL)
+    config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -70,9 +67,7 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
+        context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():
             context.run_migrations()
