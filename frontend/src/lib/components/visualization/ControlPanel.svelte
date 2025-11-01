@@ -1,4 +1,6 @@
 <script lang="ts">
+	import type { ConnectionStatus } from '$lib/visualization/websocket';
+
 	/**
 	 * ControlPanel: Debug info display and control buttons
 	 *
@@ -6,11 +8,14 @@
 	 * 1. Display performance metrics and debug information
 	 * 2. Provide reset and debug toggle buttons
 	 * 3. Show animation state and engine status
-	 * 4. Responsive design for various screen sizes
+	 * 4. Display WebSocket connection status
+	 * 5. Responsive design for various screen sizes
 	 */
 
 	export let isAnimating = false;
 	export let debugInfo = '';
+	export let connectionStatus: ConnectionStatus = 'disconnected';
+	export let connectionError: string | undefined = undefined;
 	export let metrics = {
 		fps: 0,
 		deltaTime: 0,
@@ -42,6 +47,34 @@
 		<div class="status-indicator" class:animating={isAnimating} title="Animation running">
 			{isAnimating ? '◉ Running' : '◯ Ready'}
 		</div>
+	</div>
+
+	<div class="connection-section">
+		<div class="connection-row">
+			<span class="connection-label">Backend:</span>
+			<span
+				class="connection-status"
+				class:connected={connectionStatus === 'connected'}
+				class:connecting={connectionStatus === 'connecting'}
+				class:error={connectionStatus === 'error'}
+				title="WebSocket connection status"
+			>
+				{#if connectionStatus === 'connected'}
+					◉ Connected
+				{:else if connectionStatus === 'connecting'}
+					◌ Connecting
+				{:else if connectionStatus === 'error'}
+					✕ Error
+				{:else}
+					◯ Disconnected
+				{/if}
+			</span>
+		</div>
+		{#if connectionError}
+			<div class="error-message" title={connectionError}>
+				{connectionError}
+			</div>
+		{/if}
 	</div>
 
 	<div class="metrics-section">
@@ -151,6 +184,86 @@
 	.status-indicator.animating {
 		color: #48bb78;
 		background: rgba(72, 187, 120, 0.1);
+	}
+
+	/* Connection Section */
+	.connection-section {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		padding: 0.75rem;
+		background: rgba(83, 52, 131, 0.05);
+		border-left: 3px solid #533483;
+		border-radius: 4px;
+	}
+
+	.connection-row {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 0.75rem;
+	}
+
+	.connection-label {
+		color: #533483;
+		font-size: 0.85rem;
+		font-weight: 600;
+		flex: 0 0 auto;
+	}
+
+	.connection-status {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 4px 8px;
+		background: rgba(102, 126, 234, 0.1);
+		border-radius: 4px;
+		color: #b0b8d4;
+		font-size: 0.8rem;
+		font-weight: 600;
+		flex: 1;
+		text-align: right;
+	}
+
+	.connection-status.connected {
+		color: #48bb78;
+		background: rgba(72, 187, 120, 0.1);
+		border: 1px solid rgba(72, 187, 120, 0.3);
+	}
+
+	.connection-status.connecting {
+		color: #ecc94b;
+		background: rgba(236, 201, 75, 0.1);
+		border: 1px solid rgba(236, 201, 75, 0.3);
+		animation: pulse 1.5s ease-in-out infinite;
+	}
+
+	.connection-status.error {
+		color: #f56565;
+		background: rgba(245, 101, 101, 0.1);
+		border: 1px solid rgba(245, 101, 101, 0.3);
+	}
+
+	.error-message {
+		color: #f56565;
+		font-size: 0.75rem;
+		line-height: 1.3;
+		padding: 0.5rem 0.75rem;
+		background: rgba(245, 101, 101, 0.05);
+		border: 1px solid rgba(245, 101, 101, 0.2);
+		border-radius: 3px;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	@keyframes pulse {
+		0%, 100% {
+			opacity: 1;
+		}
+		50% {
+			opacity: 0.6;
+		}
 	}
 
 	/* Metrics Section */

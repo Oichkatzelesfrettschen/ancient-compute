@@ -4,6 +4,13 @@
 	import { machineStateStore } from '$lib/visualization/state';
 	import { VisualizationManager } from '$lib/visualization/3d/VisualizationManager';
 	import { StateReconciler } from '$lib/visualization/state';
+	import {
+		initializeWebSocket,
+		disconnectWebSocket,
+		connectionStatusStore,
+		connectionErrorStore,
+		type ConnectionStatus
+	} from '$lib/visualization/websocket';
 	import CanvasContainer from './CanvasContainer.svelte';
 	import ControlPanel from './ControlPanel.svelte';
 
@@ -27,12 +34,23 @@
 	let canvas: HTMLCanvasElement | null = null;
 	let isAnimating = false;
 	let debugInfo = '';
+	let connectionStatus: ConnectionStatus = 'disconnected';
+	let connectionError: string | undefined = undefined;
 	let performanceMetrics = {
 		fps: 0,
 		deltaTime: 0,
 		renderTime: 0,
 		animationTime: 0
 	};
+
+	// Subscribe to connection status
+	$: connectionStatusStore.subscribe((status) => {
+		connectionStatus = status;
+	})();
+
+	$: connectionErrorStore.subscribe((error) => {
+		connectionError = error;
+	})();
 
 	// Configuration
 	const vizConfig = {
@@ -43,13 +61,16 @@
 	};
 
 	/**
-	 * Initialize VisualizationManager on component mount
-	 * Sets up canvas, scene, renderer, and animation loop
+	 * Initialize VisualizationManager and WebSocket on component mount
+	 * Sets up canvas, scene, renderer, animation loop, and backend connection
 	 */
 	onMount(() => {
 		if (!canvas) return;
 
+		let cleanupFunctions: Array<() => void> = [];
+
 		try {
+			// Initialize VisualizationManager
 			manager = new VisualizationManager({
 				canvas,
 				...vizConfig
@@ -68,9 +89,12 @@
 			};
 
 			window.addEventListener('resize', handleResize);
+			cleanupFunctions.push(() => {
+				window.removeEventListener('resize', handleResize);
+			});
 
-			// Subscribe to store updates
-			const unsubscribe = machineStateStore.subscribe((newState) => {
+			// Subscribe to store updates (reactive state changes)
+			const unsubscribeStore = machineStateStore.subscribe((newState) => {
 				currentState = newState;
 
 				// Only update visualization if manager is ready and state changed
@@ -84,20 +108,33 @@
 				}
 			});
 
+			cleanupFunctions.push(unsubscribeStore);
+
+			// Initialize WebSocket connection to backend
+			// This will dispatch STATE_UPDATE messages to machineStateStore
+			const backendUrl = import.meta.env.VITE_BACKEND_WS_URL || 'ws://localhost:8000/ws';
+			const unsubscribeWebSocket = initializeWebSocket(backendUrl);
+			cleanupFunctions.push(unsubscribeWebSocket);
+
+			console.log('[EmulatorView] Initialized with backend:', backendUrl);
+
 			return () => {
-				window.removeEventListener('resize', handleResize);
-				unsubscribe();
+				cleanupFunctions.forEach((cleanup) => cleanup());
 			};
 		} catch (error) {
-			console.error('Failed to initialize VisualizationManager:', error);
+			console.error('Failed to initialize EmulatorView:', error);
 		}
 	});
 
 	/**
 	 * Cleanup on component destroy
-	 * Stops animation loop and releases GPU resources
+	 * Stops animation loop, releases GPU resources, and disconnects WebSocket
 	 */
 	onDestroy(() => {
+		// Disconnect WebSocket
+		disconnectWebSocket();
+
+		// Stop and dispose VisualizationManager
 		if (manager) {
 			manager.stop();
 			manager.dispose();
@@ -167,6 +204,8 @@
 		isAnimating={isAnimating || manager?.timeline.isRunning() || false}
 		debugInfo={debugInfo}
 		metrics={performanceMetrics}
+		connectionStatus={connectionStatus}
+		connectionError={connectionError}
 		onReset={resetVisualization}
 		onToggleDebug={toggleDebug}
 	/>
