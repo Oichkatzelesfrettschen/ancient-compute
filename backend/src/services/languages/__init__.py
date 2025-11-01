@@ -3,12 +3,14 @@ from .c_service import CService
 from .python_service import PythonService
 from .haskell_service import HaskellService
 from .babbage_assembly_service import BabbageAssemblyService
+from .lisp_service import LISPService
 
 __all__ = [
     'CService',
     'PythonService',
     'HaskellService',
     'BabbageAssemblyService',
+    'LISPService',
 ]
 
 
@@ -19,6 +21,7 @@ def get_executor(language: str):
         "python": PythonService,
         "haskell": HaskellService,
         "babbage-assembly": BabbageAssemblyService,
+        "lisp": LISPService,
     }
     executor_class = executors.get(language.lower())
     if executor_class:
