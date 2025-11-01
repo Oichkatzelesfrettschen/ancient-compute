@@ -3,12 +3,16 @@
 from fastapi import APIRouter
 
 from .code_execution import router as execution_router
+from .emulator import router as emulator_router
 
 # Create main API router
 api_router = APIRouter()
 
 # Include code execution routes
 api_router.include_router(execution_router)
+
+# Include emulator routes
+api_router.include_router(emulator_router)
 
 
 @api_router.get("/status")

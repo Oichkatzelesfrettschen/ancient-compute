@@ -16,7 +16,11 @@
       "Bash(backend/tests/integration/test_phase_3_w2_2_advanced_polynomials.py )",
       "Bash(backend/tests/unit/test_card_reader.py )",
       "Bash(backend/tests/unit/test_printer.py )",
-      "Bash(backend/tests/unit/test_debugger.py )"
+      "Bash(backend/tests/unit/test_debugger.py )",
+      "WebFetch(domain:docs.khronos.org)",
+      "mcp__desktop-commander__get_config",
+      "mcp__desktop-commander__get_recent_tool_calls",
+      "mcp__desktop-commander__list_directory"
     ],
     "deny": [],
     "ask": []
