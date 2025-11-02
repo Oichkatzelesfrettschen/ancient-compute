@@ -134,6 +134,42 @@ Economics of manufacturing:
 
 **Read this for**: Understanding project costs, budgeting, pricing.
 
+### BILL_OF_MATERIALS_COMPREHENSIVE.md
+**NEW**: Complete multi-era bill of materials:
+- Era 1 (1910-1930): Third world manufacturing capabilities
+- Era 2 (1940-1970): Post-war industrial expansion
+- Era 3 (2025): Modern CNC and 3D printing
+- Component specifications with tolerances
+- Material requirements and suppliers
+- Cost estimates (inflation-adjusted)
+- Quality assurance procedures across eras
+
+**Read this for**: Comprehensive BOM across all time periods, sourcing strategies, cost comparisons.
+
+### META_TOOLING_GUIDE.md
+**NEW**: Meta-tooling documentation:
+- Tool chain hierarchy (tools to make tools to make tools)
+- Jigs and fixtures design
+- Custom inspection gauges
+- Workforce skills and training requirements
+- Process documentation needs
+- Technology transfer strategies
+- Era-specific tooling investments ($10K-$800K range)
+
+**Read this for**: Understanding the complete manufacturing infrastructure required, workforce development, technology transfer.
+
+### MODERN_MANUFACTURING_COMPARISON.md
+**NEW**: 2025 modern manufacturing vs historical:
+- Cost comparison (4-10x cheaper modern)
+- Timeline comparison (4-10x faster modern)
+- Technology comparison (20-50x better precision)
+- Accessibility and democratization
+- Modern manufacturing strategies (CNC, 3D printing, hybrid)
+- Case studies (university, makerspace, high school)
+- Recommendations by use case
+
+**Read this for**: Understanding how modern technology transforms historical manufacturing, practical implementation strategies for today.
+
 ### whitepaper/ subdirectory
 
 **WHITEPAPER_README.md**: Overview of the whitepaper project
