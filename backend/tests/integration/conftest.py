@@ -18,6 +18,7 @@ if str(backend_path) not in sys.path:
 def java_compiler():
     """Provide Java compiler instance"""
     from backend.src.compilers.java_compiler import JavaCompiler
+
     return JavaCompiler(verbose=False)
 
 
@@ -25,6 +26,7 @@ def java_compiler():
 def java_type_system():
     """Provide Java type system instance"""
     from backend.src.compilers.java_types import JavaTypeSystem
+
     return JavaTypeSystem()
 
 
@@ -32,6 +34,7 @@ def java_type_system():
 def idris_compiler():
     """Provide IDRIS2 compiler instance"""
     from backend.src.compilers.idris_compiler import IDRISCompiler
+
     return IDRISCompiler(verbose=False)
 
 
@@ -39,6 +42,7 @@ def idris_compiler():
 def idris_type_system():
     """Provide IDRIS2 type system instance"""
     from backend.src.compilers.idris_types import IDRISTypeSystem
+
     return IDRISTypeSystem()
 
 
@@ -46,6 +50,7 @@ def idris_type_system():
 def systemf_compiler():
     """Provide System F compiler instance"""
     from backend.src.compilers.systemf_compiler import SystemFCompiler
+
     return SystemFCompiler(verbose=False)
 
 
@@ -53,6 +58,7 @@ def systemf_compiler():
 def systemf_type_system():
     """Provide System F type system instance"""
     from backend.src.compilers.systemf_types import SystemFTypeSystem
+
     return SystemFTypeSystem()
 
 
@@ -60,6 +66,7 @@ def systemf_type_system():
 async def java_service():
     """Provide Java language service instance"""
     from backend.src.services.languages.java_service import JavaService
+
     return JavaService()
 
 
@@ -67,6 +74,7 @@ async def java_service():
 async def idris_service():
     """Provide IDRIS2 language service instance"""
     from backend.src.services.languages.idris_service import IDRISService
+
     return IDRISService()
 
 
@@ -74,4 +82,5 @@ async def idris_service():
 async def systemf_service():
     """Provide System F language service instance"""
     from backend.src.services.languages.systemf_service import SystemFService
+
     return SystemFService()

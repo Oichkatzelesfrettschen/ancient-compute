@@ -14,7 +14,7 @@ import sys
 import os
 
 # Add backend to path for imports
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 
 from backend.src.emulator.machine import DEMachine
 from backend.src.emulator.debugger import Debugger, BreakpointType
@@ -109,15 +109,9 @@ async def initialize_emulator():
     try:
         emulator_instance = DEMachine()
         debugger_instance = Debugger(emulator_instance)
-        return {
-            "success": True,
-            "message": "Emulator initialized successfully"
-        }
+        return {"success": True, "message": "Emulator initialized successfully"}
     except Exception as e:
-        return {
-            "success": False,
-            "error": str(e)
-        }
+        return {"success": False, "error": str(e)}
 
 
 @router.post("/reset")
@@ -138,10 +132,7 @@ async def reset_emulator():
 
         return {"success": True}
     except Exception as e:
-        return {
-            "success": False,
-            "error": str(e)
-        }
+        return {"success": False, "error": str(e)}
 
 
 @router.get("/state")
@@ -161,15 +152,12 @@ async def get_state():
                 "angle": emulator_instance.timing.angle,
                 "columns": emulator_instance.column_bank.get_all_values(),
                 "carrySignals": emulator_instance.carriage.carry_signals.copy(),
-                "accumulator": int(emulator_instance.analytical_engine.registers.get('A', 0)),
-                "totalOperations": emulator_instance.total_operations
-            }
+                "accumulator": int(emulator_instance.analytical_engine.registers.get("A", 0)),
+                "totalOperations": emulator_instance.total_operations,
+            },
         }
     except Exception as e:
-        return {
-            "success": False,
-            "error": str(e)
-        }
+        return {"success": False, "error": str(e)}
 
 
 # ============================================================================
@@ -200,8 +188,7 @@ async def execute_polynomial(request: ExecuteRequest):
         # Execute polynomial evaluation
         try:
             results_data = emulator_instance.evaluate_polynomial(
-                request.coefficients,
-                request.x_range
+                request.coefficients, request.x_range
             )
         except Exception as e:
             raise ValueError(f"Polynomial evaluation failed: {str(e)}")
@@ -211,10 +198,7 @@ async def execute_polynomial(request: ExecuteRequest):
         emulator_instance_temp = DEMachine()  # Fresh instance for evaluation
         for x in range(request.x_range[0], request.x_range[1] + 1):
             # Evaluate single polynomial value
-            temp_results = emulator_instance_temp.evaluate_polynomial(
-                request.coefficients,
-                (x, x)
-            )
+            temp_results = emulator_instance_temp.evaluate_polynomial(request.coefficients, (x, x))
             result = temp_results[0] if temp_results else 0
 
             results.append(
@@ -222,14 +206,12 @@ async def execute_polynomial(request: ExecuteRequest):
                     x=x,
                     result=result,
                     cycle=emulator_instance_temp.cycle_count,
-                    phase=emulator_instance_temp.timing.phase.value
+                    phase=emulator_instance_temp.timing.phase.value,
                 )
             )
 
         return ExecuteResponse(
-            success=True,
-            results=results,
-            totalCycles=emulator_instance_temp.cycle_count
+            success=True, results=results, totalCycles=emulator_instance_temp.cycle_count
         )
 
     except ValueError as e:
@@ -242,10 +224,7 @@ async def execute_polynomial(request: ExecuteRequest):
 async def get_results():
     """Get previous execution results"""
     # Note: In a real application, this would be stored in session
-    return {
-        "success": True,
-        "results": []
-    }
+    return {"success": True, "results": []}
 
 
 # ============================================================================
@@ -270,21 +249,18 @@ async def debug_step():
             "angle": emulator_instance.timing.angle,
             "columns": emulator_instance.column_bank.get_all_values(),
             "carrySignals": emulator_instance.carriage.carry_signals.copy(),
-            "accumulator": int(emulator_instance.analytical_engine.registers.get('A', 0)),
-            "totalOperations": emulator_instance.total_operations
+            "accumulator": int(emulator_instance.analytical_engine.registers.get("A", 0)),
+            "totalOperations": emulator_instance.total_operations,
         }
 
         return {
             "success": True,
             "state": state,
-            "breakpointsHit": triggered_breakpoints if triggered_breakpoints else []
+            "breakpointsHit": triggered_breakpoints if triggered_breakpoints else [],
         }
 
     except Exception as e:
-        return {
-            "success": False,
-            "error": str(e)
-        }
+        return {"success": False, "error": str(e)}
 
 
 @router.post("/debug/continue")
@@ -304,22 +280,19 @@ async def debug_continue(max_cycles: Optional[int] = None):
             "angle": emulator_instance.timing.angle,
             "columns": emulator_instance.column_bank.get_all_values(),
             "carrySignals": emulator_instance.carriage.carry_signals.copy(),
-            "accumulator": int(emulator_instance.analytical_engine.registers.get('A', 0)),
-            "totalOperations": emulator_instance.total_operations
+            "accumulator": int(emulator_instance.analytical_engine.registers.get("A", 0)),
+            "totalOperations": emulator_instance.total_operations,
         }
 
         return {
             "success": True,
             "cyclesRun": result.get("cycles_run", 0),
             "state": state,
-            "breakpointHit": result.get("breakpoint_hit")
+            "breakpointHit": result.get("breakpoint_hit"),
         }
 
     except Exception as e:
-        return {
-            "success": False,
-            "error": str(e)
-        }
+        return {"success": False, "error": str(e)}
 
 
 @router.post("/debug/breakpoint")
@@ -343,16 +316,10 @@ async def set_breakpoint(request: BreakpointRequest):
 
         bp_id = debugger_instance.breakpoint_manager.set_breakpoint(breakpoint_type, **kwargs)
 
-        return {
-            "success": True,
-            "breakpointId": bp_id
-        }
+        return {"success": True, "breakpointId": bp_id}
 
     except Exception as e:
-        return {
-            "success": False,
-            "error": str(e)
-        }
+        return {"success": False, "error": str(e)}
 
 
 @router.post("/debug/breakpoint/{breakpoint_id}/enable")
@@ -367,10 +334,7 @@ async def enable_breakpoint(breakpoint_id: int):
         debugger_instance.enable_breakpoint(breakpoint_id)
         return {"success": True}
     except Exception as e:
-        return {
-            "success": False,
-            "error": str(e)
-        }
+        return {"success": False, "error": str(e)}
 
 
 @router.post("/debug/breakpoint/{breakpoint_id}/disable")
@@ -385,10 +349,7 @@ async def disable_breakpoint(breakpoint_id: int):
         debugger_instance.disable_breakpoint(breakpoint_id)
         return {"success": True}
     except Exception as e:
-        return {
-            "success": False,
-            "error": str(e)
-        }
+        return {"success": False, "error": str(e)}
 
 
 @router.delete("/debug/breakpoint/{breakpoint_id}")
@@ -403,10 +364,7 @@ async def remove_breakpoint(breakpoint_id: int):
         debugger_instance.remove_breakpoint(breakpoint_id)
         return {"success": True}
     except Exception as e:
-        return {
-            "success": False,
-            "error": str(e)
-        }
+        return {"success": False, "error": str(e)}
 
 
 @router.post("/debug/variable")
@@ -421,10 +379,7 @@ async def define_variable(request: VariableRequest):
         debugger_instance.define_variable(request.name, request.value)
         return {"success": True}
     except Exception as e:
-        return {
-            "success": False,
-            "error": str(e)
-        }
+        return {"success": False, "error": str(e)}
 
 
 @router.put("/debug/variable/{name}")
@@ -439,7 +394,4 @@ async def set_variable(name: str, request: VariableRequest):
         debugger_instance.set_variable(name, request.value)
         return {"success": True}
     except Exception as e:
-        return {
-            "success": False,
-            "error": str(e)
-        }
+        return {"success": False, "error": str(e)}

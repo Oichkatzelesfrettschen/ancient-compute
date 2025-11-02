@@ -1,9 +1,27 @@
 # Ancient Compute - IDRIS Compiler
 
 from .idris_ast import (
-    Module, Import, TypeDeclaration, FunctionDeclaration, Identifier, Literal, FunctionApplication, Let, Case
+    Module,
+    Import,
+    TypeDeclaration,
+    FunctionDeclaration,
+    Identifier,
+    Literal,
+    FunctionApplication,
+    Let,
+    Case,
 )
-from ..ir_types import IRBuilder, Program, Function, BasicBlock, Constant, ReturnTerminator, IRType, VariableValue
+from ..ir_types import (
+    IRBuilder,
+    Program,
+    Function,
+    BasicBlock,
+    Constant,
+    ReturnTerminator,
+    IRType,
+    VariableValue,
+)
+
 
 class IdrisCompiler:
     def __init__(self):
@@ -23,7 +41,7 @@ class IdrisCompiler:
     def _compile_function_declaration(self, decl: FunctionDeclaration):
         self.builder = IRBuilder(decl.name, decl.args)
         self.builder.function.local_variables = {p: IRType.DEC50 for p in decl.args}
-        self.builder.new_block('entry')
+        self.builder.new_block("entry")
 
         return_val = self._compile_expression(decl.body)
 
@@ -53,4 +71,5 @@ class IdrisCompiler:
 
 class IDRIS2Compiler(IdrisCompiler):
     """Compatibility alias exposing expected class name in tests."""
+
     pass

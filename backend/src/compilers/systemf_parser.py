@@ -21,9 +21,22 @@ from __future__ import annotations
 from typing import List, Optional
 from backend.src.compilers.systemf_lexer import Token, TokenType, SystemFLexer
 from backend.src.compilers.systemf_ast import (
-    Type, TypeVar, BaseType, FunctionType, UniversalType,
-    Expr, Var, Literal, Lambda, TypeAbstraction, Application, TypeApplication,
-    IfExpr, LetExpr, FixExpr, Annotation
+    Type,
+    TypeVar,
+    BaseType,
+    FunctionType,
+    UniversalType,
+    Expr,
+    Var,
+    Literal,
+    Lambda,
+    TypeAbstraction,
+    Application,
+    TypeApplication,
+    IfExpr,
+    LetExpr,
+    FixExpr,
+    Annotation,
 )
 
 
@@ -34,7 +47,7 @@ class SystemFParser:
         """Initialize parser with token list"""
         self.tokens = tokens
         self.pos = 0
-        self.current_token = tokens[0] if tokens else Token(TokenType.EOF, '', 0, 0)
+        self.current_token = tokens[0] if tokens else Token(TokenType.EOF, "", 0, 0)
 
     def parse(self) -> List[Expr]:
         """Parse entire source and return list of expressions"""
@@ -58,7 +71,7 @@ class SystemFParser:
         pos = self.pos + offset
         if pos < len(self.tokens):
             return self.tokens[pos]
-        return Token(TokenType.EOF, '', 0, 0)
+        return Token(TokenType.EOF, "", 0, 0)
 
     def _expect(self, token_type: TokenType) -> Token:
         """Consume token of expected type or raise error"""
@@ -170,8 +183,9 @@ class SystemFParser:
                 self._expect(TokenType.RBRACKET)
                 expr = TypeApplication(expr, type_arg)
             # Regular application: f x
-            elif self._match(TokenType.IDENTIFIER, TokenType.NUMBER, TokenType.STRING_LIT,
-                             TokenType.LPAREN):
+            elif self._match(
+                TokenType.IDENTIFIER, TokenType.NUMBER, TokenType.STRING_LIT, TokenType.LPAREN
+            ):
                 arg = self._parse_primary_expr()
                 expr = Application(expr, arg)
             else:
@@ -187,7 +201,7 @@ class SystemFParser:
         if token.type == TokenType.NUMBER:
             self._advance()
             try:
-                if '.' in token.value:
+                if "." in token.value:
                     return Literal(float(token.value))
                 else:
                     return Literal(int(token.value))

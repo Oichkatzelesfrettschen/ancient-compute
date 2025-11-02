@@ -18,6 +18,7 @@ from typing import List, Optional
 
 class TokenType(Enum):
     """Java token types"""
+
     # Literals
     NUMBER = auto()
     STRING_LIT = auto()
@@ -97,15 +98,15 @@ class TokenType(Enum):
     GREATER_EQUAL = auto()
 
     AND = auto()  # &&
-    OR = auto()   # ||
+    OR = auto()  # ||
     NOT = auto()  # !
 
     BIT_AND = auto()  # &
-    BIT_OR = auto()   # |
+    BIT_OR = auto()  # |
     BIT_XOR = auto()  # ^
     BIT_NOT = auto()  # ~
-    LSHIFT = auto()   # <<
-    RSHIFT = auto()   # >>
+    LSHIFT = auto()  # <<
+    RSHIFT = auto()  # >>
     URSHIFT = auto()  # >>>
 
     PLUS_EQUAL = auto()
@@ -144,6 +145,7 @@ class TokenType(Enum):
 @dataclass
 class Token:
     """Represents a single token"""
+
     type: TokenType
     value: str
     line: int
@@ -154,56 +156,56 @@ class JavaLexer:
     """Lexer for Java source code"""
 
     KEYWORDS = {
-        'class': TokenType.CLASS,
-        'interface': TokenType.INTERFACE,
-        'enum': TokenType.ENUM,
-        'extends': TokenType.EXTENDS,
-        'implements': TokenType.IMPLEMENTS,
-        'public': TokenType.PUBLIC,
-        'private': TokenType.PRIVATE,
-        'protected': TokenType.PROTECTED,
-        'static': TokenType.STATIC,
-        'final': TokenType.FINAL,
-        'abstract': TokenType.ABSTRACT,
-        'native': TokenType.NATIVE,
-        'synchronized': TokenType.SYNCHRONIZED,
-        'volatile': TokenType.VOLATILE,
-        'transient': TokenType.TRANSIENT,
-        'void': TokenType.VOID,
-        'int': TokenType.INT,
-        'long': TokenType.LONG,
-        'float': TokenType.FLOAT,
-        'double': TokenType.DOUBLE,
-        'boolean': TokenType.BOOLEAN_TYPE,
-        'byte': TokenType.BYTE,
-        'short': TokenType.SHORT,
-        'char': TokenType.CHAR_TYPE,
-        'String': TokenType.STRING,
-        'var': TokenType.VAR,
-        'if': TokenType.IF,
-        'else': TokenType.ELSE,
-        'switch': TokenType.SWITCH,
-        'case': TokenType.CASE,
-        'default': TokenType.DEFAULT,
-        'while': TokenType.WHILE,
-        'for': TokenType.FOR,
-        'do': TokenType.DO,
-        'break': TokenType.BREAK,
-        'continue': TokenType.CONTINUE,
-        'return': TokenType.RETURN,
-        'throw': TokenType.THROW,
-        'try': TokenType.TRY,
-        'catch': TokenType.CATCH,
-        'finally': TokenType.FINALLY,
-        'new': TokenType.NEW,
-        'this': TokenType.THIS,
-        'super': TokenType.SUPER,
-        'instanceof': TokenType.INSTANCEOF,
-        'import': TokenType.IMPORT,
-        'package': TokenType.PACKAGE,
-        'true': TokenType.BOOLEAN,
-        'false': TokenType.BOOLEAN,
-        'null': TokenType.NULL,
+        "class": TokenType.CLASS,
+        "interface": TokenType.INTERFACE,
+        "enum": TokenType.ENUM,
+        "extends": TokenType.EXTENDS,
+        "implements": TokenType.IMPLEMENTS,
+        "public": TokenType.PUBLIC,
+        "private": TokenType.PRIVATE,
+        "protected": TokenType.PROTECTED,
+        "static": TokenType.STATIC,
+        "final": TokenType.FINAL,
+        "abstract": TokenType.ABSTRACT,
+        "native": TokenType.NATIVE,
+        "synchronized": TokenType.SYNCHRONIZED,
+        "volatile": TokenType.VOLATILE,
+        "transient": TokenType.TRANSIENT,
+        "void": TokenType.VOID,
+        "int": TokenType.INT,
+        "long": TokenType.LONG,
+        "float": TokenType.FLOAT,
+        "double": TokenType.DOUBLE,
+        "boolean": TokenType.BOOLEAN_TYPE,
+        "byte": TokenType.BYTE,
+        "short": TokenType.SHORT,
+        "char": TokenType.CHAR_TYPE,
+        "String": TokenType.STRING,
+        "var": TokenType.VAR,
+        "if": TokenType.IF,
+        "else": TokenType.ELSE,
+        "switch": TokenType.SWITCH,
+        "case": TokenType.CASE,
+        "default": TokenType.DEFAULT,
+        "while": TokenType.WHILE,
+        "for": TokenType.FOR,
+        "do": TokenType.DO,
+        "break": TokenType.BREAK,
+        "continue": TokenType.CONTINUE,
+        "return": TokenType.RETURN,
+        "throw": TokenType.THROW,
+        "try": TokenType.TRY,
+        "catch": TokenType.CATCH,
+        "finally": TokenType.FINALLY,
+        "new": TokenType.NEW,
+        "this": TokenType.THIS,
+        "super": TokenType.SUPER,
+        "instanceof": TokenType.INSTANCEOF,
+        "import": TokenType.IMPORT,
+        "package": TokenType.PACKAGE,
+        "true": TokenType.BOOLEAN,
+        "false": TokenType.BOOLEAN,
+        "null": TokenType.NULL,
     }
 
     def __init__(self, source: str) -> None:
@@ -234,13 +236,13 @@ class JavaLexer:
             elif ch == "'":
                 self._read_char()
             # Identifiers and keywords
-            elif ch.isalpha() or ch == '_':
+            elif ch.isalpha() or ch == "_":
                 self._read_identifier()
             # Operators and delimiters
             else:
                 self._read_operator_or_delimiter()
 
-        self.tokens.append(Token(TokenType.EOF, '', self.line, self.column))
+        self.tokens.append(Token(TokenType.EOF, "", self.line, self.column))
         return self.tokens
 
     def _current_char(self) -> Optional[str]:
@@ -260,7 +262,7 @@ class JavaLexer:
         """Advance position and return character"""
         ch = self.source[self.pos]
         self.pos += 1
-        if ch == '\n':
+        if ch == "\n":
             self.line += 1
             self.column = 1
         else:
@@ -273,20 +275,20 @@ class JavaLexer:
             ch = self._current_char()
 
             # Whitespace
-            if ch in ' \t\n\r':
+            if ch in " \t\n\r":
                 self._advance()
             # Line comment
-            elif ch == '/' and self._peek() == '/':
+            elif ch == "/" and self._peek() == "/":
                 self._advance()  # /
                 self._advance()  # /
-                while self.pos < len(self.source) and self._current_char() != '\n':
+                while self.pos < len(self.source) and self._current_char() != "\n":
                     self._advance()
             # Block comment
-            elif ch == '/' and self._peek() == '*':
+            elif ch == "/" and self._peek() == "*":
                 self._advance()  # /
                 self._advance()  # *
                 while self.pos < len(self.source):
-                    if self._current_char() == '*' and self._peek() == '/':
+                    if self._current_char() == "*" and self._peek() == "/":
                         self._advance()  # *
                         self._advance()  # /
                         break
@@ -298,9 +300,11 @@ class JavaLexer:
         """Read numeric literal"""
         start_line = self.line
         start_col = self.column
-        num_str = ''
+        num_str = ""
 
-        while self.pos < len(self.source) and (self._current_char().isdigit() or self._current_char() in '.fFdDlL'):
+        while self.pos < len(self.source) and (
+            self._current_char().isdigit() or self._current_char() in ".fFdDlL"
+        ):
             num_str += self._advance()
 
         self.tokens.append(Token(TokenType.NUMBER, num_str, start_line, start_col))
@@ -310,10 +314,10 @@ class JavaLexer:
         start_line = self.line
         start_col = self.column
         self._advance()  # Opening "
-        string_val = ''
+        string_val = ""
 
         while self.pos < len(self.source) and self._current_char() != '"':
-            if self._current_char() == '\\':
+            if self._current_char() == "\\":
                 self._advance()
                 if self.pos < len(self.source):
                     string_val += self._advance()
@@ -330,9 +334,9 @@ class JavaLexer:
         start_line = self.line
         start_col = self.column
         self._advance()  # Opening '
-        char_val = ''
+        char_val = ""
 
-        if self._current_char() == '\\':
+        if self._current_char() == "\\":
             self._advance()
             if self.pos < len(self.source):
                 char_val += self._advance()
@@ -349,9 +353,11 @@ class JavaLexer:
         """Read identifier or keyword"""
         start_line = self.line
         start_col = self.column
-        ident = ''
+        ident = ""
 
-        while self.pos < len(self.source) and (self._current_char().isalnum() or self._current_char() in '_$'):
+        while self.pos < len(self.source) and (
+            self._current_char().isalnum() or self._current_char() in "_$"
+        ):
             ident += self._advance()
 
         # Check if keyword
@@ -373,117 +379,117 @@ class JavaLexer:
         next_ch = self._current_char()
 
         # Two-character operators
-        two_char = ch + (next_ch or '')
+        two_char = ch + (next_ch or "")
 
-        if two_char == '==':
+        if two_char == "==":
             self._advance()
-            self.tokens.append(Token(TokenType.EQUAL_EQUAL, '==', start_line, start_col))
-        elif two_char == '!=':
+            self.tokens.append(Token(TokenType.EQUAL_EQUAL, "==", start_line, start_col))
+        elif two_char == "!=":
             self._advance()
-            self.tokens.append(Token(TokenType.NOT_EQUAL, '!=', start_line, start_col))
-        elif two_char == '<=':
+            self.tokens.append(Token(TokenType.NOT_EQUAL, "!=", start_line, start_col))
+        elif two_char == "<=":
             self._advance()
-            self.tokens.append(Token(TokenType.LESS_EQUAL, '<=', start_line, start_col))
-        elif two_char == '>=':
+            self.tokens.append(Token(TokenType.LESS_EQUAL, "<=", start_line, start_col))
+        elif two_char == ">=":
             self._advance()
-            self.tokens.append(Token(TokenType.GREATER_EQUAL, '>=', start_line, start_col))
-        elif two_char == '&&':
+            self.tokens.append(Token(TokenType.GREATER_EQUAL, ">=", start_line, start_col))
+        elif two_char == "&&":
             self._advance()
-            self.tokens.append(Token(TokenType.AND, '&&', start_line, start_col))
-        elif two_char == '||':
+            self.tokens.append(Token(TokenType.AND, "&&", start_line, start_col))
+        elif two_char == "||":
             self._advance()
-            self.tokens.append(Token(TokenType.OR, '||', start_line, start_col))
-        elif two_char == '++':
+            self.tokens.append(Token(TokenType.OR, "||", start_line, start_col))
+        elif two_char == "++":
             self._advance()
-            self.tokens.append(Token(TokenType.INCREMENT, '++', start_line, start_col))
-        elif two_char == '--':
+            self.tokens.append(Token(TokenType.INCREMENT, "++", start_line, start_col))
+        elif two_char == "--":
             self._advance()
-            self.tokens.append(Token(TokenType.DECREMENT, '--', start_line, start_col))
-        elif two_char == '<<':
+            self.tokens.append(Token(TokenType.DECREMENT, "--", start_line, start_col))
+        elif two_char == "<<":
             self._advance()
-            self.tokens.append(Token(TokenType.LSHIFT, '<<', start_line, start_col))
-        elif two_char == '>>':
+            self.tokens.append(Token(TokenType.LSHIFT, "<<", start_line, start_col))
+        elif two_char == ">>":
             self._advance()
-            if self._current_char() == '>':
+            if self._current_char() == ">":
                 self._advance()
-                self.tokens.append(Token(TokenType.URSHIFT, '>>>', start_line, start_col))
+                self.tokens.append(Token(TokenType.URSHIFT, ">>>", start_line, start_col))
             else:
-                self.tokens.append(Token(TokenType.RSHIFT, '>>', start_line, start_col))
-        elif two_char == '+=':
+                self.tokens.append(Token(TokenType.RSHIFT, ">>", start_line, start_col))
+        elif two_char == "+=":
             self._advance()
-            self.tokens.append(Token(TokenType.PLUS_EQUAL, '+=', start_line, start_col))
-        elif two_char == '-=':
+            self.tokens.append(Token(TokenType.PLUS_EQUAL, "+=", start_line, start_col))
+        elif two_char == "-=":
             self._advance()
-            self.tokens.append(Token(TokenType.MINUS_EQUAL, '-=', start_line, start_col))
-        elif two_char == '*=':
+            self.tokens.append(Token(TokenType.MINUS_EQUAL, "-=", start_line, start_col))
+        elif two_char == "*=":
             self._advance()
-            self.tokens.append(Token(TokenType.STAR_EQUAL, '*=', start_line, start_col))
-        elif two_char == '/=':
+            self.tokens.append(Token(TokenType.STAR_EQUAL, "*=", start_line, start_col))
+        elif two_char == "/=":
             self._advance()
-            self.tokens.append(Token(TokenType.SLASH_EQUAL, '/=', start_line, start_col))
-        elif two_char == '%=':
+            self.tokens.append(Token(TokenType.SLASH_EQUAL, "/=", start_line, start_col))
+        elif two_char == "%=":
             self._advance()
-            self.tokens.append(Token(TokenType.PERCENT_EQUAL, '%=', start_line, start_col))
-        elif two_char == '->':
+            self.tokens.append(Token(TokenType.PERCENT_EQUAL, "%=", start_line, start_col))
+        elif two_char == "->":
             self._advance()
-            self.tokens.append(Token(TokenType.ARROW, '->', start_line, start_col))
-        elif two_char == '::':
+            self.tokens.append(Token(TokenType.ARROW, "->", start_line, start_col))
+        elif two_char == "::":
             self._advance()
-            self.tokens.append(Token(TokenType.DOUBLE_COLON, '::', start_line, start_col))
-        elif two_char == '...':
-            if self._peek() == '.':
+            self.tokens.append(Token(TokenType.DOUBLE_COLON, "::", start_line, start_col))
+        elif two_char == "...":
+            if self._peek() == ".":
                 self._advance()
-                self.tokens.append(Token(TokenType.ELLIPSIS, '...', start_line, start_col))
+                self.tokens.append(Token(TokenType.ELLIPSIS, "...", start_line, start_col))
             else:
-                self.tokens.append(Token(TokenType.DOT, '.', start_line, start_col))
+                self.tokens.append(Token(TokenType.DOT, ".", start_line, start_col))
         # Single-character operators
-        elif ch == '+':
-            self.tokens.append(Token(TokenType.PLUS, '+', start_line, start_col))
-        elif ch == '-':
-            self.tokens.append(Token(TokenType.MINUS, '-', start_line, start_col))
-        elif ch == '*':
-            self.tokens.append(Token(TokenType.STAR, '*', start_line, start_col))
-        elif ch == '/':
-            self.tokens.append(Token(TokenType.SLASH, '/', start_line, start_col))
-        elif ch == '%':
-            self.tokens.append(Token(TokenType.PERCENT, '%', start_line, start_col))
-        elif ch == '!':
-            self.tokens.append(Token(TokenType.NOT, '!', start_line, start_col))
-        elif ch == '<':
-            self.tokens.append(Token(TokenType.LESS, '<', start_line, start_col))
-        elif ch == '>':
-            self.tokens.append(Token(TokenType.GREATER, '>', start_line, start_col))
-        elif ch == '=':
-            self.tokens.append(Token(TokenType.EQUAL, '=', start_line, start_col))
-        elif ch == '&':
-            self.tokens.append(Token(TokenType.BIT_AND, '&', start_line, start_col))
-        elif ch == '|':
-            self.tokens.append(Token(TokenType.BIT_OR, '|', start_line, start_col))
-        elif ch == '^':
-            self.tokens.append(Token(TokenType.BIT_XOR, '^', start_line, start_col))
-        elif ch == '~':
-            self.tokens.append(Token(TokenType.BIT_NOT, '~', start_line, start_col))
-        elif ch == '(':
-            self.tokens.append(Token(TokenType.LPAREN, '(', start_line, start_col))
-        elif ch == ')':
-            self.tokens.append(Token(TokenType.RPAREN, ')', start_line, start_col))
-        elif ch == '{':
-            self.tokens.append(Token(TokenType.LBRACE, '{', start_line, start_col))
-        elif ch == '}':
-            self.tokens.append(Token(TokenType.RBRACE, '}', start_line, start_col))
-        elif ch == '[':
-            self.tokens.append(Token(TokenType.LBRACKET, '[', start_line, start_col))
-        elif ch == ']':
-            self.tokens.append(Token(TokenType.RBRACKET, ']', start_line, start_col))
-        elif ch == ';':
-            self.tokens.append(Token(TokenType.SEMICOLON, ';', start_line, start_col))
-        elif ch == ',':
-            self.tokens.append(Token(TokenType.COMMA, ',', start_line, start_col))
-        elif ch == '.':
-            self.tokens.append(Token(TokenType.DOT, '.', start_line, start_col))
-        elif ch == ':':
-            self.tokens.append(Token(TokenType.COLON, ':', start_line, start_col))
-        elif ch == '?':
-            self.tokens.append(Token(TokenType.QUESTION, '?', start_line, start_col))
-        elif ch == '@':
-            self.tokens.append(Token(TokenType.AT, '@', start_line, start_col))
+        elif ch == "+":
+            self.tokens.append(Token(TokenType.PLUS, "+", start_line, start_col))
+        elif ch == "-":
+            self.tokens.append(Token(TokenType.MINUS, "-", start_line, start_col))
+        elif ch == "*":
+            self.tokens.append(Token(TokenType.STAR, "*", start_line, start_col))
+        elif ch == "/":
+            self.tokens.append(Token(TokenType.SLASH, "/", start_line, start_col))
+        elif ch == "%":
+            self.tokens.append(Token(TokenType.PERCENT, "%", start_line, start_col))
+        elif ch == "!":
+            self.tokens.append(Token(TokenType.NOT, "!", start_line, start_col))
+        elif ch == "<":
+            self.tokens.append(Token(TokenType.LESS, "<", start_line, start_col))
+        elif ch == ">":
+            self.tokens.append(Token(TokenType.GREATER, ">", start_line, start_col))
+        elif ch == "=":
+            self.tokens.append(Token(TokenType.EQUAL, "=", start_line, start_col))
+        elif ch == "&":
+            self.tokens.append(Token(TokenType.BIT_AND, "&", start_line, start_col))
+        elif ch == "|":
+            self.tokens.append(Token(TokenType.BIT_OR, "|", start_line, start_col))
+        elif ch == "^":
+            self.tokens.append(Token(TokenType.BIT_XOR, "^", start_line, start_col))
+        elif ch == "~":
+            self.tokens.append(Token(TokenType.BIT_NOT, "~", start_line, start_col))
+        elif ch == "(":
+            self.tokens.append(Token(TokenType.LPAREN, "(", start_line, start_col))
+        elif ch == ")":
+            self.tokens.append(Token(TokenType.RPAREN, ")", start_line, start_col))
+        elif ch == "{":
+            self.tokens.append(Token(TokenType.LBRACE, "{", start_line, start_col))
+        elif ch == "}":
+            self.tokens.append(Token(TokenType.RBRACE, "}", start_line, start_col))
+        elif ch == "[":
+            self.tokens.append(Token(TokenType.LBRACKET, "[", start_line, start_col))
+        elif ch == "]":
+            self.tokens.append(Token(TokenType.RBRACKET, "]", start_line, start_col))
+        elif ch == ";":
+            self.tokens.append(Token(TokenType.SEMICOLON, ";", start_line, start_col))
+        elif ch == ",":
+            self.tokens.append(Token(TokenType.COMMA, ",", start_line, start_col))
+        elif ch == ".":
+            self.tokens.append(Token(TokenType.DOT, ".", start_line, start_col))
+        elif ch == ":":
+            self.tokens.append(Token(TokenType.COLON, ":", start_line, start_col))
+        elif ch == "?":
+            self.tokens.append(Token(TokenType.QUESTION, "?", start_line, start_col))
+        elif ch == "@":
+            self.tokens.append(Token(TokenType.AT, "@", start_line, start_col))

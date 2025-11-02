@@ -20,9 +20,26 @@ from __future__ import annotations
 from typing import List, Optional
 from backend.src.compilers.python_lexer import Token, TokenType, PythonLexer
 from backend.src.compilers.python_ast import (
-    Expr, Stmt, BinOp, UnaryOp, Call, Name, Constant, Subscript, Attribute,
-    Assign, Return, If, While, For, FunctionDef, Pass, Break, Continue, ExprStmt,
-    Module
+    Expr,
+    Stmt,
+    BinOp,
+    UnaryOp,
+    Call,
+    Name,
+    Constant,
+    Subscript,
+    Attribute,
+    Assign,
+    Return,
+    If,
+    While,
+    For,
+    FunctionDef,
+    Pass,
+    Break,
+    Continue,
+    ExprStmt,
+    Module,
 )
 
 
@@ -33,7 +50,7 @@ class PythonParser:
         """Initialize parser with token list"""
         self.tokens = tokens
         self.pos = 0
-        self.current_token = tokens[0] if tokens else Token(TokenType.EOF, '', 0, 0)
+        self.current_token = tokens[0] if tokens else Token(TokenType.EOF, "", 0, 0)
 
     def parse(self) -> Module:
         """Parse module (top-level program)"""
@@ -64,7 +81,7 @@ class PythonParser:
         pos = self.pos + offset
         if pos < len(self.tokens):
             return self.tokens[pos]
-        return Token(TokenType.EOF, '', 0, 0)
+        return Token(TokenType.EOF, "", 0, 0)
 
     def _expect(self, token_type: TokenType) -> Token:
         """Consume token of expected type or raise error"""
@@ -274,7 +291,7 @@ class PythonParser:
         while self.current_token.type == TokenType.OR:
             self._advance()
             right = self._parse_and()
-            left = BinOp(left=left, op='or', right=right)
+            left = BinOp(left=left, op="or", right=right)
 
         return left
 
@@ -285,7 +302,7 @@ class PythonParser:
         while self.current_token.type == TokenType.AND:
             self._advance()
             right = self._parse_not()
-            left = BinOp(left=left, op='and', right=right)
+            left = BinOp(left=left, op="and", right=right)
 
         return left
 
@@ -294,7 +311,7 @@ class PythonParser:
         if self.current_token.type == TokenType.NOT:
             self._advance()
             operand = self._parse_not()
-            return UnaryOp(op='not', operand=operand)
+            return UnaryOp(op="not", operand=operand)
 
         return self._parse_comparison()
 
@@ -302,16 +319,21 @@ class PythonParser:
         """Parse comparison: expr (==|!=|<|<=|>|>=) expr"""
         left = self._parse_additive()
 
-        while self.current_token.type in (TokenType.EQUAL_EQUAL, TokenType.NOT_EQUAL,
-                                          TokenType.LESS, TokenType.LESS_EQUAL,
-                                          TokenType.GREATER, TokenType.GREATER_EQUAL):
+        while self.current_token.type in (
+            TokenType.EQUAL_EQUAL,
+            TokenType.NOT_EQUAL,
+            TokenType.LESS,
+            TokenType.LESS_EQUAL,
+            TokenType.GREATER,
+            TokenType.GREATER_EQUAL,
+        ):
             op_map = {
-                TokenType.EQUAL_EQUAL: '==',
-                TokenType.NOT_EQUAL: '!=',
-                TokenType.LESS: '<',
-                TokenType.LESS_EQUAL: '<=',
-                TokenType.GREATER: '>',
-                TokenType.GREATER_EQUAL: '>=',
+                TokenType.EQUAL_EQUAL: "==",
+                TokenType.NOT_EQUAL: "!=",
+                TokenType.LESS: "<",
+                TokenType.LESS_EQUAL: "<=",
+                TokenType.GREATER: ">",
+                TokenType.GREATER_EQUAL: ">=",
             }
             op = op_map[self.current_token.type]
             self._advance()
@@ -336,13 +358,17 @@ class PythonParser:
         """Parse multiplication/division: expr (*|/|//|%) expr"""
         left = self._parse_power()
 
-        while self.current_token.type in (TokenType.STAR, TokenType.SLASH,
-                                          TokenType.DOUBLE_SLASH, TokenType.PERCENT):
+        while self.current_token.type in (
+            TokenType.STAR,
+            TokenType.SLASH,
+            TokenType.DOUBLE_SLASH,
+            TokenType.PERCENT,
+        ):
             op_map = {
-                TokenType.STAR: '*',
-                TokenType.SLASH: '/',
-                TokenType.DOUBLE_SLASH: '//',
-                TokenType.PERCENT: '%',
+                TokenType.STAR: "*",
+                TokenType.SLASH: "/",
+                TokenType.DOUBLE_SLASH: "//",
+                TokenType.PERCENT: "%",
             }
             op = op_map[self.current_token.type]
             self._advance()
@@ -358,7 +384,7 @@ class PythonParser:
         if self.current_token.type == TokenType.POWER:
             self._advance()
             right = self._parse_power()  # Right-associative
-            return BinOp(left=left, op='**', right=right)
+            return BinOp(left=left, op="**", right=right)
 
         return left
 
@@ -418,7 +444,7 @@ class PythonParser:
             value_str = self.current_token.value
             self._advance()
 
-            if '.' in value_str:
+            if "." in value_str:
                 value = float(value_str)
             else:
                 value = int(value_str)
@@ -461,8 +487,7 @@ class PythonParser:
 
     def _skip_to_end_of_line(self) -> None:
         """Skip to end of line"""
-        while self.current_token.type not in (TokenType.NEWLINE, TokenType.DEDENT,
-                                               TokenType.EOF):
+        while self.current_token.type not in (TokenType.NEWLINE, TokenType.DEDENT, TokenType.EOF):
             self._advance()
 
         if self.current_token.type == TokenType.NEWLINE:

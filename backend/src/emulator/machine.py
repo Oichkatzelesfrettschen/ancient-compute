@@ -37,24 +37,24 @@ from backend.src.emulator.timing import TimingController, MechanicalPhase
 class OperationResult:
     """Result of a mechanical operation."""
 
-    operation: str                      # Operation name
-    phase: MechanicalPhase              # Mechanical phase
-    success: bool                       # Operation succeeded
-    data: Optional[Dict] = None         # Optional result data
-    error: Optional[str] = None         # Optional error message
+    operation: str  # Operation name
+    phase: MechanicalPhase  # Mechanical phase
+    success: bool  # Operation succeeded
+    data: Optional[Dict] = None  # Optional result data
+    error: Optional[str] = None  # Optional error message
 
 
 @dataclass
 class DEMachineSnapshot:
     """Complete snapshot of DEMachine state for debugging."""
 
-    cycle_count: int                    # Total cycles completed
-    current_phase: MechanicalPhase      # Current mechanical phase
-    timing_angle: int                   # Current shaft angle (0-360)
-    column_values: List[int]            # Current column values
-    carry_signals: List[bool]           # Current carry signals
-    ae_accumulator: int                 # Analytical Engine accumulator
-    total_operations: int               # Total operations executed
+    cycle_count: int  # Total cycles completed
+    current_phase: MechanicalPhase  # Current mechanical phase
+    timing_angle: int  # Current shaft angle (0-360)
+    column_values: List[int]  # Current column values
+    carry_signals: List[bool]  # Current carry signals
+    ae_accumulator: int  # Analytical Engine accumulator
+    total_operations: int  # Total operations executed
 
 
 class DEMachine:
@@ -85,8 +85,8 @@ class DEMachine:
         self.carriage = AnticipatingCarriage()
         self.timing = TimingController()
 
-        self.cycle_count = 0                # Total cycles completed
-        self.total_operations = 0           # Total operations executed
+        self.cycle_count = 0  # Total cycles completed
+        self.total_operations = 0  # Total operations executed
         self.operation_history: List[OperationResult] = []
 
     def run_full_cycle(self) -> int:
@@ -116,7 +116,7 @@ class DEMachine:
     def _process_phase_input(self) -> None:
         """Load difference values from analytical engine to column bank."""
         # Get input values from analytical engine register A
-        ae_value = self.analytical_engine.registers['A'].value % 10000000000
+        ae_value = self.analytical_engine.registers["A"].value % 10000000000
 
         # Set column 0 value in column bank
         self.column_bank.columns[0].set_value_from_int(ae_value)
@@ -183,7 +183,8 @@ class DEMachine:
         # Store primary result (column 0) back to analytical engine register A
         if len(column_values) > 0:
             from backend.src.emulator.analytical_engine import BabbageNumber
-            self.analytical_engine.registers['A'] = BabbageNumber(column_values[0])
+
+            self.analytical_engine.registers["A"] = BabbageNumber(column_values[0])
 
         self._record_operation(
             "OUTPUT",
@@ -198,9 +199,7 @@ class DEMachine:
         # In a real DE2, this would physically advance the mechanism
         # For simulation, we prepare state for next cycle
 
-        self._record_operation(
-            "ADVANCE", MechanicalPhase.ADVANCE, success=True, data={}
-        )
+        self._record_operation("ADVANCE", MechanicalPhase.ADVANCE, success=True, data={})
 
     def _process_phase_reset(self) -> None:
         """Reset mechanical state between cycles."""
@@ -241,9 +240,7 @@ class DEMachine:
         """Set input difference values."""
         self.set_column_values(values)
 
-    def evaluate_polynomial(
-        self, coefficients: List[int], x_range: Tuple[int, int]
-    ) -> List[int]:
+    def evaluate_polynomial(self, coefficients: List[int], x_range: Tuple[int, int]) -> List[int]:
         """
         Evaluate polynomial f(x) = a_0 + a_1*x + a_2*x^2 + ... using DE2.
 
@@ -281,6 +278,7 @@ class DEMachine:
         # Reset analytical engine state manually
         for reg in self.analytical_engine.registers:
             from backend.src.emulator.analytical_engine import BabbageNumber
+
             self.analytical_engine.registers[reg] = BabbageNumber(0)
         self.analytical_engine.PC = 0
 
@@ -299,7 +297,7 @@ class DEMachine:
             timing_angle=self.timing.angle,
             column_values=self.get_column_values(),
             carry_signals=[col.carry_out for col in self.column_bank.columns],
-            ae_accumulator=int(self.analytical_engine.registers['A'].to_decimal()),
+            ae_accumulator=int(self.analytical_engine.registers["A"].to_decimal()),
             total_operations=self.total_operations,
         )
 

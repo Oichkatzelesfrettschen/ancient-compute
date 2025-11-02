@@ -28,10 +28,10 @@ from dataclasses import dataclass
 class CarrySnapshot:
     """Snapshot of AnticipatingCarriage state for debugging."""
 
-    phase: int                          # Current mechanical phase (0-7)
-    carry_signals: List[bool]           # Carry signals from 8 columns
-    anticipated_carries: List[bool]     # Carries to apply to next phase
-    is_active: bool                     # Carriage active in this cycle
+    phase: int  # Current mechanical phase (0-7)
+    carry_signals: List[bool]  # Carry signals from 8 columns
+    anticipated_carries: List[bool]  # Carries to apply to next phase
+    is_active: bool  # Carriage active in this cycle
 
 
 class AnticipatingCarriage:
@@ -61,12 +61,12 @@ class AnticipatingCarriage:
 
     def __init__(self):
         """Initialize Anticipating Carriage."""
-        self.phases = 8                              # 8 columns → 8 phases
-        self.current_phase = 0                       # Current phase (0-7)
-        self.carry_signals = [False] * 8             # Input carry signals
-        self.anticipated_carries = [False] * 8       # Output carries
-        self.is_active = False                       # Active in current cycle
-        self.history: List[CarrySnapshot] = []       # For tracing
+        self.phases = 8  # 8 columns → 8 phases
+        self.current_phase = 0  # Current phase (0-7)
+        self.carry_signals = [False] * 8  # Input carry signals
+        self.anticipated_carries = [False] * 8  # Output carries
+        self.is_active = False  # Active in current cycle
+        self.history: List[CarrySnapshot] = []  # For tracing
 
     def set_carry_signals(self, signals: List[bool]) -> None:
         """
@@ -189,9 +189,7 @@ class AnticipatingCarriage:
     def __repr__(self) -> str:
         """String representation for debugging."""
         carries_str = "".join("1" if c else "0" for c in self.carry_signals)
-        anticipated_str = "".join(
-            "1" if c else "0" for c in self.anticipated_carries
-        )
+        anticipated_str = "".join("1" if c else "0" for c in self.anticipated_carries)
         return (
             f"AnticipatingCarriage(phase={self.current_phase}, "
             f"carries={carries_str}, anticipated={anticipated_str}, "
@@ -294,7 +292,4 @@ class CarryPropagationUnit:
 
     def __repr__(self) -> str:
         """String representation for debugging."""
-        return (
-            f"CarryPropagationUnit(mode={self.mode}, "
-            f"step_count={self.step_count})"
-        )
+        return f"CarryPropagationUnit(mode={self.mode}, " f"step_count={self.step_count})"

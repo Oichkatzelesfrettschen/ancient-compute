@@ -63,7 +63,14 @@ class TestExecutionAPIContract:
             "error": "Language not supported",
             "language": "cobol",
             "supported_languages": [
-                "python", "c", "haskell", "idris", "lisp", "java", "assembly", "systemf"
+                "python",
+                "c",
+                "haskell",
+                "idris",
+                "lisp",
+                "java",
+                "assembly",
+                "systemf",
             ],
             "status_code": 400,
         }
@@ -475,6 +482,7 @@ class TestTimeFormatContract:
 
         iso_pattern = r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$"
         import re
+
         for ts in timestamps:
             assert re.match(iso_pattern, ts)
 

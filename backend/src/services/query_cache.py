@@ -11,6 +11,7 @@ from functools import wraps
 from dataclasses import dataclass
 
 from typing import TYPE_CHECKING
+
 try:
     # Only needed at runtime when DB paths are used
     from sqlalchemy.orm import Session  # type: ignore
@@ -68,9 +69,7 @@ class QueryCache:
         params = "|".join(f"{k}={v}" for k, v in sorted(kwargs.items()))
         return f"{query_type}:{params}"
 
-    def get_exercise_with_relations(
-        self, db: Session, exercise_id: int
-    ) -> Optional["Exercise"]:
+    def get_exercise_with_relations(self, db: Session, exercise_id: int) -> Optional["Exercise"]:
         """
         Get exercise with eagerly loaded relations.
 
@@ -106,9 +105,7 @@ class QueryCache:
 
         return exercise
 
-    def get_module_with_exercises(
-        self, db: Session, module_id: int
-    ) -> Optional["Module"]:
+    def get_module_with_exercises(self, db: Session, module_id: int) -> Optional["Module"]:
         """
         Get module with all exercises eagerly loaded.
 
@@ -186,9 +183,7 @@ class QueryCache:
 
         return progress
 
-    def list_exercises_by_module(
-        self, db: Session, module_id: int
-    ) -> List["Exercise"]:
+    def list_exercises_by_module(self, db: Session, module_id: int) -> List["Exercise"]:
         """
         List all exercises for a module with eager loading.
 
@@ -273,9 +268,7 @@ class QueryCache:
             Number of entries removed
         """
         initial_size = len(self._cache)
-        expired_keys = [
-            key for key, entry in self._cache.items() if entry.is_expired()
-        ]
+        expired_keys = [key for key, entry in self._cache.items() if entry.is_expired()]
         for key in expired_keys:
             del self._cache[key]
         return initial_size - len(self._cache)
@@ -283,9 +276,7 @@ class QueryCache:
     def get_stats(self) -> Dict[str, any]:
         """Get cache statistics."""
         total_requests = self.hits + self.misses
-        hit_rate = (
-            self.hits / total_requests if total_requests > 0 else 0
-        )
+        hit_rate = self.hits / total_requests if total_requests > 0 else 0
 
         return {
             "entries": len(self._cache),

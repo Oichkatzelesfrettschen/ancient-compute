@@ -306,12 +306,8 @@ class TestOptimizedExecutor:
         executor = OptimizedExecutor()
 
         # Simulate cache entries for different exercises
-        executor.query_cache._cache["exercise=1:item"] = Mock(
-            is_expired=lambda: False
-        )
-        executor.query_cache._cache["exercise=2:item"] = Mock(
-            is_expired=lambda: False
-        )
+        executor.query_cache._cache["exercise=1:item"] = Mock(is_expired=lambda: False)
+        executor.query_cache._cache["exercise=2:item"] = Mock(is_expired=lambda: False)
 
         # Invalidate only exercise 1
         count = executor.invalidate_exercise_cache(1)

@@ -18,6 +18,7 @@ from dataclasses import dataclass
 # Type Representation
 # ============================================================================
 
+
 @dataclass
 class HaskellType:
     """Represents a Haskell type"""
@@ -36,14 +37,14 @@ class HaskellType:
     def __str__(self) -> str:
         if not self.args:
             return self.kind
-        if self.kind == '->':
+        if self.kind == "->":
             # Function type: a -> b -> c
             if len(self.args) >= 2:
                 return f"({self.args[0]} -> {self.args[1]})"
             return self.kind
-        if self.kind == 'List':
+        if self.kind == "List":
             return f"[{self.args[0]}]"
-        if self.kind == 'Tuple':
+        if self.kind == "Tuple":
             return f"({', '.join(str(a) for a in self.args)})"
         return f"{self.kind}({', '.join(str(a) for a in self.args)})"
 
@@ -66,23 +67,23 @@ class HaskellType:
 
     @staticmethod
     def int() -> HaskellType:
-        return HaskellType('int')
+        return HaskellType("int")
 
     @staticmethod
     def float() -> HaskellType:
-        return HaskellType('float')
+        return HaskellType("float")
 
     @staticmethod
     def string() -> HaskellType:
-        return HaskellType('string')
+        return HaskellType("string")
 
     @staticmethod
     def char() -> HaskellType:
-        return HaskellType('char')
+        return HaskellType("char")
 
     @staticmethod
     def bool() -> HaskellType:
-        return HaskellType('bool')
+        return HaskellType("bool")
 
     @staticmethod
     def var(name: str) -> HaskellType:
@@ -91,16 +92,16 @@ class HaskellType:
 
     @staticmethod
     def list(elem_type: HaskellType) -> HaskellType:
-        return HaskellType('List', [elem_type])
+        return HaskellType("List", [elem_type])
 
     @staticmethod
     def tuple(elem_types: list) -> HaskellType:
-        return HaskellType('Tuple', elem_types)
+        return HaskellType("Tuple", elem_types)
 
     @staticmethod
     def function(arg_type: HaskellType, return_type: HaskellType) -> HaskellType:
         """Create function type: arg -> return"""
-        return HaskellType('->', [arg_type, return_type])
+        return HaskellType("->", [arg_type, return_type])
 
     def is_polymorphic(self) -> bool:
         """Check if type contains type variables"""
@@ -114,11 +115,11 @@ class HaskellType:
 
     def is_function(self) -> bool:
         """Check if this is a function type"""
-        return self.kind == '->'
+        return self.kind == "->"
 
     def is_list(self) -> bool:
         """Check if this is a list type"""
-        return self.kind == 'List'
+        return self.kind == "List"
 
     def apply_substitution(self, subst: Dict[str, HaskellType]) -> HaskellType:
         """Apply type variable substitution"""
@@ -134,8 +135,10 @@ class HaskellType:
 # Type Inference
 # ============================================================================
 
+
 class TypeVariable:
     """Generates unique type variables"""
+
     _counter = 0
 
     @classmethod
@@ -236,11 +239,13 @@ class HaskellTypeSystem:
         """Generalize type by applying current substitution"""
         return typ.apply_substitution(self.substitution)
 
-    def operation_type(self, op: str, left: HaskellType, right: Optional[HaskellType] = None) -> HaskellType:
+    def operation_type(
+        self, op: str, left: HaskellType, right: Optional[HaskellType] = None
+    ) -> HaskellType:
         """Determine result type of operation"""
         if right is None:
             # Unary operation
-            if op == '-' or op == '+':
+            if op == "-" or op == "+":
                 return left
             else:
                 return TypeVariable.fresh()
@@ -250,11 +255,11 @@ class HaskellTypeSystem:
         right = self._deref(right)
 
         # Comparison operations return Bool
-        if op in ('==', '/=', '<', '<=', '>', '>='):
+        if op in ("==", "/=", "<", "<=", ">", ">="):
             return HaskellType.bool()
 
         # Arithmetic operations
-        if op in ('+', '-', '*', '/', '%', '^'):
+        if op in ("+", "-", "*", "/", "%", "^"):
             # Type promotion: int + float -> float
             if left == HaskellType.int() and right == HaskellType.float():
                 return HaskellType.float()
@@ -266,7 +271,7 @@ class HaskellTypeSystem:
                 return HaskellType.int()
 
         # List concatenation
-        if op == '++':
+        if op == "++":
             if left.is_list() and right.is_list():
                 return left
 
@@ -275,33 +280,34 @@ class HaskellTypeSystem:
     def is_numeric(self, typ: HaskellType) -> bool:
         """Check if type is numeric"""
         typ = self._deref(typ)
-        return typ.kind in ('int', 'float')
+        return typ.kind in ("int", "float")
 
 
 # ============================================================================
 # Babbage Type Mapping
 # ============================================================================
 
+
 class BabbageTypeMapper:
     """Maps Haskell types to Babbage IR types"""
 
     TYPE_MAP = {
-        'int': 'i64',
-        'float': 'f64',
-        'string': 'i64',      # String as memory pointer
-        'char': 'i64',        # Char as integer
-        'bool': 'i64',        # Bool as 0/1
-        'List': 'i64',        # List as pointer
-        'Tuple': 'i64',       # Tuple as pointer
-        '->': 'i64',          # Function pointer
+        "int": "i64",
+        "float": "f64",
+        "string": "i64",  # String as memory pointer
+        "char": "i64",  # Char as integer
+        "bool": "i64",  # Bool as 0/1
+        "List": "i64",  # List as pointer
+        "Tuple": "i64",  # Tuple as pointer
+        "->": "i64",  # Function pointer
     }
 
     @staticmethod
     def to_babbage_type(typ: HaskellType) -> str:
         """Map Haskell type to Babbage IR type"""
         if typ.is_var():
-            return 'i64'  # Default to i64 for type variables
-        return BabbageTypeMapper.TYPE_MAP.get(typ.kind, 'i64')
+            return "i64"  # Default to i64 for type variables
+        return BabbageTypeMapper.TYPE_MAP.get(typ.kind, "i64")
 
     @staticmethod
     def default_value_for_type(typ: HaskellType) -> Any:
@@ -310,19 +316,19 @@ class BabbageTypeMapper:
         if typ.is_var():
             return 0
 
-        if typ.kind == 'int':
+        if typ.kind == "int":
             return 0
-        elif typ.kind == 'float':
+        elif typ.kind == "float":
             return 0.0
-        elif typ.kind == 'bool':
+        elif typ.kind == "bool":
             return False
-        elif typ.kind == 'char':
-            return ''
-        elif typ.kind == 'string':
-            return ''
-        elif typ.kind == 'List':
+        elif typ.kind == "char":
+            return ""
+        elif typ.kind == "string":
+            return ""
+        elif typ.kind == "List":
             return []
-        elif typ.kind == 'Tuple':
+        elif typ.kind == "Tuple":
             return ()
         else:
             return 0
@@ -331,6 +337,7 @@ class BabbageTypeMapper:
 # ============================================================================
 # Type Inference Environment
 # ============================================================================
+
 
 @dataclass
 class TypeEnvironment:
