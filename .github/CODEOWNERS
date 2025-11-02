@@ -1,0 +1,84 @@
+# Code Owners for Ancient Compute
+#
+# This file defines who should review pull requests for different parts of the codebase.
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owners for everything (fallback)
+* @Oichkatzelesfrettschen
+
+# Multi-Agent System Documentation
+/AGENTS.md @Oichkatzelesfrettschen
+/.github/agents/ @Oichkatzelesfrettschen
+
+# Project Structure and Organization
+/PROJECT_STRUCTURE.md @Oichkatzelesfrettschen
+/CONTRIBUTING.md @Oichkatzelesfrettschen
+/MASTER_ROADMAP.md @Oichkatzelesfrettschen
+
+# Frontend (SvelteKit, TypeScript)
+/frontend/ @Oichkatzelesfrettschen
+/frontend/src/ @Oichkatzelesfrettschen
+/frontend/tests/ @Oichkatzelesfrettschen
+/frontend/e2e/ @Oichkatzelesfrettschen
+
+# Backend (FastAPI, Python)
+/backend/ @Oichkatzelesfrettschen
+/backend/src/ @Oichkatzelesfrettschen
+/backend/tests/ @Oichkatzelesfrettschen
+/backend/alembic/ @Oichkatzelesfrettschen
+
+# Language Services
+/services/ @Oichkatzelesfrettschen
+/services/*/Dockerfile @Oichkatzelesfrettschen
+
+# Babbage Analytical Engine
+/BABBAGE_ANALYTICAL_ENGINE/ @Oichkatzelesfrettschen
+/BABBAGE_*.md @Oichkatzelesfrettschen
+
+# Curriculum and Content
+/CURRICULUM_AND_CONTENT/ @Oichkatzelesfrettschen
+/HISTORICAL_CONTEXT/ @Oichkatzelesfrettschen
+
+# Documentation (LaTeX)
+/docs/ @Oichkatzelesfrettschen
+/whitepaper/ @Oichkatzelesfrettschen
+/*.tex @Oichkatzelesfrettschen
+
+# Infrastructure and Deployment
+/docker-compose.yml @Oichkatzelesfrettschen
+/Dockerfile @Oichkatzelesfrettschen
+/.dockerignore @Oichkatzelesfrettschen
+/scripts/ @Oichkatzelesfrettschen
+/config/ @Oichkatzelesfrettschen
+
+# Build System (Bazel)
+/BUILD.bazel @Oichkatzelesfrettschen
+/MODULE.bazel @Oichkatzelesfrettschen
+/WORKSPACE.bazel @Oichkatzelesfrettschen
+/.bazelrc @Oichkatzelesfrettschen
+/.bazelversion @Oichkatzelesfrettschen
+
+# CI/CD Workflows
+/.github/workflows/ @Oichkatzelesfrettschen
+
+# Configuration Files
+/.github/ @Oichkatzelesfrettschen
+/pyproject.toml @Oichkatzelesfrettschen
+/package.json @Oichkatzelesfrettschen
+/tsconfig.json @Oichkatzelesfrettschen
+
+# Security Policies
+/.github/SECURITY.md @Oichkatzelesfrettschen
+/SECURITY.md @Oichkatzelesfrettschen
+
+# Multi-Repo Migration Files
+/.github/PROJECT_TEMPLATES/ @Oichkatzelesfrettschen
+/.github/ISSUE_TEMPLATE/ @Oichkatzelesfrettschen
+/.github/PULL_REQUEST_TEMPLATE.md @Oichkatzelesfrettschen
+
+# Future: Add team assignments when teams are created
+# Example:
+# /frontend/ @frontend-team
+# /backend/ @backend-team
+# /services/ @devops-team
+# /BABBAGE_ANALYTICAL_ENGINE/ @babbage-team

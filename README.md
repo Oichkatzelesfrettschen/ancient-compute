@@ -2,10 +2,13 @@
 
 A comprehensive educational platform teaching the complete 12,500-year history of computation, logic, and programming paradigms - from prehistoric tally marks to modern dependent type theory.
 
-**Status**: Phase 1 ✓ COMPLETE | Phase 2 → 85% (3 of 7 language services) | Phase 3 → DESIGNED
-**Codebase**: ~28,000 lines total | Phase 1: 7,070 lines | Phase 2+: 10,270 lines | Phase 3: 10,660 lines
-**Tests**: 500+ tests | 100% pass rate | >90% code coverage
-**Last Updated**: 2025-10-31
+**Status**: Phase 1 ✓ COMPLETE | Phase 2 → 85% (3 of 7 language services) | Phase 3 → DESIGNED  
+**Codebase**: ~28,000 lines total | Phase 1: 7,070 lines | Phase 2+: 10,270 lines | Phase 3: 10,660 lines  
+**Tests**: 500+ tests | 100% pass rate | >90% code coverage  
+**Last Updated**: 2025-11-02  
+**Organization**: Multi-repository GitHub Project
+
+> **Note**: This project is organized as a GitHub Project with multiple specialized repositories. See [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md) for the complete multi-repo architecture.
 
 ## Strategic Vision
 
@@ -41,6 +44,22 @@ Developers who know C, Python, Assembly, Java, Haskell, IDRIS2, and LISP but lac
 - **Build System**: Bazel for hermetic polyglot builds
 - **Documentation**: XeLaTeX with pgfplots and TikZ
 - **Security**: 5-layer isolation (Docker, gVisor, seccomp-bpf, cgroups, read-only FS)
+
+## Multi-Repository Organization
+
+Ancient Compute is organized as a GitHub Project with specialized repositories:
+
+1. **[ancient-compute](https://github.com/Oichkatzelesfrettschen/ancient-compute)** (this repo) - Core orchestration and documentation
+2. **[ancient-compute-frontend](https://github.com/Oichkatzelesfrettschen/ancient-compute-frontend)** - SvelteKit interactive UI
+3. **[ancient-compute-backend](https://github.com/Oichkatzelesfrettschen/ancient-compute-backend)** - FastAPI REST/WebSocket service
+4. **[ancient-compute-babbage-engine](https://github.com/Oichkatzelesfrettschen/ancient-compute-babbage-engine)** - Babbage Analytical Engine emulator
+5. **[ancient-compute-language-services](https://github.com/Oichkatzelesfrettschen/ancient-compute-language-services)** - Docker language containers
+6. **[ancient-compute-curriculum](https://github.com/Oichkatzelesfrettschen/ancient-compute-curriculum)** - Educational content
+7. **[ancient-compute-docs](https://github.com/Oichkatzelesfrettschen/ancient-compute-docs)** - LaTeX academic documentation
+
+**For Contributors**: See [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md) and [CONTRIBUTING.md](./CONTRIBUTING.md) for multi-repo workflows.
+
+**For Migration**: See [REPOSITORY_SPLIT_GUIDE.md](./REPOSITORY_SPLIT_GUIDE.md) for step-by-step extraction instructions.
 
 ## Supported Languages
 
