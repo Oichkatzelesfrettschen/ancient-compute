@@ -16,7 +16,6 @@ License: Educational, historical simulation
 """
 
 import sys
-import re
 from typing import Dict, List, Tuple, Optional, Any
 from enum import IntEnum
 from dataclasses import dataclass, field
