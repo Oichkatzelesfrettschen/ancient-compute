@@ -7,7 +7,11 @@ result caching and database query optimization.
 
 from typing import Optional, List, Dict, Any, Tuple
 
-from sqlalchemy.orm import Session
+from typing import TYPE_CHECKING
+try:
+    from sqlalchemy.orm import Session  # type: ignore
+except Exception:  # pragma: no cover - allow running without SQLAlchemy
+    Session = Any  # type: ignore
 
 from .execution_orchestrator import ExecutionOrchestrator
 from .execution_cache import get_execution_cache, ExecutionCache

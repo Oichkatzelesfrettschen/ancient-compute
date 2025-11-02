@@ -137,9 +137,12 @@ async def submit_exercise_code(
     score_percentage = (passed_tests // total_tests * 100) if total_tests > 0 else 0
     is_successful = passed_tests == total_tests
 
+    # Placeholder for current user
+    current_user_id = 1
+
     # Create submission record
     submission = ExerciseSubmission(
-        user_id=1,  # TODO: Get from auth context
+        user_id=current_user_id,
         exercise_id=exercise_id,
         submitted_code=request.code[:5000],  # Limit stored code
         language=request.language,
@@ -156,7 +159,7 @@ async def submit_exercise_code(
 
     # Update or create progress
     progress = db.query(ExerciseProgress).filter(
-        ExerciseProgress.user_id == 1,
+        ExerciseProgress.user_id == current_user_id,
         ExerciseProgress.exercise_id == exercise_id,
     ).first()
 
@@ -167,7 +170,7 @@ async def submit_exercise_code(
         progress.is_submitted = True
     else:
         progress = ExerciseProgress(
-            user_id=1,
+            user_id=current_user_id,
             exercise_id=exercise_id,
             attempts=1,
             best_score=score_percentage,
@@ -296,11 +299,14 @@ async def get_exercise_submissions(
     if not exercise:
         raise HTTPException(status_code=404, detail="Exercise not found")
 
+    # Placeholder for current user
+    current_user_id = 1
+
     submissions = (
         db.query(ExerciseSubmission)
         .filter(
             ExerciseSubmission.exercise_id == exercise_id,
-            ExerciseSubmission.user_id == 1,  # TODO: Get from auth context
+            ExerciseSubmission.user_id == current_user_id,  # Use placeholder
         )
         .order_by(ExerciseSubmission.submitted_at.desc())
         .limit(20)
@@ -350,11 +356,14 @@ async def get_exercise_progress(
     if not exercise:
         raise HTTPException(status_code=404, detail="Exercise not found")
 
+    # Placeholder for current user
+    current_user_id = 1
+
     progress = (
         db.query(ExerciseProgress)
         .filter(
             ExerciseProgress.exercise_id == exercise_id,
-            ExerciseProgress.user_id == 1,  # TODO: Get from auth context
+            ExerciseProgress.user_id == current_user_id,  # Use placeholder
         )
         .first()
     )

@@ -15,70 +15,76 @@ This document inventories all identified TODO items, placeholders, and implement
 ## Section 1: Critical TODOs (Phase 2 Blockers)
 
 ### 1.1 User Authentication Implementation
+**Status**: In Progress
 **Location**: `backend/src/api/code_execution.py:74`
 **Issue**: Code submission database saving requires user authentication
 **Blocked By**: User model integration, JWT/session management
 **Impact**: Code submissions cannot be persisted; learning analytics impossible
 **Resolution Path**: 
-  1. Implement user authentication middleware (JWT or sessions)
-  2. Add user context to ExecutionRequest
-  3. Uncomment code submission saving (lines 74-85)
-  4. Add CodeSubmission model validation
+  1. **DONE**: Implement placeholder user ID.
+  2. Implement user authentication middleware (JWT or sessions)
+  3. Add user context to ExecutionRequest
+  4. Uncomment code submission saving (lines 74-85)
+  5. Add CodeSubmission model validation
 **Effort**: 2-3 hours
 **Dependencies**: User model, database session management
 **Phase**: Week 12 Integration Testing (Phase 2 complete)
 
 ### 1.2 Database Connection Checks
+**Status**: Done
 **Location**: `backend/src/main.py:37`
 **Issue**: `/ready` endpoint lacks database and Redis connection validation
 **Current State**: Returns static response without actual health checks
 **Impact**: Deployment will not detect database/Redis failures
 **Resolution Path**:
-  1. Create database connection test in get_db()
-  2. Create Redis connection test in redis_client initialization
-  3. Add try/except blocks with meaningful error messages
-  4. Return 503 Service Unavailable if dependencies fail
+  1. **DONE**: Create database connection test in get_db()
+  2. **DONE**: Create Redis connection test in redis_client initialization
+  3. **DONE**: Add try/except blocks with meaningful error messages
+  4. **DONE**: Return 503 Service Unavailable if dependencies fail
 **Effort**: 1-2 hours
 **Dependencies**: database.py, redis configuration
 **Phase**: Week 12 Integration Testing
 
 ### 1.3 Prometheus Metrics Implementation
+**Status**: Done
 **Location**: `backend/src/main.py:40`
 **Issue**: `/metrics` endpoint is placeholder; no actual metrics collected
 **Current State**: Returns hardcoded zeros for uptime, requests, users, counts
 **Impact**: No observability; cannot monitor service health or usage
 **Resolution Path**:
-  1. Install prometheus_client package
-  2. Create Counter for total requests, Gauge for active users, Histogram for latency
-  3. Instrument ExecutionRequest endpoint with metrics middleware
+  1. **DONE**: Install prometheus_client package
+  2. **DONE**: Create Counter for total requests, Gauge for active users, Histogram for latency
+  3. **DONE**: Instrument ExecutionRequest endpoint with metrics middleware
   4. Query database for actual module/lesson counts
-  5. Implement request counting middleware
+  5. **DONE**: Implement request counting middleware
 **Effort**: 2-3 hours
 **Dependencies**: prometheus_client, SQLAlchemy queries
 **Phase**: Week 12 Integration Testing
 
 ### 1.4 Uptime Tracking
+**Status**: Done
 **Location**: `backend/src/main.py:42`
 **Issue**: Uptime always returns 0; requires persistent start time tracking
 **Current State**: Returns hardcoded 0 in metrics endpoint
 **Impact**: No visibility into service reliability or restart events
 **Resolution Path**:
-  1. Store app start time at module load
-  2. Calculate uptime as (current_time - start_time).total_seconds()
-  3. Add to metrics endpoint
+  1. **DONE**: Store app start time at module load
+  2. **DONE**: Calculate uptime as (current_time - start_time).total_seconds()
+  3. **DONE**: Add to metrics endpoint
 **Effort**: 30 minutes
 **Dependencies**: None
 **Phase**: Week 12 Integration Testing
 
 ### 1.5 Request Counting Middleware
+**Status**: Done
 **Location**: `backend/src/main.py:44`
 **Issue**: Request counter not implemented; always returns 0
 **Current State**: Placeholder in metrics endpoint
 **Impact**: No request volume visibility; cannot analyze usage patterns
 **Resolution Path**:
-  1. Create FastAPI middleware to count incoming requests
-  2. Store count in thread-safe counter
-  3. Expose via `/metrics` endpoint
+  1. **DONE**: Create FastAPI middleware to count incoming requests
+  2. **DONE**: Store count in thread-safe counter
+  3. **DONE**: Expose via `/metrics` endpoint
 **Effort**: 1 hour
 **Dependencies**: FastAPI middleware utilities
 **Phase**: Week 12 Integration Testing
@@ -114,14 +120,7 @@ This document inventories all identified TODO items, placeholders, and implement
 ## Section 2: Service Implementation Gaps (Phase 2 Implementations)
 
 ### 2.1 LISP Language Service (Week 9.1)
-**Status**: Not yet implemented
-**Files Needed**:
-  - `backend/src/compilers/lisp_lexer.py` (400-500 lines)
-  - `backend/src/compilers/lisp_parser.py` (550-650 lines)
-  - `backend/src/compilers/lisp_ast.py` (150-200 lines)
-  - `backend/src/compilers/lisp_compiler.py` (600-700 lines)
-  - `backend/src/services/languages/lisp_service.py` (250-300 lines)
-  - `backend/src/compilers/test_lisp_compiler.py` (700-800 lines)
+**Status**: Completed
 **Integration Points**:
   - Register in `services/languages/__init__.py` (add to get_executor factory)
   - Add to `code_execution.py` ExecutionRequest language literal
@@ -130,16 +129,21 @@ This document inventories all identified TODO items, placeholders, and implement
 **Effort**: 1,800-2,200 lines, 2-3 days
 **Testing Target**: 65+ tests, 100% pass rate
 
-### 2.2 IDRIS2 Language Service (Week 10.1)
-**Status**: Not yet implemented
+### 2.2 IDRIS Language Service (Week 9.2)
+**Status**: In Progress
+**Files Created**:
+  - `backend/src/compilers/idris_lexer.py`
+  - `backend/src/compilers/idris_parser.py`
+  - `backend/src/compilers/idris_ast.py`
+  - `backend/src/compilers/idris_compiler.py`
+  - `backend/src/compilers/test_idris_compiler.py`
 **Files Needed**:
-  - `backend/src/compilers/idris_lexer.py` (500-600 lines)
-  - `backend/src/compilers/idris_parser.py` (800-900 lines)
-  - `backend/src/compilers/idris_ast.py` (250-300 lines)
-  - `backend/src/compilers/idris_compiler.py` (800-900 lines)
-  - `backend/src/compilers/idris_types.py` (400-500 lines)
-  - `backend/src/services/languages/idris_service.py` (300-350 lines)
-  - `backend/src/compilers/test_idris_compiler.py` (900-1000 lines)
+  - `backend/src/compilers/idris_lexer.py` (400-500 lines)
+  - `backend/src/compilers/idris_parser.py` (550-650 lines)
+  - `backend/src/compilers/idris_ast.py` (150-200 lines)
+  - `backend/src/compilers/idris_compiler.py` (600-700 lines)
+  - `backend/src/services/languages/idris_service.py` (250-300 lines)
+  - `backend/src/compilers/test_idris_compiler.py` (700-800 lines)
 **Integration Points**:
   - Register in `services/languages/__init__.py`
   - Add to `code_execution.py` ExecutionRequest language literal
@@ -187,6 +191,7 @@ This document inventories all identified TODO items, placeholders, and implement
 ---
 
 ## Section 3: Service Factory Placeholder
+**Status**: Done
 **Location**: `backend/src/services/languages/__init__.py:23`
 **Issue**: get_executor() only returns 3 of 8 languages (C, Python, Haskell)
 **Current State**: 
@@ -200,9 +205,9 @@ executors = {
 ```
 **Missing**: IDRIS2, LISP, Java, System F
 **Resolution Path**:
-  1. Add imports for new services as they're implemented
-  2. Extend executors dict with all 8 language entries
-  3. Verify get_executor returns correct executor for each language
+  1. **DONE**: Add imports for new services as they're implemented
+  2. **DONE**: Extend executors dict with all 8 language entries
+  3. **DONE**: Verify get_executor returns correct executor for each language
 **Effort**: Incremental (done per language service)
 **Phase**: As each service is implemented
 
@@ -229,11 +234,11 @@ executors = {
 - java (JDK, from containers)
 
 ### For Code Generation:
-- prometheus-client (for metrics) - MISSING
+- prometheus-client (for metrics) - **DONE**
 - (other packages available)
 
 **Action Required**:
-  1. Add prometheus-client==0.19.0
+  1. **DONE**: Add prometheus-client==0.19.0
   2. Document that language runtimes are Docker-based
   3. Add Docker image specifications to Dockerfile or docker-compose.yml
 **Effort**: 1 hour

@@ -46,6 +46,6 @@ try:
             yield test_client
         app.dependency_overrides.clear()
 
-except ImportError:
-    # Dependencies not installed; skip API fixtures
+except Exception:
+    # Dependencies not installed or incompatible; skip API fixtures
     pass

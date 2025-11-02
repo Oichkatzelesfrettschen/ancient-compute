@@ -118,6 +118,23 @@ make type-check          # Run type checkers
 
 # Build
 make build               # Build all
+
+## Infrastructure: MINIX in QEMU (Docker)
+
+We integrate an external, working MINIX-in-Docker implementation (minix-analysis/docker) and add orchestration, metrics collection, and APIs in this repo.
+
+- Orchestrator: `scripts/minix_metrics.sh`
+- Artifacts: `metrics/minix/<arch>/{boot_time.json,resource_timeseries.csv,boot.log,qemu-debug.log}`
+- API (dev): `GET /api/v1/infra/minix/metrics?arch=i386`, `.../runs`, `.../run/{runId}`
+- Frontend: `/infra/minix` route shows latest metrics and recent runs
+
+Quick start:
+```bash
+./scripts/minix_metrics.sh --iso /home/eirikr/Playground/minix-analysis/docker/minix_R3.4.0rc6-d5e4fc0.iso --iterations 3 --label local
+```
+
+CI workflow: `.github/workflows/minix-metrics.yml` (requires self-hosted runner with `/dev/kvm`).
+
 make build-backend       # Backend only
 make build-frontend      # Frontend only
 make build-docker        # Docker images

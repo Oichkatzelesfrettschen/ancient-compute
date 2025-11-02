@@ -20,7 +20,11 @@
       "WebFetch(domain:docs.khronos.org)",
       "mcp__desktop-commander__get_config",
       "mcp__desktop-commander__get_recent_tool_calls",
-      "mcp__desktop-commander__list_directory"
+      "mcp__desktop-commander__list_directory",
+      "Bash(while read f)",
+      "Bash(done)",
+      "Bash(xargs -I {} bash -c 'echo \"\"\"\"=== $(basename {}) ===\"\"\"\" && wc -l {} && echo')",
+      "WebFetch(domain:docs.github.com)"
     ],
     "deny": [],
     "ask": []
