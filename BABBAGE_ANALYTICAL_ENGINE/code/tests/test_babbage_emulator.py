@@ -31,6 +31,8 @@ def test_babbage_number_comparison():
     num2 = BabbageNumber(20)
     assert num1 < num2
     assert num2 > num1
+    assert not (num2 < num1)
+    assert not (num1 > num2)
     assert num1 == BabbageNumber(10)
     assert num1 != num2
 
