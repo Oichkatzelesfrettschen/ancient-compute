@@ -168,7 +168,6 @@ def test_engine_push_pop():
 
 def test_engine_rdcrd():
     engine = Engine()
-    instruction = Instruction("RDCRD", ["A"])
     # Pass the expected value to _execute_RDCRD for testing
     engine._execute_RDCRD("A", value=123)  # Directly call the handler with the test value
     assert engine.registers["A"].to_decimal() == 123.0
