@@ -228,16 +228,31 @@ All code execution occurs in multi-layer sandboxed environments:
 
 See the following for comprehensive information:
 
+### Core Documentation
+- **[MASTER_ROADMAP.md](./MASTER_ROADMAP.md)** - Comprehensive synthesis of all phases, consolidates 50+ planning documents
+- **[TODO_TRACKER.md](./TODO_TRACKER.md)** - Active task tracking, priorities, execution plan
+- **[README.md](./README.md)** - This file: Project overview and quick start
 - **[CLAUDE.md](./CLAUDE.md)** - Development guide for Claude Code AI assistants (updated with Phase 2/3 status)
-- **[requirements.md](./requirements.md)** - Project-wide system and infrastructure requirements
+- **[AGENTS.md](./AGENTS.md)** - Multi-agent coordination system (5 specialized AI agents)
+
+### Requirements & Architecture
+- **[requirements.md](./requirements.md)** - Project-wide system and infrastructure requirements (comprehensive)
 - **[backend/requirements.md](./backend/requirements.md)** - Backend Python, FastAPI, and compiler details
 - **[frontend/requirements.md](./frontend/requirements.md)** - Frontend SvelteKit, TypeScript, and visualization
 - **[services/requirements.md](./services/requirements.md)** - Docker containers and language service architecture
 - **[docs/requirements.md](./docs/requirements.md)** - LaTeX documentation and TikZ diagram requirements
+
+### Technical Debt & Planning
 - **[TECHNICAL_DEBT.md](./TECHNICAL_DEBT.md)** - Known issues, TODOs, and quality improvements
+- **[PROJECT_STATUS.md](./PROJECT_STATUS.md)** - Comprehensive project overview and metrics
 - **[OPTION_B_IMPLEMENTATION_ROADMAP.md](./OPTION_B_IMPLEMENTATION_ROADMAP.md)** - Phase 2 detailed plan (LISP, IDRIS2, System F, Java)
 - **[OPTION_C_PHASE_3_VISION.md](./OPTION_C_PHASE_3_VISION.md)** - Phase 3 emulator and tools architecture
-- **[PROJECT_STATUS.md](./PROJECT_STATUS.md)** - Comprehensive project overview and metrics
+
+### Babbage Analytical Engine (Capstone)
+- **[BABBAGE_ANALYTICAL_ENGINE/README.md](./BABBAGE_ANALYTICAL_ENGINE/README.md)** - Complete engineering documentation hub
+- **[BABBAGE_ANALYTICAL_ENGINE/BILL_OF_MATERIALS_COMPREHENSIVE.md](./BABBAGE_ANALYTICAL_ENGINE/BILL_OF_MATERIALS_COMPREHENSIVE.md)** - Complete BOM across 3 eras (1910-1930, 1940-1970, 2025)
+- **[BABBAGE_ANALYTICAL_ENGINE/META_TOOLING_GUIDE.md](./BABBAGE_ANALYTICAL_ENGINE/META_TOOLING_GUIDE.md)** - Meta-tooling infrastructure ($10K-$800K across eras)
+- **[BABBAGE_ANALYTICAL_ENGINE/MODERN_MANUFACTURING_COMPARISON.md](./BABBAGE_ANALYTICAL_ENGINE/MODERN_MANUFACTURING_COMPARISON.md)** - 2025 vs historical comparison (4-10x cost reduction, 4-10x time reduction)
 
 ## Project Progress
 

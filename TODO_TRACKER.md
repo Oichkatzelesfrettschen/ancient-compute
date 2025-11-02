@@ -1,0 +1,550 @@
+# Ancient Compute - TODO Tracker & Project Planner
+
+**Document Version**: 1.0
+**Date**: November 2, 2025
+**Status**: Active Development Tracking
+**Purpose**: Comprehensive task tracking, priorities, and execution plan
+
+---
+
+## Overview
+
+This document tracks all pending tasks across the Ancient Compute project, organized by priority, phase, and category. It serves as the single source of truth for "what needs to be done" and "in what order."
+
+**Related Documents**:
+- MASTER_ROADMAP.md - Strategic vision and phase planning
+- TECHNICAL_DEBT.md - Known issues and implementation gaps
+- PROJECT_STATUS.md - Current status and metrics
+
+---
+
+## Table of Contents
+
+1. [Current Sprint (Week 9)](#current-sprint-week-9)
+2. [High Priority (Weeks 9-12)](#high-priority-weeks-9-12)
+3. [Medium Priority (Weeks 13-18)](#medium-priority-weeks-13-18)
+4. [Low Priority (Weeks 19+)](#low-priority-weeks-19)
+5. [Backlog](#backlog)
+6. [Completed](#completed)
+
+---
+
+## Current Sprint (Week 9)
+
+**Focus**: LISP Language Service Implementation
+**Duration**: November 2-8, 2025 (7 days)
+**Target**: 1,800-2,200 lines, 65+ tests
+
+### Day-by-Day Plan
+
+#### Day 1 (Nov 2): Lexer & Parser Foundation
+- [ ] Create `backend/src/compilers/lisp_lexer.py`
+  - [ ] Token types: LPAREN, RPAREN, SYMBOL, NUMBER, STRING, QUOTE, etc.
+  - [ ] Tokenization of S-expressions
+  - [ ] String and number parsing
+  - [ ] Line/column tracking
+- [ ] Create `backend/src/compilers/lisp_parser.py`
+  - [ ] Recursive S-expression parsing
+  - [ ] Nested list handling
+  - [ ] Quote/unquote special forms
+  - [ ] Error recovery
+- [ ] Write initial tests (10-15 tests)
+  - [ ] Lexer token recognition
+  - [ ] Parser S-expression construction
+  - [ ] Nested list parsing
+
+**Deliverable**: 900-1,100 lines, 10-15 tests
+**Review**: Run pytest, verify all tests pass
+
+#### Day 2 (Nov 3): AST & Semantic Analysis
+- [ ] Create `backend/src/compilers/lisp_ast.py`
+  - [ ] Node types: SExpr, Symbol, Literal, Lambda, etc.
+  - [ ] AST visitor pattern
+  - [ ] Pretty-printing for debugging
+- [ ] Create `backend/src/compilers/lisp_types.py` (optional, dynamic typing)
+  - [ ] Simple type inference (if needed)
+  - [ ] Symbol table management
+- [ ] Write tests (15-20 tests)
+  - [ ] AST construction
+  - [ ] Symbol resolution
+
+**Deliverable**: 300-400 lines, 15-20 tests
+**Review**: Verify AST structure matches expectations
+
+#### Day 3 (Nov 4): Compiler to Babbage IR
+- [ ] Create `backend/src/compilers/lisp_compiler.py`
+  - [ ] S-expression to IR translation
+  - [ ] cons/car/cdr implementation
+  - [ ] lambda translation to IR functions
+  - [ ] defun macro expansion and compilation
+  - [ ] List operations (append, reverse, map, filter)
+- [ ] Write tests (20-25 tests)
+  - [ ] Simple expressions (arithmetic)
+  - [ ] List operations
+  - [ ] Function definitions
+  - [ ] Lambda expressions
+
+**Deliverable**: 600-700 lines, 20-25 tests
+**Review**: Verify IR generation matches expected patterns
+
+#### Day 4 (Nov 5): Service Integration
+- [ ] Create `backend/src/services/languages/lisp_service.py`
+  - [ ] FastAPI service wrapper
+  - [ ] SBCL Docker container integration
+  - [ ] Code execution sandboxing
+  - [ ] Error handling and reporting
+- [ ] Register in `backend/src/services/languages/__init__.py`
+  - [ ] Add "lisp" to get_executor() factory
+- [ ] Update `backend/src/api/code_execution.py`
+  - [ ] Add "lisp" to language literal type
+  - [ ] Update /languages endpoint metadata
+  - [ ] Update health check (3 → 4 languages)
+- [ ] Write integration tests (10-15 tests)
+  - [ ] Service instantiation
+  - [ ] Code execution end-to-end
+  - [ ] Error handling
+
+**Deliverable**: 250-300 lines, 10-15 tests
+**Review**: Test via API endpoint, verify execution
+
+#### Day 5 (Nov 6-7): Testing & Documentation
+- [ ] Comprehensive test suite review
+  - [ ] Verify all 65+ tests passing
+  - [ ] Add edge case tests
+  - [ ] Stress testing (large S-expressions)
+- [ ] Code quality checks
+  - [ ] Run pylint (no warnings)
+  - [ ] Run mypy (strict mode)
+  - [ ] Run black formatter
+- [ ] Documentation
+  - [ ] Add docstrings to all public functions
+  - [ ] Create LISP_SERVICE_README.md
+  - [ ] Update CLAUDE.md with LISP service status
+
+**Deliverable**: Documentation complete, quality verified
+**Review**: All tests pass, no warnings, docs complete
+
+### Week 9 Success Criteria
+
+- [ ] 1,800-2,200 lines of production code
+- [ ] 65+ tests passing (100% pass rate)
+- [ ] Zero pylint/mypy warnings
+- [ ] LISP code executes correctly via API
+- [ ] Documentation complete and accurate
+
+---
+
+## High Priority (Weeks 9-12)
+
+### Week 10.1: IDRIS2 Language Service (Nov 9-13)
+
+**Complexity**: HIGH (dependent type system)
+**Effort**: 2,500-3,000 lines, 70+ tests, 3-4 days
+
+#### Tasks
+- [ ] Design dependent type system architecture
+  - [ ] Sigma types (dependent pairs)
+  - [ ] Refinement types
+  - [ ] Type-level computation
+  - [ ] Type checking algorithm
+- [ ] Implement lexer (500-600 lines)
+  - [ ] Dependent type syntax tokens
+  - [ ] Type-level expression tokens
+- [ ] Implement parser (800-900 lines)
+  - [ ] Type annotations
+  - [ ] Dependent function types
+  - [ ] Pattern matching with types
+- [ ] Implement type system (400-500 lines)
+  - [ ] Type inference
+  - [ ] Type checking
+  - [ ] Type erasure before execution
+- [ ] Implement compiler (800-900 lines)
+  - [ ] Type erasure
+  - [ ] Compile-time proof verification
+  - [ ] Runtime code generation
+- [ ] Create service wrapper (300-350 lines)
+  - [ ] IDRIS2 Docker container
+  - [ ] Execution pipeline
+- [ ] Write comprehensive tests (70+ tests)
+  - [ ] Type inference tests
+  - [ ] Dependent type validation
+  - [ ] Compile-time proof tests
+- [ ] Integration and documentation
+
+**Success Criteria**:
+- [ ] Dependent types work correctly
+- [ ] Type erasure preserves semantics
+- [ ] 70+ tests passing
+- [ ] Documentation explains type system
+
+### Week 10.2: System F Language Service (Nov 14-16)
+
+**Complexity**: MEDIUM-HIGH (polymorphic lambda calculus)
+**Effort**: 2,000-2,500 lines, 60+ tests, 2-3 days
+
+#### Tasks
+- [ ] Design rank-2 polymorphism architecture
+- [ ] Implement lexer (350-400 lines)
+  - [ ] Forall quantification syntax
+  - [ ] Type abstraction tokens
+- [ ] Implement parser (600-700 lines)
+  - [ ] Universal quantification
+  - [ ] Type abstraction (Λα)
+  - [ ] Type application
+- [ ] Implement type system (300-400 lines)
+  - [ ] Rank-2 polymorphism
+  - [ ] Type unification
+  - [ ] Monomorphization strategy
+- [ ] Implement compiler (700-800 lines)
+  - [ ] Type specialization
+  - [ ] Monomorphization
+  - [ ] IR generation
+- [ ] Create service wrapper (250-300 lines)
+  - [ ] Custom interpreter (no standard runtime)
+  - [ ] Execution engine
+- [ ] Write comprehensive tests (60+ tests)
+- [ ] Integration and documentation
+
+**Success Criteria**:
+- [ ] Polymorphic functions work correctly
+- [ ] Rank-2 types type-check properly
+- [ ] 60+ tests passing
+- [ ] Documentation explains System F
+
+### Week 11: Java Language Service (Nov 17-21)
+
+**Complexity**: MEDIUM (OOP paradigm)
+**Effort**: 2,200-2,800 lines, 70+ tests, 3-4 days
+
+#### Tasks
+- [ ] Design OOP semantics translation
+- [ ] Implement lexer (500-600 lines)
+  - [ ] Java keyword tokenization
+  - [ ] Operator precedence
+- [ ] Implement parser (1000-1200 lines)
+  - [ ] Class declarations
+  - [ ] Method definitions
+  - [ ] Field declarations
+  - [ ] Inheritance syntax
+- [ ] Implement type system (350-450 lines)
+  - [ ] Subtyping
+  - [ ] Method resolution
+  - [ ] Overriding validation
+- [ ] Implement compiler (800-900 lines)
+  - [ ] Class table construction
+  - [ ] Method dispatch (virtual vs static)
+  - [ ] Constructor handling
+  - [ ] Basic exception handling
+- [ ] Create service wrapper (300-350 lines)
+  - [ ] OpenJDK Docker container
+  - [ ] Compilation + execution pipeline
+- [ ] Write comprehensive tests (70+ tests)
+- [ ] Integration and documentation
+
+**Success Criteria**:
+- [ ] Classes and inheritance work
+- [ ] Method overriding correct
+- [ ] 70+ tests passing
+- [ ] Documentation explains OOP translation
+
+### Week 12: Integration & Technical Debt (Nov 22-28)
+
+**Complexity**: MEDIUM (testing and cleanup)
+**Effort**: 2,300-3,000 lines, 60+ tests, 5-6 days
+
+#### Day 1-3: Integration Testing
+- [ ] Create integration test suite (1,500-2,000 lines)
+  - [ ] Multi-language compilation tests
+  - [ ] Cross-language comparison (same algorithm, different languages)
+  - [ ] Resource limit enforcement
+  - [ ] Security sandbox validation
+  - [ ] 40+ integration test scenarios
+- [ ] Create end-to-end test suite (800-1,000 lines)
+  - [ ] Full learning path validation
+  - [ ] User journey testing
+  - [ ] Performance benchmarking
+  - [ ] 20+ E2E test scenarios
+
+#### Day 4-5: Technical Debt Resolution
+- [ ] User authentication implementation (2-3 hours)
+  - [ ] JWT token handling
+  - [ ] User model integration
+  - [ ] Uncomment code submission saving
+- [ ] Database health checks (1-2 hours)
+  - [ ] Test DB connectivity in /ready endpoint
+  - [ ] Test Redis connectivity
+  - [ ] Return 503 on failure
+- [ ] Prometheus metrics (2-3 hours)
+  - [ ] Install prometheus_client
+  - [ ] Create metrics (Counter, Gauge, Histogram)
+  - [ ] Instrument API endpoints
+- [ ] Uptime tracking (30 minutes)
+  - [ ] Store start time
+  - [ ] Calculate uptime in /metrics
+- [ ] Request counting middleware (1 hour)
+  - [ ] Create FastAPI middleware
+  - [ ] Thread-safe counter
+- [ ] Active users query (1-2 hours)
+  - [ ] Query User model for recent activity
+- [ ] Module/lesson counts (30 minutes)
+  - [ ] Query Module and Lesson tables
+
+**Total Debt Resolution**: 8-12 hours
+
+#### Day 6: Documentation Updates
+- [ ] Update CLAUDE.md
+  - [ ] Phase 2 completion status
+  - [ ] All 7 language services documented
+  - [ ] Integration testing strategy
+- [ ] Update README.md
+  - [ ] All 7 languages listed
+  - [ ] Updated project status
+  - [ ] Installation instructions verified
+- [ ] Update AGENTS.md
+  - [ ] Multi-agent coordination for Phase 2
+  - [ ] Agent roles and responsibilities
+- [ ] Create language service templates
+  - [ ] Extract common patterns
+  - [ ] Document 4-phase compiler pipeline
+  - [ ] Service wrapper template
+
+**Success Criteria**:
+- [ ] All 7 language services complete
+- [ ] 300+ total tests passing (100% pass rate)
+- [ ] Integration tests validate multi-language pipeline
+- [ ] All technical debt from Section 1 resolved
+- [ ] Documentation complete and accurate
+- [ ] Zero warnings (pylint, mypy, eslint)
+
+---
+
+## Medium Priority (Weeks 13-18)
+
+### Phase 3: Emulator & Tools
+
+#### Week 13: Babbage ISA Emulator
+- [ ] RegisterFile implementation (100-150 lines)
+- [ ] Memory system (150-200 lines)
+- [ ] InstructionDecoder (200-300 lines)
+- [ ] ExecutionEngine (300-400 lines)
+- [ ] Tests (200-300 lines, 30+ tests)
+
+#### Week 14: I/O System
+- [ ] ConsoleIO implementation (300-400 lines)
+- [ ] FileSystem (sandboxed) (400-500 lines)
+- [ ] SyscallHandler (400-500 lines)
+- [ ] Tests (200-300 lines, 25+ tests)
+
+#### Week 15: Debugger
+- [ ] BreakpointManager (200-250 lines)
+- [ ] DebuggerSession (400-500 lines)
+- [ ] Visualization (400-500 lines)
+- [ ] Interactive REPL (300-400 lines)
+- [ ] Tests (200-300 lines, 25+ tests)
+
+#### Week 16: Performance Analyzer
+- [ ] ExecutionProfiler (300-400 lines)
+- [ ] BottleneckAnalyzer (300-400 lines)
+- [ ] OptimizationAdvisor (200-300 lines)
+- [ ] ReportGenerator (200-300 lines)
+- [ ] Tests (100-200 lines, 15+ tests)
+
+#### Week 17-18: Phase 3 Integration
+- [ ] API endpoint integration
+- [ ] Frontend debugger UI
+- [ ] Documentation
+- [ ] Performance testing
+
+---
+
+## Low Priority (Weeks 19+)
+
+### Phase 4: Frontend & Visualization (Remaining)
+
+#### Week 19: Timeline & Educational Content
+- [ ] Interactive timeline component (D3.js)
+- [ ] Historical module components
+- [ ] Backend content delivery API
+- [ ] Database models for modules/lessons
+
+#### Week 20: Language Services Integration
+- [ ] Code editor enhancements
+- [ ] Execution console UI
+- [ ] Language selector
+- [ ] Result visualization
+
+#### Week 21: Performance & DevOps
+- [ ] Performance optimization (lazy loading, code splitting)
+- [ ] Build pipeline improvements
+- [ ] Deployment automation
+- [ ] Monitoring and logging
+
+#### Week 22: User Testing & Launch Prep
+- [ ] User testing sessions
+- [ ] Bug fixes and refinements
+- [ ] Documentation finalization
+- [ ] Launch preparation
+
+### Phase 5: Educational Content Production
+
+- [ ] 7 complete historical volumes (LaTeX)
+- [ ] 3 synthesis modules
+- [ ] 200+ code examples across all languages
+- [ ] 100+ exercises with automated validation
+- [ ] TikZ diagrams and visualizations
+
+### Phase 6: Advanced Features
+
+- [ ] Multi-user learning paths
+- [ ] Peer code review system
+- [ ] Achievements and progress tracking
+- [ ] Social features (forums, code sharing)
+
+### Phase 7: Research Extensions
+
+- [ ] Formal verification integration (Coq, Lean)
+- [ ] Quantum computing module
+- [ ] Additional language services (APL, Prolog, Agda)
+- [ ] Advanced type theory curriculum
+
+---
+
+## Backlog
+
+### Infrastructure
+- [ ] Kubernetes deployment configuration
+- [ ] CI/CD pipeline improvements
+- [ ] Automated dependency updates (Dependabot)
+- [ ] Security scanning (OWASP, Snyk)
+- [ ] Load testing and scalability validation
+
+### Documentation
+- [ ] API reference documentation (Swagger/OpenAPI)
+- [ ] Developer onboarding guide
+- [ ] Contribution guidelines
+- [ ] Code of conduct
+
+### Quality
+- [ ] Refactor monolithic files (>1000 lines)
+- [ ] Extract common utilities to shared modules
+- [ ] Improve error messages (user-friendly)
+- [ ] Add logging and observability
+
+### Research
+- [ ] Performance comparison across languages
+- [ ] Type system expressiveness analysis
+- [ ] Historical accuracy verification (primary sources)
+- [ ] User learning effectiveness studies
+
+---
+
+## Completed
+
+### Phase 1: Foundation ✓
+- [x] FastAPI backend structure
+- [x] PostgreSQL + Redis setup
+- [x] C language service (7 components, 58 tests)
+- [x] Python language service (7 components, 58 tests)
+- [x] Haskell language service (7 components, 68 tests)
+- [x] Code generation pipeline (5 components, 50+ tests)
+- [x] Docker Compose orchestration
+- [x] Bazel build system configuration
+- [x] Frontend skeleton (SvelteKit)
+
+### Phase 2: Partial ✓
+- [x] C service complete
+- [x] Python service complete
+- [x] Haskell service complete
+
+### Phase 4: Partial ✓
+- [x] Frontend skeleton (Week 1)
+- [x] State management + 3D visualization (Week 2)
+- [x] WebSocket + quality adaptation (Week 3)
+
+### Babbage Engineering Capstone ✓
+- [x] BILL_OF_MATERIALS_COMPREHENSIVE.md (3 eras, 32.5 KB)
+- [x] META_TOOLING_GUIDE.md (tooling infrastructure, 32.9 KB)
+- [x] MODERN_MANUFACTURING_COMPARISON.md (2025 vs historical, 29.6 KB)
+- [x] Updated Babbage README.md
+
+### Strategic Documentation ✓
+- [x] MASTER_ROADMAP.md (consolidation of 50+ phase documents)
+- [x] Updated requirements.md (comprehensive specification)
+
+---
+
+## Tracking Metrics
+
+### Current Sprint Progress
+
+| Task | Status | Progress | Tests | Notes |
+|------|--------|----------|-------|-------|
+| LISP Lexer | ⚪ Not Started | 0% | 0/10 | Week 9 Day 1 |
+| LISP Parser | ⚪ Not Started | 0% | 0/10 | Week 9 Day 1 |
+| LISP AST | ⚪ Not Started | 0% | 0/15 | Week 9 Day 2 |
+| LISP Compiler | ⚪ Not Started | 0% | 0/25 | Week 9 Day 3 |
+| LISP Service | ⚪ Not Started | 0% | 0/15 | Week 9 Day 4 |
+
+**Legend**: ⚪ Not Started | 🟡 In Progress | 🟢 Complete
+
+### Overall Project Progress
+
+| Phase | Status | LOC | Tests | Completion |
+|-------|--------|-----|-------|------------|
+| Phase 1 | 🟢 Complete | 7,070 | 174 | 100% |
+| Phase 2 | 🟡 In Progress | 10,270 | 184 | 70% → 85% |
+| Phase 3 | ⚪ Designed | 0 | 0 | 0% (designed) |
+| Phase 4 | 🟡 In Progress | 6,000 | 1,019 | 80% |
+| **Total** | **🟡 In Progress** | **~23,340** | **~1,377** | **~70%** |
+
+---
+
+## Priority Matrix
+
+| Priority | Focus Area | Effort (weeks) | Impact | Dependencies |
+|----------|-----------|----------------|--------|--------------|
+| **P0** | LISP Service | 1 | HIGH | None |
+| **P0** | IDRIS2 Service | 1 | HIGH | None |
+| **P0** | System F Service | 0.5 | HIGH | None |
+| **P0** | Java Service | 1 | HIGH | None |
+| **P0** | Integration Tests | 1 | CRITICAL | All 4 services |
+| **P1** | Tech Debt Resolution | 0.5 | HIGH | User model |
+| **P1** | Documentation Updates | 0.5 | MEDIUM | Phase 2 complete |
+| **P2** | Emulator Core | 2 | HIGH | Phase 2 complete |
+| **P2** | I/O System | 1 | MEDIUM | Emulator core |
+| **P2** | Debugger | 1.5 | MEDIUM | Emulator core |
+| **P2** | Profiler | 1 | LOW | Emulator core |
+| **P3** | Timeline UI | 1 | MEDIUM | Phase 3 complete |
+| **P3** | Educational Content | 8 | HIGH | All phases |
+
+---
+
+## Notes and Decisions
+
+### November 2, 2025
+- Created comprehensive TODO tracker
+- Prioritized Phase 2 completion (Weeks 9-12)
+- Detailed day-by-day plan for Week 9 (LISP service)
+- Established success criteria for each week
+
+### Future Decisions Needed
+- [ ] Select formal verification framework (Coq vs Lean vs Agda)
+- [ ] Determine quantum computing module scope
+- [ ] Decide on additional language priorities (APL, Prolog, Agda, Coq)
+
+---
+
+## Review Schedule
+
+- **Daily**: Update current sprint progress
+- **Weekly**: Review completed tasks, update priorities
+- **Monthly**: Strategic review, roadmap adjustments
+- **Quarterly**: Major milestone planning
+
+---
+
+**Document Revision**: 1.0
+**Last Updated**: November 2, 2025
+**Next Review**: November 9, 2025 (end of Week 9)
+
+**End of TODO Tracker**

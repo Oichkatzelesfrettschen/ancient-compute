@@ -1,8 +1,9 @@
 # Ancient Compute - Project Requirements
 
-**Document Version**: 1.0
-**Last Updated**: 2025-10-31
-**Status**: Project Architecture Phase (70% → 85%)
+**Document Version**: 1.1
+**Last Updated**: 2025-11-02
+**Status**: Comprehensive Requirements Specification (All Phases)
+**Consolidates**: Backend, frontend, services, docs, infrastructure requirements
 
 ---
 
@@ -13,9 +14,20 @@ Ancient Compute is a comprehensive educational platform teaching the 12,500-year
 **Project Scope**:
 - **Frontend**: SvelteKit webapp with D3.js visualizations and Monaco code editor
 - **Backend**: FastAPI service orchestration with async/await patterns
-- **Language Services**: Sandboxed Docker containers for C, Python, Haskell, IDRIS2, LISP, System F, Java, Assembly
+- **Language Services**: Sandboxed Docker containers for 7+ languages (C, Python, Haskell, IDRIS2, LISP, System F, Java, Assembly)
+- **Compiler Pipeline**: Universal IR targeting Babbage ISA
+- **Emulator**: Babbage ISA virtual machine
 - **Documentation**: LaTeX curriculum with TikZ diagrams and pgfplots visualizations
 - **Build System**: Bazel for hermetic, reproducible builds
+- **Babbage Engine**: Complete engineering specifications for historical (1910-1970) and modern (2025) manufacturing
+
+**Current Status** (November 2, 2025):
+- Phase 1: ✓ COMPLETE (Foundation, 7,070 LOC)
+- Phase 2: 85% (3 of 7 language services, 10,270 LOC)
+- Phase 3: DESIGNED (Emulator & Tools, 6,000-8,000 LOC)
+- Phase 4: 80% (Frontend visualization, 6,000 LOC)
+- **Total Codebase**: ~28,000 lines
+- **Test Coverage**: 500+ tests, 100% pass rate, >90% coverage
 
 ---
 
