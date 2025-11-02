@@ -19,7 +19,7 @@
 ### Project Management
 - **[MASTER_ROADMAP.md](./MASTER_ROADMAP.md)** - Overall project roadmap
 - **[AGENTS.md](./AGENTS.md)** - AI agent coordination
-- **[.github/PROJECT_TEMPLATES/](./github/PROJECT_TEMPLATES/)** - GitHub Project setup
+- **[.github/PROJECT_TEMPLATES/](./.github/PROJECT_TEMPLATES/)** - GitHub Project setup
 
 ---
 
