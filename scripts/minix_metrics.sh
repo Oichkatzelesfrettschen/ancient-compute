@@ -46,7 +46,11 @@ done
 ISO_ABS="$(readlink -f "$ISO")"
 OUT_ABS="$(readlink -f "$OUT")"
 MEAS_DIR="$OUT_ABS/$ARCH"
-mkdir -p "$MEAS_DIR/runs"
+RUNTIME_DIR="$MEAS_DIR/runtime"
+mkdir -p "$MEAS_DIR/runs" "$RUNTIME_DIR"
+
+# Prepare runtime dir with ISO where the entrypoint expects it
+cp -f "$ISO_ABS" "$RUNTIME_DIR/minix_R3.4.0-rc6.iso"
 
 # Determine run id
 if [[ -z "$RUN_ID" ]]; then
@@ -81,7 +85,7 @@ for i in $(seq 1 "$ITERATIONS"); do
   echo "==> Starting container $NAME (arch=$ARCH, iter=$i/$ITERATIONS)"
   set +e; docker rm -f "$NAME" >/dev/null 2>&1; set -e
   docker run -d --name "$NAME" "${KVM_FLAGS[@]}" \
-    -v "$ISO_ABS":/minix-runtime/minix_R3.4.0-rc6.iso:ro \
+    -v "$RUNTIME_DIR":/minix-runtime \
     -v "$OUT_ABS":/measurements \
     "$IMAGE" >/dev/null
 
