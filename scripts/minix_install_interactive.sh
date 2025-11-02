@@ -57,21 +57,21 @@ if [[ $BUILD -eq 1 ]]; then
   echo "==> Building image $IMAGE from $DOCKERFILE"
   docker build -t "$IMAGE" -f "$DOCKERFILE" "$DOCKER_DIR"
 else
-  echo "==> Skipping image build for $IMAGE"
+  echo "==> Skipping image build for ${IMAGE}"
 fi
 
-echo "==> Starting interactive installation container: $NAME"
+echo "==> Starting interactive installation container: ${NAME}"
 echo "    VNC: localhost:${VNC_PORT} (passwordless)"
-echo "    ISO: $ISO_ABS"
-echo "    Measurements: $OUT_ABS"
-set +e; docker rm -f "$NAME" >/dev/null 2>&1; set -e
+echo "    ISO: ${ISO_ABS}"
+echo "    Measurements: ${OUT_ABS}"
+set +e; docker rm -f "${NAME}" >/dev/null 2>&1; set -e
 
 # Publish VNC and optional forwarded ports; mount ISO + measurements
-docker run --name "$NAME" \
-  -p ${VNC_PORT}:5900 -p ${SSH_PORT}:2222 -p ${METRICS_PORT}:9000 \
-  -v "$ISO_ABS":/minix-runtime/minix_R3.4.0-rc6.iso:ro \
-  -v "$OUT_ABS":/measurements \
-  "$IMAGE"
+docker run --name "${NAME}" \
+  -p "${VNC_PORT}":5900 -p "${SSH_PORT}":2222 -p "${METRICS_PORT}":9000 \
+  -v "${ISO_ABS}":/minix-runtime/minix_R3.4.0-rc6.iso:ro \
+  -v "${OUT_ABS}":/measurements \
+  "${IMAGE}"
 
 echo "Container exited. If installation completed, a larger qcow2 should be present in /measurements/${ARCH}."
 
