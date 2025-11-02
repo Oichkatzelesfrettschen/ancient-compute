@@ -15,7 +15,7 @@ echo ""
 # Define expected versions
 EXPECTED_NODE="20"
 EXPECTED_PYTHON="3.11"
-EXPECTED_BAZEL="6.4"
+EXPECTED_BAZEL="6.4.0"
 
 # Check Node.js version in frontend
 echo "Checking Frontend (Node.js)..."
