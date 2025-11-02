@@ -4,6 +4,20 @@
 
 **Audience**: Engineers, manufacturers, historians, academics, policy makers
 
+**Status**: ✅ Production Ready - Fully Organized (v2.0)
+
+---
+
+## 🚀 Quick Start
+
+**New here?** Start with one of these:
+- **[INDEX.md](./INDEX.md)** - Master navigation hub (comprehensive guide to all resources)
+- **[BABBAGE_README.md](./BABBAGE_README.md)** - Project overview and introduction
+- **[MASTER_BOM.md](./MASTER_BOM.md)** - Complete Bill of Materials (all eras: 1910-2025)
+- **[ENGINEERING_BLUEPRINTS.md](./ENGINEERING_BLUEPRINTS.md)** - Technical drawings and architecture
+
+**Important**: This directory was reorganized on November 2, 2025. All files are now in logical subdirectories. See [INDEX.md](./INDEX.md) for complete navigation.
+
 ---
 
 ## What's in This Directory
@@ -14,6 +28,33 @@ Comprehensive documentation for manufacturing and operating the Babbage Analytic
 - **Operating manuals**: How to use and maintain the Engine
 - **Whitepapers**: Academic specifications and theoretical foundations
 - **Cost and economic analysis**: Budget models, supply chain, regional variations
+- **Engineering blueprints**: Technical drawings, diagrams, CAD references
+- **Software emulator**: Full implementation with tests and examples
+- **Master BOM**: Complete bill of materials across 115 years (1910-2025)
+
+## New Organization (v2.0 - November 2, 2025)
+
+All files have been reorganized into a logical structure:
+
+```
+BABBAGE_ANALYTICAL_ENGINE/
+├── INDEX.md                      ◄── Master navigation hub
+├── BABBAGE_README.md             ◄── Project overview
+├── MASTER_BOM.md                 ◄── Complete BOM (all eras)
+├── ENGINEERING_BLUEPRINTS.md     ◄── Technical drawings
+├── specifications/               ◄── Technical specs
+├── documentation/
+│   ├── manufacturing/            ◄── Manufacturing guides
+│   ├── user-guides/              ◄── User manuals
+│   └── academic/                 ◄── Research & whitepapers
+├── blueprints/                   ◄── Engineering diagrams
+└── code/                         ◄── Software & tests
+    ├── emulator/
+    ├── services/
+    └── tests/
+```
+
+**See [INDEX.md](./INDEX.md) for complete navigation and file descriptions.**
 
 ---
 
