@@ -245,16 +245,42 @@ All code execution occurs in multi-layer sandboxed environments:
 
 See the following for comprehensive information:
 
-- **[CLAUDE.md](./CLAUDE.md)** - Development guide for Claude Code AI assistants (updated with Phase 2/3 status)
+### Core Documentation
+- **[MASTER_ROADMAP.md](./MASTER_ROADMAP.md)** - Comprehensive synthesis of all phases, consolidates 50+ planning documents
+- **[TODO_TRACKER.md](./TODO_TRACKER.md)** - Active task tracking, priorities, execution plan
+- **[README.md](./README.md)** - This file: Project overview and quick start
+- **[CLAUDE.md](./CLAUDE.md)** - Development guide for Claude Code AI assistants
+- **[AGENTS.md](./AGENTS.md)** - Multi-agent coordination system (5 specialized AI agents)
+
+### Multi-Agent Documentation
+- **[MULTI_AGENT_SYNTHESIS.md](./MULTI_AGENT_SYNTHESIS.md)** - Synthesis of all agent outputs, integration analysis
+- **[LANGUAGE_SERVICE_ARCHITECTURE.md](./LANGUAGE_SERVICE_ARCHITECTURE.md)** - Polyglot-Systems-Architect: Multi-language execution architecture
+- **[TYPE_THEORY_CURRICULUM.md](./TYPE_THEORY_CURRICULUM.md)** - Category-Theory-Expert: Type systems across 12,500 years
+- **[PRODUCTION_READINESS_REVIEW.md](./PRODUCTION_READINESS_REVIEW.md)** - PhD-Software-Engineer: Code quality and production readiness
+
+### Operational Guides (New)
+- **[API_DOCUMENTATION.md](./API_DOCUMENTATION.md)** - Complete REST/WebSocket API reference with examples
+- **[DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)** - Production deployment (Docker, Kubernetes, monitoring, security)
+- **[TROUBLESHOOTING_GUIDE.md](./TROUBLESHOOTING_GUIDE.md)** - Common issues, diagnostics, and solutions
+
+### Requirements & Architecture
 - **[requirements.md](./requirements.md)** - Project-wide system and infrastructure requirements
 - **[backend/requirements.md](./backend/requirements.md)** - Backend Python, FastAPI, and compiler details
 - **[frontend/requirements.md](./frontend/requirements.md)** - Frontend SvelteKit, TypeScript, and visualization
 - **[services/requirements.md](./services/requirements.md)** - Docker containers and language service architecture
 - **[docs/requirements.md](./docs/requirements.md)** - LaTeX documentation and TikZ diagram requirements
+
+### Technical Debt & Planning
 - **[TECHNICAL_DEBT.md](./TECHNICAL_DEBT.md)** - Known issues, TODOs, and quality improvements
+- **[PROJECT_STATUS.md](./PROJECT_STATUS.md)** - Comprehensive project overview and metrics
 - **[OPTION_B_IMPLEMENTATION_ROADMAP.md](./OPTION_B_IMPLEMENTATION_ROADMAP.md)** - Phase 2 detailed plan (LISP, IDRIS2, System F, Java)
 - **[OPTION_C_PHASE_3_VISION.md](./OPTION_C_PHASE_3_VISION.md)** - Phase 3 emulator and tools architecture
-- **[PROJECT_STATUS.md](./PROJECT_STATUS.md)** - Comprehensive project overview and metrics
+
+### Babbage Analytical Engine (Capstone)
+- **[BABBAGE_ANALYTICAL_ENGINE/README.md](./BABBAGE_ANALYTICAL_ENGINE/README.md)** - Complete engineering documentation hub
+- **[BABBAGE_ANALYTICAL_ENGINE/BILL_OF_MATERIALS_COMPREHENSIVE.md](./BABBAGE_ANALYTICAL_ENGINE/BILL_OF_MATERIALS_COMPREHENSIVE.md)** - Complete BOM across 3 eras (1910-1930, 1940-1970, 2025)
+- **[BABBAGE_ANALYTICAL_ENGINE/META_TOOLING_GUIDE.md](./BABBAGE_ANALYTICAL_ENGINE/META_TOOLING_GUIDE.md)** - Meta-tooling infrastructure ($10K-$800K across eras)
+- **[BABBAGE_ANALYTICAL_ENGINE/MODERN_MANUFACTURING_COMPARISON.md](./BABBAGE_ANALYTICAL_ENGINE/MODERN_MANUFACTURING_COMPARISON.md)** - 2025 vs historical comparison (4-10x improvements)
 
 ## Project Progress
 

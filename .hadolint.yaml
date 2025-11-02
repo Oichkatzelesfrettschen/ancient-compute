@@ -1,0 +1,12 @@
+# Hadolint Configuration for Dockerfiles
+# Warnings as errors
+
+# Ignore specific rules (if absolutely necessary)
+# ignored:
+#   - DL3008  # Pin versions in apt-get install
+
+# Treat warnings as errors
+failure-threshold: warning
+
+# Strict mode
+strict-labels: true

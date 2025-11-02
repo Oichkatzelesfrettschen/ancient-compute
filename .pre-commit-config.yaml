@@ -1,4 +1,5 @@
 # Ancient Compute - Pre-commit Hooks Configuration
+# WARNINGS AS ERRORS - All checks must pass
 # See https://pre-commit.com for more information
 
 default_language_version:
@@ -20,49 +21,71 @@ repos:
       - id: mixed-line-ending
         args: ['--fix=lf']
 
+  # Shell scripts (ShellCheck)
+  - repo: https://github.com/koalaman/shellcheck-precommit
+    rev: v0.9.0
+    hooks:
+      - id: shellcheck
+        args: ['--severity=style', '--enable=all', '--shell=sh']
+        # Warnings as errors - fail on any issue
+
   # Python formatting and linting
   - repo: https://github.com/psf/black
     rev: 23.12.1
     hooks:
       - id: black
         language_version: python3
-        args: ['--line-length=100']
+        args: ['--line-length=100', '--check']
+        # Fail if not formatted
 
   - repo: https://github.com/pycqa/isort
     rev: 5.13.2
     hooks:
       - id: isort
         language_version: python3
-        args: ['--profile', 'black', '--line-length', '100']
+        args: ['--profile', 'black', '--line-length', '100', '--check-only']
+        # Fail on incorrect import order
 
   - repo: https://github.com/pycqa/flake8
     rev: 7.0.0
     hooks:
       - id: flake8
         language_version: python3
-        args: ['--max-line-length=100', '--extend-ignore=E203,W503']
+        args: ['--max-line-length=100', '--extend-ignore=E203,W503', '--count', '--show-source']
         additional_dependencies: [flake8-docstrings]
+        # Fail on any flake8 issue
 
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.8.0
     hooks:
       - id: mypy
         language_version: python3
-        args: ['--ignore-missing-imports', '--strict']
+        args: ['--strict', '--warn-return-any', '--warn-unused-configs', '--disallow-untyped-defs']
+        # Strict type checking - warnings as errors
+
+  - repo: https://github.com/pycqa/pylint
+    rev: v3.0.3
+    hooks:
+      - id: pylint
+        language_version: python3
+        args: ['--fail-under=9.0', '--rcfile=.pylintrc']
+        # Fail if score < 9.0
 
   # Docker linting
   - repo: https://github.com/hadolint/hadolint
     rev: v2.12.0
     hooks:
       - id: hadolint-docker
-        args: ['--ignore', 'DL3008', '--ignore', 'DL3009']
+        args: ['--failure-threshold=warning']
+        # Warnings as errors
 
   # YAML linting
   - repo: https://github.com/adrienverge/yamllint
     rev: v1.33.0
     hooks:
       - id: yamllint
-        args: ['-d', '{extends: default, rules: {line-length: {max: 120}}}']
+        args: ['-s', '-d', '{extends: default, rules: {line-length: {max: 120}}}']
+        # Strict mode - warnings as errors
 
   # Security checks
   - repo: https://github.com/PyCQA/bandit
@@ -70,5 +93,15 @@ repos:
     hooks:
       - id: bandit
         language_version: python3
-        args: ['-c', 'pyproject.toml']
+        args: ['-ll', '-r', 'backend/src/']
         additional_dependencies: ['bandit[toml]']
+        # Fail on medium+ severity issues
+
+  # Markdown linting
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.38.0
+    hooks:
+      - id: markdownlint
+        args: ['--config', '.markdownlint.json']
+        # Fail on markdown issues
+

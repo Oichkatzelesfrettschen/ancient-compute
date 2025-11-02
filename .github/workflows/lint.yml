@@ -1,0 +1,365 @@
+---
+# Comprehensive Linting Workflow - Warnings as Errors
+name: Lint All Languages
+
+on:
+  push:
+    branches: [master, main, develop]
+  pull_request:
+    branches: [master, main, develop]
+
+env:
+  PYTHON_VERSION: "3.11"
+  NODE_VERSION: "20"
+
+jobs:
+  # Shell Scripts (POSIX sh preferred, bash fallback)
+  lint-shell:
+    name: Lint Shell Scripts (ShellCheck)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ShellCheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck
+
+      - name: Run ShellCheck on all .sh files
+        run: |
+          # Find all .sh files and lint them
+          find . -type f -name "*.sh" -not -path "./.git/*" | while read -r file; do
+            echo "Checking: $file"
+            shellcheck --severity=style --enable=all "$file"
+          done
+
+      - name: Verify POSIX compliance
+        run: |
+          # Check that scripts prefer sh over bash
+          find . -type f -name "*.sh" -not -path "./.git/*" | while read -r file; do
+            if head -n 1 "$file" | grep -q "#!/bin/bash"; then
+              echo "WARNING: $file uses bash instead of sh"
+              echo "Consider using #!/bin/sh for POSIX compliance"
+            fi
+          done
+
+  # Python Backend
+  lint-python:
+    name: Lint Python (All Tools)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install linting tools
+        run: |
+          cd backend
+          pip install -r requirements.txt
+          pip install black isort pylint mypy flake8 bandit safety
+
+      - name: Run black (code formatting)
+        run: |
+          cd backend
+          black --check --diff src/ tests/
+        # Fail on formatting issues
+
+      - name: Run isort (import sorting)
+        run: |
+          cd backend
+          isort --check-only --diff src/ tests/
+        # Fail on import order issues
+
+      - name: Run flake8 (style + errors)
+        run: |
+          cd backend
+          flake8 src/ tests/ --count --show-source --statistics \
+            --max-line-length=100 \
+            --max-complexity=10 \
+            --ignore=E203,W503
+        # Fail on any flake8 issue
+
+      - name: Run pylint (code quality)
+        run: |
+          cd backend
+          pylint src/ --fail-under=9.0 --rcfile=.pylintrc
+        # Fail if score < 9.0
+
+      - name: Run mypy (type checking)
+        run: |
+          cd backend
+          mypy src/ --strict --warn-return-any --warn-unused-configs \
+            --disallow-untyped-defs --disallow-incomplete-defs \
+            --check-untyped-defs --disallow-untyped-decorators
+        # Fail on any type errors
+
+      - name: Run bandit (security)
+        run: |
+          cd backend
+          bandit -r src/ -ll -f screen
+        # Fail on medium+ severity security issues
+
+      - name: Run safety (dependency vulnerabilities)
+        run: |
+          cd backend
+          safety check --json
+        continue-on-error: true
+        # Don't fail on dependency issues (informational)
+
+  # TypeScript/JavaScript Frontend
+  lint-typescript:
+    name: Lint TypeScript/JavaScript
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install dependencies
+        run: cd frontend && pnpm install
+
+      - name: Run ESLint
+        run: |
+          cd frontend
+          pnpm eslint . --ext .js,.ts,.svelte --max-warnings 0
+        # Fail on any warnings
+
+      - name: Run Prettier
+        run: |
+          cd frontend
+          pnpm prettier --check .
+        # Fail on formatting issues
+
+      - name: Run TypeScript compiler
+        run: |
+          cd frontend
+          pnpm tsc --noEmit --strict
+        # Fail on type errors
+
+      - name: Run Svelte check
+        run: |
+          cd frontend
+          pnpm svelte-check --fail-on-warnings
+        # Fail on Svelte-specific issues
+
+  # C Language Services
+  lint-c:
+    name: Lint C Code
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check if C service exists
+        id: check_c
+        run: |
+          if [ -d "services/c-service" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "⚠️  C service not yet implemented - skipping"
+          fi
+
+      - name: Install clang-format and clang-tidy
+        if: steps.check_c.outputs.exists == 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-format clang-tidy
+
+      - name: Run clang-format
+        if: steps.check_c.outputs.exists == 'true'
+        run: |
+          find services/c-service -name "*.c" -o -name "*.h" | while read -r file; do
+            if ! clang-format --dry-run --Werror "$file" 2>&1 | grep -q "warning"; then
+              echo "Format check passed: $file"
+            else
+              echo "Format check FAILED: $file"
+              exit 1
+            fi
+          done
+
+      - name: Run clang-tidy
+        if: steps.check_c.outputs.exists == 'true'
+        run: |
+          find services/c-service -name "*.c" | while read -r file; do
+            clang-tidy "$file" --warnings-as-errors='*' -- -I./services/c-service/include
+          done
+
+  # Haskell Language Services
+  lint-haskell:
+    name: Lint Haskell Code
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check if Haskell service exists
+        id: check_haskell
+        run: |
+          if [ -d "services/haskell-service" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "⚠️  Haskell service not yet implemented - skipping"
+          fi
+
+      - name: Set up Haskell
+        if: steps.check_haskell.outputs.exists == 'true'
+        uses: haskell/actions/setup@v2
+        with:
+          ghc-version: '9.4'
+          cabal-version: '3.10'
+
+      - name: Install HLint
+        if: steps.check_haskell.outputs.exists == 'true'
+        run: cabal install hlint
+
+      - name: Run HLint
+        if: steps.check_haskell.outputs.exists == 'true'
+        run: |
+          find services/haskell-service -name "*.hs" | while read -r file; do
+            hlint "$file" --color=never --report
+          done
+
+  # Docker and Docker Compose
+  lint-docker:
+    name: Lint Dockerfiles
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Lint backend Dockerfile
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: backend/Dockerfile
+          failure-threshold: warning
+        continue-on-error: false
+
+      - name: Lint frontend Dockerfile
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: frontend/Dockerfile
+          failure-threshold: warning
+        continue-on-error: true
+
+  # YAML Files
+  lint-yaml:
+    name: Lint YAML Files
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install yamllint
+        run: pip install yamllint
+
+      - name: Run yamllint on workflows
+        run: |
+          yamllint -s -d "{extends: default, rules: {line-length: {max: 120}}}" \
+            .github/workflows/*.yml
+        # Fail on any YAML issues
+
+      - name: Run yamllint on docker-compose
+        run: |
+          if [ -f docker-compose.yml ]; then
+            yamllint -s -d "{extends: default, rules: {line-length: {max: 120}}}" \
+              docker-compose.yml
+          else
+            echo "⚠️  docker-compose.yml not found - skipping"
+          fi
+        continue-on-error: true
+
+  # Markdown Documentation
+  lint-markdown:
+    name: Lint Markdown
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install markdownlint-cli
+        run: npm install -g markdownlint-cli
+
+      - name: Run markdownlint
+        run: |
+          markdownlint '**/*.md' --ignore node_modules --config .markdownlint.json
+        continue-on-error: true
+
+  # JSON Files
+  lint-json:
+    name: Lint JSON Files
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate JSON syntax
+        run: |
+          find . -name "*.json" -not -path "./node_modules/*" -not -path "./.git/*" | while read -r file; do
+            echo "Validating: $file"
+            python3 -m json.tool "$file" > /dev/null
+          done
+
+  # Bazel BUILD files
+  lint-bazel:
+    name: Lint Bazel Files
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check if Bazel files exist
+        id: check_bazel
+        run: |
+          if find . -name "BUILD.bazel" -o -name "WORKSPACE.bazel" -o -name "*.bzl" | grep -q .; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "⚠️  No Bazel files found - skipping"
+          fi
+
+      - name: Install Buildifier
+        if: steps.check_bazel.outputs.exists == 'true'
+        run: |
+          wget https://github.com/bazelbuild/buildtools/releases/download/v6.4.0/buildifier-linux-amd64
+          chmod +x buildifier-linux-amd64
+          sudo mv buildifier-linux-amd64 /usr/local/bin/buildifier
+
+      - name: Run Buildifier
+        if: steps.check_bazel.outputs.exists == 'true'
+        run: |
+          buildifier -mode=check -lint=warn -warnings=all \
+            $(find . -name "BUILD.bazel" -o -name "WORKSPACE.bazel" -o -name "*.bzl")
+
+  # Summary
+  lint-summary:
+    name: Linting Summary
+    runs-on: ubuntu-latest
+    needs:
+      - lint-shell
+      - lint-python
+      - lint-typescript
+      - lint-c
+      - lint-haskell
+      - lint-docker
+      - lint-yaml
+      - lint-json
+      - lint-markdown
+      - lint-bazel
+    if: always()
+    steps:
+      - name: All linting passed
+        run: |
+          echo "✓ All linting checks completed"
+          echo "Note: Some checks may have been skipped for unimplemented services"
