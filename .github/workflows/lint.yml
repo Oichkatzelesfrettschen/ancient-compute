@@ -55,6 +55,7 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
+          cache-dependency-path: backend/requirements.txt
 
       - name: Install linting tools
         run: |
