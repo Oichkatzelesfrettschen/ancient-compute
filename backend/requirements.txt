@@ -37,9 +37,13 @@ pytest-mock==3.12.0
 
 # Code Quality
 black==23.11.0
+isort==5.12.0
+flake8==6.1.0
 pylint==3.0.2
 mypy==1.7.1
 ruff==0.1.6
+bandit==1.7.5
+safety==2.3.5
 
 # Development
 watchfiles==0.21.0
