@@ -60,20 +60,21 @@ async def execute_code(request: ExecutionRequest, db: Session = Depends(get_db))
     # Execute code in sandboxed container
     result = await executor.execute(request.code, request.input_data)
 
-    # TODO: Save submission to database if lesson_id provided
-    # Requires user authentication to be implemented first
-    # if request.lesson_id:
-    #     submission = CodeSubmission(
-    #         user_id=current_user.id,
-    #         lesson_id=request.lesson_id,
-    #         submitted_code=request.code,
-    #         language=request.language,
-    #         execution_output=result.stdout,
-    #         execution_error=result.stderr,
-    #         is_successful=(result.status.value == "success")
-    #     )
-    #     db.add(submission)
-    #     db.commit()
+    # Save submission to database if lesson_id provided
+    if request.lesson_id:
+        # Placeholder for current user
+        current_user_id = 1
+        submission = CodeSubmission(
+            user_id=current_user_id,
+            lesson_id=request.lesson_id,
+            submitted_code=request.code,
+            language=request.language,
+            execution_output=result.stdout,
+            execution_error=result.stderr,
+            is_successful=(result.status.value == "success")
+        )
+        db.add(submission)
+        db.commit()
 
     return ExecutionResponse(
         status=result.status.value,

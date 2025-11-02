@@ -1,13 +1,17 @@
 # Ancient Compute Backend - FastAPI Application
 
 import logging
-
-from fastapi import FastAPI
+import time
+from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from prometheus_client import Counter, Gauge, generate_latest, CONTENT_TYPE_LATEST
+import redis
 
 from .api.router import api_router
 from .config import settings
+# Note: Avoid importing database/SQLAlchemy at module import time to keep
+# app importable in limited environments. Lazily import within handlers.
 
 # Configure logging
 logging.basicConfig(
@@ -17,6 +21,11 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
+# Prometheus Metrics
+REQUEST_COUNT = Counter("requests_total", "Total number of requests")
+UPTIME = Gauge("uptime_seconds", "Time the service has been running")
+START_TIME = time.time()
+
 # Create FastAPI application
 app = FastAPI(
     title="Ancient Compute API",
@@ -25,6 +34,13 @@ app = FastAPI(
     docs_url="/docs" if settings.DEBUG else None,
     redoc_url="/redoc" if settings.DEBUG else None,
 )
+
+# Middleware to count requests
+@app.middleware("http")
+async def count_requests(request: Request, call_next):
+    REQUEST_COUNT.inc()
+    response = await call_next(request)
+    return response
 
 # Configure CORS
 app.add_middleware(
@@ -49,22 +65,38 @@ async def health_check():
 @app.get("/ready")
 async def readiness_check():
     """Readiness check - verifies dependencies are available"""
-    # TODO: Add database and redis connection checks
-    return {"status": "ready", "service": "ancient-compute-backend"}
+    db_ok = False
+    redis_ok = False
+    try:
+        # Local imports to avoid hard dependency at module import time
+        from sqlalchemy import text  # type: ignore
+        from .database import SessionLocal  # type: ignore
+
+        db = SessionLocal()
+        db.execute(text("SELECT 1"))
+        db.close()
+        db_ok = True
+    except Exception as e:
+        logger.error(f"Database readiness check failed: {e}")
+
+    try:
+        r = redis.from_url(settings.REDIS_URL)
+        r.ping()
+        redis_ok = True
+    except Exception as e:
+        logger.error(f"Redis readiness check failed: {e}")
+
+    if db_ok and redis_ok:
+        return {"status": "ready", "service": "ancient-compute-backend"}
+    else:
+        raise HTTPException(status_code=503, detail="Service Unavailable")
 
 
 @app.get("/metrics")
 async def metrics():
-    """Basic metrics endpoint for monitoring"""
-    # TODO: Add Prometheus-style metrics
-    return {
-        "service": "ancient-compute-backend",
-        "uptime_seconds": 0,  # TODO: Implement actual uptime tracking
-        "requests_total": 0,  # TODO: Implement request counting
-        "active_users": 0,  # TODO: Query from database
-        "modules_count": 0,  # TODO: Query from database
-        "lessons_count": 0,  # TODO: Query from database
-    }
+    """Prometheus metrics endpoint"""
+    UPTIME.set(time.time() - START_TIME)
+    return JSONResponse(content=generate_latest().decode("utf-8"), media_type=CONTENT_TYPE_LATEST)
 
 
 @app.get("/")
@@ -84,6 +116,7 @@ async def startup_event():
     logger.info("Ancient Compute Backend starting...")
     logger.info(f"Environment: {settings.ENVIRONMENT}")
     logger.info(f"Debug mode: {settings.DEBUG}")
+    UPTIME.set(0)
 
 
 # Shutdown event

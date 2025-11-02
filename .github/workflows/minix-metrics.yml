@@ -1,0 +1,62 @@
+name: Minix Metrics
+
+on:
+  workflow_dispatch:
+    inputs:
+      iso_path:
+        description: 'Path to MINIX ISO on runner'
+        required: true
+      arch:
+        description: 'Architecture (i386 or arm)'
+        default: 'i386'
+        required: true
+      iterations:
+        description: 'Iterations per run'
+        default: '1'
+        required: true
+      baseline_ms:
+        description: 'Optional baseline boot time (ms) for regression gate'
+        required: false
+      baseline_summary_json:
+        description: 'Optional baseline summary JSON path for average compare'
+        required: false
+
+jobs:
+  run:
+    runs-on: [self-hosted, kvm]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run MINIX metrics
+        run: |
+          chmod +x scripts/minix_metrics.sh
+          ./scripts/minix_metrics.sh --iso "${{ github.event.inputs.iso_path }}" --arch "${{ github.event.inputs.arch }}" --iterations "${{ github.event.inputs.iterations }}" --label ci
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: minix-metrics-${{ github.event.inputs.arch }}
+          path: metrics/minix/${{ github.event.inputs.arch }}
+      - name: Regression gate (optional)
+        if: ${{ github.event.inputs.baseline_ms != '' }}
+        run: |
+          python3 scripts/minix_regression_check.py \
+            --metrics metrics/minix/${{ github.event.inputs.arch }}/boot_time.json \
+            --baseline-ms ${{ github.event.inputs.baseline_ms }} \
+            --tolerance 20
+      - name: Summary average compare (optional)
+        if: ${{ github.event.inputs.baseline_summary_json != '' }}
+        run: |
+          python3 scripts/minix_compare_summary.py \
+            --summary metrics/minix/${{ github.event.inputs.arch }}/summary.json \
+            --baseline ${{ github.event.inputs.baseline_summary_json }} \
+            --tolerance 20
+      - name: Summary compare against repo baseline (if present)
+        run: |
+          BASELINE_PATH="INFRASTRUCTURE_AND_DEPLOYMENT/MINIX_BASELINES/${{ github.event.inputs.arch }}.json"
+          if [ -f "$BASELINE_PATH" ]; then
+            python3 scripts/minix_compare_summary.py \
+              --summary metrics/minix/${{ github.event.inputs.arch }}/summary.json \
+              --baseline "$BASELINE_PATH" \
+              --tolerance 20
+          else
+            echo "No repo baseline at $BASELINE_PATH; skipping compare."
+          fi

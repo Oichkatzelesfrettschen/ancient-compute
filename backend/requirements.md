@@ -95,9 +95,9 @@ python-multipart==0.0.6            # Form data parsing
 
 **Database** (3 packages):
 ```
-sqlalchemy==2.0.23                 # ORM and schema
-alembic==1.12.1                    # Database migrations
-psycopg2-binary==2.9.9             # PostgreSQL driver
+sqlalchemy==2.0.35                 # ORM and schema (Python 3.13 compatible)
+alembic==1.13.2                    # Database migrations
+psycopg2-binary==2.9.11            # PostgreSQL driver
 ```
 
 **Caching** (2 packages):
@@ -740,3 +740,7 @@ async def websocket_execute(websocket: WebSocket):
 ---
 
 **End of Backend Requirements**
+### Compatibility Notes
+
+- Python 3.13 support requires SQLAlchemy >= 2.0.35. Requirements updated accordingly; ensure your virtual environment is rebuilt after upgrading.
+- Test configuration now treats warnings as errors (pytest `-W error`). Address deprecations promptly.

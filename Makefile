@@ -42,6 +42,8 @@ help:
 	@echo "Utilities:"
 	@echo "  make clean           - Clean build artifacts"
 	@echo "  make deps            - Update dependencies"
+	@echo "  make minix-install   - Launch interactive MINIX installer (VNC)"
+	@echo "  make minix-metrics   - Run MINIX metrics orchestrator (requires ISO path)"
 
 # Setup
 setup:
@@ -159,7 +161,7 @@ db-reset:
 
 db-seed:
 	@echo "Seeding database..."
-	# TODO: Add database seeding script
+	python backend/src/seeder.py
 
 # Utilities
 clean:
@@ -179,6 +181,15 @@ deps:
 	cd backend && pip install -U -r requirements.txt
 	cd frontend && pnpm update
 	@echo "Dependencies updated"
+
+# MINIX metrics orchestrator
+minix-metrics:
+	@[ -n "$$ISO" ] || (echo "Usage: make minix-metrics ISO=/path/to/minix.iso [ARCH=i386] [ITER=1]" && exit 2)
+	ARCH=$${ARCH:-i386} ITER=$${ITER:-1} ./scripts/minix_metrics.sh --iso "$$ISO" --arch "$$ARCH" --iterations "$$ITER" --label make
+
+minix-install:
+	@[ -n "$$ISO" ] || (echo "Usage: make minix-install ISO=/path/to/minix.iso [ARCH=i386] [VNC=5900]" && exit 2)
+	ARCH=$${ARCH:-i386} VNC=$${VNC:-5900} ./scripts/minix_install_interactive.sh --iso "$$ISO" --arch "$$ARCH" --vnc-port "$$VNC"
 
 # Bazel operations
 bazel-build:

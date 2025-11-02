@@ -12,6 +12,7 @@
 		{ label: 'Home', path: '/', description: 'Welcome page' },
 		{ label: 'Modules', path: '/modules', description: 'Browse learning modules' },
 		{ label: 'Timeline', path: '/timeline', description: 'Interactive historical timeline' },
+		{ label: 'MINIX Metrics', path: '/infra/minix', description: 'MINIX in QEMU metrics' },
 		{ label: 'About', path: '/about', description: 'About this project' }
 	];
 

@@ -10,10 +10,23 @@ from typing import Optional, List, Dict, Any
 from functools import wraps
 from dataclasses import dataclass
 
-from sqlalchemy.orm import Session, joinedload
-from sqlalchemy import select
+from typing import TYPE_CHECKING
+try:
+    # Only needed at runtime when DB paths are used
+    from sqlalchemy.orm import Session  # type: ignore
+except Exception:  # pragma: no cover - environment without SQLAlchemy
+    Session = Any  # type: ignore
 
-from src.models import Exercise, Module, Era, ExerciseProgress, ExerciseSubmission
+# Avoid importing SQLAlchemy models at module import time to keep this module
+# usable in environments where SQLAlchemy isn't available (e.g., limited CI).
+if TYPE_CHECKING:  # for type checkers only
+    from src.models import (
+        Exercise,
+        Module,
+        Era,
+        ExerciseProgress,
+        ExerciseSubmission,
+    )
 
 
 @dataclass
@@ -57,7 +70,7 @@ class QueryCache:
 
     def get_exercise_with_relations(
         self, db: Session, exercise_id: int
-    ) -> Optional[Exercise]:
+    ) -> Optional["Exercise"]:
         """
         Get exercise with eagerly loaded relations.
 
@@ -76,6 +89,9 @@ class QueryCache:
         self.misses += 1
 
         # Query with eager loading to avoid N+1 problem
+        from sqlalchemy.orm import joinedload  # local import to avoid hard dependency
+        from src.models import Exercise, Module
+
         exercise = (
             db.query(Exercise)
             .options(
@@ -92,7 +108,7 @@ class QueryCache:
 
     def get_module_with_exercises(
         self, db: Session, module_id: int
-    ) -> Optional[Module]:
+    ) -> Optional["Module"]:
         """
         Get module with all exercises eagerly loaded.
 
@@ -111,6 +127,9 @@ class QueryCache:
         self.misses += 1
 
         # Eager load exercises to prevent N+1
+        from sqlalchemy.orm import joinedload
+        from src.models import Module
+
         module = (
             db.query(Module)
             .options(
@@ -128,7 +147,7 @@ class QueryCache:
 
     def get_exercise_progress_with_submissions(
         self, db: Session, user_id: int, exercise_id: int
-    ) -> Optional[ExerciseProgress]:
+    ) -> Optional["ExerciseProgress"]:
         """
         Get exercise progress with latest submissions eagerly loaded.
 
@@ -147,6 +166,9 @@ class QueryCache:
         self.misses += 1
 
         # Eager load submissions to avoid N+1
+        from sqlalchemy.orm import joinedload
+        from src.models import ExerciseProgress
+
         progress = (
             db.query(ExerciseProgress)
             .options(
@@ -166,7 +188,7 @@ class QueryCache:
 
     def list_exercises_by_module(
         self, db: Session, module_id: int
-    ) -> List[Exercise]:
+    ) -> List["Exercise"]:
         """
         List all exercises for a module with eager loading.
 
@@ -183,6 +205,8 @@ class QueryCache:
                 del self._cache[key]
 
         self.misses += 1
+
+        from src.models import Exercise
 
         exercises = (
             db.query(Exercise)
