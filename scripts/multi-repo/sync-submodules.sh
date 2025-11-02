@@ -27,7 +27,6 @@ git submodule foreach 'git pull origin $(git branch --show-current)'
 # Update submodule references in parent repo
 echo ""
 echo "Updating submodule references..."
-git add .gitmodules
 git submodule update --remote --merge
 
 echo ""
