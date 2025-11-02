@@ -185,24 +185,57 @@ pnpm dev
 
 ```
 ancient_compute/
-├── backend/           # FastAPI backend
-├── frontend/          # SvelteKit frontend
-├── services/          # Language execution services
-│   ├── c/
-│   ├── python/
-│   ├── haskell/
-│   ├── idris/
-│   ├── lisp/
-│   ├── assembly/
-│   ├── java/
-│   └── systemf/
-├── docs/              # LaTeX documentation
-├── content/           # Educational content
-│   ├── modules/       # Historical modules
-│   └── synthesis/     # Cross-era synthesis
-├── scripts/           # Build and deployment
-├── config/            # Configuration files
-└── shared/            # Common utilities
+├── README.md                           # This file - main entry point
+├── AGENTS.md                           # AI agent coordination system
+├── backend/                            # FastAPI backend (active codebase)
+│   ├── src/
+│   │   ├── emulator/                   # Babbage Analytical Engine emulator
+│   │   ├── compilers/                  # Language compilers
+│   │   └── services/                   # Execution services
+│   └── tests/
+├── frontend/                           # SvelteKit frontend (active codebase)
+│   ├── src/
+│   └── tests/
+├── services/                           # Language execution containers
+│   ├── lisp/                           # LISP service
+│   └── (c, python, haskell, etc.)
+├── BABBAGE_ANALYTICAL_ENGINE/          # Complete Babbage documentation
+│   ├── specifications/                 # Technical specifications
+│   ├── documentation/                  # Manufacturing, operations guides
+│   ├── blueprints/                     # Engineering diagrams
+│   ├── code/                           # Reference implementations
+│   └── reference/                      # Historical archives
+├── IMPLEMENTATION_PHASES/              # Phase-by-phase development
+│   ├── PHASE_2/                        # Multi-language support
+│   ├── PHASE_3/                        # Emulator & tools
+│   └── PHASE_4/                        # Advanced features
+├── ARCHITECTURE_AND_DESIGN/            # Architecture documentation
+│   ├── ARCHITECTURE.md
+│   ├── LANGUAGE_SERVICES_ARCHITECTURE.md
+│   ├── MASTER_ROADMAP.md
+│   └── MULTI_AGENT_SYNTHESIS.md
+├── DEVELOPMENT_GUIDES/                 # Developer documentation
+│   ├── API_DOCUMENTATION.md
+│   ├── BUILD.md
+│   ├── TROUBLESHOOTING_GUIDE.md
+│   └── LANGUAGE_SERVICE_SPECIFICATION.md
+├── INFRASTRUCTURE_AND_DEPLOYMENT/      # Deployment & operations
+│   ├── DEPLOYMENT_GUIDE.md
+│   └── PRODUCTION_READINESS_REVIEW.md
+├── HISTORICAL_RECORDS/                 # Development history archive
+│   ├── sessions/                       # Session summaries
+│   └── weekly/                         # Weekly progress reports
+├── CURRICULUM_AND_CONTENT/             # Educational content
+│   └── TYPE_THEORY_CURRICULUM.md
+├── DOCUMENTATION_AND_ORGANIZATION/     # Project management docs
+│   ├── PROJECT_STATUS.md
+│   ├── TODO_TRACKER.md
+│   └── TECHNICAL_DEBT.md
+├── docs/                               # Academic papers (LaTeX)
+│   ├── whitepaper-arxiv/
+│   └── PEDAGOGICAL_*.tex
+├── scripts/                            # Build and deployment scripts
+└── config/                             # Configuration files
 ```
 
 ## Educational Modules
@@ -246,41 +279,51 @@ All code execution occurs in multi-layer sandboxed environments:
 See the following for comprehensive information:
 
 ### Core Documentation
-- **[MASTER_ROADMAP.md](./MASTER_ROADMAP.md)** - Comprehensive synthesis of all phases, consolidates 50+ planning documents
-- **[TODO_TRACKER.md](./TODO_TRACKER.md)** - Active task tracking, priorities, execution plan
 - **[README.md](./README.md)** - This file: Project overview and quick start
+- **[AGENTS.md](./AGENTS.md)** - Multi-agent AI coordination system (5 specialized agents)
 - **[CLAUDE.md](./CLAUDE.md)** - Development guide for Claude Code AI assistants
-- **[AGENTS.md](./AGENTS.md)** - Multi-agent coordination system (5 specialized AI agents)
+- **[GEMINI.md](./GEMINI.md)** - Development guide for Gemini AI assistants
 
-### Multi-Agent Documentation
-- **[MULTI_AGENT_SYNTHESIS.md](./MULTI_AGENT_SYNTHESIS.md)** - Synthesis of all agent outputs, integration analysis
-- **[LANGUAGE_SERVICE_ARCHITECTURE.md](./LANGUAGE_SERVICE_ARCHITECTURE.md)** - Polyglot-Systems-Architect: Multi-language execution architecture
-- **[TYPE_THEORY_CURRICULUM.md](./TYPE_THEORY_CURRICULUM.md)** - Category-Theory-Expert: Type systems across 12,500 years
-- **[PRODUCTION_READINESS_REVIEW.md](./PRODUCTION_READINESS_REVIEW.md)** - PhD-Software-Engineer: Code quality and production readiness
+### Architecture & Design
+- **[ARCHITECTURE_AND_DESIGN/ARCHITECTURE.md](./ARCHITECTURE_AND_DESIGN/ARCHITECTURE.md)** - System architecture overview
+- **[ARCHITECTURE_AND_DESIGN/MASTER_ROADMAP.md](./ARCHITECTURE_AND_DESIGN/MASTER_ROADMAP.md)** - Comprehensive roadmap (50+ planning docs consolidated)
+- **[ARCHITECTURE_AND_DESIGN/LANGUAGE_SERVICES_ARCHITECTURE.md](./ARCHITECTURE_AND_DESIGN/LANGUAGE_SERVICES_ARCHITECTURE.md)** - Multi-language execution architecture
+- **[ARCHITECTURE_AND_DESIGN/MULTI_AGENT_SYNTHESIS.md](./ARCHITECTURE_AND_DESIGN/MULTI_AGENT_SYNTHESIS.md)** - Multi-agent integration analysis
 
-### Operational Guides (New)
-- **[API_DOCUMENTATION.md](./API_DOCUMENTATION.md)** - Complete REST/WebSocket API reference with examples
-- **[DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)** - Production deployment (Docker, Kubernetes, monitoring, security)
-- **[TROUBLESHOOTING_GUIDE.md](./TROUBLESHOOTING_GUIDE.md)** - Common issues, diagnostics, and solutions
+### Development Guides
+- **[DEVELOPMENT_GUIDES/API_DOCUMENTATION.md](./DEVELOPMENT_GUIDES/API_DOCUMENTATION.md)** - Complete REST/WebSocket API reference
+- **[DEVELOPMENT_GUIDES/BUILD.md](./DEVELOPMENT_GUIDES/BUILD.md)** - Build system documentation
+- **[DEVELOPMENT_GUIDES/TROUBLESHOOTING_GUIDE.md](./DEVELOPMENT_GUIDES/TROUBLESHOOTING_GUIDE.md)** - Common issues and solutions
+- **[DEVELOPMENT_GUIDES/LANGUAGE_SERVICE_SPECIFICATION.md](./DEVELOPMENT_GUIDES/LANGUAGE_SERVICE_SPECIFICATION.md)** - Language service specification
 
-### Requirements & Architecture
-- **[requirements.md](./requirements.md)** - Project-wide system and infrastructure requirements
-- **[backend/requirements.md](./backend/requirements.md)** - Backend Python, FastAPI, and compiler details
-- **[frontend/requirements.md](./frontend/requirements.md)** - Frontend SvelteKit, TypeScript, and visualization
-- **[services/requirements.md](./services/requirements.md)** - Docker containers and language service architecture
-- **[docs/requirements.md](./docs/requirements.md)** - LaTeX documentation and TikZ diagram requirements
+### Infrastructure & Deployment
+- **[INFRASTRUCTURE_AND_DEPLOYMENT/DEPLOYMENT_GUIDE.md](./INFRASTRUCTURE_AND_DEPLOYMENT/DEPLOYMENT_GUIDE.md)** - Production deployment guide
+- **[INFRASTRUCTURE_AND_DEPLOYMENT/PRODUCTION_READINESS_REVIEW.md](./INFRASTRUCTURE_AND_DEPLOYMENT/PRODUCTION_READINESS_REVIEW.md)** - Production readiness review
 
-### Technical Debt & Planning
-- **[TECHNICAL_DEBT.md](./TECHNICAL_DEBT.md)** - Known issues, TODOs, and quality improvements
-- **[PROJECT_STATUS.md](./PROJECT_STATUS.md)** - Comprehensive project overview and metrics
-- **[OPTION_B_IMPLEMENTATION_ROADMAP.md](./OPTION_B_IMPLEMENTATION_ROADMAP.md)** - Phase 2 detailed plan (LISP, IDRIS2, System F, Java)
-- **[OPTION_C_PHASE_3_VISION.md](./OPTION_C_PHASE_3_VISION.md)** - Phase 3 emulator and tools architecture
+### Implementation Phases
+- **[IMPLEMENTATION_PHASES/README.md](./IMPLEMENTATION_PHASES/README.md)** - Phase-by-phase implementation guide
+- **[IMPLEMENTATION_PHASES/PHASE_2/](./IMPLEMENTATION_PHASES/PHASE_2/)** - Multi-language support (85% complete)
+- **[IMPLEMENTATION_PHASES/PHASE_3/](./IMPLEMENTATION_PHASES/PHASE_3/)** - Emulator & tools (designed)
+- **[IMPLEMENTATION_PHASES/PHASE_4/](./IMPLEMENTATION_PHASES/PHASE_4/)** - Advanced features (in progress)
 
-### Babbage Analytical Engine (Capstone)
+### Babbage Analytical Engine
 - **[BABBAGE_ANALYTICAL_ENGINE/README.md](./BABBAGE_ANALYTICAL_ENGINE/README.md)** - Complete engineering documentation hub
-- **[BABBAGE_ANALYTICAL_ENGINE/BILL_OF_MATERIALS_COMPREHENSIVE.md](./BABBAGE_ANALYTICAL_ENGINE/BILL_OF_MATERIALS_COMPREHENSIVE.md)** - Complete BOM across 3 eras (1910-1930, 1940-1970, 2025)
-- **[BABBAGE_ANALYTICAL_ENGINE/META_TOOLING_GUIDE.md](./BABBAGE_ANALYTICAL_ENGINE/META_TOOLING_GUIDE.md)** - Meta-tooling infrastructure ($10K-$800K across eras)
-- **[BABBAGE_ANALYTICAL_ENGINE/MODERN_MANUFACTURING_COMPARISON.md](./BABBAGE_ANALYTICAL_ENGINE/MODERN_MANUFACTURING_COMPARISON.md)** - 2025 vs historical comparison (4-10x improvements)
+- **[BABBAGE_ANALYTICAL_ENGINE/INDEX.md](./BABBAGE_ANALYTICAL_ENGINE/INDEX.md)** - Master navigation for all Babbage resources
+- **[BABBAGE_ANALYTICAL_ENGINE/specifications/](./BABBAGE_ANALYTICAL_ENGINE/specifications/)** - Technical specifications
+- **[BABBAGE_ANALYTICAL_ENGINE/documentation/](./BABBAGE_ANALYTICAL_ENGINE/documentation/)** - Manufacturing and operations guides
+
+### Educational Content
+- **[CURRICULUM_AND_CONTENT/TYPE_THEORY_CURRICULUM.md](./CURRICULUM_AND_CONTENT/TYPE_THEORY_CURRICULUM.md)** - Type systems across 12,500 years
+
+### Project Management
+- **[DOCUMENTATION_AND_ORGANIZATION/PROJECT_STATUS.md](./DOCUMENTATION_AND_ORGANIZATION/PROJECT_STATUS.md)** - Current project status
+- **[DOCUMENTATION_AND_ORGANIZATION/TODO_TRACKER.md](./DOCUMENTATION_AND_ORGANIZATION/TODO_TRACKER.md)** - Task tracking and priorities
+- **[DOCUMENTATION_AND_ORGANIZATION/TECHNICAL_DEBT.md](./DOCUMENTATION_AND_ORGANIZATION/TECHNICAL_DEBT.md)** - Known issues and improvements
+
+### Historical Records
+- **[HISTORICAL_RECORDS/README.md](./HISTORICAL_RECORDS/README.md)** - Development history archive
+- **[HISTORICAL_RECORDS/sessions/](./HISTORICAL_RECORDS/sessions/)** - Session summaries
+- **[HISTORICAL_RECORDS/weekly/](./HISTORICAL_RECORDS/weekly/)** - Weekly progress reports
 
 ## Project Progress
 
