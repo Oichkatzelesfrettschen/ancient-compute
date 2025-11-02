@@ -1,0 +1,53 @@
+%% Store Memory Organization
+%% 2,000 x 50 digit matrix with address decoding
+
+\begin{tikzpicture}[scale=0.8]
+
+% Draw memory matrix (simplified)
+\draw[thick] (0, 0) rectangle (10, 8);
+
+% Draw address on left
+\draw[thick] (-0.5, 0) rectangle (0, 8);
+\node[font=\tiny, rotate=90, align=center] at (-0.25, 4) {Address (0--1999)};
+
+% Draw columns for digit positions (50 total, show 10)
+\foreach \i in {0, 1, 2, ..., 9} {
+    \draw[thin] (\i, 0) -- (\i, 8);
+}
+\node[font=\tiny, below=-0.3cm] at (5, 0) {Digit position 0, 1, 2, ..., 49 (50 total)};
+
+% Draw some rows
+\foreach \row in {0, 2, 4, 6} {
+    \draw[thin] (0, \row) -- (10, \row);
+}
+
+% Highlight one memory location
+\draw[thick, fill=yellow!20] (3, 5) rectangle (4, 6);
+\node[font=\tiny, align=center] at (3.5, 5.5) {Address\\i};
+
+% Draw address decoder
+\draw[thick, rounded corners] (11, 5) rectangle (14, 7);
+\node[font=\small, align=center] at (12.5, 6) {Address\\Decoder};
+
+% Draw connection from decoder to memory
+\draw[thick, ->] (14, 6) -- (10, 5.5);
+\node[font=\tiny, above=0.1cm] at (12, 5.8) {11-bit addr};
+
+% Draw read/write mechanism
+\draw[thick, fill=lightgray] (11, 2) rectangle (14, 4);
+\node[font=\small, align=center] at (12.5, 3) {Read/Write\\Head};
+
+% Draw connection to memory location
+\draw[thick, <->] (14, 3) -- (10, 3);
+\node[font=\tiny, above=0.1cm] at (12, 3.2) {50-bit data};
+
+% Memory organization annotation
+\node[font=\footnotesize, below=0.5cm] at (5, -1.5) {Total memory: 2,000 addresses $\times$ 50 digits = 100,000 digits $\approx$ 100 KB};
+\node[font=\footnotesize, below=1.2cm] at (5, -1.5) {Access time: 15 seconds (LOAD) or 15 seconds (STOR)};
+
+% Show data format in one cell
+\draw[thick] (4, 7.5) rectangle (5, 8.5);
+\node[font=\tiny, above=-0.1cm] at (4.5, 8.5) {Digit wheel};
+\node[font=\footnotesize, below=1.8cm] at (5, -1.5) {Each digit is a 12mm gear wheel (positions 0--9)};
+
+\end{tikzpicture}

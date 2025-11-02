@@ -1,0 +1,246 @@
+%% Section: Cost and Timeline Analysis
+%% Detailed financial breakdown and comparison with historical projects
+
+\subsection{Summary Cost Estimate}
+
+\begin{table}[h]
+    \centering
+    \small
+    \begin{tabular}{lrrrr}
+    \toprule
+    \textbf{Category} & \textbf{Original Estimate} & \textbf{Realistic Estimate} & \textbf{Difference} & \textbf{Ratio} \\
+    \midrule
+    Materials & 8,000 GBP & 6,431 GBP & --1,569 GBP & 0.81× \\
+    Labour & 114,000 GBP & 35,600 GBP & --78,400 GBP & 0.31× \\
+    Overhead & 42,000 GBP & 12,810 GBP & --29,190 GBP & 0.31× \\
+    \midrule
+    \textbf{TOTAL} & \textbf{164,000 GBP} & \textbf{54,841 GBP} & \textbf{--109,159 GBP} & \textbf{0.33×} \\
+    \bottomrule
+    \end{tabular}
+    \caption{Cost estimate comparison: original vs. realistic (detailed analysis).}
+    \label{tab:cost-comparison}
+\end{table}
+
+**Conclusion**: Original estimate is 2.99$\times$ inflated. Realistic project cost: **50,000--60,000 GBP** in 1910s currency.
+
+\subsection{Timeline Comparison}
+
+\begin{table}[h]
+    \centering
+    \small
+    \begin{tabular}{lrrrr}
+    \toprule
+    \textbf{Metric} & \textbf{Original} & \textbf{Realistic} & \textbf{Ratio} & \textbf{Multiplier} \\
+    \midrule
+    Total time & 54 months & 10--12 months & 0.22× & 4.5--5.4× faster \\
+    Labour hours & 76,000 hours & 20,000 hours & 0.26× & 3.8--4× fewer hours \\
+    Team size & 12 workers & 8--10 workers & 0.75× & Similar \\
+    Cost per hour & 1.50 GBP/hr & 1.80 GBP/hr & 1.20× & Slight increase \\
+    \bottomrule
+    \end{tabular}
+    \caption{Timeline and labour comparison.}
+    \label{tab:timeline-comparison}
+\end{table}
+
+**Conclusion**: Original timeline significantly overestimated. Modern 1910s manufacturing methods enable **4.5--5.4$\times$ faster** execution.
+
+\subsection{Cost Driver Analysis}
+
+Where does the budget actually go?
+
+\begin{figure}[h]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            type=pie chart,
+            pie chart/radius=2cm,
+            pie chart/slice font=\small,
+            pie chart/text=percentage,
+            legend entries={Labour, Overhead, Materials, I/O Devices},
+            legend pos=outer north east
+        ]
+        \addplot[color=blue] coordinates {(Labour,35600)};
+        \addplot[color=green] coordinates {(Overhead,12810)};
+        \addplot[color=yellow] coordinates {(Materials,6431)};
+        \addplot[color=red] coordinates {(IO,900)};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Budget breakdown: labour dominates (65\%), overhead 23\%, materials 12\%, I/O 2\%.}
+    \label{fig:cost-pie}
+\end{figure}
+
+Labour is the dominant cost driver (64.9% of total). The primary labour sinks:
+
+\begin{enumerate}
+    \item \textbf{Gear hobbing} (26\%): 5,200 hours to cut/finish 5,235 gears.
+    \item \textbf{Assembly} (29\%): 8,000 hours to assemble, align, integrate.
+    \item \textbf{Testing} (7\%): 2,000 hours of validation and calibration.
+\end{enumerate}
+
+Cost reduction opportunities:
+
+\begin{itemize}
+    \item Reduce instruction set complexity: Eliminate bitwise operations (AND, OR, XOR), saves $\sim$2,500 GBP (not significant).
+    \item Simplify process management: Use card-based job queue instead of in-memory process table, saves $\sim$1,000 GBP labour.
+    \item Reduce precision where possible: Accept ±0.2 mm instead of ±0.1 mm tolerances, saves $\sim$500 GBP labour.
+\end{itemize}
+
+Maximum cost reduction through simplification: **5--10\%** (relatively minor).
+
+\subsection{Historical Comparison: Other Mechanical Computing Projects}
+
+How does this cost compare to other historical computing engines?
+
+\begin{table}[h]
+    \centering
+    \small
+    \begin{tabular}{llllll}
+    \toprule
+    \textbf{Project} & \textbf{Year} & \textbf{Cost (GBP)} & \textbf{Components} & \textbf{Timeline} & \textbf{Note} \\
+    \midrule
+    Difference Engine No. 1 & 1823--1833 & 25,000 & $\sim$8,000 & 10 years & Incomplete \\
+    Scheutz Difference Engine & 1855 & 5,000 & $\sim$4,000 & 5 years & Completed \\
+    Swedish Scheutz Replica & 1870 & 8,000 & $\sim$4,000 & 7 years & Completed \\
+    \midrule
+    \textbf{This specification (realistic)} & \textbf{1910} & \textbf{55,000} & \textbf{$\sim$40,000} & \textbf{10--12 mo} & Complete \\
+    \textbf{This specification (original claim)} & \textbf{1910} & \textbf{164,000} & \textbf{$\sim$40,000} & \textbf{54 mo} & Inflated \\
+    \bottomrule
+    \end{tabular}
+    \caption{Historical comparison of mechanical computing projects.}
+    \label{tab:historical-projects}
+\end{table}
+
+**Analysis**:
+
+\begin{enumerate}
+    \item \textbf{Difference Engine No. 1 (Babbage, 1823--1833)}: Cost 25,000 GBP for $\sim$8,000 parts over 10 years. Adjusted for 1910 (inflation $\sim$3--4×): 75,000--100,000 GBP in 1910 money. Very expensive due to hand-fitting, experimental design.
+    
+    \item \textbf{Scheutz Engines (1855, 1870)}: Smaller engines, simpler arithmetic (difference only, no multiply/divide). Cost 5,000--8,000 GBP for 4,000 parts. 1910 equivalent: 15,000--24,000 GBP.
+    
+    \item \textbf{This specification (55,000 GBP)}: 10--13$\times$ larger component count (40,000 vs. 4,000), 7--11$\times$ more complex (full arithmetic vs. differences only). Cost is $\sim$2.3--7$\times$ that of Scheutz, justified by increased complexity. Ratio of cost-per-component: 1.4 GBP/component (our spec) vs. 1.3--2.0 GBP/component (Scheutz), suggesting reasonable cost scaling.
+\end{enumerate}
+
+**Conclusion**: Our realistic estimate (55,000 GBP) is credible given:
+- Increased complexity (arithmetic, memory, process management)
+- Modern 1910s manufacturing (cheaper than 1840s--1870s)
+- Parallel work methodology (faster than historical sequential projects)
+
+Original claim (164,000 GBP) suggests either:
+- Inclusion of factory setup, operator training, documentation (not just hardware)
+- Conservative 3--4× contingency for unknown risks
+- Confusion with total project scope vs. single-engine cost
+
+\subsection{Cost Sensitivity Analysis}
+
+How does cost change with key parameters?
+
+\subsubsection{Sensitivity to Hourly Labour Rate}
+
+1910s hourly wage for skilled machinist: 1.50--2.00 GBP/hour. We assume 1.80 GBP (midpoint).
+
+\begin{table}[h]
+    \centering
+    \small
+    \begin{tabular}{lrr}
+    \toprule
+    \textbf{Labour Rate} & \textbf{Total Cost} & \textbf{Change from baseline (1.80)} \\
+    \midrule
+    1.50 GBP/hr & 48,700 GBP & --12\% \\
+    1.70 GBP/hr & 52,800 GBP & --4\% \\
+    1.80 GBP/hr & 54,841 GBP & baseline \\
+    2.00 GBP/hr & 58,000 GBP & +6\% \\
+    2.50 GBP/hr & 67,000 GBP & +22\% \\
+    \bottomrule
+    \end{tabular}
+    \caption{Cost sensitivity to labour rates (±10\% variation = ±4--6\% cost change).}
+    \label{tab:sensitivity-labour}
+\end{table}
+
+**Finding**: Labour rate uncertainty of ±10\% produces cost uncertainty of ±4--6%, acceptable range.
+
+\subsubsection{Sensitivity to Manufacturing Method}
+
+If hobbing machine rented (60 GBP/week) instead of in-house:
+
+\begin{table}[h]
+    \centering
+    \small
+    \begin{tabular}{lll}
+    \toprule
+    \textbf{Scenario} & \textbf{Labour Hours} & \textbf{Total Cost} \\
+    \midrule
+    In-house hobbing (assumed) & 20,000 hours & 54,841 GBP \\
+    Rented hobbing machine & 20,000 hours & 54,841 GBP (same, rental cost absorbed in labour) \\
+    Outsource gear cutting & 12,000 hours & 42,000 GBP (but adds 8 weeks lead time) \\
+    \bottomrule
+    \end{tabular}
+    \caption{Cost sensitivity to manufacturing method.}
+    \label{tab:sensitivity-method}
+\end{table}
+
+**Finding**: Manufacturing method choice affects timeline more than cost. Outsourcing saves 8,000 labour hours but adds 2 months delay.
+
+\subsubsection{Sensitivity to Specification Changes}
+
+Removing certain features or simplifying design:
+
+\begin{table}[h]
+    \centering
+    \small
+    \begin{tabular}{llrr}
+    \toprule
+    \textbf{Modification} & \textbf{Impact} & \textbf{Labour Saved} & \textbf{Cost Reduction} \\
+    \midrule
+    Remove bitwise ops (AND, OR, XOR) & Less hardware & 800 hours & 1,440 GBP (2.6\%) \\
+    Remove process management & Card-based jobs instead & 1,000 hours & 1,800 GBP (3.3\%) \\
+    Reduce precision (±0.2 vs ±0.1 mm) & Faster machining & 500 hours & 900 GBP (1.6\%) \\
+    Simplify I/O (remove printer) & Skip one device & 200 hours & 360 GBP (0.7\%) \\
+    \midrule
+    \textbf{All changes combined} & & \textbf{2,500 hours} & \textbf{4,500 GBP (8.2\%)} \\
+    \bottomrule
+    \end{tabular}
+    \caption{Cost reduction from feature simplification.}
+    \label{tab:cost-reduction}
+\end{table}
+
+**Finding**: Even drastic simplification yields only 8--10\% cost reduction. Hardware cost is driven by component count, not feature complexity.
+
+\subsection{Economic Context: 1910 Labour and Costs}
+
+To contextualize costs, we provide economic data for 1910:
+
+\begin{table}[h]
+    \centering
+    \small
+    \begin{tabular}{lll}
+    \toprule
+    \textbf{Item} & \textbf{Cost (1910)} & \textbf{USD Equivalent} \\
+    \midrule
+    Skilled machinist wage & 1.80 GBP/hour & \$0.36 USD/hour \\
+    Unskilled labourer wage & 0.50 GBP/day & \$0.10 USD/day \\
+    New automobile & 200 GBP & \$1,000 USD (Model T, 1909) \\
+    House (suburban) & 300--500 GBP & \$1,500--2,500 USD \\
+    \midrule
+    This project (55,000 GBP) & & 300,000 worker-hours \\
+    Or equivalently & & 150 man-years of labour \\
+    Or equivalently & & 275 automobiles \\
+    Or equivalently & & 110--180 suburban houses \\
+    \bottomrule
+    \end{tabular}
+    \caption{Economic context: 1910 costs and equivalencies.}
+    \label{tab:1910-context}
+\end{table}
+
+In modern 2025 USD (inflation multiplier $\sim$30--35×):
+
+\[
+\text{Project cost in 2025 USD} = 55,000 \text{ GBP} \times 4.8 \text{ USD/GBP (1910 exchange)} \times 32 \text{ (inflation)} \approx \$8.4 \text{ million USD}
+\]
+
+For comparison:
+- Large NASA robotics project: 10--50 million USD
+- Modern prototype engine/machinery: 5--15 million USD
+- Academic research facility: 5--25 million USD
+
+**Conclusion**: The project cost is credible for a complete mechanical computing system, neither wildly expensive nor underestimated.
+

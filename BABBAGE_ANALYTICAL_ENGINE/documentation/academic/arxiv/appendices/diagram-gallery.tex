@@ -1,0 +1,62 @@
+%% Appendix B: Mechanical Diagram Gallery
+
+\section*{Subsystem Visualization}
+
+This appendix contains detailed mechanical diagrams referenced throughout the whitepaper.
+
+\subsection*{System Architecture}
+
+\input{diagrams/01-system-architecture.tikz}
+
+Five primary subsystems connected via central system bus: Mill (arithmetic), Store (memory), Barrel (control), I/O, and Sequencer (process management).
+
+\subsection*{Carry Propagation Mechanism}
+
+\input{diagrams/02-carry-mechanism.tikz}
+
+Mechanical cascade mechanism enabling addition/subtraction across 50 digit positions. Pawls engage sequentially during carry propagation.
+
+\subsection*{Memory Store Organization}
+
+\input{diagrams/03-store-organization.tikz}
+
+2,000 × 50 matrix memory with address decoding and read/write mechanisms. Each digit wheel is a 12mm gear with 10 positions (0--9).
+
+\subsection*{Process Control Block Layout (Table Form)}
+
+See Table \ref{tab:pcb-layout} in Section \ref{sec:unix-mapping} for detailed PCB structure.
+
+\subsection*{Pipe Buffer Implementation}
+
+The pipe mechanism uses a rotating 8-slot drum with independent read/write pointers. Each slot stores one 50-digit number. Mechanical engagement detects empty/full conditions and blocks reader/writer as appropriate.
+
+\subsection*{Digit Wheel Assembly}
+
+Each digit wheel is a precisely cut gear:
+\begin{itemize}
+    \item Diameter: 12 mm
+    \item Material: Hardened steel
+    \item Number of teeth: 10 (representing digits 0--9)
+    \item Tolerance: ±0.15 mm (hobbing accuracy)
+    \item Mounting: Press-fit onto shaft
+\end{itemize}
+
+\subsection*{Bearing Configuration}
+
+Two bearing types used throughout:
+\begin{itemize}
+    \item Timken roller bearings (high-speed drives): Superior load rating, lower friction
+    \item Bronze journal bearings (low-speed): Cost-effective, adequate for carry mechanisms
+\end{itemize}
+
+\subsection*{Assembly Integration Points}
+
+Key interfaces between subsystems:
+\begin{enumerate}
+    \item Mill output to Store write-path
+    \item Store read-path to Mill input
+    \item Barrel to Mill (opcode lines)
+    \item Barrel to Sequencer (process control)
+    \item I/O devices to Store (card data buffering)
+\end{enumerate}
+

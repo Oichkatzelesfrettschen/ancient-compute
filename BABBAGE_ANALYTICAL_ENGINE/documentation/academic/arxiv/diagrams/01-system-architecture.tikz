@@ -1,0 +1,40 @@
+%% System Architecture Diagram
+%% Five primary subsystems of the Babbage Analytical Engine
+
+\begin{tikzpicture}[scale=1.2, node distance=2cm]
+
+% Define subsystem blocks
+\node[block, fill=blue!10, minimum width=2.5cm] (mill) {The Mill\\(Arithmetic Unit)};
+\node[block, fill=green!10, right=3.5cm of mill, minimum width=2.5cm] (store) {The Store\\(Memory)};
+\node[block, fill=yellow!10, below=3cm of mill, minimum width=2.5cm] (barrel) {The Barrel\\(Control)};
+\node[block, fill=purple!10, below=3cm of store, minimum width=2.5cm] (io) {Input/Output\\(I/O)};
+\node[block, fill=red!10, right=3.5cm of barrel, minimum width=2.5cm] (seq) {Sequencer\\(Processes)};
+
+% Central coordination point
+\node[circle, draw=black, thick, fill=white, inner sep=0.3cm] (center) at (1.25,-1.5) {System Bus};
+
+% Draw connections from each subsystem to center
+\draw[thick, ->] (mill) -- (center);
+\draw[thick, ->] (store) -- (center);
+\draw[thick, ->] (barrel) -- (center);
+\draw[thick, ->] (io) -- (center);
+\draw[thick, ->] (seq) -- (center);
+
+% Add labels for data paths
+\node[font=\small, above=0.1cm] at (0.5,-0.8) {50-bit data};
+\node[font=\small, above=0.1cm] at (2,-0.8) {11-bit addr};
+\node[font=\small, above=0.1cm] at (0.5,-2.2) {Control};
+\node[font=\small, above=0.1cm] at (2,-2.2) {Process};
+
+% Add subsystem descriptions
+\node[font=\tiny, below=0.8cm of mill, text width=2.2cm, align=center] {Performs ADD, SUB, MUL, DIV on 50-digit decimals};
+\node[font=\tiny, below=0.8cm of store, text width=2.2cm, align=center] {2,000 × 50 digit matrix, 15s access time};
+\node[font=\tiny, below=0.8cm of barrel, text width=2.2cm, align=center] {Pegged cylinder, 32-instruction ISA};
+\node[font=\tiny, below=0.8cm of io, text width=2.2cm, align=center] {Cards, printer, communication};
+\node[font=\tiny, below=0.8cm of seq, text width=2.2cm, align=center] {Round-robin, 67 processes};
+
+% Add operating frequency annotation
+\node[font=\small, below=5cm] at (1.25,-5) {Operating frequency: $\sim$1 instruction per 8--750 seconds};
+\node[font=\small, below=5.5cm] at (1.25,-5) {(Depends on operation complexity)};
+
+\end{tikzpicture}

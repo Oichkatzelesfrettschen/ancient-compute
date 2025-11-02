@@ -1,0 +1,224 @@
+%% Section: Unix-Like Abstractions Mapping
+%% Maps Unix primitives (processes, pipes, files, signals) to mechanical components
+
+\subsection{Process Abstraction}
+
+In Unix, a process is an isolated execution context with private memory, registers, and execution state. We implement this mechanically using an in-memory process table (process control block, PCB).
+
+\subsubsection{Process Control Block (PCB) Layout}
+
+Each process occupies 14 memory words (700 digits), organized as:
+
+\begin{table}[h]
+    \centering
+    \small
+    \begin{tabular}{llr}
+    \toprule
+    \textbf{Field} & \textbf{Purpose} & \textbf{Size (words)} \\
+    \midrule
+    PID & Process identifier (0--67) & 1 \\
+    PC & Program counter (barrel address) & 1 \\
+    State & READY, RUNNING, BLOCKED, TERMINATED & 1 \\
+    Memory Region & Start address of code/data & 1 \\
+    Register A & Working register A value & 1 \\
+    Register B & Working register B value & 1 \\
+    Register C & Working register C value & 1 \\
+    Register D & Working register D value & 1 \\
+    Stack Pointer & Return stack index (0--15) & 1 \\
+    I/O Wait Flag & Set if blocked on I/O & 1 \\
+    Signal Pending & Bit vector of pending signals & 1 \\
+    Priority & Round-robin scheduling priority & 1 \\
+    CPU Time Used & For accounting/measurement & 1 \\
+    \midrule
+    \textbf{PCB Total} &  & 14 \\
+    \bottomrule
+    \end{tabular}
+    \caption{Process Control Block fields and memory layout.}
+    \label{tab:pcb-layout}
+\end{table}
+
+Memory allocation for process table:
+
+\[
+\text{Process Table Capacity} = \frac{2000 \text{ addresses}}{14 \text{ words/process}} = \lfloor 142 \rfloor \approx 67 \text{ processes}
+\]
+
+However, a practical implementation reserves storage for other data structures (I/O buffers, pipe tables, etc.), reducing effective capacity to 50--67 processes.
+
+\subsubsection{Context Switching Mechanism}
+
+When the Sequencer switches from process $P_i$ to process $P_j$:
+
+\begin{enumerate}
+    \item Save $P_i$ state: Execute PUSH operations to save A, B, C, D, PC, SP registers to return stack.
+    \item Load $P_j$ state: Execute POP operations to restore registers from memory.
+    \item Update Program Counter: Barrel advances to $P_j$'s PC address.
+    \item Resume execution: Sequencer allows program execution on next cycle.
+\end{enumerate}
+
+Context switch latency: $\sim 20$ seconds (10 seconds PUSH + 10 seconds POP).
+
+\subsection{Round-Robin Scheduler}
+
+The Sequencer implements a simple round-robin scheduler:
+
+\begin{algorithm}
+\caption{Round-Robin Process Scheduling}
+\begin{algorithmic}
+\WHILE{machine operating}
+    \STATE current\_process := next\_ready\_process()
+    \STATE IF current\_process.state == BLOCKED THEN
+        \STATE \quad SKIP to next process
+    \ENDIF
+    \STATE context\_switch(current\_process)
+    \STATE run\_process(quantum = 1000 \text{ instructions})
+    \STATE current\_process.state := READY
+    \STATE current\_process.cpu\_time\_used += 1000
+    \STATE advance\_scheduler()
+\ENDWHILE
+\end{algorithmic}
+\end{algorithm}
+
+Time quantum: 1,000 instructions $\times$ 10 seconds/instruction (average) $= 10,000$ seconds $\approx 3$ hours per process per round.
+
+This is extremely coarse-grained by modern standards, but appropriate for mechanical operation.
+
+\subsection{Inter-Process Communication: Pipes}
+
+A pipe is a unidirectional data channel connecting a writer (producer) to a reader (consumer).
+
+\subsubsection{Mechanical Pipe Implementation}
+
+Pipes are implemented as rotating 8-slot mechanical buffer drums:
+
+\begin{table}[h]
+    \centering
+    \small
+    \begin{tabular}{ll}
+    \toprule
+    \textbf{Parameter} & \textbf{Value} \\
+    \midrule
+    Number of slots & 8 \\
+    Slot capacity & 50 digits (1 machine number) \\
+    Total capacity & 8 × 50 = 400 digits \\
+    Read pointer & Independent mechanical register \\
+    Write pointer & Independent mechanical register \\
+    Full flag & Set when write pointer catches read pointer \\
+    Empty flag & Set when pointers equal \\
+    \bottomrule
+    \end{tabular}
+    \caption{Pipe buffer mechanical specification.}
+    \label{tab:pipe-spec}
+\end{table}
+
+\subsubsection{Pipe Operations}
+
+\begin{description}
+    \item[RDPIPE addr] Read from pipe at address. Blocks if empty (sets BLOCKED state, I/O wait flag).
+    \item[WRPIPE addr] Write to pipe at address. Blocks if full (sets BLOCKED state, I/O wait flag).
+\end{description}
+
+Latency: 2--3 seconds per operation (drum advance, pointer check).
+
+\subsubsection{Deadlock Prevention}
+
+Classical pipe deadlock can occur if both reader and writer are blocked. Prevention strategy:
+
+\begin{itemize}
+    \item Maximum 8 pending readers/writers per pipe (enforced by blocking semantics).
+    \item Processes only block after ensuring data availability (no mutual wait).
+    \item Pipe full condition never causes writer to wait indefinitely (only until reader consumes).
+\end{itemize}
+
+\subsection{File System}
+
+Files are stored as Hollerith punched cards with hierarchical directory structure.
+
+\subsubsection{Card Format}
+
+A single card encodes 80 columns × 12 rows = 960 bits $\approx 120$ bytes of data.
+
+\[
+\text{Data per card} = 120 \text{ bytes} = 2.4 \text{ machine words (at 50 digits/word)}
+\]
+
+Therefore, a single machine number (50 digits) spans multiple cards.
+
+\subsubsection{Directory Structure}
+
+Directories are stored as card catalogs (card index metadata):
+
+\begin{table}[h]
+    \centering
+    \small
+    \begin{tabular}{lll}
+    \toprule
+    \textbf{Field} & \textbf{Purpose} & \textbf{Size} \\
+    \midrule
+    Filename & ASCII string (up to 32 chars) & 32 \\
+    File size & Number of cards & 2 \\
+    Permissions & Owner/group/other (9 bits) & 2 \\
+    Card address & First card number in deck & 2 \\
+    Creation date & Card catalog entry date & 1 \\
+    Modification date & Last modified date & 1 \\
+    \bottomrule
+    \end{tabular}
+    \caption{File metadata (card catalog entry).}
+    \label{tab:file-metadata}
+\end{table}
+
+\subsubsection{File Operations}
+
+\begin{description}
+    \item[RDCRD addr] Read card at deck address. Latency: 30 seconds (mechanical card feed).
+    \item[WRPCH addr] Write card (punch). Latency: 30 seconds (mechanical punch).
+\end{description}
+
+\subsection{Signal Mechanism}
+
+Signals are asynchronous notifications for inter-process coordination (SIGTERM, SIGKILL, SIGUSR1, SIGUSR2).
+
+\subsubsection{Signal Delivery}
+
+Signals are delivered via mechanical flip-flops (flag registers) or dedicated signal lines:
+
+\begin{table}[h]
+    \centering
+    \small
+    \begin{tabular}{lll}
+    \toprule
+    \textbf{Signal} & \textbf{Semantics} & \textbf{Mechanical Implementation} \\
+    \midrule
+    SIGTERM & Graceful termination & Flip-flop (catchable) \\
+    SIGKILL & Immediate termination & Control line (uncatchable) \\
+    SIGUSR1, SIGUSR2 & Application-defined & Flip-flops (catchable) \\
+    \bottomrule
+    \end{tabular}
+    \caption{Signal types and mechanical implementation.}
+    \label{tab:signals}
+\end{table}
+
+Signal checking occurs at program counter advance (every cycle).
+
+\subsection{Summary: Mechanical vs. Electronic Unix}
+
+\begin{table}[h]
+    \centering
+    \small
+    \begin{tabular}{lll}
+    \toprule
+    \textbf{Unix Concept} & \textbf{Electronic Impl.} & \textbf{Mechanical Impl.} \\
+    \midrule
+    Process & Memory pages + CPU registers & PCB + memory words \\
+    Context Switch & CPU state save (microseconds) & Mechanical PUSH/POP (seconds) \\
+    Scheduler & Timer interrupt + scheduler code & Barrel sequencer + mechanical timer \\
+    Pipe & RAM buffer + semaphore & Drum buffer + mechanical pointers \\
+    File & Disk blocks + inode & Punched cards + catalog \\
+    Signal & Interrupt flag + handler & Flip-flop + signal line \\
+    \bottomrule
+    \end{tabular}
+    \caption{Mapping Unix concepts to mechanical implementations.}
+    \label{tab:unix-mechanical}
+\end{table}
+
+The key insight: all Unix abstractions are implementable in mechanical form, demonstrating that the concepts are fundamentally algorithmic, independent of physical substrate.

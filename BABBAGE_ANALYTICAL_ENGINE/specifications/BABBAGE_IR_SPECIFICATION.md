@@ -1,9 +1,5 @@
 # Babbage Intermediate Representation (IR) Specification
 
-> **⚠️ NOTE**: This file has been reorganized. The authoritative version is now at:  
-> **[BABBAGE_ANALYTICAL_ENGINE/specifications/BABBAGE_IR_SPECIFICATION.md](./BABBAGE_ANALYTICAL_ENGINE/specifications/BABBAGE_IR_SPECIFICATION.md)**  
-> See [BABBAGE_FILES_MOVED_README.md](./BABBAGE_FILES_MOVED_README.md) for more information.
-
 **Date**: 2025-10-31  
 **Phase**: Week 7 Foundation (Critical Path)  
 **Purpose**: Language-agnostic intermediate representation for all 8 language compilers targeting Babbage Analytical Engine  

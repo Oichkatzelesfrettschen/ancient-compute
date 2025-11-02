@@ -1,0 +1,155 @@
+%% Appendix A: Detailed Instruction Specifications
+
+\section*{Instruction Format and Encoding}
+
+All instructions follow a standardized 50-bit format:
+
+\[
+\text{Instruction} = \underbrace{\text{opcode}}_8 \underbrace{\text{register}}_2 \underbrace{\text{address}}_{\text{11}} \underbrace{\text{immediate}}_{\text{29}}
+\]
+
+\subsection*{Instruction Classes}
+
+\subsubsection*{Class 1: Arithmetic Operations}
+
+\begin{tabular}{lll}
+\toprule
+\textbf{Opcode} & \textbf{Mnemonic} & \textbf{Semantics} \\
+\midrule
+00 & ADD & $\mathrm{REG[D]} \leftarrow \mathrm{REG[A]} + \mathrm{REG[B]}$ \\
+01 & SUB & $\mathrm{REG[D]} \leftarrow \mathrm{REG[A]} - \mathrm{REG[B]}$ \\
+02 & MUL & $\mathrm{REG[D]} \leftarrow \mathrm{REG[A]} \times \mathrm{REG[B]}$ \\
+03 & DIV & $\mathrm{REG[D]} \leftarrow \mathrm{REG[A]} / \mathrm{REG[B]}$ \\
+04 & SQRT & $\mathrm{REG[D]} \leftarrow \sqrt{\mathrm{REG[A]}}$ \\
+05 & CMP & $\mathrm{FLAGS} \leftarrow \mathrm{REG[A]} \; \mathrm{vs} \; \mathrm{REG[B]}$ \\
+\bottomrule
+\end{tabular}
+
+**Timing**: ADD/SUB: 8 seconds. MUL: 400 seconds. DIV: 750 seconds. All on 50-digit decimals.
+
+\subsubsection*{Class 2: Logic Operations}
+
+\begin{tabular}{lll}
+\toprule
+\textbf{Opcode} & \textbf{Mnemonic} & \textbf{Semantics} \\
+\midrule
+06 & AND & $\mathrm{REG[D]} \leftarrow \mathrm{REG[A]} \land \mathrm{REG[B]}$ (bitwise) \\
+07 & OR & $\mathrm{REG[D]} \leftarrow \mathrm{REG[A]} \lor \mathrm{REG[B]}$ (bitwise) \\
+08 & XOR & $\mathrm{REG[D]} \leftarrow \mathrm{REG[A]} \oplus \mathrm{REG[B]}$ (bitwise) \\
+09 & SHL & $\mathrm{REG[D]} \leftarrow \mathrm{REG[A]} \ll N$ (shift left) \\
+0A & SHR & $\mathrm{REG[D]} \leftarrow \mathrm{REG[A]} \gg N$ (shift right) \\
+\bottomrule
+\end{tabular}
+
+**Warning**: Bitwise operations (AND, OR, XOR) are anachronistic; not in original Babbage design.
+
+\subsubsection*{Class 3: Control Flow}
+
+\begin{tabular}{lll}
+\toprule
+\textbf{Opcode} & \textbf{Mnemonic} & \textbf{Semantics} \\
+\midrule
+0B & JMP & $\mathrm{PC} \leftarrow \text{address}$ \\
+0C & JZ & if $\mathrm{FLAGS.zero}$ then $\mathrm{PC} \leftarrow \text{address}$ \\
+0D & JNZ & if $\neg\mathrm{FLAGS.zero}$ then $\mathrm{PC} \leftarrow \text{address}$ \\
+0E & JLT & if $\mathrm{FLAGS.less}$ then $\mathrm{PC} \leftarrow \text{address}$ \\
+0F & JGT & if $\mathrm{FLAGS.greater}$ then $\mathrm{PC} \leftarrow \text{address}$ \\
+10 & JEQ & if $\mathrm{FLAGS.equal}$ then $\mathrm{PC} \leftarrow \text{address}$ \\
+11 & CALL & Push PC; $\mathrm{PC} \leftarrow \text{address}$ \\
+\bottomrule
+\end{tabular}
+
+**Timing**: All branch operations 3 seconds. CALL/RET involve mechanical PUSH/POP: 5 seconds.
+
+\subsubsection*{Class 4: Stack Operations}
+
+\begin{tabular}{lll}
+\toprule
+\textbf{Opcode} & \textbf{Mnemonic} & \textbf{Semantics} \\
+\midrule
+12 & RET & Pop PC from stack, resume \\
+13 & PUSH & Push value (register or immediate) to stack \\
+14 & POP & Pop value from stack to register \\
+15 & RST & Reset stack pointer to 0 \\
+\bottomrule
+\end{tabular}
+
+**Stack**: 16-level hardware return stack (mechanical). Each level stores one 50-digit number. Depth tracking via mechanical counter.
+
+\subsubsection*{Class 5: I/O Operations}
+
+\begin{tabular}{lll}
+\toprule
+\textbf{Opcode} & \textbf{Mnemonic} & \textbf{Semantics} \\
+\midrule
+16 & RDCRD & Read Hollerith card into register \\
+17 & WRPCH & Write register to punch card \\
+18 & WRPRN & Write register to printer \\
+19 & CHKS & Compute and verify checksum on register \\
+\bottomrule
+\end{tabular}
+
+**Timing**: RDCRD/WRPCH: 30 seconds (mechanical card transport). WRPRN: 2.5 seconds (prints one 50-digit number).
+
+\subsubsection*{Class 6: Memory and System}
+
+\begin{tabular}{lll}
+\toprule
+\textbf{Opcode} & \textbf{Mnemonic} & \textbf{Semantics} \\
+\midrule
+1A & LOAD & $\mathrm{REG[D]} \leftarrow \mathrm{MEM[address]}$ \\
+1B & STOR & $\mathrm{MEM[address]} \leftarrow \mathrm{REG[A]}$ \\
+1C & FORK & Create new process (copy current state) \\
+1D & WAIT & Block until child process terminates \\
+1E & PIPE & Create pipe between two processes \\
+1F & SIG & Send signal to process \\
+20 & HALT & Stop execution \\
+\bottomrule
+\end{tabular}
+
+**Timing**: LOAD/STOR: 15 seconds. FORK/WAIT/PIPE/SIG: process management overhead (mechanical).
+
+\subsection*{Register Model}
+
+Four working registers (A, B, C, D), each 50 digits:
+
+\begin{table}[h]
+    \centering
+    \small
+    \begin{tabular}{ll}
+    \toprule
+    \textbf{Register} & \textbf{Purpose} \\
+    \midrule
+    A & Accumulator (primary arithmetic) \\
+    B & Secondary operand \\
+    C & Tertiary operand / address register \\
+    D & Destination (results written here) \\
+    \bottomrule
+    \end{tabular}
+    \caption{Working register purposes.}
+    \label{tab:registers}
+\end{table}
+
+\subsection*{Flags Register}
+
+Conditional branching uses FLAGS register (8 bits):
+
+\begin{table}[h]
+    \centering
+    \small
+    \begin{tabular}{lll}
+    \toprule
+    \textbf{Flag} & \textbf{Set when} & \textbf{Cleared when} \\
+    \midrule
+    ZERO & Result equals 0 & Result non-zero \\
+    SIGN & Result negative & Result positive or zero \\
+    CARRY & Arithmetic overflow & No overflow \\
+    EQUAL & Two operands equal (CMP) & Operands unequal \\
+    LESS & First operand $<$ second & Otherwise \\
+    GREATER & First operand $>$ second & Otherwise \\
+    \bottomrule
+    \end{tabular}
+    \caption{Flags set by comparison and arithmetic operations.}
+    \label{tab:flags}
+\end{table}
+
