@@ -235,11 +235,16 @@ See the following for comprehensive information:
 - **[CLAUDE.md](./CLAUDE.md)** - Development guide for Claude Code AI assistants
 - **[AGENTS.md](./AGENTS.md)** - Multi-agent coordination system (5 specialized AI agents)
 
-### Multi-Agent Documentation (New)
+### Multi-Agent Documentation
 - **[MULTI_AGENT_SYNTHESIS.md](./MULTI_AGENT_SYNTHESIS.md)** - Synthesis of all agent outputs, integration analysis
 - **[LANGUAGE_SERVICE_ARCHITECTURE.md](./LANGUAGE_SERVICE_ARCHITECTURE.md)** - Polyglot-Systems-Architect: Multi-language execution architecture
 - **[TYPE_THEORY_CURRICULUM.md](./TYPE_THEORY_CURRICULUM.md)** - Category-Theory-Expert: Type systems across 12,500 years
 - **[PRODUCTION_READINESS_REVIEW.md](./PRODUCTION_READINESS_REVIEW.md)** - PhD-Software-Engineer: Code quality and production readiness
+
+### Operational Guides (New)
+- **[API_DOCUMENTATION.md](./API_DOCUMENTATION.md)** - Complete REST/WebSocket API reference with examples
+- **[DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)** - Production deployment (Docker, Kubernetes, monitoring, security)
+- **[TROUBLESHOOTING_GUIDE.md](./TROUBLESHOOTING_GUIDE.md)** - Common issues, diagnostics, and solutions
 
 ### Requirements & Architecture
 - **[requirements.md](./requirements.md)** - Project-wide system and infrastructure requirements
