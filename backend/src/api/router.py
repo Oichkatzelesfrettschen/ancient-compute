@@ -2,21 +2,25 @@
 
 from fastapi import APIRouter
 
-from .code_execution import router as execution_router
+from .code_execution import router as code_execution_router
 from .emulator import router as emulator_router
 from .timeline import router as timeline_router
+from .execution import router as exercise_execution_router
 
 # Create main API router
 api_router = APIRouter()
 
 # Include code execution routes
-api_router.include_router(execution_router)
+api_router.include_router(code_execution_router)
 
 # Include emulator routes
 api_router.include_router(emulator_router)
 
 # Include timeline content delivery routes
 api_router.include_router(timeline_router)
+
+# Include exercise execution routes (code submission and validation)
+api_router.include_router(exercise_execution_router)
 
 
 @api_router.get("/status")
