@@ -11,6 +11,7 @@ from typing import List, Tuple, Optional, Dict, Any
 
 from .base_executor import ExecutionResult, ExecutionStatus
 from .docker_manager import DockerManager
+from .docker_executor import ExecutorRegistry
 
 
 # Language service mappings to Docker images and configurations
@@ -92,12 +93,13 @@ class ExecutionOrchestrator:
         """
         language = language.lower()
 
-        if language not in self.language_config:
+        # Check if language is supported
+        if not ExecutorRegistry.is_supported(language):
             return ExecutionResult(
                 status=ExecutionStatus.RUNTIME_ERROR,
                 stdout="",
                 stderr=f"Language '{language}' not supported. "
-                f"Supported: {', '.join(self.language_config.keys())}",
+                f"Supported: {', '.join(ExecutorRegistry.list_supported_languages())}",
             )
 
         # Get execution constraints from exercise
@@ -106,19 +108,26 @@ class ExecutionOrchestrator:
             execution_timeout = exercise.time_limit_seconds
 
         try:
-            # Execute using docker manager with appropriate constraints
-            loop = asyncio.get_event_loop()
+            # Get executor for language with appropriate timeout
+            executor = ExecutorRegistry.get_executor(
+                language,
+                timeout=execution_timeout,
+            )
+
+            if executor is None:
+                return ExecutionResult(
+                    status=ExecutionStatus.RUNTIME_ERROR,
+                    stdout="",
+                    stderr=f"Failed to create executor for language '{language}'",
+                )
+
+            # Execute code with timeout
             result = await asyncio.wait_for(
-                loop.run_in_executor(
-                    None,
-                    self._execute_with_docker,
-                    code,
-                    language,
-                    execution_timeout,
-                ),
+                executor.execute(code),
                 timeout=execution_timeout + 5,  # Give buffer beyond service timeout
             )
             return result
+
         except asyncio.TimeoutError:
             return ExecutionResult(
                 status=ExecutionStatus.TIMEOUT,
@@ -132,67 +141,6 @@ class ExecutionOrchestrator:
                 stderr=f"Execution error: {str(e)}",
             )
 
-    def _execute_with_docker(
-        self,
-        code: str,
-        language: str,
-        timeout: int,
-    ) -> ExecutionResult:
-        """
-        Execute code using Docker with appropriate image and constraints.
-
-        Note: This is synchronous because it needs to interact with the blocking
-        Docker daemon. Called from async context via executor.
-        """
-        config = self.language_config[language]
-        image = config["image"]
-
-        # Check backend availability
-        backend = self.docker_manager.get_backend_for_language(language)
-        if not self.docker_manager.backends[backend].available:
-            return ExecutionResult(
-                status=ExecutionStatus.RUNTIME_ERROR,
-                stdout="",
-                stderr=self.docker_manager.backends[backend].reason,
-            )
-
-        # For now, use a simple approach: run as Python subprocess
-        # In production, would use Docker with BaseExecutor
-        try:
-            import subprocess
-            import tempfile
-
-            with tempfile.NamedTemporaryFile(mode="w", suffix=config["extensions"]) as f:
-                f.write(code)
-                f.flush()
-
-                # Run code with resource limits
-                result = subprocess.run(
-                    [f"python3", f.name],
-                    capture_output=True,
-                    text=True,
-                    timeout=timeout,
-                )
-
-                return ExecutionResult(
-                    status=ExecutionStatus.SUCCESS if result.returncode == 0 else ExecutionStatus.RUNTIME_ERROR,
-                    stdout=result.stdout[:10000],
-                    stderr=result.stderr[:10000],
-                    execution_time=0.0,  # Would be measured from Docker metrics
-                    exit_code=result.returncode,
-                )
-        except subprocess.TimeoutExpired:
-            return ExecutionResult(
-                status=ExecutionStatus.TIMEOUT,
-                stdout="",
-                stderr=f"Execution timeout ({timeout}s exceeded)",
-            )
-        except Exception as e:
-            return ExecutionResult(
-                status=ExecutionStatus.RUNTIME_ERROR,
-                stdout="",
-                stderr=str(e),
-            )
 
     async def validate_test_cases(
         self,
@@ -342,18 +290,21 @@ class ExecutionOrchestrator:
 
     def get_supported_languages(self) -> List[str]:
         """Get list of supported programming languages."""
-        return sorted(list(self.services.keys()))
+        return ExecutorRegistry.list_supported_languages()
 
     def get_language_info(self, language: str) -> Optional[Dict[str, Any]]:
         """Get information about a specific language service."""
         language = language.lower()
-        if language not in self.services:
+        if not ExecutorRegistry.is_supported(language):
             return None
 
-        service = self.services[language]
+        executor = ExecutorRegistry.get_executor(language)
+        if executor is None:
+            return None
+
         return {
             "language": language,
-            "service_class": service.__class__.__name__,
-            "timeout": getattr(service, "timeout", 10),
-            "memory_limit": getattr(service, "memory_limit", 128),
+            "executor_class": executor.__class__.__name__,
+            "timeout": executor.timeout,
+            "docker_image": executor.docker_image,
         }

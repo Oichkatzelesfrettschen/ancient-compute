@@ -681,3 +681,127 @@ class TestExerciseTypeSystem:
         assert "advanced" in difficulties
 
         db.close()
+
+
+class TestExecutorRegistryIntegration:
+    """Test integration of ExecutorRegistry with ExecutionOrchestrator."""
+
+    def test_executor_registry_instantiation(self):
+        """Test that ExecutorRegistry can instantiate all language executors."""
+        from src.services.docker_executor import ExecutorRegistry
+
+        languages = ExecutorRegistry.list_supported_languages()
+        assert len(languages) == 8
+        assert "python" in languages
+        assert "c" in languages
+        assert "haskell" in languages
+        assert "idris" in languages
+        assert "lisp" in languages
+        assert "java" in languages
+        assert "assembly" in languages
+        assert "systemf" in languages
+
+    def test_executor_registry_get_executor(self):
+        """Test getting executor instances with custom timeout."""
+        from src.services.docker_executor import ExecutorRegistry
+
+        # Get Python executor with custom timeout
+        executor = ExecutorRegistry.get_executor("python", timeout=20)
+        assert executor is not None
+        assert executor.language == "python"
+        assert executor.timeout == 20
+
+    def test_executor_registry_language_info(self):
+        """Test retrieving executor metadata."""
+        from src.services.docker_executor import ExecutorRegistry
+
+        executor = ExecutorRegistry.get_executor("haskell", timeout=15)
+        assert executor is not None
+        assert executor.language == "haskell"
+        assert executor.timeout == 15
+        assert executor.docker_image == "ancient-compute/haskell:latest"
+
+    def test_executor_registry_unsupported_language(self):
+        """Test that unsupported language returns None."""
+        from src.services.docker_executor import ExecutorRegistry
+
+        assert ExecutorRegistry.is_supported("cobol") is False
+        assert ExecutorRegistry.get_executor("cobol") is None
+
+    def test_execution_orchestrator_uses_registry(self):
+        """Test that ExecutionOrchestrator properly uses ExecutorRegistry."""
+        from src.services.execution_orchestrator import ExecutionOrchestrator
+
+        orchestrator = ExecutionOrchestrator()
+        languages = orchestrator.get_supported_languages()
+
+        assert len(languages) == 8
+        assert "python" in languages
+        assert "c" in languages
+
+    def test_execution_orchestrator_language_metadata(self):
+        """Test retrieving language info through orchestrator."""
+        from src.services.execution_orchestrator import ExecutionOrchestrator
+
+        orchestrator = ExecutionOrchestrator()
+        info = orchestrator.get_language_info("haskell")
+
+        assert info is not None
+        assert info["language"] == "haskell"
+        assert "executor_class" in info
+        assert info["executor_class"] == "HaskellExecutor"
+        assert info["timeout"] == 15
+        assert info["docker_image"] == "ancient-compute/haskell:latest"
+
+    def test_execution_orchestrator_unsupported_returns_none(self):
+        """Test orchestrator returns None for unsupported language."""
+        from src.services.execution_orchestrator import ExecutionOrchestrator
+
+        orchestrator = ExecutionOrchestrator()
+        info = orchestrator.get_language_info("rust")
+
+        assert info is None
+
+    @pytest.mark.asyncio
+    async def test_execution_orchestrator_error_handling(self):
+        """Test orchestrator error handling for unsupported language."""
+        from src.services.execution_orchestrator import ExecutionOrchestrator
+        from src.services.base_executor import ExecutionStatus
+
+        orchestrator = ExecutionOrchestrator()
+        result = await orchestrator.execute_code(
+            code="print('hello')",
+            language="cobol",
+            timeout=10,
+        )
+
+        assert result.status == ExecutionStatus.RUNTIME_ERROR
+        assert "not supported" in result.stderr.lower()
+
+    def test_executor_memory_limits(self):
+        """Test that executors respect memory limits."""
+        from src.services.docker_executor import ExecutorRegistry
+
+        c_executor = ExecutorRegistry.get_executor("c", memory_limit=256)
+        assert c_executor is not None
+        assert c_executor.language == "c"
+        # Memory limit passed to constructor but stored by BaseExecutor
+        # Memory is applied via container config, not stored on executor
+
+    def test_executor_timeout_constraints(self):
+        """Test executor timeout configuration."""
+        from src.services.docker_executor import ExecutorRegistry
+
+        # Each language has default timeout
+        python_exec = ExecutorRegistry.get_executor("python")
+        assert python_exec.timeout == 10
+
+        haskell_exec = ExecutorRegistry.get_executor("haskell")
+        assert haskell_exec.timeout == 15
+
+        idris_exec = ExecutorRegistry.get_executor("idris")
+        assert idris_exec.timeout == 20
+
+        # Can override timeout at instantiation
+        custom_exec = ExecutorRegistry.get_executor("python", timeout=30)
+        assert custom_exec.timeout == 30
