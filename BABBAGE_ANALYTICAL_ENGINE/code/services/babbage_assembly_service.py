@@ -141,7 +141,6 @@ class BabbageAssemblyService:
 
 
 if __name__ == "__main__":
-    import asyncio
 
     async def test_assembly():
         """Test Babbage Assembly Service."""
