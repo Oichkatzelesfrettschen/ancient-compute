@@ -8,7 +8,7 @@ Represents the structure of parsed Haskell code with support for:
 - Types: simple types, function types, polymorphic types
 """
 
-from __future__ import annotations
+from __future_ import annotations
 from dataclasses import dataclass
 from typing import List, Optional, Any
 
@@ -283,3 +283,4 @@ class Module:
 
     name: Optional[str]  # Module name (if declared)
     declarations: List[Stmt]  # Top-level declarations and definitions
+

@@ -1,6 +1,7 @@
+---
 name: Minix Metrics
 
-on:
+'on':
   workflow_dispatch:
     inputs:
       iso_path:

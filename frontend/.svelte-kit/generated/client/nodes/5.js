@@ -1,1 +1,1 @@
-export { default as component } from "../../../../src/routes/timeline/+page.svelte";
+export { default as component } from "../../../../src/routes/emulator/3d/+page.svelte";

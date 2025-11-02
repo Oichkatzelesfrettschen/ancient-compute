@@ -1,6 +1,9 @@
 {
 	"/": [],
 	"/about": [],
+	"/emulator": [],
+	"/emulator/3d": [],
+	"/infra/minix": [],
 	"/modules": [],
 	"/timeline": []
 }

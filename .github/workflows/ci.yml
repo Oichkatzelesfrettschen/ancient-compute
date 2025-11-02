@@ -1,7 +1,7 @@
 ---
 # Ancient Compute - CI/CD Pipeline
 name: CI
-on:
+'on':
   push:
     branches: [master, main, develop]
   pull_request:

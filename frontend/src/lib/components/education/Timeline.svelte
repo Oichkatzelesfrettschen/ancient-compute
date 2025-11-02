@@ -259,7 +259,8 @@ function getEraX(index: number): number {
   </div>
 
   <!-- Era details card below timeline -->
-  {#if selectedEraId && eras.find((e) => e.id === selectedEraId) as selectedEra}
+  {@const selectedEra = eras.find((e) => e.id === selectedEraId)}
+  {#if selectedEraId && selectedEra}
     <div class="selected-era-card" style="border-left: 4px solid {selectedEra.color}">
       <div class="era-card-header">
         <h3 class="era-name">{selectedEra.fullName}</h3>
