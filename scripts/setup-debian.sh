@@ -1,5 +1,6 @@
-#!/bin/bash
-set -euo pipefail
+#!/bin/sh
+# shellcheck shell=sh
+set -eu
 
 # Ancient Compute Debian/Linux Setup Script
 
@@ -9,7 +10,7 @@ echo "================================================"
 echo ""
 
 # Check for root privileges
-if [[ $EUID -eq 0 ]]; then
+if [ "$(id -u)" -eq 0 ]; then
    echo "ERROR: This script should NOT be run as root"
    echo "Please run as your regular user"
    exit 1
@@ -55,11 +56,11 @@ chmod +x /tmp/bazelisk
 sudo mv /tmp/bazelisk /usr/local/bin/bazel
 
 # Install Docker if not present
-if ! command -v docker &> /dev/null; then
+if ! command -v docker >/dev/null 2>&1; then
     echo "Installing Docker..."
     curl -fsSL https://get.docker.com -o /tmp/get-docker.sh
     sudo sh /tmp/get-docker.sh
-    sudo usermod -aG docker $USER
+    sudo usermod -aG docker "$(whoami)"
     echo "Docker installed. You'll need to log out and back in for group changes to take effect"
 fi
 

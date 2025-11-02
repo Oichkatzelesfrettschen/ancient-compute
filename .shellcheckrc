@@ -1,0 +1,26 @@
+# ShellCheck Configuration
+# Prefer POSIX sh, fallback to bash
+
+# Target shell (prefer sh, allow bash features when necessary)
+shell=sh
+
+# Enable all optional checks
+enable=all
+
+# Treat warnings as errors (fail on any issue)
+severity=style
+
+# Specific checks to enable
+enable=avoid-nullary-conditions
+enable=check-extra-masked-returns
+enable=check-set-e-suppressed
+enable=check-unassigned-uppercase
+enable=deprecate-which
+enable=quote-safe-variables
+enable=require-double-brackets
+
+# Exclusions (none - we want strict checking)
+# Use inline directives like # shellcheck disable=SC2034 for specific cases only
+
+# Source path for external scripts
+source-path=SCRIPTDIR
