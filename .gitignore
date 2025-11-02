@@ -40,6 +40,12 @@ pnpm-debug.log*
 dist/
 .turbo/
 
+# SvelteKit
+frontend/.svelte-kit/
+frontend/.output/
+frontend/package-lock.json
+frontend/test-results/
+
 # Docker
 .dockerignore.bak
 docker-compose.override.yml
@@ -68,6 +74,7 @@ htmlcov/
 .env.local
 .env.*.local
 *.log
+.claude/settings.local.json
 
 # Database
 *.db
