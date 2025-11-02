@@ -62,9 +62,7 @@ class ExecutionCache:
         content = f"{language}|{code}|{input_data}".encode("utf-8")
         return hashlib.sha256(content).hexdigest()
 
-    def get(
-        self, language: str, code: str, input_data: str = ""
-    ) -> Optional[ExecutionResult]:
+    def get(self, language: str, code: str, input_data: str = "") -> Optional[ExecutionResult]:
         """
         Retrieve cached execution result if available.
 
@@ -92,9 +90,7 @@ class ExecutionCache:
         self.hits += 1
         return entry.result
 
-    def set(
-        self, language: str, code: str, result: ExecutionResult, input_data: str = ""
-    ) -> None:
+    def set(self, language: str, code: str, result: ExecutionResult, input_data: str = "") -> None:
         """
         Store execution result in cache.
 
@@ -139,9 +135,7 @@ class ExecutionCache:
             Number of entries removed
         """
         initial_size = len(self._cache)
-        expired_keys = [
-            key for key, entry in self._cache.items() if entry.is_expired()
-        ]
+        expired_keys = [key for key, entry in self._cache.items() if entry.is_expired()]
         for key in expired_keys:
             del self._cache[key]
         return initial_size - len(self._cache)
@@ -149,9 +143,7 @@ class ExecutionCache:
     def get_stats(self) -> Dict[str, any]:
         """Get cache statistics."""
         total_requests = self.hits + self.misses
-        hit_rate = (
-            self.hits / total_requests if total_requests > 0 else 0
-        )
+        hit_rate = self.hits / total_requests if total_requests > 0 else 0
 
         return {
             "entries": len(self._cache),

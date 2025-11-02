@@ -27,6 +27,7 @@ from backend.src.assembler.assembler import Assembler
 
 class ExecutionStatus(str, Enum):
     """Execution status enumeration."""
+
     SUCCESS = "success"
     COMPILE_ERROR = "compile_error"
     RUNTIME_ERROR = "runtime_error"
@@ -36,6 +37,7 @@ class ExecutionStatus(str, Enum):
 @dataclass
 class CompilationResult:
     """Result of C code compilation."""
+
     status: ExecutionStatus
     stdout: str = ""  # Assembly text or hex dump
     stderr: str = ""  # Error messages
@@ -77,20 +79,17 @@ class CService:
             # Run compilation in thread pool to avoid blocking
             result = await asyncio.wait_for(
                 loop.run_in_executor(self.executor, self._compile_and_assemble, code),
-                timeout=self.timeout_seconds
+                timeout=self.timeout_seconds,
             )
             return result
 
         except asyncio.TimeoutError:
             return CompilationResult(
                 status=ExecutionStatus.TIMEOUT,
-                stderr=f"Compilation timed out after {self.timeout_seconds} seconds"
+                stderr=f"Compilation timed out after {self.timeout_seconds} seconds",
             )
         except Exception as e:
-            return CompilationResult(
-                status=ExecutionStatus.COMPILE_ERROR,
-                stderr=str(e)
-            )
+            return CompilationResult(status=ExecutionStatus.COMPILE_ERROR, stderr=str(e))
 
     def _compile_and_assemble(self, code: str) -> CompilationResult:
         """Internal method: compile C code to machine code.
@@ -102,6 +101,7 @@ class CService:
             CompilationResult with compiled output
         """
         import time
+
         start_time = time.time()
 
         try:
@@ -143,7 +143,7 @@ class CService:
                     status=ExecutionStatus.COMPILE_ERROR,
                     stderr=error_text,
                     assembly_text=complete_assembly,
-                    compilation_time=time.time() - start_time
+                    compilation_time=time.time() - start_time,
                 )
 
             # Format machine code as hex dump
@@ -158,16 +158,17 @@ class CService:
                 ir_text=ir_text,
                 assembly_text=complete_assembly,
                 machine_code=machine_code_hex,
-                compilation_time=time.time() - start_time
+                compilation_time=time.time() - start_time,
             )
 
         except Exception as e:
             import traceback
+
             error_msg = f"{str(e)}\n\n{traceback.format_exc()}"
             return CompilationResult(
                 status=ExecutionStatus.COMPILE_ERROR,
                 stderr=error_msg,
-                compilation_time=time.time() - start_time
+                compilation_time=time.time() - start_time,
             )
 
     def _ir_to_string(self, ir_program: Any) -> str:
@@ -238,20 +239,17 @@ class CService:
         try:
             result = await asyncio.wait_for(
                 loop.run_in_executor(self.executor, self._validate_code, code),
-                timeout=self.timeout_seconds
+                timeout=self.timeout_seconds,
             )
             return result
 
         except asyncio.TimeoutError:
             return {
                 "valid": False,
-                "error": f"Validation timed out after {self.timeout_seconds} seconds"
+                "error": f"Validation timed out after {self.timeout_seconds} seconds",
             }
         except Exception as e:
-            return {
-                "valid": False,
-                "error": str(e)
-            }
+            return {"valid": False, "error": str(e)}
 
     def _validate_code(self, code: str) -> Dict[str, Any]:
         """Internal method: validate C code.
@@ -265,16 +263,9 @@ class CService:
         try:
             # Try to compile - if it succeeds, code is valid
             ir_program = self.c_compiler.compile(code)
-            return {
-                "valid": True,
-                "functions": list(ir_program.functions.keys()),
-                "error": None
-            }
+            return {"valid": True, "functions": list(ir_program.functions.keys()), "error": None}
         except Exception as e:
-            return {
-                "valid": False,
-                "error": str(e)
-            }
+            return {"valid": False, "error": str(e)}
 
     async def get_capabilities(self) -> Dict[str, Any]:
         """Get service capabilities and metadata.
@@ -303,5 +294,5 @@ class CService:
             ],
             "execution_model": "Compile to IR → Assembly → Machine Code",
             "timeout_seconds": self.timeout_seconds,
-            "response_format": "JSON with compilation output and errors"
+            "response_format": "JSON with compilation output and errors",
         }

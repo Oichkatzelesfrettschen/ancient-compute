@@ -13,14 +13,27 @@ Supports:
 from __future__ import annotations
 from typing import Dict, Optional, List, Tuple
 from backend.src.compilers.java_ast import (
-    Type, PrimitiveType, ReferenceType, ArrayType, TypeParameter,
-    Expr, Literal, Variable, FieldAccess, MethodCall, NewExpression,
-    BinaryOp, UnaryOp, InstanceofExpr, CastExpr
+    Type,
+    PrimitiveType,
+    ReferenceType,
+    ArrayType,
+    TypeParameter,
+    Expr,
+    Literal,
+    Variable,
+    FieldAccess,
+    MethodCall,
+    NewExpression,
+    BinaryOp,
+    UnaryOp,
+    InstanceofExpr,
+    CastExpr,
 )
 
 
 class JavaTypeError(Exception):
     """Type error in Java expression"""
+
     pass
 
 
@@ -28,14 +41,10 @@ class JavaTypeSystem:
     """Type system for Java"""
 
     # Primitive type hierarchy
-    PRIMITIVE_TYPES = {
-        'int', 'long', 'short', 'byte', 'float', 'double', 'boolean', 'char', 'void'
-    }
+    PRIMITIVE_TYPES = {"int", "long", "short", "byte", "float", "double", "boolean", "char", "void"}
 
     # Numeric type precedence for operations
-    NUMERIC_PRECEDENCE = {
-        'byte': 1, 'short': 2, 'int': 3, 'long': 4, 'float': 5, 'double': 6
-    }
+    NUMERIC_PRECEDENCE = {"byte": 1, "short": 2, "int": 3, "long": 4, "float": 5, "double": 6}
 
     def __init__(self) -> None:
         self.symbols: Dict[str, Type] = {}
@@ -44,11 +53,11 @@ class JavaTypeSystem:
     def _register_builtins(self) -> None:
         """Register built-in types and methods"""
         # Common types
-        self.symbols['String'] = ReferenceType('String')
-        self.symbols['Object'] = ReferenceType('Object')
-        self.symbols['System'] = ReferenceType('System')
-        self.symbols['Exception'] = ReferenceType('Exception')
-        self.symbols['RuntimeException'] = ReferenceType('RuntimeException')
+        self.symbols["String"] = ReferenceType("String")
+        self.symbols["Object"] = ReferenceType("Object")
+        self.symbols["System"] = ReferenceType("System")
+        self.symbols["Exception"] = ReferenceType("Exception")
+        self.symbols["RuntimeException"] = ReferenceType("RuntimeException")
 
     def register_symbol(self, name: str, type_: Type) -> None:
         """Register symbol with type"""
@@ -67,20 +76,20 @@ class JavaTypeSystem:
             sym = self.lookup_symbol(expr.name)
             if sym:
                 return sym
-            if expr.name == 'this' or expr.name == 'super':
-                return ReferenceType('Object')
+            if expr.name == "this" or expr.name == "super":
+                return ReferenceType("Object")
             raise JavaTypeError(f"Undefined variable: {expr.name}")
 
         if isinstance(expr, FieldAccess):
             obj_type = self.infer_type(expr.object_expr)
             # Field type depends on object type
             # For now, return Object type
-            return ReferenceType('Object')
+            return ReferenceType("Object")
 
         if isinstance(expr, MethodCall):
             # Method return type depends on method signature
             # For now, return Object type
-            return ReferenceType('Object')
+            return ReferenceType("Object")
 
         if isinstance(expr, NewExpression):
             return expr.type_
@@ -92,7 +101,7 @@ class JavaTypeSystem:
             return self._infer_unary_op_type(expr)
 
         if isinstance(expr, InstanceofExpr):
-            return PrimitiveType('boolean')
+            return PrimitiveType("boolean")
 
         if isinstance(expr, CastExpr):
             return expr.target_type
@@ -102,15 +111,15 @@ class JavaTypeSystem:
     def _infer_literal_type(self, value: object) -> Type:
         """Infer type from literal value"""
         if isinstance(value, bool):
-            return PrimitiveType('boolean')
+            return PrimitiveType("boolean")
         elif isinstance(value, int):
-            return PrimitiveType('int')
+            return PrimitiveType("int")
         elif isinstance(value, float):
-            return PrimitiveType('double')
+            return PrimitiveType("double")
         elif isinstance(value, str):
-            return ReferenceType('String')
+            return ReferenceType("String")
         elif value is None:
-            return ReferenceType('null')
+            return ReferenceType("null")
         else:
             raise JavaTypeError(f"Unknown literal type: {type(value)}")
 
@@ -120,25 +129,25 @@ class JavaTypeSystem:
         right_type = self.infer_type(expr.right)
 
         # Comparison operators return boolean
-        if expr.operator in ['<', '>', '<=', '>=', '==', '!=']:
-            return PrimitiveType('boolean')
+        if expr.operator in ["<", ">", "<=", ">=", "==", "!="]:
+            return PrimitiveType("boolean")
 
         # Logical operators return boolean
-        if expr.operator in ['&&', '||']:
-            return PrimitiveType('boolean')
+        if expr.operator in ["&&", "||"]:
+            return PrimitiveType("boolean")
 
         # Arithmetic operators
-        if expr.operator in ['+', '-', '*', '/', '%']:
+        if expr.operator in ["+", "-", "*", "/", "%"]:
             return self._promote_numeric_type(left_type, right_type)
 
         # Bitwise operators
-        if expr.operator in ['&', '|', '^', '<<', '>>', '>>>']:
+        if expr.operator in ["&", "|", "^", "<<", ">>", ">>>"]:
             return self._promote_numeric_type(left_type, right_type)
 
         # String concatenation
-        if expr.operator == '+':
+        if expr.operator == "+":
             if self._is_string_type(left_type) or self._is_string_type(right_type):
-                return ReferenceType('String')
+                return ReferenceType("String")
 
         raise JavaTypeError(f"Unknown binary operator: {expr.operator}")
 
@@ -147,19 +156,19 @@ class JavaTypeSystem:
         operand_type = self.infer_type(expr.operand)
 
         # Logical NOT returns boolean
-        if expr.operator == '!':
-            return PrimitiveType('boolean')
+        if expr.operator == "!":
+            return PrimitiveType("boolean")
 
         # Bitwise NOT
-        if expr.operator == '~':
+        if expr.operator == "~":
             return operand_type
 
         # Unary plus/minus
-        if expr.operator in ['+', '-']:
+        if expr.operator in ["+", "-"]:
             return operand_type
 
         # Increment/decrement
-        if expr.operator in ['++', '--']:
+        if expr.operator in ["++", "--"]:
             return operand_type
 
         raise JavaTypeError(f"Unknown unary operator: {expr.operator}")
@@ -193,15 +202,13 @@ class JavaTypeSystem:
     def _is_numeric_type(self, type_: Type) -> bool:
         """Check if type is numeric"""
         if isinstance(type_, PrimitiveType):
-            return type_.name in {
-                'byte', 'short', 'int', 'long', 'float', 'double', 'char'
-            }
+            return type_.name in {"byte", "short", "int", "long", "float", "double", "char"}
         return False
 
     def _is_string_type(self, type_: Type) -> bool:
         """Check if type is String"""
         if isinstance(type_, ReferenceType):
-            return type_.name == 'String'
+            return type_.name == "String"
         return False
 
     def is_assignable_to(self, from_type: Type, to_type: Type) -> bool:
@@ -211,7 +218,7 @@ class JavaTypeSystem:
             return True
 
         # null can be assigned to any reference type
-        if isinstance(from_type, ReferenceType) and from_type.name == 'null':
+        if isinstance(from_type, ReferenceType) and from_type.name == "null":
             if isinstance(to_type, ReferenceType) or isinstance(to_type, ArrayType):
                 return True
 
@@ -231,7 +238,7 @@ class JavaTypeSystem:
         if isinstance(from_type, ReferenceType) and isinstance(to_type, ReferenceType):
             # Check if from_type is subclass of to_type
             # Simplified: only check for exact match or Object supertype
-            if to_type.name == 'Object':
+            if to_type.name == "Object":
                 return True
             return from_type.name == to_type.name
 
@@ -250,30 +257,31 @@ class JavaTypeSystem:
             return all(self._types_equal(a1, a2) for a1, a2 in zip(t1.type_args, t2.type_args))
 
         if isinstance(t1, ArrayType) and isinstance(t2, ArrayType):
-            return (t1.dimensions == t2.dimensions and
-                    self._types_equal(t1.element_type, t2.element_type))
+            return t1.dimensions == t2.dimensions and self._types_equal(
+                t1.element_type, t2.element_type
+            )
 
         return False
 
     def to_babbage_type(self, type_: Type) -> str:
         """Map Java type to Babbage IR type"""
         if isinstance(type_, PrimitiveType):
-            if type_.name in ('int', 'short', 'byte', 'char'):
-                return 'i64'
-            elif type_.name in ('long',):
-                return 'i64'
-            elif type_.name in ('float', 'double'):
-                return 'f64'
-            elif type_.name == 'boolean':
-                return 'i64'
-            elif type_.name == 'void':
-                return 'void'
+            if type_.name in ("int", "short", "byte", "char"):
+                return "i64"
+            elif type_.name in ("long",):
+                return "i64"
+            elif type_.name in ("float", "double"):
+                return "f64"
+            elif type_.name == "boolean":
+                return "i64"
+            elif type_.name == "void":
+                return "void"
 
         # Reference types are pointers
         if isinstance(type_, ReferenceType) or isinstance(type_, ArrayType):
-            return 'ptr'
+            return "ptr"
 
-        return 'ptr'
+        return "ptr"
 
     def check_method_compatibility(self, param_types: List[Type], arg_types: List[Type]) -> bool:
         """Check if arguments match parameter types"""
@@ -301,9 +309,9 @@ class JavaTypeSystem:
             else:
                 # Find common superclass (simplified to Object)
                 if isinstance(common, ReferenceType) and isinstance(type_, ReferenceType):
-                    if type_.name == 'Object' or common.name == 'Object':
-                        common = ReferenceType('Object')
+                    if type_.name == "Object" or common.name == "Object":
+                        common = ReferenceType("Object")
                     else:
-                        common = ReferenceType('Object')
+                        common = ReferenceType("Object")
 
         return common

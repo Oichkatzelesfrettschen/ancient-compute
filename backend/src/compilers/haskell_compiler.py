@@ -22,29 +22,67 @@ import time
 from backend.src.compilers.haskell_lexer import HaskellLexer
 from backend.src.compilers.haskell_parser import HaskellParser
 from backend.src.compilers.haskell_ast import (
-    Expr, Stmt, Module, FunctionDef, FunctionEquation,
-    Literal, Variable, BinOp, UnaryOp, Lambda, Application,
-    Let, Case, CaseBranch, IfThenElse, List as HList, Tuple as HTuple,
+    Expr,
+    Stmt,
+    Module,
+    FunctionDef,
+    FunctionEquation,
+    Literal,
+    Variable,
+    BinOp,
+    UnaryOp,
+    Lambda,
+    Application,
+    Let,
+    Case,
+    CaseBranch,
+    IfThenElse,
+    List as HList,
+    Tuple as HTuple,
     Constructor,
-    Pattern, PatternLiteral, PatternVariable, PatternConstructor,
-    PatternTuple, PatternList, PatternWildcard,
-    TypeDecl, DataDecl, ClassDecl, InstanceDecl
+    Pattern,
+    PatternLiteral,
+    PatternVariable,
+    PatternConstructor,
+    PatternTuple,
+    PatternList,
+    PatternWildcard,
+    TypeDecl,
+    DataDecl,
+    ClassDecl,
+    InstanceDecl,
 )
 from backend.src.compilers.haskell_types import (
-    HaskellType, HaskellTypeSystem, TypeEnvironment, BabbageTypeMapper
+    HaskellType,
+    HaskellTypeSystem,
+    TypeEnvironment,
+    BabbageTypeMapper,
 )
 from backend.src.ir_types import (
-    Program, Function, BasicBlock, Instruction,
-    Assignment, BinaryOp, Load, Store, Call as IRCall, Return as IRReturn,
-    BranchTerminator, JumpTerminator, ReturnTerminator,
-    VariableValue, Constant as IRConstant, MemoryValue,
-    IRBuilder
+    Program,
+    Function,
+    BasicBlock,
+    Instruction,
+    Assignment,
+    BinaryOp,
+    Load,
+    Store,
+    Call as IRCall,
+    Return as IRReturn,
+    BranchTerminator,
+    JumpTerminator,
+    ReturnTerminator,
+    VariableValue,
+    Constant as IRConstant,
+    MemoryValue,
+    IRBuilder,
 )
 
 
 @dataclass
 class Symbol:
     """Symbol table entry for Haskell compilation"""
+
     name: str
     htype: HaskellType
     scope: str  # 'global', 'parameter', 'local'
@@ -58,7 +96,7 @@ class SymbolTable:
         self.symbols: Dict[str, Symbol] = {}
         self.parent = parent
 
-    def define(self, name: str, htype: HaskellType, scope: str = 'local') -> None:
+    def define(self, name: str, htype: HaskellType, scope: str = "local") -> None:
         """Define symbol in current scope"""
         self.symbols[name] = Symbol(name=name, htype=htype, scope=scope)
 
@@ -135,17 +173,14 @@ class HaskellCompiler:
                 pass
             elif isinstance(stmt, FunctionDef):
                 # Infer function type from first equation
-                htype = HaskellType.function(
-                    HaskellType.var('a'),
-                    HaskellType.var('b')
-                )
-                self.symbol_table.define(stmt.name, htype, scope='global')
+                htype = HaskellType.function(HaskellType.var("a"), HaskellType.var("b"))
+                self.symbol_table.define(stmt.name, htype, scope="global")
                 self.type_env.bind(stmt.name, htype)
             elif isinstance(stmt, DataDecl):
                 # Register data constructors
                 for constructor in stmt.constructors:
                     cons_type = HaskellType(constructor.name)
-                    self.symbol_table.define(constructor.name, cons_type, scope='global')
+                    self.symbol_table.define(constructor.name, cons_type, scope="global")
 
     def _generate_ir_module(self, module: Module) -> Program:
         """Generate IR for module"""
@@ -203,12 +238,14 @@ class HaskellCompiler:
 
         return self.builder.finalize()
 
-    def _compile_equation(self, equation: FunctionEquation, block: BasicBlock, param_names: List[str]) -> None:
+    def _compile_equation(
+        self, equation: FunctionEquation, block: BasicBlock, param_names: List[str]
+    ) -> None:
         """Compile single function equation"""
         # Bind parameters
         for name, pattern in zip(param_names, equation.patterns):
-            htype = HaskellType.var('a')
-            self.symbol_table.define(name, htype, scope='parameter')
+            htype = HaskellType.var("a")
+            self.symbol_table.define(name, htype, scope="parameter")
 
         # Compile guard if present
         if equation.guard:
@@ -217,11 +254,11 @@ class HaskellCompiler:
             else_label = self._gen_label("guard_false")
 
             block.terminator = BranchTerminator(
-                condition='nonzero',
+                condition="nonzero",
                 operand1=guard_operand,
                 operand2=None,
                 true_label=then_label,
-                false_label=else_label
+                false_label=else_label,
             )
 
             then_block = self.builder.new_block(then_label)
@@ -285,19 +322,19 @@ class HaskellCompiler:
 
         # Map Haskell operators to IR operators
         op_map = {
-            '+': 'add',
-            '-': 'sub',
-            '*': 'mul',
-            '/': 'div',
-            '%': 'mod',
-            '^': 'pow',
-            '==': 'eq',
-            '/=': 'ne',
-            '<': 'lt',
-            '<=': 'le',
-            '>': 'gt',
-            '>=': 'ge',
-            '++': 'concat',  # String/list concat
+            "+": "add",
+            "-": "sub",
+            "*": "mul",
+            "/": "div",
+            "%": "mod",
+            "^": "pow",
+            "==": "eq",
+            "/=": "ne",
+            "<": "lt",
+            "<=": "le",
+            ">": "gt",
+            ">=": "ge",
+            "++": "concat",  # String/list concat
         }
 
         ir_op = op_map.get(expr.op, expr.op)
@@ -314,17 +351,15 @@ class HaskellCompiler:
         operand = self._compile_expression(expr.operand, block)
 
         op_map = {
-            '-': 'neg',
-            '+': 'pos',
-            'not': 'not',
+            "-": "neg",
+            "+": "pos",
+            "not": "not",
         }
 
         ir_op = op_map.get(expr.op, expr.op)
 
         temp = self._gen_temp("unop")
-        block.instructions.append(
-            BinaryOp(target=temp, op=ir_op, operand1=operand, operand2=None)
-        )
+        block.instructions.append(BinaryOp(target=temp, op=ir_op, operand1=operand, operand2=None))
 
         return VariableValue(temp)
 
@@ -333,9 +368,7 @@ class HaskellCompiler:
         # For MVP, represent lambda as a function reference
         # Real implementation would create closure object
         temp = self._gen_temp("lambda")
-        block.instructions.append(
-            Assignment(target=temp, source=IRConstant(0))  # Placeholder
-        )
+        block.instructions.append(Assignment(target=temp, source=IRConstant(0)))  # Placeholder
         return VariableValue(temp)
 
     def _compile_application(self, expr: Application, block: BasicBlock):
@@ -344,9 +377,7 @@ class HaskellCompiler:
         args = [self._compile_expression(arg, block) for arg in expr.args]
 
         temp = self._gen_temp("app")
-        block.instructions.append(
-            IRCall(target=temp, function_name=str(expr.func), arguments=args)
-        )
+        block.instructions.append(IRCall(target=temp, function_name=str(expr.func), arguments=args))
 
         return VariableValue(temp)
 
@@ -355,10 +386,8 @@ class HaskellCompiler:
         # Compile bindings
         for name, binding_expr in expr.bindings:
             binding_operand = self._compile_expression(binding_expr, block)
-            block.instructions.append(
-                Assignment(target=name, source=binding_operand)
-            )
-            self.symbol_table.define(name, HaskellType.var('a'), scope='local')
+            block.instructions.append(Assignment(target=name, source=binding_operand))
+            self.symbol_table.define(name, HaskellType.var("a"), scope="local")
 
         # Compile body
         return self._compile_expression(expr.body, block)
@@ -378,18 +407,18 @@ class HaskellCompiler:
                 block.instructions.append(
                     BinaryOp(
                         target=condition_temp,
-                        op='eq',
+                        op="eq",
                         operand1=scrutinee_operand,
-                        operand2=IRConstant(branch.pattern.value)
+                        operand2=IRConstant(branch.pattern.value),
                     )
                 )
 
                 block.terminator = BranchTerminator(
-                    condition='nonzero',
+                    condition="nonzero",
                     operand1=VariableValue(condition_temp),
                     operand2=None,
                     true_label=branch_label,
-                    false_label=next_label
+                    false_label=next_label,
                 )
 
             body_block = self.builder.new_block(branch_label)
@@ -410,28 +439,24 @@ class HaskellCompiler:
         end_label = self._gen_label("if_end")
 
         block.terminator = BranchTerminator(
-            condition='nonzero',
+            condition="nonzero",
             operand1=condition_operand,
             operand2=None,
             true_label=then_label,
-            false_label=else_label
+            false_label=else_label,
         )
 
         # Then branch
         then_block = self.builder.new_block(then_label)
         then_operand = self._compile_expression(expr.then_expr, then_block)
         result_temp = self._gen_temp("if_result")
-        then_block.instructions.append(
-            Assignment(target=result_temp, source=then_operand)
-        )
+        then_block.instructions.append(Assignment(target=result_temp, source=then_operand))
         self.builder.emit_jump(end_label)
 
         # Else branch
         else_block = self.builder.new_block(else_label)
         else_operand = self._compile_expression(expr.else_expr, else_block)
-        else_block.instructions.append(
-            Assignment(target=result_temp, source=else_operand)
-        )
+        else_block.instructions.append(Assignment(target=result_temp, source=else_operand))
         self.builder.emit_jump(end_label)
 
         # End block
@@ -457,9 +482,7 @@ class HaskellCompiler:
         # For MVP, treat like function application
         args = [self._compile_expression(arg, block) for arg in expr.args]
         temp = self._gen_temp("constructor")
-        block.instructions.append(
-            IRCall(target=temp, function_name=expr.name, arguments=args)
-        )
+        block.instructions.append(IRCall(target=temp, function_name=expr.name, arguments=args))
         return VariableValue(temp)
 
     def _gen_temp(self, prefix: str = "temp") -> str:

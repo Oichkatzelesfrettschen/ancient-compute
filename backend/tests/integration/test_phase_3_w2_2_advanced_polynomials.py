@@ -160,8 +160,8 @@ class TestOverflowHandling:
 
         # Just verify we can evaluate without overflow
         assert len(results) == 101
-        assert results[0] == 1      # f(0) = 1
-        assert results[1] == 3      # f(1) = 3
+        assert results[0] == 1  # f(0) = 1
+        assert results[1] == 3  # f(1) = 3
         assert results[100] == 10101  # f(100) = 10000 + 100 + 1
 
 
@@ -369,9 +369,9 @@ class TestStateManagementAdvanced:
         assert len(de.operation_history) == 51 * 6
 
         # Spot-check some results
-        assert results[0] == 1      # f(0) = 1
-        assert results[1] == 3      # f(1) = 3
-        assert results[10] == 111   # f(10) = 100 + 10 + 1
+        assert results[0] == 1  # f(0) = 1
+        assert results[1] == 3  # f(1) = 3
+        assert results[10] == 111  # f(10) = 100 + 10 + 1
         assert results[50] == 2551  # f(50) = 2500 + 50 + 1
 
 

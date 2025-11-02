@@ -80,12 +80,7 @@ class TestPolynomialExecution:
         client.post("/api/initialize")
 
         response = client.post(
-            "/api/execute",
-            json={
-                "coefficients": [1, 2],
-                "x_range": [1, 5],
-                "execution_speed": 1.0
-            }
+            "/api/execute", json={"coefficients": [1, 2], "x_range": [1, 5], "execution_speed": 1.0}
         )
 
         assert response.status_code == 200
@@ -107,11 +102,7 @@ class TestPolynomialExecution:
 
         response = client.post(
             "/api/execute",
-            json={
-                "coefficients": [1, 0, 1],
-                "x_range": [1, 5],
-                "execution_speed": 1.0
-            }
+            json={"coefficients": [1, 0, 1], "x_range": [1, 5], "execution_speed": 1.0},
         )
 
         assert response.status_code == 200
@@ -130,11 +121,7 @@ class TestPolynomialExecution:
 
         response = client.post(
             "/api/execute",
-            json={
-                "coefficients": [0, 0, 0, 1],
-                "x_range": [1, 5],
-                "execution_speed": 1.0
-            }
+            json={"coefficients": [0, 0, 0, 1], "x_range": [1, 5], "execution_speed": 1.0},
         )
 
         assert response.status_code == 200
@@ -152,12 +139,7 @@ class TestPolynomialExecution:
         client.post("/api/initialize")
 
         response = client.post(
-            "/api/execute",
-            json={
-                "coefficients": [1, 2],
-                "x_range": [3, 3],
-                "execution_speed": 1.0
-            }
+            "/api/execute", json={"coefficients": [1, 2], "x_range": [3, 3], "execution_speed": 1.0}
         )
 
         assert response.status_code == 200
@@ -173,11 +155,7 @@ class TestPolynomialExecution:
 
         response = client.post(
             "/api/execute",
-            json={
-                "coefficients": [1, 2],
-                "x_range": [-5, 5],
-                "execution_speed": 1.0
-            }
+            json={"coefficients": [1, 2], "x_range": [-5, 5], "execution_speed": 1.0},
         )
 
         assert response.status_code == 200
@@ -191,11 +169,7 @@ class TestPolynomialExecution:
 
         response = client.post(
             "/api/execute",
-            json={
-                "coefficients": [1, 2],
-                "x_range": [10, 5],
-                "execution_speed": 1.0
-            }
+            json={"coefficients": [1, 2], "x_range": [10, 5], "execution_speed": 1.0},
         )
 
         assert response.status_code == 200
@@ -208,12 +182,7 @@ class TestPolynomialExecution:
         client.post("/api/initialize")
 
         response = client.post(
-            "/api/execute",
-            json={
-                "coefficients": [1, 2],
-                "x_range": [1, 2],
-                "execution_speed": 1.0
-            }
+            "/api/execute", json={"coefficients": [1, 2], "x_range": [1, 2], "execution_speed": 1.0}
         )
 
         assert response.status_code == 200
@@ -228,12 +197,7 @@ class TestPolynomialExecution:
         """GET /api/results should return execution history"""
         client.post("/api/initialize")
         client.post(
-            "/api/execute",
-            json={
-                "coefficients": [1, 2],
-                "x_range": [1, 5],
-                "execution_speed": 1.0
-            }
+            "/api/execute", json={"coefficients": [1, 2], "x_range": [1, 5], "execution_speed": 1.0}
         )
 
         response = client.get("/api/results")
@@ -266,13 +230,7 @@ class TestDebugger:
         """POST /api/debug/breakpoint should create cycle breakpoint"""
         client.post("/api/initialize")
 
-        response = client.post(
-            "/api/debug/breakpoint",
-            json={
-                "type": "CYCLE",
-                "cycle_target": 100
-            }
-        )
+        response = client.post("/api/debug/breakpoint", json={"type": "CYCLE", "cycle_target": 100})
 
         assert response.status_code == 200
         data = response.json()
@@ -285,11 +243,7 @@ class TestDebugger:
         client.post("/api/initialize")
 
         response = client.post(
-            "/api/debug/breakpoint",
-            json={
-                "type": "PHASE",
-                "phase_target": "CARRY"
-            }
+            "/api/debug/breakpoint", json={"type": "PHASE", "phase_target": "CARRY"}
         )
 
         assert response.status_code == 200
@@ -302,11 +256,7 @@ class TestDebugger:
         client.post("/api/initialize")
 
         response = client.post(
-            "/api/debug/breakpoint",
-            json={
-                "type": "VALUE_CHANGE",
-                "variable_name": "accumulator"
-            }
+            "/api/debug/breakpoint", json={"type": "VALUE_CHANGE", "variable_name": "accumulator"}
         )
 
         assert response.status_code == 200
@@ -320,8 +270,7 @@ class TestDebugger:
 
         # Create breakpoint
         bp_response = client.post(
-            "/api/debug/breakpoint",
-            json={"type": "CYCLE", "cycle_target": 50}
+            "/api/debug/breakpoint", json={"type": "CYCLE", "cycle_target": 50}
         )
         bp_id = bp_response.json()["breakpointId"]
 
@@ -337,8 +286,7 @@ class TestDebugger:
 
         # Create breakpoint
         bp_response = client.post(
-            "/api/debug/breakpoint",
-            json={"type": "CYCLE", "cycle_target": 50}
+            "/api/debug/breakpoint", json={"type": "CYCLE", "cycle_target": 50}
         )
         bp_id = bp_response.json()["breakpointId"]
 
@@ -354,8 +302,7 @@ class TestDebugger:
 
         # Create breakpoint
         bp_response = client.post(
-            "/api/debug/breakpoint",
-            json={"type": "CYCLE", "cycle_target": 50}
+            "/api/debug/breakpoint", json={"type": "CYCLE", "cycle_target": 50}
         )
         bp_id = bp_response.json()["breakpointId"]
 
@@ -369,13 +316,7 @@ class TestDebugger:
         """POST /api/debug/variable should define debugger variable"""
         client.post("/api/initialize")
 
-        response = client.post(
-            "/api/debug/variable",
-            json={
-                "name": "myvar",
-                "value": 42
-            }
-        )
+        response = client.post("/api/debug/variable", json={"name": "myvar", "value": 42})
 
         assert response.status_code == 200
         data = response.json()
@@ -386,16 +327,10 @@ class TestDebugger:
         client.post("/api/initialize")
 
         # Define variable
-        client.post(
-            "/api/debug/variable",
-            json={"name": "myvar", "value": 42}
-        )
+        client.post("/api/debug/variable", json={"name": "myvar", "value": 42})
 
         # Update it
-        response = client.put(
-            "/api/debug/variable/myvar",
-            json={"name": "myvar", "value": 100}
-        )
+        response = client.put("/api/debug/variable/myvar", json={"name": "myvar", "value": 100})
 
         assert response.status_code == 200
         data = response.json()
@@ -405,10 +340,7 @@ class TestDebugger:
         """POST /api/debug/continue should run until breakpoint"""
         client.post("/api/initialize")
 
-        response = client.post(
-            "/api/debug/continue",
-            json={"max_cycles": 50}
-        )
+        response = client.post("/api/debug/continue", json={"max_cycles": 50})
 
         assert response.status_code == 200
         data = response.json()
@@ -426,12 +358,7 @@ class TestStateConsistency:
 
         # Execute polynomial
         client.post(
-            "/api/execute",
-            json={
-                "coefficients": [1, 2],
-                "x_range": [1, 3],
-                "execution_speed": 1.0
-            }
+            "/api/execute", json={"coefficients": [1, 2], "x_range": [1, 3], "execution_speed": 1.0}
         )
 
         # Get state
@@ -449,12 +376,7 @@ class TestStateConsistency:
 
         # Execute polynomial
         client.post(
-            "/api/execute",
-            json={
-                "coefficients": [1, 2],
-                "x_range": [1, 5],
-                "execution_speed": 1.0
-            }
+            "/api/execute", json={"coefficients": [1, 2], "x_range": [1, 5], "execution_speed": 1.0}
         )
 
         # Get state before reset
@@ -496,22 +418,14 @@ class TestErrorHandling:
         """POST /api/execute should handle uninitialized emulator gracefully"""
         # This test depends on whether endpoint auto-initializes
         response = client.post(
-            "/api/execute",
-            json={
-                "coefficients": [1, 2],
-                "x_range": [1, 5],
-                "execution_speed": 1.0
-            }
+            "/api/execute", json={"coefficients": [1, 2], "x_range": [1, 5], "execution_speed": 1.0}
         )
         # Should either work (auto-init) or fail gracefully
         assert response.status_code in [200, 400]
 
     def test_breakpoint_on_uninitialized_emulator(self):
         """POST /api/debug/breakpoint should handle uninitialized emulator"""
-        response = client.post(
-            "/api/debug/breakpoint",
-            json={"type": "CYCLE", "cycle_target": 50}
-        )
+        response = client.post("/api/debug/breakpoint", json={"type": "CYCLE", "cycle_target": 50})
         # Should either work or fail gracefully
         assert response.status_code in [200, 400]
 
@@ -519,10 +433,7 @@ class TestErrorHandling:
         """POST /api/debug/breakpoint should reject invalid type"""
         client.post("/api/initialize")
 
-        response = client.post(
-            "/api/debug/breakpoint",
-            json={"type": "INVALID_TYPE"}
-        )
+        response = client.post("/api/debug/breakpoint", json={"type": "INVALID_TYPE"})
 
         # Should return error
         assert response.status_code in [200, 400]
@@ -535,12 +446,7 @@ class TestErrorHandling:
         client.post("/api/initialize")
 
         response = client.post(
-            "/api/execute",
-            json={
-                "coefficients": [],
-                "x_range": [1, 5],
-                "execution_speed": 1.0
-            }
+            "/api/execute", json={"coefficients": [], "x_range": [1, 5], "execution_speed": 1.0}
         )
 
         # Should handle gracefully
@@ -552,11 +458,7 @@ class TestErrorHandling:
 
         response = client.post(
             "/api/execute",
-            json={
-                "coefficients": [1000000, 999999],
-                "x_range": [1, 2],
-                "execution_speed": 1.0
-            }
+            json={"coefficients": [1000000, 999999], "x_range": [1, 2], "execution_speed": 1.0},
         )
 
         # Should handle gracefully
@@ -568,11 +470,7 @@ class TestErrorHandling:
 
         response = client.post(
             "/api/execute",
-            json={
-                "coefficients": [1, 2],
-                "x_range": [1, 1000],
-                "execution_speed": 1.0
-            }
+            json={"coefficients": [1, 2], "x_range": [1, 1000], "execution_speed": 1.0},
         )
 
         # Should complete (may be slow)

@@ -11,14 +11,28 @@ Key features:
 from __future__ import annotations
 from typing import Dict, Optional, Tuple
 from backend.src.compilers.systemf_ast import (
-    Type, TypeVar, BaseType, FunctionType, UniversalType,
-    Expr, Var, Literal, Lambda, TypeAbstraction, Application, TypeApplication,
-    IfExpr, LetExpr, FixExpr, Annotation
+    Type,
+    TypeVar,
+    BaseType,
+    FunctionType,
+    UniversalType,
+    Expr,
+    Var,
+    Literal,
+    Lambda,
+    TypeAbstraction,
+    Application,
+    TypeApplication,
+    IfExpr,
+    LetExpr,
+    FixExpr,
+    Annotation,
 )
 
 
 class SystemFTypeError(Exception):
     """Type error in System F expression"""
+
     pass
 
 
@@ -118,11 +132,11 @@ class SystemFTypeSystem:
         if isinstance(t1, TypeVar) and isinstance(t2, TypeVar):
             return t1.name == t2.name
         if isinstance(t1, FunctionType) and isinstance(t2, FunctionType):
-            return (self._types_equal(t1.arg_type, t2.arg_type) and
-                    self._types_equal(t1.return_type, t2.return_type))
+            return self._types_equal(t1.arg_type, t2.arg_type) and self._types_equal(
+                t1.return_type, t2.return_type
+            )
         if isinstance(t1, UniversalType) and isinstance(t2, UniversalType):
-            return (t1.type_var == t2.type_var and
-                    self._types_equal(t1.body, t2.body))
+            return t1.type_var == t2.type_var and self._types_equal(t1.body, t2.body)
         return False
 
     def _instantiate(self, univ_type: UniversalType, arg_type: Type) -> Type:
@@ -137,15 +151,12 @@ class SystemFTypeSystem:
         elif isinstance(type_, FunctionType):
             return FunctionType(
                 self._substitute(type_.arg_type, var, with_type),
-                self._substitute(type_.return_type, var, with_type)
+                self._substitute(type_.return_type, var, with_type),
             )
         elif isinstance(type_, UniversalType):
             if type_.type_var == var:
                 return type_  # Shadowed variable
-            return UniversalType(
-                type_.type_var,
-                self._substitute(type_.body, var, with_type)
-            )
+            return UniversalType(type_.type_var, self._substitute(type_.body, var, with_type))
         else:
             return type_
 

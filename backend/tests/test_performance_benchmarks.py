@@ -93,10 +93,9 @@ class TestQueryCachePerformance:
 
         # Populate cache
         for i in range(1000):
-            cache._cache[f"exercise:{i}"] = type('Entry', (), {
-                'is_expired': lambda: False,
-                'data': {'id': i}
-            })()
+            cache._cache[f"exercise:{i}"] = type(
+                "Entry", (), {"is_expired": lambda: False, "data": {"id": i}}
+            )()
 
         def lookups():
             for i in range(100):
@@ -109,11 +108,9 @@ class TestQueryCachePerformance:
         cache = QueryCache()
 
         # Populate cache with different patterns
-        for prefix in ['exercise', 'module', 'progress']:
+        for prefix in ["exercise", "module", "progress"]:
             for i in range(100):
-                cache._cache[f"{prefix}:{i}"] = type('Entry', (), {
-                    'is_expired': lambda: False
-                })()
+                cache._cache[f"{prefix}:{i}"] = type("Entry", (), {"is_expired": lambda: False})()
 
         def invalidate():
             # Invalidate exercise entries
@@ -162,10 +159,7 @@ class TestCachingScalability:
     def test_cache_with_many_languages(self):
         """Test cache performance with many different languages."""
         cache = ExecutionCache()
-        languages = [
-            "python", "c", "haskell", "idris", "lisp",
-            "java", "assembly", "systemf"
-        ]
+        languages = ["python", "c", "haskell", "idris", "lisp", "java", "assembly", "systemf"]
 
         # Add items for each language
         result = ExecutionResult(
@@ -257,10 +251,9 @@ class TestMemoryUsage:
 
         # Fill beyond capacity
         for i in range(100):
-            cache._cache[f"key_{i}"] = type('Entry', (), {
-                'is_expired': lambda: False,
-                'created_at': time.time()
-            })()
+            cache._cache[f"key_{i}"] = type(
+                "Entry", (), {"is_expired": lambda: False, "created_at": time.time()}
+            )()
             # Simulate storage within the cache
             if len(cache._cache) > 50:
                 break
@@ -299,10 +292,9 @@ class TestConcurrentAccess:
             for i in range(50):
                 key = f"exercise:{i % 10}"
                 if i % 2 == 0:
-                    cache._cache[key] = type('Entry', (), {
-                        'is_expired': lambda: False,
-                        'created_at': time.time()
-                    })()
+                    cache._cache[key] = type(
+                        "Entry", (), {"is_expired": lambda: False, "created_at": time.time()}
+                    )()
                 else:
                     cache._cache.get(key)
 
@@ -313,6 +305,7 @@ class TestConcurrentAccess:
 @pytest.fixture
 def benchmark(request):
     """Simple benchmark fixture for performance tests."""
+
     def wrapper(func, *args, **kwargs):
         start = time.perf_counter()
         for _ in range(10):  # Run 10 times
@@ -321,4 +314,5 @@ def benchmark(request):
         elapsed = (end - start) / 10  # Average time
         print(f"\n{request.node.name}: {elapsed*1000:.2f}ms")
         return elapsed
+
     return wrapper

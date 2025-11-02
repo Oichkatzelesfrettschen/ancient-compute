@@ -6,6 +6,7 @@ from typing import Dict
 @dataclass
 class ResourceLimit:
     """Resource limits for language execution"""
+
     memory_mb: int
     cpu_percent: int
     timeout_seconds: int
@@ -23,7 +24,7 @@ LANGUAGE_LIMITS: Dict[str, ResourceLimit] = {
         max_processes=1,
         max_files=10,
         max_file_size_mb=1,
-        network_enabled=False
+        network_enabled=False,
     ),
     "python": ResourceLimit(
         memory_mb=256,
@@ -32,7 +33,7 @@ LANGUAGE_LIMITS: Dict[str, ResourceLimit] = {
         max_processes=1,
         max_files=5,
         max_file_size_mb=1,
-        network_enabled=False
+        network_enabled=False,
     ),
     "haskell": ResourceLimit(
         memory_mb=512,
@@ -41,7 +42,7 @@ LANGUAGE_LIMITS: Dict[str, ResourceLimit] = {
         max_processes=1,
         max_files=20,
         max_file_size_mb=5,
-        network_enabled=False
+        network_enabled=False,
     ),
     "idris": ResourceLimit(
         memory_mb=512,
@@ -50,7 +51,7 @@ LANGUAGE_LIMITS: Dict[str, ResourceLimit] = {
         max_processes=1,
         max_files=20,
         max_file_size_mb=5,
-        network_enabled=False
+        network_enabled=False,
     ),
     "lisp": ResourceLimit(
         memory_mb=256,
@@ -59,7 +60,7 @@ LANGUAGE_LIMITS: Dict[str, ResourceLimit] = {
         max_processes=1,
         max_files=10,
         max_file_size_mb=1,
-        network_enabled=False
+        network_enabled=False,
     ),
     "assembly": ResourceLimit(
         memory_mb=64,
@@ -68,7 +69,7 @@ LANGUAGE_LIMITS: Dict[str, ResourceLimit] = {
         max_processes=1,
         max_files=5,
         max_file_size_mb=1,
-        network_enabled=False
+        network_enabled=False,
     ),
     "java": ResourceLimit(
         memory_mb=256,
@@ -77,7 +78,7 @@ LANGUAGE_LIMITS: Dict[str, ResourceLimit] = {
         max_processes=5,
         max_files=20,
         max_file_size_mb=5,
-        network_enabled=False
+        network_enabled=False,
     ),
     "systemf": ResourceLimit(
         memory_mb=128,
@@ -86,8 +87,8 @@ LANGUAGE_LIMITS: Dict[str, ResourceLimit] = {
         max_processes=1,
         max_files=10,
         max_file_size_mb=1,
-        network_enabled=False
-    )
+        network_enabled=False,
+    ),
 }
 
 

@@ -6,14 +6,31 @@ from __future__ import annotations
 from typing import Dict, Optional
 
 from backend.src.ir_types import (
-    IRType, Value, Constant, VariableValue, UndefValue,
-    BasicBlock, Function, Program, IRBuilder
+    IRType,
+    Value,
+    Constant,
+    VariableValue,
+    UndefValue,
+    BasicBlock,
+    Function,
+    Program,
+    IRBuilder,
 )
 from backend.src.compilers.systemf_lexer import SystemFLexer
 from backend.src.compilers.systemf_parser import SystemFParser
 from backend.src.compilers.systemf_ast import (
-    Type, Expr, Var, Literal, Lambda, TypeAbstraction, Application, TypeApplication,
-    IfExpr, LetExpr, FixExpr, Annotation
+    Type,
+    Expr,
+    Var,
+    Literal,
+    Lambda,
+    TypeAbstraction,
+    Application,
+    TypeApplication,
+    IfExpr,
+    LetExpr,
+    FixExpr,
+    Annotation,
 )
 from backend.src.compilers.systemf_types import SystemFTypeSystem
 
