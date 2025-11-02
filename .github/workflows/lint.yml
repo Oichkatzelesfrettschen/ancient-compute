@@ -2,7 +2,7 @@
 # Comprehensive Linting Workflow - Warnings as Errors
 name: Lint All Languages
 
-on:
+'on':
   push:
     branches: [master, main, develop]
   pull_request:
