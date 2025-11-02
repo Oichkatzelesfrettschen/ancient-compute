@@ -55,12 +55,12 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
+          cache-dependency-path: backend/requirements.txt
 
       - name: Install linting tools
         run: |
           cd backend
           pip install -r requirements.txt
-          pip install black isort pylint mypy flake8 bandit safety
 
       - name: Run black (code formatting)
         run: |
@@ -118,7 +118,9 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install pnpm
-        run: npm install -g pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -133,25 +135,19 @@ jobs:
       - name: Run ESLint
         run: |
           cd frontend
-          pnpm eslint . --ext .js,.ts,.svelte --max-warnings 0
+          pnpm run lint:ci
         # Fail on any warnings
 
       - name: Run Prettier
         run: |
           cd frontend
-          pnpm prettier --check .
+          pnpm run format:check
         # Fail on formatting issues
-
-      - name: Run TypeScript compiler
-        run: |
-          cd frontend
-          pnpm tsc --noEmit --strict
-        # Fail on type errors
 
       - name: Run Svelte check
         run: |
           cd frontend
-          pnpm svelte-check --fail-on-warnings
+          pnpm run check
         # Fail on Svelte-specific issues
 
   # C Language Services
