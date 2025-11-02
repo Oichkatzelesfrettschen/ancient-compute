@@ -1,5 +1,29 @@
 # Ancient Compute Backend Dockerfile
-# Multi-stage build for development and production
+# Optimized multi-stage build for caching and production deployment
+
+# Stage 0: Dependencies base image
+FROM python:3.11-slim AS dependencies
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Stage 1: Builder
+FROM dependencies AS builder
+
+WORKDIR /app
+COPY requirements.txt .
+
+# Create virtual environment and install dependencies
+RUN python -m venv /opt/venv && \
+    /opt/venv/bin/pip install --upgrade pip && \
+    /opt/venv/bin/pip install --no-cache-dir -r requirements.txt
 
 # Base stage - common dependencies
 FROM python:3.11-slim AS base
@@ -8,13 +32,17 @@ FROM python:3.11-slim AS base
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PATH="/opt/venv/bin:$PATH"
 
 # Create non-root user
 RUN groupadd -g 1000 appuser && \
     useradd -u 1000 -g appuser -s /bin/bash -m appuser
 
 WORKDIR /app
+
+# Copy venv from builder
+COPY --from=builder /opt/venv /opt/venv
 
 # Development stage
 FROM base AS development
