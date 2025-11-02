@@ -1,4 +1,4 @@
-"""
+r"""
 Haskell Lexer - Tokenizes Haskell source code
 
 Handles:
