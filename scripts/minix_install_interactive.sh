@@ -4,7 +4,7 @@ set -euo pipefail
 # Interactive MINIX installation helper.
 # Launches the minix-analysis Docker image with VNC port exposed for manual setup.
 
-ARCH="i386"        # i386 | arm
+ARCH="i386"       # i386 | arm
 ISO=""
 OUT="metrics/minix"
 NAME="minix-install"
@@ -44,7 +44,12 @@ done
 # Resolve paths
 ISO_ABS="$(readlink -f "$ISO")"
 OUT_ABS="$(readlink -f "$OUT")"
-mkdir -p "$OUT_ABS/$ARCH"
+MEAS_DIR="$OUT_ABS/$ARCH"
+RUNTIME_DIR="$MEAS_DIR/runtime"
+mkdir -p "$MEAS_DIR" "$RUNTIME_DIR"
+
+# Prepare runtime directory with ISO copy
+cp -f "$ISO_ABS" "$RUNTIME_DIR/minix_R3.4.0-rc6.iso"
 
 # Pick Dockerfile based on arch
 case "$ARCH" in
@@ -66,12 +71,11 @@ echo "    ISO: ${ISO_ABS}"
 echo "    Measurements: ${OUT_ABS}"
 set +e; docker rm -f "${NAME}" >/dev/null 2>&1; set -e
 
-# Publish VNC and optional forwarded ports; mount ISO + measurements
+# Publish VNC and optional forwarded ports; mount prepared runtime dir + measurements
 docker run --name "${NAME}" \
   -p "${VNC_PORT}":5900 -p "${SSH_PORT}":2222 -p "${METRICS_PORT}":9000 \
-  -v "${ISO_ABS}":/minix-runtime/minix_R3.4.0-rc6.iso:ro \
+  -v "${RUNTIME_DIR}":/minix-runtime \
   -v "${OUT_ABS}":/measurements \
   "${IMAGE}"
 
 echo "Container exited. If installation completed, a larger qcow2 should be present in /measurements/${ARCH}."
-

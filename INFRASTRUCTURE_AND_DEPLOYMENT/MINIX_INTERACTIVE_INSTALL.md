@@ -40,6 +40,17 @@ The container will exit once QEMU exits. If successful, a qcow2 disk image will 
 - Check qcow2 image size under `metrics/minix/<arch>/` (should be >100 MB, not ~193 KB).
 - Boot from installed disk (headless): run the orchestrator without ISO boot mode; or repeat interactive script and select disk boot.
 
+### Core Functionality Test (Headless)
+After installation, run metrics orchestrator once; it will boot from the installed disk and capture logs. Verify in `boot.log`:
+- Presence of login prompt (e.g., `login:`)
+- Kernel and scheduler messages
+You can also run an interactive container and choose disk boot to manually log in and run:
+```
+uname -a
+ls /
+df -h
+```
+
 ## Next: Metrics and Boot Profiling
 Once installation is complete, run the metrics orchestrator to profile boot and collect artifacts:
 
@@ -58,6 +69,16 @@ Artifacts:
 - If VNC shows nothing, ensure host port 5900 is free and your VNC client supports VNC without encryption.
 - If qcow2 remains tiny (~193 KB), installation did not complete; rerun and verify each prompt.
 - Without `/dev/kvm`, installation and boot are slower (TCG fallback).
+
+## Alternative (No Docker)
+You can run the installer directly on the host using the minix-analysis scripts:
+```bash
+python3 /home/eirikr/Playground/minix-analysis/docker/minix_auto_install.py \
+  --iso /home/eirikr/Playground/minix-analysis/docker/minix_R3.4.0rc6-d5e4fc0.iso \
+  --disk /home/eirikr/Playground/minix-analysis/docker/minix_installed.qcow2 \
+  --size 2G --memory 512M
+```
+Then boot from disk via QEMU as shown in the minix-analysis guide.
 
 ## Verbose Logging
 - QEMU debug logs are written to `qemu-debug-*.log` in `metrics/minix/<arch>/` by the minix-analysis run script.
