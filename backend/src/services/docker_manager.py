@@ -2,6 +2,7 @@
 Ancient Compute - Docker Manager with Graceful Fallback
 Provides Docker execution with fallback to local restricted execution
 """
+
 import asyncio
 import subprocess
 import tempfile
@@ -15,6 +16,7 @@ from pathlib import Path
 
 class ExecutionBackend(Enum):
     """Available execution backends"""
+
     DOCKER = "docker"
     RESTRICTED_PYTHON = "restricted_python"
     SUBPROCESS = "subprocess"
@@ -24,6 +26,7 @@ class ExecutionBackend(Enum):
 @dataclass
 class BackendInfo:
     """Information about an execution backend"""
+
     backend_type: ExecutionBackend
     available: bool
     reason: str = ""
@@ -39,6 +42,7 @@ class DockerManager:
     Manages Docker containers with graceful fallback to other execution methods.
     Singleton pattern ensures single Docker client instance.
     """
+
     _instance = None
 
     def __new__(cls):
@@ -74,7 +78,7 @@ class DockerManager:
             backend_type=ExecutionBackend.SUBPROCESS,
             available=True,
             reason="Native subprocess execution (limited languages)",
-            capabilities=["python"]  # Only Python via RestrictedPython
+            capabilities=["python"],  # Only Python via RestrictedPython
         )
 
         return backends
@@ -83,6 +87,7 @@ class DockerManager:
         """Check if Docker is available and working"""
         try:
             import docker
+
             self.docker_client = docker.from_env()
 
             # Test connection
@@ -96,14 +101,23 @@ class DockerManager:
                 backend_type=ExecutionBackend.DOCKER,
                 available=True,
                 reason=f"Docker connected (API version: {self.docker_client.version()['ApiVersion']})",
-                capabilities=["c", "python", "haskell", "java", "assembly", "lisp", "idris", "systemf"]
+                capabilities=[
+                    "c",
+                    "python",
+                    "haskell",
+                    "java",
+                    "assembly",
+                    "lisp",
+                    "idris",
+                    "systemf",
+                ],
             )
 
         except ImportError:
             return BackendInfo(
                 backend_type=ExecutionBackend.DOCKER,
                 available=False,
-                reason="Docker Python package not installed. Run: pip install docker"
+                reason="Docker Python package not installed. Run: pip install docker",
             )
 
         except Exception as e:
@@ -112,37 +126,38 @@ class DockerManager:
                 return BackendInfo(
                     backend_type=ExecutionBackend.DOCKER,
                     available=False,
-                    reason="Docker daemon not running. Please start Docker Desktop."
+                    reason="Docker daemon not running. Please start Docker Desktop.",
                 )
             elif "permission denied" in error_msg.lower():
                 return BackendInfo(
                     backend_type=ExecutionBackend.DOCKER,
                     available=False,
-                    reason="Permission denied. Add user to docker group or run with sudo."
+                    reason="Permission denied. Add user to docker group or run with sudo.",
                 )
             else:
                 return BackendInfo(
                     backend_type=ExecutionBackend.DOCKER,
                     available=False,
-                    reason=f"Docker error: {error_msg}"
+                    reason=f"Docker error: {error_msg}",
                 )
 
     def _check_restricted_python(self) -> BackendInfo:
         """Check if RestrictedPython is available"""
         try:
             import RestrictedPython
+
             self.restricted_python_available = True
             return BackendInfo(
                 backend_type=ExecutionBackend.RESTRICTED_PYTHON,
                 available=True,
                 reason="RestrictedPython available for sandboxed Python execution",
-                capabilities=["python"]
+                capabilities=["python"],
             )
         except ImportError:
             return BackendInfo(
                 backend_type=ExecutionBackend.RESTRICTED_PYTHON,
                 available=False,
-                reason="RestrictedPython not installed. Run: pip install RestrictedPython"
+                reason="RestrictedPython not installed. Run: pip install RestrictedPython",
             )
 
     def get_backend_for_language(self, language: str) -> ExecutionBackend:
@@ -208,9 +223,7 @@ class DockerManager:
                 try:
                     print(f"Building Docker image {image_name}...")
                     self.docker_client.images.build(
-                        path=str(Path(dockerfile_path).parent),
-                        tag=image_name,
-                        rm=True
+                        path=str(Path(dockerfile_path).parent), tag=image_name, rm=True
                     )
                     return True
                 except Exception as e:
@@ -258,12 +271,7 @@ class DockerManager:
 
         config = {
             "image": f"ancient-compute/{language}:latest",
-            "volumes": {
-                tmpdir: {
-                    "bind": "/workspace",
-                    "mode": "ro"
-                }
-            },
+            "volumes": {tmpdir: {"bind": "/workspace", "mode": "ro"}},
             "working_dir": "/workspace",
             "mem_limit": "128m",
             "memswap_limit": "128m",

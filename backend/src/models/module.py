@@ -33,7 +33,9 @@ class Module(Base):
     slug = Column(String(100), unique=True, index=True, nullable=False)
     title = Column(String(255), nullable=False)
     description = Column(Text, nullable=False)
-    era_enum = Column(Enum(ModuleEra), nullable=False, index=True)  # Kept for backward compatibility
+    era_enum = Column(
+        Enum(ModuleEra), nullable=False, index=True
+    )  # Kept for backward compatibility
 
     # Chronological ordering
     start_year = Column(Integer, nullable=False)  # Can be negative for BC

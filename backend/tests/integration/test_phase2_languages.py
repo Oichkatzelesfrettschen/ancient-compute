@@ -44,6 +44,7 @@ from backend.src.ir_types import Program, Function, BasicBlock
 # INDIVIDUAL LANGUAGE SERVICE TESTS
 # ==============================================================================
 
+
 class TestJavaLanguageService:
     """Test Java language compilation and validation"""
 
@@ -134,7 +135,7 @@ class TestJavaLanguageService:
         compiler = JavaCompiler()
         program = compiler.compile(source)
         assert isinstance(program, Program)
-        assert hasattr(program, 'functions')
+        assert hasattr(program, "functions")
         assert isinstance(program.functions, (list, dict))
 
 
@@ -153,7 +154,7 @@ class TestIDRIS2LanguageService:
         source = "(n : Nat) -> Vect n Int"
         lexer = IDRIS2Lexer(source)
         tokens = lexer.tokenize()
-        assert any(t.type.name == 'LPAREN' for t in tokens)
+        assert any(t.type.name == "LPAREN" for t in tokens)
 
     def test_idris_compiler_generates_ir(self) -> None:
         """Test that IDRIS2 compiler generates IR"""
@@ -174,7 +175,7 @@ class TestIDRIS2LanguageService:
         tokens = lexer.tokenize()
         # Verify tokens are recognized (colon, arrow, etc.)
         token_types = [t.type.name for t in tokens]
-        assert 'COLON' in token_types or 'ARROW' in token_types
+        assert "COLON" in token_types or "ARROW" in token_types
 
     def test_idris_parser_type_annotation(self) -> None:
         """Test IDRIS2 parser handles type annotations"""
@@ -193,7 +194,9 @@ class TestIDRIS2LanguageService:
         result = ts.lookup_symbol("x")
         # Result is an IDRISType object, check its string representation
         result_str = str(result)
-        assert "nat" in result_str.lower() or (hasattr(result, 'name') and "nat" in result.name.lower())
+        assert "nat" in result_str.lower() or (
+            hasattr(result, "name") and "nat" in result.name.lower()
+        )
 
     def test_idris_ir_generation(self) -> None:
         """Test IDRIS2 IR code generation"""
@@ -201,7 +204,7 @@ class TestIDRIS2LanguageService:
         compiler = IDRIS2Compiler()
         program = compiler.compile(source)
         assert isinstance(program, Program)
-        assert hasattr(program, 'functions')
+        assert hasattr(program, "functions")
 
 
 class TestSystemFLanguageService:
@@ -212,7 +215,7 @@ class TestSystemFLanguageService:
         source = "forall"
         lexer = SystemFLexer(source)
         tokens = lexer.tokenize()
-        assert tokens[0].type.name == 'FORALL'
+        assert tokens[0].type.name == "FORALL"
 
     def test_systemf_lexer_type_lambda(self) -> None:
         """Test System F lexer recognizes type lambda /\\"""
@@ -220,7 +223,7 @@ class TestSystemFLanguageService:
         lexer = SystemFLexer(source)
         tokens = lexer.tokenize()
         token_types = [t.type.name for t in tokens]
-        assert 'TYPE_BACKSLASH' in token_types
+        assert "TYPE_BACKSLASH" in token_types
 
     def test_systemf_universal_type(self) -> None:
         """Test System F universal type parsing"""
@@ -237,7 +240,7 @@ class TestSystemFLanguageService:
         lexer = SystemFLexer(source)
         tokens = lexer.tokenize()
         token_types = [t.type.name for t in tokens]
-        assert 'LBRACKET' in token_types
+        assert "LBRACKET" in token_types
 
     def test_systemf_compiler_generates_ir(self) -> None:
         """Test System F compiler generates IR"""
@@ -273,33 +276,38 @@ class TestSystemFLanguageService:
 # SERVICE FACTORY TESTS
 # ==============================================================================
 
+
 class TestServiceFactory:
     """Test language service factory pattern"""
 
     def test_java_factory_registration(self) -> None:
         """Test Java service factory registration"""
         from backend.src.services.languages.java_service import JavaService
+
         service = JavaService()
         assert service is not None
-        assert hasattr(service, 'execute')
-        assert hasattr(service, 'validate')
-        assert hasattr(service, 'get_capabilities')
+        assert hasattr(service, "execute")
+        assert hasattr(service, "validate")
+        assert hasattr(service, "get_capabilities")
 
     def test_idris_factory_registration(self) -> None:
         """Test IDRIS2 service factory registration"""
         from backend.src.services.languages.idris_service import IDRISService
+
         service = IDRISService()
         assert service is not None
 
     def test_systemf_factory_registration(self) -> None:
         """Test System F service factory registration"""
         from backend.src.services.languages.systemf_service import SystemFService
+
         service = SystemFService()
         assert service is not None
 
     def test_java_service_executor_pool(self) -> None:
         """Test Java service has thread pool executor"""
         from backend.src.services.languages.java_service import JavaService
+
         service = JavaService()
         assert service.executor is not None
         assert service.executor._max_workers > 0
@@ -307,12 +315,14 @@ class TestServiceFactory:
     def test_idris_service_executor_pool(self) -> None:
         """Test IDRIS2 service has thread pool executor"""
         from backend.src.services.languages.idris_service import IDRISService
+
         service = IDRISService()
         assert service.executor is not None
 
     def test_systemf_service_executor_pool(self) -> None:
         """Test System F service has thread pool executor"""
         from backend.src.services.languages.systemf_service import SystemFService
+
         service = SystemFService()
         assert service.executor is not None
 
@@ -321,6 +331,7 @@ class TestServiceFactory:
 # ASYNC SERVICE TESTS
 # ==============================================================================
 
+
 class TestAsyncServices:
     """Test async compilation and service capabilities"""
 
@@ -328,6 +339,7 @@ class TestAsyncServices:
     async def test_java_async_compilation(self) -> None:
         """Test Java service async compilation"""
         from backend.src.services.languages.java_service import JavaService
+
         service = JavaService()
         result = await service.execute("class T {}", timeout=5.0)
         assert result.status == "success"
@@ -337,6 +349,7 @@ class TestAsyncServices:
     async def test_java_async_validation(self) -> None:
         """Test Java service async validation"""
         from backend.src.services.languages.java_service import JavaService
+
         service = JavaService()
         result = await service.validate("class T {}", timeout=5.0)
         assert result.status == "success"
@@ -345,6 +358,7 @@ class TestAsyncServices:
     async def test_java_service_capabilities(self) -> None:
         """Test Java service reports capabilities"""
         from backend.src.services.languages.java_service import JavaService
+
         service = JavaService()
         caps = await service.get_capabilities()
         assert caps["language"] == "java"
@@ -355,6 +369,7 @@ class TestAsyncServices:
     async def test_idris_async_compilation(self) -> None:
         """Test IDRIS2 service async compilation"""
         from backend.src.services.languages.idris_service import IDRISService
+
         service = IDRISService()
         result = await service.execute("test : nat", timeout=5.0)
         assert result.status == "success"
@@ -363,15 +378,19 @@ class TestAsyncServices:
     async def test_idris_service_capabilities(self) -> None:
         """Test IDRIS2 service reports capabilities"""
         from backend.src.services.languages.idris_service import IDRISService
+
         service = IDRISService()
         caps = await service.get_capabilities()
         assert caps["language"] == "idris2"
-        assert "dependent" in str(caps["features"]).lower() or "types" in str(caps["features"]).lower()
+        assert (
+            "dependent" in str(caps["features"]).lower() or "types" in str(caps["features"]).lower()
+        )
 
     @pytest.mark.asyncio
     async def test_systemf_async_compilation(self) -> None:
         """Test System F service async compilation"""
         from backend.src.services.languages.systemf_service import SystemFService
+
         service = SystemFService()
         result = await service.execute("42", timeout=5.0)
         assert result.status == "success"
@@ -380,6 +399,7 @@ class TestAsyncServices:
     async def test_systemf_service_capabilities(self) -> None:
         """Test System F service reports capabilities"""
         from backend.src.services.languages.systemf_service import SystemFService
+
         service = SystemFService()
         caps = await service.get_capabilities()
         assert caps["language"] == "systemf"
@@ -389,6 +409,7 @@ class TestAsyncServices:
 # ==============================================================================
 # ERROR HANDLING AND EDGE CASES
 # ==============================================================================
+
 
 class TestErrorHandling:
     """Test error handling across all language services"""
@@ -421,6 +442,7 @@ class TestErrorHandling:
     async def test_java_timeout_handling(self) -> None:
         """Test Java service timeout handling"""
         from backend.src.services.languages.java_service import JavaService
+
         service = JavaService()
         # Very short timeout - may trigger timeout error
         result = await service.execute("class T {}", timeout=0.001)
@@ -433,6 +455,7 @@ class TestErrorHandling:
         # Create invalid situation and ensure no crash
         try:
             from backend.src.compilers.java_ast import Literal
+
             lit = Literal(3.14)
             type_result = ts.infer_type(lit)
             assert type_result is not None
@@ -444,6 +467,7 @@ class TestErrorHandling:
 # ==============================================================================
 # TYPE SYSTEM CONSISTENCY TESTS
 # ==============================================================================
+
 
 class TestTypeSystemConsistency:
     """Test type system consistency across languages"""
@@ -465,7 +489,7 @@ class TestTypeSystemConsistency:
         """Test IDRIS2 maps types to Babbage"""
         ts = IDRISTypeSystem()
         # Type system should support Babbage mapping
-        assert hasattr(ts, 'to_babbage_type')
+        assert hasattr(ts, "to_babbage_type")
 
     def test_systemf_type_mapping_to_babbage(self) -> None:
         """Test System F maps types to Babbage"""
@@ -500,6 +524,7 @@ class TestTypeSystemConsistency:
 # ==============================================================================
 # IR GENERATION CONSISTENCY TESTS
 # ==============================================================================
+
 
 class TestIRGeneration:
     """Test IR generation across all languages"""
@@ -552,6 +577,7 @@ class TestIRGeneration:
 # ==============================================================================
 # CROSS-LANGUAGE FEATURE PARITY TESTS
 # ==============================================================================
+
 
 class TestCrossLanguageFeatures:
     """Test feature parity across languages"""
@@ -642,6 +668,7 @@ class TestCrossLanguageFeatures:
 # ==============================================================================
 # FULL PIPELINE INTEGRATION TESTS
 # ==============================================================================
+
 
 class TestFullPipelines:
     """End-to-end pipeline tests for all languages"""

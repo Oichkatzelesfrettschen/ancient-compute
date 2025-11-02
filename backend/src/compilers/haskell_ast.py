@@ -17,15 +17,18 @@ from typing import List, Optional, Any
 # Expressions
 # ============================================================================
 
+
 @dataclass
 class Expr:
     """Base class for expressions"""
+
     pass
 
 
 @dataclass
 class Literal(Expr):
     """Literal value (number, string, char)"""
+
     value: Any
     type_name: str  # 'int', 'float', 'string', 'char'
 
@@ -33,12 +36,14 @@ class Literal(Expr):
 @dataclass
 class Variable(Expr):
     """Variable reference"""
+
     name: str
 
 
 @dataclass
 class BinOp(Expr):
     """Binary operation: left op right"""
+
     left: Expr
     op: str
     right: Expr
@@ -47,13 +52,15 @@ class BinOp(Expr):
 @dataclass
 class UnaryOp(Expr):
     """Unary operation: op operand"""
+
     op: str
     operand: Expr
 
 
 @dataclass
 class Lambda(Expr):
-    """Lambda expression: \param -> body"""
+    r"""Lambda expression: \param -> body"""
+
     params: List[str]
     body: Expr
 
@@ -61,6 +68,7 @@ class Lambda(Expr):
 @dataclass
 class Application(Expr):
     """Function application: func arg"""
+
     func: Expr
     args: List[Expr]
 
@@ -68,6 +76,7 @@ class Application(Expr):
 @dataclass
 class Let(Expr):
     """Let expression: let x = e1 in e2"""
+
     bindings: List[tuple]  # List of (name, expr) tuples
     body: Expr
 
@@ -75,6 +84,7 @@ class Let(Expr):
 @dataclass
 class Case(Expr):
     """Case expression: case expr of pattern -> expr ..."""
+
     expr: Expr
     branches: List[CaseBranch]
 
@@ -82,6 +92,7 @@ class Case(Expr):
 @dataclass
 class CaseBranch:
     """Single branch in case expression"""
+
     pattern: Pattern
     guard: Optional[Expr]  # Optional guard condition
     body: Expr
@@ -90,6 +101,7 @@ class CaseBranch:
 @dataclass
 class IfThenElse(Expr):
     """If-then-else expression"""
+
     condition: Expr
     then_expr: Expr
     else_expr: Expr
@@ -98,6 +110,7 @@ class IfThenElse(Expr):
 @dataclass
 class List(Expr):
     """List literal: [e1, e2, ...] or [e1 .. en]"""
+
     elements: List[Expr]
     is_range: bool = False  # True if [start .. end]
 
@@ -105,12 +118,14 @@ class List(Expr):
 @dataclass
 class Tuple(Expr):
     """Tuple literal: (e1, e2, ...)"""
+
     elements: List[Expr]
 
 
 @dataclass
 class TypeAnnotation(Expr):
     """Type annotation: expr :: type"""
+
     expr: Expr
     type_sig: str  # Type signature as string
 
@@ -118,6 +133,7 @@ class TypeAnnotation(Expr):
 @dataclass
 class Constructor(Expr):
     """Constructor application: Name args"""
+
     name: str
     args: List[Expr]
 
@@ -126,27 +142,32 @@ class Constructor(Expr):
 # Patterns
 # ============================================================================
 
+
 @dataclass
 class Pattern:
     """Base class for patterns"""
+
     pass
 
 
 @dataclass
 class PatternLiteral(Pattern):
     """Literal pattern: 42, "string", 'c'"""
+
     value: Any
 
 
 @dataclass
 class PatternVariable(Pattern):
     """Variable pattern: x"""
+
     name: str
 
 
 @dataclass
 class PatternConstructor(Pattern):
     """Constructor pattern: Name p1 p2"""
+
     name: str
     patterns: List[Pattern]
 
@@ -154,12 +175,14 @@ class PatternConstructor(Pattern):
 @dataclass
 class PatternTuple(Pattern):
     """Tuple pattern: (p1, p2, ...)"""
+
     patterns: List[Pattern]
 
 
 @dataclass
 class PatternList(Pattern):
     """List pattern: [p1, p2, ...] or [h|t]"""
+
     patterns: List[Pattern]
     tail: Optional[Pattern] = None  # For [h|t] syntax
 
@@ -167,6 +190,7 @@ class PatternList(Pattern):
 @dataclass
 class PatternWildcard(Pattern):
     """Wildcard pattern: _"""
+
     pass
 
 
@@ -174,15 +198,18 @@ class PatternWildcard(Pattern):
 # Statements
 # ============================================================================
 
+
 @dataclass
 class Stmt:
     """Base class for statements"""
+
     pass
 
 
 @dataclass
 class FunctionDef(Stmt):
     """Function definition with pattern matching"""
+
     name: str
     equations: List[FunctionEquation]  # Multiple equations for pattern matching
 
@@ -190,14 +217,16 @@ class FunctionDef(Stmt):
 @dataclass
 class FunctionEquation:
     """Single equation in function definition"""
+
     patterns: List[Pattern]  # Argument patterns
-    guard: Optional[Expr]    # Optional guard
+    guard: Optional[Expr]  # Optional guard
     body: Expr
 
 
 @dataclass
 class TypeDecl(Stmt):
     """Type declaration: name :: type"""
+
     name: str
     type_sig: str
 
@@ -205,6 +234,7 @@ class TypeDecl(Stmt):
 @dataclass
 class DataDecl(Stmt):
     """Data type declaration"""
+
     name: str
     constructors: List[DataConstructor]
 
@@ -212,6 +242,7 @@ class DataDecl(Stmt):
 @dataclass
 class DataConstructor:
     """Single constructor in data declaration"""
+
     name: str
     fields: List[str]  # Field types
 
@@ -219,6 +250,7 @@ class DataConstructor:
 @dataclass
 class TypeSynonym(Stmt):
     """Type synonym: type Name = Type"""
+
     name: str
     definition: str
 
@@ -226,6 +258,7 @@ class TypeSynonym(Stmt):
 @dataclass
 class ClassDecl(Stmt):
     """Type class declaration"""
+
     name: str
     methods: List[tuple]  # (name, type_sig) tuples
 
@@ -233,6 +266,7 @@ class ClassDecl(Stmt):
 @dataclass
 class InstanceDecl(Stmt):
     """Instance declaration"""
+
     class_name: str
     type_name: str
     definitions: List[tuple]  # (name, body) tuples
@@ -242,8 +276,10 @@ class InstanceDecl(Stmt):
 # Top-level
 # ============================================================================
 
+
 @dataclass
 class Module:
     """Top-level module"""
+
     name: Optional[str]  # Module name (if declared)
     declarations: List[Stmt]  # Top-level declarations and definitions

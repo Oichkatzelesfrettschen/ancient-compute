@@ -198,9 +198,7 @@ class TestOperationResult:
 
     def test_operation_result_creation(self):
         """Create operation result."""
-        result = OperationResult(
-            operation="TEST", phase=MechanicalPhase.INPUT, success=True
-        )
+        result = OperationResult(operation="TEST", phase=MechanicalPhase.INPUT, success=True)
         assert result.operation == "TEST"
         assert result.phase == MechanicalPhase.INPUT
         assert result.success == True
@@ -429,8 +427,9 @@ class TestEdgeCasesAndIntegration:
     def test_analytical_engine_integration(self):
         """DEMachine coordinates with AnalyticalEngine."""
         from backend.src.emulator.analytical_engine import BabbageNumber
+
         de = DEMachine()
-        de.analytical_engine.registers['A'] = BabbageNumber(42)
+        de.analytical_engine.registers["A"] = BabbageNumber(42)
         snapshot = de.get_snapshot()
         assert snapshot.ae_accumulator == 42
 

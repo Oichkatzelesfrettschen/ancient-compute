@@ -22,6 +22,7 @@ from backend.src.compilers.haskell_compiler import HaskellCompiler
 
 class ExecutionStatus(Enum):
     """Execution result status"""
+
     SUCCESS = "success"
     COMPILE_ERROR = "compile_error"
     RUNTIME_ERROR = "runtime_error"
@@ -31,6 +32,7 @@ class ExecutionStatus(Enum):
 @dataclass
 class CompilationResult:
     """Haskell compilation result"""
+
     status: ExecutionStatus
     output: str
     errors: str
@@ -45,7 +47,9 @@ class CompilationResult:
 class HaskellService:
     """Haskell language compilation service"""
 
-    def __init__(self, executor: Optional[ThreadPoolExecutor] = None, verbose: bool = False) -> None:
+    def __init__(
+        self, executor: Optional[ThreadPoolExecutor] = None, verbose: bool = False
+    ) -> None:
         """Initialize service"""
         self.executor = executor or ThreadPoolExecutor(max_workers=4)
         self.verbose = verbose
@@ -63,8 +67,7 @@ class HaskellService:
         """
         try:
             result = await asyncio.wait_for(
-                self._compile_and_assemble(source),
-                timeout=timeout_seconds
+                self._compile_and_assemble(source), timeout=timeout_seconds
             )
             return result
         except asyncio.TimeoutError:
@@ -77,7 +80,7 @@ class HaskellService:
                 machine_code="",
                 compile_time_ms=0,
                 codegen_time_ms=0,
-                assembly_time_ms=0
+                assembly_time_ms=0,
             )
 
     async def _compile_and_assemble(self, source: str) -> CompilationResult:
@@ -88,10 +91,7 @@ class HaskellService:
         compile_start = time.time()
         try:
             compiler = HaskellCompiler(verbose=self.verbose)
-            program = await loop.run_in_executor(
-                self.executor,
-                lambda: compiler.compile(source)
-            )
+            program = await loop.run_in_executor(self.executor, lambda: compiler.compile(source))
             compile_time = (time.time() - compile_start) * 1000
 
             ir_output = self._ir_to_string(program)
@@ -106,17 +106,14 @@ class HaskellService:
                 machine_code="",
                 compile_time_ms=(time.time() - compile_start) * 1000,
                 codegen_time_ms=0,
-                assembly_time_ms=0
+                assembly_time_ms=0,
             )
 
         # Phase 2: Code generation (in thread pool)
         codegen_start = time.time()
         try:
             codegen = CodeGenerator()
-            asm_code = await loop.run_in_executor(
-                self.executor,
-                lambda: codegen.generate(program)
-            )
+            asm_code = await loop.run_in_executor(self.executor, lambda: codegen.generate(program))
             codegen_time = (time.time() - codegen_start) * 1000
 
         except Exception as e:
@@ -129,7 +126,7 @@ class HaskellService:
                 machine_code="",
                 compile_time_ms=compile_time,
                 codegen_time_ms=(time.time() - codegen_start) * 1000,
-                assembly_time_ms=0
+                assembly_time_ms=0,
             )
 
         # Phase 3: Assembly (in thread pool)
@@ -137,8 +134,7 @@ class HaskellService:
         try:
             assembler = Assembler()
             machine_code = await loop.run_in_executor(
-                self.executor,
-                lambda: assembler.assemble(asm_code)
+                self.executor, lambda: assembler.assemble(asm_code)
             )
             assembly_time = (time.time() - assembly_start) * 1000
 
@@ -152,7 +148,7 @@ class HaskellService:
                 machine_code="",
                 compile_time_ms=compile_time,
                 codegen_time_ms=codegen_time,
-                assembly_time_ms=(time.time() - assembly_start) * 1000
+                assembly_time_ms=(time.time() - assembly_start) * 1000,
             )
 
         machine_code_hex = self._format_hex_dump(machine_code)
@@ -166,7 +162,7 @@ class HaskellService:
             machine_code=machine_code_hex,
             compile_time_ms=compile_time,
             codegen_time_ms=codegen_time,
-            assembly_time_ms=assembly_time
+            assembly_time_ms=assembly_time,
         )
 
     async def validate(self, source: str) -> CompilationResult:
@@ -176,10 +172,7 @@ class HaskellService:
 
         try:
             compiler = HaskellCompiler(verbose=self.verbose)
-            program = await loop.run_in_executor(
-                self.executor,
-                lambda: compiler.compile(source)
-            )
+            program = await loop.run_in_executor(self.executor, lambda: compiler.compile(source))
             compile_time = (time.time() - compile_start) * 1000
 
             return CompilationResult(
@@ -191,7 +184,7 @@ class HaskellService:
                 machine_code="",
                 compile_time_ms=compile_time,
                 codegen_time_ms=0,
-                assembly_time_ms=0
+                assembly_time_ms=0,
             )
 
         except Exception as e:
@@ -204,7 +197,7 @@ class HaskellService:
                 machine_code="",
                 compile_time_ms=(time.time() - compile_start) * 1000,
                 codegen_time_ms=0,
-                assembly_time_ms=0
+                assembly_time_ms=0,
             )
 
     async def get_capabilities(self) -> dict:
@@ -259,9 +252,9 @@ class HaskellService:
         if isinstance(data, str):
             hex_str = data.replace("0x", "").replace(" ", "")
             for i in range(0, len(hex_str), 32):
-                chunk = hex_str[i:i+32]
+                chunk = hex_str[i : i + 32]
                 offset = i // 2
-                formatted = " ".join(chunk[j:j+2] for j in range(0, len(chunk), 2))
+                formatted = " ".join(chunk[j : j + 2] for j in range(0, len(chunk), 2))
                 lines.append(f"  {offset:04x}: {formatted}")
         else:
             lines.append("  (binary format)")

@@ -10,8 +10,12 @@ Coverage: 60+ tests across 12 test classes.
 import pytest
 from backend.src.emulator.machine import DEMachine
 from backend.src.emulator.debugger import (
-    Debugger, SymbolTable, BreakpointManager, BreakpointType,
-    ExecutionTrace, SymbolEntry
+    Debugger,
+    SymbolTable,
+    BreakpointManager,
+    BreakpointType,
+    ExecutionTrace,
+    SymbolEntry,
 )
 from backend.src.emulator.timing import MechanicalPhase
 
@@ -19,6 +23,7 @@ from backend.src.emulator.timing import MechanicalPhase
 # ============================================================================
 # Symbol Table Tests (8 tests)
 # ============================================================================
+
 
 class TestSymbolTableBasics:
     """Test basic symbol table operations."""
@@ -90,6 +95,7 @@ class TestSymbolTableBasics:
 # Symbol Access Tracking Tests (7 tests)
 # ============================================================================
 
+
 class TestSymbolAccessTracking:
     """Test symbol access recording."""
 
@@ -157,6 +163,7 @@ class TestSymbolAccessTracking:
 # Symbol Statistics Tests (4 tests)
 # ============================================================================
 
+
 class TestSymbolStatistics:
     """Test symbol statistics and reporting."""
 
@@ -208,6 +215,7 @@ class TestSymbolStatistics:
 # ============================================================================
 # Breakpoint Manager Tests (8 tests)
 # ============================================================================
+
 
 class TestBreakpointManager:
     """Test breakpoint management."""
@@ -279,12 +287,14 @@ class TestBreakpointManager:
 # Breakpoint Detection Tests (6 tests)
 # ============================================================================
 
+
 class TestBreakpointDetection:
     """Test breakpoint triggering."""
 
     def test_cycle_breakpoint_triggers(self):
         """Test cycle breakpoint triggers at correct cycle."""
         from backend.src.emulator.machine import DEMachineSnapshot
+
         bm = BreakpointManager()
         bp_id = bm.set_breakpoint(BreakpointType.CYCLE, cycle_target=5)
         st = SymbolTable()
@@ -303,6 +313,7 @@ class TestBreakpointDetection:
     def test_cycle_breakpoint_does_not_trigger_wrong_cycle(self):
         """Test cycle breakpoint doesn't trigger at wrong cycle."""
         from backend.src.emulator.machine import DEMachineSnapshot
+
         bm = BreakpointManager()
         bp_id = bm.set_breakpoint(BreakpointType.CYCLE, cycle_target=5)
         st = SymbolTable()
@@ -321,6 +332,7 @@ class TestBreakpointDetection:
     def test_phase_breakpoint_triggers(self):
         """Test phase breakpoint triggers at correct phase."""
         from backend.src.emulator.machine import DEMachineSnapshot
+
         bm = BreakpointManager()
         bp_id = bm.set_breakpoint(BreakpointType.PHASE, phase_target=MechanicalPhase.ADDITION)
         st = SymbolTable()
@@ -339,6 +351,7 @@ class TestBreakpointDetection:
     def test_disabled_breakpoint_does_not_trigger(self):
         """Test disabled breakpoint doesn't trigger."""
         from backend.src.emulator.machine import DEMachineSnapshot
+
         bm = BreakpointManager()
         bp_id = bm.set_breakpoint(BreakpointType.CYCLE, cycle_target=5)
         bm.disable_breakpoint(bp_id)
@@ -358,6 +371,7 @@ class TestBreakpointDetection:
     def test_breakpoint_hit_count(self):
         """Test breakpoint hit count is incremented."""
         from backend.src.emulator.machine import DEMachineSnapshot
+
         bm = BreakpointManager()
         bp_id = bm.set_breakpoint(BreakpointType.PHASE, phase_target=MechanicalPhase.ADDITION)
         st = SymbolTable()
@@ -378,6 +392,7 @@ class TestBreakpointDetection:
     def test_condition_breakpoint_triggers(self):
         """Test condition breakpoint triggers when condition is true."""
         from backend.src.emulator.machine import DEMachineSnapshot
+
         bm = BreakpointManager()
         condition = lambda snapshot: snapshot.cycle_count > 5
         bp_id = bm.set_breakpoint(BreakpointType.CONDITION, condition_func=condition)
@@ -398,6 +413,7 @@ class TestBreakpointDetection:
 # ============================================================================
 # Debugger Integration Tests (10 tests)
 # ============================================================================
+
 
 class TestDebuggerBasics:
     """Test basic debugger operations."""
@@ -494,6 +510,7 @@ class TestDebuggerBasics:
 # Debugger Execution Tests (8 tests)
 # ============================================================================
 
+
 class TestDebuggerExecution:
     """Test debugger execution control."""
 
@@ -588,6 +605,7 @@ class TestDebuggerExecution:
 # Polynomial Evaluation with Debugger Tests (6 tests)
 # ============================================================================
 
+
 class TestDebuggerPolynomialEvaluation:
     """Test debugger with polynomial evaluation."""
 
@@ -658,6 +676,7 @@ class TestDebuggerPolynomialEvaluation:
 # ============================================================================
 # Edge Cases and Advanced Tests (7 tests)
 # ============================================================================
+
 
 class TestDebuggerEdgeCases:
     """Test edge cases and advanced scenarios."""

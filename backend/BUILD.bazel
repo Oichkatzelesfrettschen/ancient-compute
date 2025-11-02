@@ -1,6 +1,6 @@
 # Ancient Compute Backend Build Configuration
 
-load("@rules_python//python:defs.bzl", "py_library", "py_binary", "py_test")
+load("@rules_python//python:defs.bzl", "py_binary", "py_library", "py_test")
 
 # Backend library
 py_library(
@@ -20,18 +20,18 @@ py_binary(
     name = "server",
     srcs = ["src/main.py"],
     main = "src/main.py",
-    deps = [":backend_lib"],
     visibility = ["//visibility:public"],
+    deps = [":backend_lib"],
 )
 
 # Tests
 py_test(
     name = "backend_test",
     srcs = glob(["tests/**/*_test.py"]),
+    python_version = "PY3",
     deps = [
         ":backend_lib",
     ],
-    python_version = "PY3",
 )
 
 # Export requirements for Docker builds

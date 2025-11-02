@@ -41,27 +41,27 @@ class PythonType:
 
     @staticmethod
     def int() -> PythonType:
-        return PythonType('int')
+        return PythonType("int")
 
     @staticmethod
     def float() -> PythonType:
-        return PythonType('float')
+        return PythonType("float")
 
     @staticmethod
     def str() -> PythonType:
-        return PythonType('str')
+        return PythonType("str")
 
     @staticmethod
     def bool() -> PythonType:
-        return PythonType('bool')
+        return PythonType("bool")
 
     @staticmethod
     def none() -> PythonType:
-        return PythonType('None')
+        return PythonType("None")
 
     @staticmethod
     def any() -> PythonType:
-        return PythonType('Any')
+        return PythonType("Any")
 
 
 class PythonTypeSystem:
@@ -93,18 +93,21 @@ class PythonTypeSystem:
             return left
 
         # int + float → float
-        if (left.kind == 'int' and right.kind == 'float') or \
-           (left.kind == 'float' and right.kind == 'int'):
+        if (left.kind == "int" and right.kind == "float") or (
+            left.kind == "float" and right.kind == "int"
+        ):
             return PythonType.float()
 
         # bool + int → int (bool is subclass of int)
-        if (left.kind == 'bool' and right.kind == 'int') or \
-           (left.kind == 'int' and right.kind == 'bool'):
+        if (left.kind == "bool" and right.kind == "int") or (
+            left.kind == "int" and right.kind == "bool"
+        ):
             return PythonType.int()
 
         # bool + float → float
-        if (left.kind == 'bool' and right.kind == 'float') or \
-           (left.kind == 'float' and right.kind == 'bool'):
+        if (left.kind == "bool" and right.kind == "float") or (
+            left.kind == "float" and right.kind == "bool"
+        ):
             return PythonType.float()
 
         # Default to Any for incompatible types
@@ -112,37 +115,39 @@ class PythonTypeSystem:
 
     def is_numeric(self, ptype: PythonType) -> bool:
         """Check if type is numeric"""
-        return ptype.kind in ('int', 'float', 'bool')
+        return ptype.kind in ("int", "float", "bool")
 
     def is_truthy(self, ptype: PythonType) -> bool:
         """Check if type can be used in boolean context"""
-        return ptype.kind != 'None'
+        return ptype.kind != "None"
 
-    def operation_type(self, op: str, left: PythonType, right: Optional[PythonType] = None) -> PythonType:
+    def operation_type(
+        self, op: str, left: PythonType, right: Optional[PythonType] = None
+    ) -> PythonType:
         """Determine result type of operation"""
         if right is None:
             # Unary operation
-            if op == 'not':
+            if op == "not":
                 return PythonType.bool()
-            elif op in ('-', '+'):
+            elif op in ("-", "+"):
                 return left
             else:
                 return PythonType.any()
 
         # Binary operation
-        if op in ('==', '!=', '<', '<=', '>', '>='):
+        if op in ("==", "!=", "<", "<=", ">", ">="):
             return PythonType.bool()
 
-        if op in ('and', 'or'):
+        if op in ("and", "or"):
             return self.promote_type(left, right)
 
-        if op in ('+', '-', '*', '//', '%', '**'):
+        if op in ("+", "-", "*", "//", "%", "**"):
             if self.is_numeric(left) and self.is_numeric(right):
                 return self.promote_type(left, right)
             else:
                 return PythonType.any()
 
-        if op == '/':
+        if op == "/":
             # Division always returns float
             if self.is_numeric(left) and self.is_numeric(right):
                 return PythonType.float()
@@ -156,31 +161,31 @@ class BabbageTypeMapper:
     """Maps Python types to Babbage IR types"""
 
     TYPE_MAP = {
-        'int': 'i64',
-        'float': 'f64',
-        'str': 'i64',  # Strings as memory pointers
-        'bool': 'i64',  # Booleans as 0/1
-        'None': 'void',
-        'Any': 'i64',  # Default to integer
+        "int": "i64",
+        "float": "f64",
+        "str": "i64",  # Strings as memory pointers
+        "bool": "i64",  # Booleans as 0/1
+        "None": "void",
+        "Any": "i64",  # Default to integer
     }
 
     @staticmethod
     def to_babbage_type(ptype: PythonType) -> str:
         """Map Python type to Babbage IR type"""
-        return BabbageTypeMapper.TYPE_MAP.get(ptype.kind, 'i64')
+        return BabbageTypeMapper.TYPE_MAP.get(ptype.kind, "i64")
 
     @staticmethod
     def default_value_for_type(ptype: PythonType):
         """Get default value for Python type"""
-        if ptype.kind == 'int':
+        if ptype.kind == "int":
             return 0
-        elif ptype.kind == 'float':
+        elif ptype.kind == "float":
             return 0.0
-        elif ptype.kind == 'bool':
+        elif ptype.kind == "bool":
             return False
-        elif ptype.kind == 'str':
-            return ''
-        elif ptype.kind == 'None':
+        elif ptype.kind == "str":
+            return ""
+        elif ptype.kind == "None":
             return None
         else:
             return 0

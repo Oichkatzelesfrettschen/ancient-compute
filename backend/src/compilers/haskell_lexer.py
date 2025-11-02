@@ -1,4 +1,4 @@
-"""
+r"""
 Haskell Lexer - Tokenizes Haskell source code
 
 Handles:
@@ -21,6 +21,7 @@ from dataclasses import dataclass
 
 class TokenType(Enum):
     """Haskell token types"""
+
     # Keywords
     LET = auto()
     IN = auto()
@@ -47,37 +48,37 @@ class TokenType(Enum):
     CHAR = auto()
 
     # Operators
-    ARROW = auto()        # ->
-    FAT_ARROW = auto()    # =>
-    DOUBLE_COLON = auto() # ::
-    PIPE = auto()         # |
-    BACKSLASH = auto()    # \
-    BACKTICK = auto()     # `
-    CONS = auto()         # :
-    EQUALS = auto()       # =
-    PLUS = auto()         # +
-    MINUS = auto()         # -
-    STAR = auto()         # *
-    SLASH = auto()        # /
-    PERCENT = auto()      # %
-    POWER = auto()        # ^
-    DOT = auto()          # .
-    COMMA = auto()        # ,
-    SEMICOLON = auto()    # ;
-    LPAREN = auto()       # (
-    RPAREN = auto()       # )
-    LBRACKET = auto()     # [
-    RBRACKET = auto()     # ]
-    LBRACE = auto()       # {
-    RBRACE = auto()       # }
+    ARROW = auto()  # ->
+    FAT_ARROW = auto()  # =>
+    DOUBLE_COLON = auto()  # ::
+    PIPE = auto()  # |
+    BACKSLASH = auto()  # \
+    BACKTICK = auto()  # `
+    CONS = auto()  # :
+    EQUALS = auto()  # =
+    PLUS = auto()  # +
+    MINUS = auto()  # -
+    STAR = auto()  # *
+    SLASH = auto()  # /
+    PERCENT = auto()  # %
+    POWER = auto()  # ^
+    DOT = auto()  # .
+    COMMA = auto()  # ,
+    SEMICOLON = auto()  # ;
+    LPAREN = auto()  # (
+    RPAREN = auto()  # )
+    LBRACKET = auto()  # [
+    RBRACKET = auto()  # ]
+    LBRACE = auto()  # {
+    RBRACE = auto()  # }
 
     # Comparison
     EQUAL_EQUAL = auto()  # ==
-    NOT_EQUAL = auto()    # /=
-    LESS = auto()         # <
-    LESS_EQUAL = auto()   # <=
-    GREATER = auto()      # >
-    GREATER_EQUAL = auto() # >=
+    NOT_EQUAL = auto()  # /=
+    LESS = auto()  # <
+    LESS_EQUAL = auto()  # <=
+    GREATER = auto()  # >
+    GREATER_EQUAL = auto()  # >=
 
     # Special
     INDENT = auto()
@@ -89,6 +90,7 @@ class TokenType(Enum):
 @dataclass
 class Token:
     """Haskell token"""
+
     type: TokenType
     value: str
     line: int
@@ -99,22 +101,22 @@ class HaskellLexer:
     """Lexer for Haskell source code"""
 
     KEYWORDS = {
-        'let': TokenType.LET,
-        'in': TokenType.IN,
-        'where': TokenType.WHERE,
-        'if': TokenType.IF,
-        'then': TokenType.THEN,
-        'else': TokenType.ELSE,
-        'case': TokenType.CASE,
-        'of': TokenType.OF,
-        'do': TokenType.DO,
-        'module': TokenType.MODULE,
-        'import': TokenType.IMPORT,
-        'data': TokenType.DATA,
-        'type': TokenType.TYPE,
-        'class': TokenType.CLASS,
-        'instance': TokenType.INSTANCE,
-        'deriving': TokenType.DERIVING,
+        "let": TokenType.LET,
+        "in": TokenType.IN,
+        "where": TokenType.WHERE,
+        "if": TokenType.IF,
+        "then": TokenType.THEN,
+        "else": TokenType.ELSE,
+        "case": TokenType.CASE,
+        "of": TokenType.OF,
+        "do": TokenType.DO,
+        "module": TokenType.MODULE,
+        "import": TokenType.IMPORT,
+        "data": TokenType.DATA,
+        "type": TokenType.TYPE,
+        "class": TokenType.CLASS,
+        "instance": TokenType.INSTANCE,
+        "deriving": TokenType.DERIVING,
     }
 
     def __init__(self, source: str) -> None:
@@ -145,8 +147,8 @@ class HaskellLexer:
                 continue
 
             # Handle newlines
-            if self.pos < len(self.source) and self.source[self.pos] == '\n':
-                self.tokens.append(Token(TokenType.NEWLINE, '\n', self.line, self.column))
+            if self.pos < len(self.source) and self.source[self.pos] == "\n":
+                self.tokens.append(Token(TokenType.NEWLINE, "\n", self.line, self.column))
                 self._advance()
 
                 # Handle indentation on next line
@@ -174,30 +176,30 @@ class HaskellLexer:
                 continue
 
             # Identifiers and keywords
-            if char.isalpha() or char == '_':
+            if char.isalpha() or char == "_":
                 self._read_identifier()
                 continue
 
             # Two-character operators
             if self.pos + 1 < len(self.source):
-                two_char = self.source[self.pos:self.pos+2]
+                two_char = self.source[self.pos : self.pos + 2]
                 token_type = None
 
-                if two_char == '->':
+                if two_char == "->":
                     token_type = TokenType.ARROW
-                elif two_char == '=>':
+                elif two_char == "=>":
                     token_type = TokenType.FAT_ARROW
-                elif two_char == '::':
+                elif two_char == "::":
                     token_type = TokenType.DOUBLE_COLON
-                elif two_char == '==':
+                elif two_char == "==":
                     token_type = TokenType.EQUAL_EQUAL
-                elif two_char == '/=':
+                elif two_char == "/=":
                     token_type = TokenType.NOT_EQUAL
-                elif two_char == '<=':
+                elif two_char == "<=":
                     token_type = TokenType.LESS_EQUAL
-                elif two_char == '>=':
+                elif two_char == ">=":
                     token_type = TokenType.GREATER_EQUAL
-                elif two_char == '^':
+                elif two_char == "^":
                     token_type = TokenType.POWER
 
                 if token_type:
@@ -208,47 +210,47 @@ class HaskellLexer:
 
             # Single-character operators
             token_type = None
-            if char == '|':
+            if char == "|":
                 token_type = TokenType.PIPE
-            elif char == '\\':
+            elif char == "\\":
                 token_type = TokenType.BACKSLASH
-            elif char == '`':
+            elif char == "`":
                 token_type = TokenType.BACKTICK
-            elif char == ':':
+            elif char == ":":
                 token_type = TokenType.CONS
-            elif char == '=':
+            elif char == "=":
                 token_type = TokenType.EQUALS
-            elif char == '+':
+            elif char == "+":
                 token_type = TokenType.PLUS
-            elif char == '-':
+            elif char == "-":
                 token_type = TokenType.MINUS
-            elif char == '*':
+            elif char == "*":
                 token_type = TokenType.STAR
-            elif char == '/':
+            elif char == "/":
                 token_type = TokenType.SLASH
-            elif char == '%':
+            elif char == "%":
                 token_type = TokenType.PERCENT
-            elif char == '.':
+            elif char == ".":
                 token_type = TokenType.DOT
-            elif char == ',':
+            elif char == ",":
                 token_type = TokenType.COMMA
-            elif char == ';':
+            elif char == ";":
                 token_type = TokenType.SEMICOLON
-            elif char == '(':
+            elif char == "(":
                 token_type = TokenType.LPAREN
-            elif char == ')':
+            elif char == ")":
                 token_type = TokenType.RPAREN
-            elif char == '[':
+            elif char == "[":
                 token_type = TokenType.LBRACKET
-            elif char == ']':
+            elif char == "]":
                 token_type = TokenType.RBRACKET
-            elif char == '{':
+            elif char == "{":
                 token_type = TokenType.LBRACE
-            elif char == '}':
+            elif char == "}":
                 token_type = TokenType.RBRACE
-            elif char == '<':
+            elif char == "<":
                 token_type = TokenType.LESS
-            elif char == '>':
+            elif char == ">":
                 token_type = TokenType.GREATER
 
             if token_type:
@@ -262,9 +264,9 @@ class HaskellLexer:
         # Emit remaining DEDENT tokens
         while len(self.indent_stack) > 1:
             self.indent_stack.pop()
-            self.tokens.append(Token(TokenType.DEDENT, '', self.line, self.column))
+            self.tokens.append(Token(TokenType.DEDENT, "", self.line, self.column))
 
-        self.tokens.append(Token(TokenType.EOF, '', self.line, self.column))
+        self.tokens.append(Token(TokenType.EOF, "", self.line, self.column))
         return self.tokens
 
     def _read_string(self) -> None:
@@ -273,19 +275,19 @@ class HaskellLexer:
         start_col = self.column
         self._advance()  # Skip opening "
 
-        value = ''
+        value = ""
         while self.pos < len(self.source) and self.source[self.pos] != '"':
-            if self.source[self.pos] == '\\' and self.pos + 1 < len(self.source):
+            if self.source[self.pos] == "\\" and self.pos + 1 < len(self.source):
                 self._advance()
                 escape_char = self.source[self.pos]
-                if escape_char == 'n':
-                    value += '\n'
-                elif escape_char == 't':
-                    value += '\t'
-                elif escape_char == 'r':
-                    value += '\r'
-                elif escape_char == '\\':
-                    value += '\\'
+                if escape_char == "n":
+                    value += "\n"
+                elif escape_char == "t":
+                    value += "\t"
+                elif escape_char == "r":
+                    value += "\r"
+                elif escape_char == "\\":
+                    value += "\\"
                 elif escape_char == '"':
                     value += '"'
                 else:
@@ -307,15 +309,15 @@ class HaskellLexer:
         start_col = self.column
         self._advance()  # Skip opening '
 
-        value = ''
+        value = ""
         if self.pos < len(self.source):
-            if self.source[self.pos] == '\\' and self.pos + 1 < len(self.source):
+            if self.source[self.pos] == "\\" and self.pos + 1 < len(self.source):
                 self._advance()
                 escape_char = self.source[self.pos]
-                if escape_char == 'n':
-                    value = '\n'
-                elif escape_char == 't':
-                    value = '\t'
+                if escape_char == "n":
+                    value = "\n"
+                elif escape_char == "t":
+                    value = "\t"
                 else:
                     value = escape_char
                 self._advance()
@@ -333,14 +335,14 @@ class HaskellLexer:
         """Read number literal"""
         start_line = self.line
         start_col = self.column
-        value = ''
+        value = ""
 
         while self.pos < len(self.source) and self.source[self.pos].isdigit():
             value += self.source[self.pos]
             self._advance()
 
         # Handle floating point
-        if self.pos < len(self.source) and self.source[self.pos] == '.':
+        if self.pos < len(self.source) and self.source[self.pos] == ".":
             if self.pos + 1 < len(self.source) and self.source[self.pos + 1].isdigit():
                 value += self.source[self.pos]
                 self._advance()
@@ -354,11 +356,13 @@ class HaskellLexer:
         """Read identifier or keyword"""
         start_line = self.line
         start_col = self.column
-        value = ''
+        value = ""
 
-        while self.pos < len(self.source) and \
-              (self.source[self.pos].isalnum() or self.source[self.pos] == '_' or
-               self.source[self.pos] == "'"):
+        while self.pos < len(self.source) and (
+            self.source[self.pos].isalnum()
+            or self.source[self.pos] == "_"
+            or self.source[self.pos] == "'"
+        ):
             value += self.source[self.pos]
             self._advance()
 
@@ -368,12 +372,12 @@ class HaskellLexer:
 
     def _skip_horizontal_whitespace(self) -> None:
         """Skip spaces and tabs but not newlines"""
-        while self.pos < len(self.source) and self.source[self.pos] in ' \t':
+        while self.pos < len(self.source) and self.source[self.pos] in " \t":
             self._advance()
 
     def _skip_line_comment(self) -> None:
         """Skip line comment (-- to end of line)"""
-        while self.pos < len(self.source) and self.source[self.pos] != '\n':
+        while self.pos < len(self.source) and self.source[self.pos] != "\n":
             self._advance()
 
     def _skip_block_comment(self) -> None:
@@ -381,11 +385,11 @@ class HaskellLexer:
         self.pos += 2
         self.column += 2
         while self.pos + 1 < len(self.source):
-            if self.source[self.pos:self.pos+2] == '-}':
+            if self.source[self.pos : self.pos + 2] == "-}":
                 self.pos += 2
                 self.column += 2
                 return
-            if self.source[self.pos] == '\n':
+            if self.source[self.pos] == "\n":
                 self.line += 1
                 self.column = 1
             else:
@@ -395,34 +399,34 @@ class HaskellLexer:
     def _handle_indentation(self) -> None:
         """Handle indentation tokens for block structure"""
         indent_level = 0
-        while self.pos < len(self.source) and self.source[self.pos] in ' \t':
-            if self.source[self.pos] == ' ':
+        while self.pos < len(self.source) and self.source[self.pos] in " \t":
+            if self.source[self.pos] == " ":
                 indent_level += 1
             else:
                 indent_level += 8  # Tab = 8 spaces
             self._advance()
 
         # Skip blank lines and comments
-        if self.pos < len(self.source) and self.source[self.pos] not in '\n':
-            if self._peek_chars(2) == '--':
+        if self.pos < len(self.source) and self.source[self.pos] not in "\n":
+            if self._peek_chars(2) == "--":
                 return
-            if self._peek_chars(2) == '{-':
+            if self._peek_chars(2) == "{-":
                 return
 
             current_indent = self.indent_stack[-1]
 
             if indent_level > current_indent:
                 self.indent_stack.append(indent_level)
-                self.tokens.append(Token(TokenType.INDENT, '', self.line, self.column))
+                self.tokens.append(Token(TokenType.INDENT, "", self.line, self.column))
             elif indent_level < current_indent:
                 while len(self.indent_stack) > 1 and self.indent_stack[-1] > indent_level:
                     self.indent_stack.pop()
-                    self.tokens.append(Token(TokenType.DEDENT, '', self.line, self.column))
+                    self.tokens.append(Token(TokenType.DEDENT, "", self.line, self.column))
 
     def _advance(self) -> None:
         """Move to next character"""
         if self.pos < len(self.source):
-            if self.source[self.pos] == '\n':
+            if self.source[self.pos] == "\n":
                 self.line += 1
                 self.column = 1
             else:
@@ -433,8 +437,8 @@ class HaskellLexer:
         """Check if current position matches text"""
         if self.pos + len(text) > len(self.source):
             return False
-        return self.source[self.pos:self.pos+len(text)] == text
+        return self.source[self.pos : self.pos + len(text)] == text
 
     def _peek_chars(self, count: int) -> str:
         """Peek ahead at multiple characters"""
-        return self.source[self.pos:self.pos+count]
+        return self.source[self.pos : self.pos + count]

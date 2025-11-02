@@ -27,36 +27,36 @@ from dataclasses import dataclass
 class MechanicalPhase(Enum):
     """Mechanical phases during DE2 rotation (0-360°)."""
 
-    IDLE = "idle"                          # 0°: No operation
-    INPUT = "input"                        # 45°: Load difference values
-    ADDITION = "addition"                  # 90°: Add columns
-    CARRY = "carry"                        # 135°: Propagate carries
-    OUTPUT = "output"                      # 180°: Prepare output
-    ADVANCE = "advance"                    # 225°: Advance to next row
-    RESET = "reset"                        # 270°: Reset mechanical state
-    PAUSE = "pause"                        # 315°: Pause before cycle repeat
+    IDLE = "idle"  # 0°: No operation
+    INPUT = "input"  # 45°: Load difference values
+    ADDITION = "addition"  # 90°: Add columns
+    CARRY = "carry"  # 135°: Propagate carries
+    OUTPUT = "output"  # 180°: Prepare output
+    ADVANCE = "advance"  # 225°: Advance to next row
+    RESET = "reset"  # 270°: Reset mechanical state
+    PAUSE = "pause"  # 315°: Pause before cycle repeat
 
 
 @dataclass
 class TimingEvent:
     """Event generated at specific shaft angle."""
 
-    angle: int                              # 0-360 degrees
-    phase: MechanicalPhase                  # Current phase
-    event_type: str                         # Event name
-    timestamp: int                          # Cycle counter
-    payload: Optional[Dict] = None          # Additional data
+    angle: int  # 0-360 degrees
+    phase: MechanicalPhase  # Current phase
+    event_type: str  # Event name
+    timestamp: int  # Cycle counter
+    payload: Optional[Dict] = None  # Additional data
 
 
 @dataclass
 class TimingSnapshot:
     """Snapshot of TimingController state for debugging."""
 
-    angle: int                              # Current angle
-    phase: MechanicalPhase                  # Current phase
-    rotation_count: int                     # Total rotations
-    total_events: int                       # Events generated
-    is_rotating: bool                       # Currently rotating
+    angle: int  # Current angle
+    phase: MechanicalPhase  # Current phase
+    rotation_count: int  # Total rotations
+    total_events: int  # Events generated
+    is_rotating: bool  # Currently rotating
 
 
 class TimingController:
@@ -84,9 +84,9 @@ class TimingController:
 
     def __init__(self):
         """Initialize TimingController."""
-        self.angle = 0                      # Current shaft angle (0-360)
-        self.rotation_count = 0             # Total rotations completed
-        self.is_rotating = False            # Currently rotating
+        self.angle = 0  # Current shaft angle (0-360)
+        self.rotation_count = 0  # Total rotations completed
+        self.is_rotating = False  # Currently rotating
         self.phase = self._get_phase_at_angle(0)
         self.events: List[TimingEvent] = []
         self.event_callbacks: Dict[int, List[Callable]] = {}  # angle → handlers
@@ -201,9 +201,7 @@ class TimingController:
             for callback in self.event_callbacks[angle]:
                 callback(angle, self.phase)
 
-    def register_callback(
-        self, angle: int, callback: Callable
-    ) -> None:
+    def register_callback(self, angle: int, callback: Callable) -> None:
         """
         Register callback for specific angle.
 
@@ -306,17 +304,13 @@ class TimingSequence:
         self.operations: Dict[MechanicalPhase, List[str]] = {}
         self.duration = 360  # Default one rotation
 
-    def add_operation(
-        self, phase: MechanicalPhase, operation: str
-    ) -> None:
+    def add_operation(self, phase: MechanicalPhase, operation: str) -> None:
         """Add operation to phase."""
         if phase not in self.operations:
             self.operations[phase] = []
         self.operations[phase].append(operation)
 
-    def get_operations_for_phase(
-        self, phase: MechanicalPhase
-    ) -> List[str]:
+    def get_operations_for_phase(self, phase: MechanicalPhase) -> List[str]:
         """Get operations for given phase."""
         return self.operations.get(phase, [])
 

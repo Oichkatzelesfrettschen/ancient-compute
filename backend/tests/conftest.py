@@ -9,18 +9,17 @@ try:
     from sqlalchemy.pool import StaticPool
     from src.database import Base, get_db
     from src.main import app
-    
+
     # Create in-memory SQLite database for testing
     SQLALCHEMY_DATABASE_URL = "sqlite:///:memory:"
-    
+
     engine = create_engine(
         SQLALCHEMY_DATABASE_URL,
         connect_args={"check_same_thread": False},
         poolclass=StaticPool,
     )
     TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-    
-    
+
     def override_get_db():
         """Override database dependency for testing."""
         try:
@@ -28,16 +27,14 @@ try:
             yield db
         finally:
             db.close()
-    
-    
+
     @pytest.fixture(scope="function")
     def test_db():
         """Create a fresh database for each test."""
         Base.metadata.create_all(bind=engine)
         yield
         Base.metadata.drop_all(bind=engine)
-    
-    
+
     @pytest.fixture(scope="function")
     def client(test_db):
         """Create a test client with database override."""
