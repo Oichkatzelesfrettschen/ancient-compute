@@ -35,6 +35,7 @@ def test_babbage_number_comparison():
     assert not (num1 > num2)
     assert num1 == BabbageNumber(10)
     assert num1 != num2
+    assert not (num1 != BabbageNumber(10))
 
 
 # Test Engine class - basic instruction execution
