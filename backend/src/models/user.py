@@ -37,6 +37,12 @@ class User(Base):
     code_submissions = relationship(
         "CodeSubmission", back_populates="user", cascade="all, delete-orphan"
     )
+    exercise_progress = relationship(
+        "ExerciseProgress", back_populates="user", cascade="all, delete-orphan"
+    )
+    exercise_submissions = relationship(
+        "ExerciseSubmission", back_populates="user", cascade="all, delete-orphan"
+    )
 
     def __repr__(self):
         return f"<User {self.username}>"

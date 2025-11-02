@@ -29,10 +29,11 @@ class Module(Base):
     __tablename__ = "modules"
 
     id = Column(Integer, primary_key=True, index=True)
+    era_id = Column(Integer, ForeignKey("eras.id", ondelete="CASCADE"), nullable=False, index=True)
     slug = Column(String(100), unique=True, index=True, nullable=False)
     title = Column(String(255), nullable=False)
     description = Column(Text, nullable=False)
-    era = Column(Enum(ModuleEra), nullable=False, index=True)
+    era_enum = Column(Enum(ModuleEra), nullable=False, index=True)  # Kept for backward compatibility
 
     # Chronological ordering
     start_year = Column(Integer, nullable=False)  # Can be negative for BC
@@ -49,11 +50,18 @@ class Module(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
     # Relationships
+    era = relationship("Era", back_populates="modules")
     lessons = relationship(
         "Lesson",
         back_populates="module",
         cascade="all, delete-orphan",
         order_by="Lesson.sequence_order",
+    )
+    exercises = relationship(
+        "Exercise",
+        back_populates="module",
+        cascade="all, delete-orphan",
+        order_by="Exercise.sequence_order",
     )
     progress = relationship("ModuleProgress", back_populates="module", cascade="all, delete-orphan")
 
