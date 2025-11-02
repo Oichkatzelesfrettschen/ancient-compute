@@ -1,5 +1,9 @@
 # Babbage Code Generator Specification
 
+> **⚠️ NOTE**: This file has been reorganized. The authoritative version is now at:  
+> **[BABBAGE_ANALYTICAL_ENGINE/specifications/BABBAGE_CODE_GENERATOR_SPECIFICATION.md](./BABBAGE_ANALYTICAL_ENGINE/specifications/BABBAGE_CODE_GENERATOR_SPECIFICATION.md)**  
+> See [BABBAGE_FILES_MOVED_README.md](./BABBAGE_FILES_MOVED_README.md) for more information.
+
 **Date**: 2025-10-31  
 **Phase**: Week 7 Foundation (Critical Path)  
 **Purpose**: Transform Babbage IR to Babbage machine code (32-instruction ISA)  

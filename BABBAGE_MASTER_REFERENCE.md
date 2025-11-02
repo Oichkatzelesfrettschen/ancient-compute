@@ -1,5 +1,9 @@
 # Babbage Analytical Engine - Master Reference & Best Practices
 
+> **⚠️ NOTE**: This file has been reorganized. The authoritative version is now at:  
+> **[BABBAGE_ANALYTICAL_ENGINE/specifications/BABBAGE_MASTER_REFERENCE.md](./BABBAGE_ANALYTICAL_ENGINE/specifications/BABBAGE_MASTER_REFERENCE.md)**  
+> See [BABBAGE_FILES_MOVED_README.md](./BABBAGE_FILES_MOVED_README.md) for more information.
+
 **Document Type**: Comprehensive Technical Reference
 **Version**: 1.0 (2025-10-31)
 **Audience**: Compiler developers, language service implementers, system architects
