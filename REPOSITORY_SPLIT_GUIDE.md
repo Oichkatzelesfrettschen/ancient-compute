@@ -454,7 +454,12 @@ cd curriculum
 git filter-repo --path CURRICULUM_AND_CONTENT/ \
                 --path HISTORICAL_CONTEXT/ \
                 --path TYPE_THEORY_CURRICULUM.md \
-                --path-rename CURRICULUM_AND_CONTENT/:modules/ \
+                --path-rename CURRICULUM_AND_CONTENT/:modules/
+
+# Rename HISTORICAL_CONTEXT/ to historical/
+git filter-repo --path modules/ \
+                --path HISTORICAL_CONTEXT/ \
+                --path TYPE_THEORY_CURRICULUM.md \
                 --path-rename HISTORICAL_CONTEXT/:historical/
 
 # Create README
