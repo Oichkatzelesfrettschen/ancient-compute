@@ -1,391 +1,387 @@
-# Multi-Agent Coordination Strategy for Ancient Compute
+# Ancient Compute: Custom AI Agents
+
+**Date**: November 1, 2025
+**Version**: 1.0
+**Status**: Production Ready
+
+---
+
+## Overview
+
+Ancient Compute utilizes five specialized AI agents to deliver a comprehensive educational platform teaching 12,500 years of computational history. These agents provide expert guidance across history, type theory, software architecture, and implementation excellence.
+
+Each agent brings deep domain expertise while collaborating to ensure pedagogical accuracy, mathematical rigor, architectural coherence, and production-quality code.
+
+---
+
+## Agent System Architecture
+
+```
+┌─────────────────────────────────────────────┐
+│   Multi-Agent Orchestrator (Coordinator)    │
+│   Decomposes complex problems, routes to    │
+│   specialists, resolves conflicts, ensures  │
+│   integration across domains                │
+└──────────────┬──────────────────────────────┘
+               │
+    ┌──────────┼──────────┬──────────┐
+    │          │          │          │
+    ▼          ▼          ▼          ▼
+┌─────────┐ ┌──────────┐ ┌───────────┐ ┌──────────┐
+│ Logic-  │ │ Polyglot │ │ Category  │ │ PhD      │
+│ Compu-  │ │ Systems  │ │ Theory    │ │ Software │
+│ tation  │ │ Architect│ │ Expert    │ │ Engineer │
+│Historian│ │          │ │           │ │          │
+└─────────┘ └──────────┘ └───────────┘ └──────────┘
+```
+
+---
+
+## Agents
+
+### 1. Logic-Computation-Historian
+
+**Location**: `.github/agents/logic-computation-historian.md`
+
+**Responsibility**: Ensures historical accuracy and pedagogical soundness across the entire curriculum.
+
+**Core Expertise**:
+- 12,500-year history of computation across all civilizations
+- Cross-cultural contributions: Mesopotamian, Egyptian, Greek, Indian, Chinese, Islamic, European
+- Primary source documentation and scholarly verification
+- Chronological accuracy and timeline validation
+- Prevention of Eurocentric or teleological narratives
+
+**Consulted For**:
+- ✅ Designing new historical modules (Module 0-7)
+- ✅ Writing historical context and explanations
+- ✅ Validating timeline accuracy across content
+- ✅ Bridging ancient algorithmic concepts to modern implementation
+- ✅ Creating synthesis modules (A, B, C)
+
+**Key Principle**: Computation's history is not linear progress but complex cultural exchange across millennia.
+
+**Example Task**:
+> "Design Module 3 (Medieval Transmission) covering Islamic Golden Age (Al-Khwarizmi), scholastic logic, and Lull's Ars Magna. Ensure chronological accuracy, identify modern computational relevance, and provide primary source documentation."
+
+---
+
+### 2. Polyglot-Systems-Architect
+
+**Location**: `.github/agents/polyglot-systems-architect.md`
+
+**Responsibility**: Designs and optimizes multi-language execution architecture serving 8+ programming paradigms.
+
+**Core Expertise**:
+- Language service containerization (Docker)
+- Cross-language API design and standardization
+- Performance profiling and optimization
+- Security sandboxing and resource limits
+- Language interoperability and FFI patterns
+- Data flow across language boundaries
+
+**Consulted For**:
+- ✅ Designing new language services (C, Python, Haskell, IDRIS2, LISP, Java, Assembly, System F)
+- ✅ Creating code examples implementing same algorithm across multiple languages
+- ✅ Optimizing system performance and response times
+- ✅ Establishing standardized REST/WebSocket APIs
+- ✅ Managing resource limits (CPU, memory, timeout)
+
+**Coverage**:
+```
+C (systems programming)
+Python (general-purpose, beginner-friendly)
+Haskell (pure functional, parametric polymorphism)
+IDRIS2 (dependent types, compile-time proofs)
+LISP (metaprogramming, symbolic computation)
+Java (JVM, static typing, enterprise patterns)
+Assembly (x86-64, direct hardware access)
+System F (lambda calculus with universal quantification)
+```
+
+**Key Principle**: Every language deserves first-class support; no language is "best" for all tasks.
+
+**Example Task**:
+> "Implement factorial algorithm in C, Python, Haskell, IDRIS2, and LISP. Highlight how type systems differ: C unsafe pointers, Haskell parametric polymorphism, IDRIS2 dependent types. Create performance comparison framework."
+
+---
+
+### 3. Category-Theory-Expert
+
+**Location**: `.github/agents/category-theory-expert.md`
+
+**Responsibility**: Provides mathematical rigor to type systems and formal verification of computational properties.
+
+**Core Expertise**:
+- Type theory: From simply-typed lambda calculus to dependent types
+- Category theory: Functors, natural transformations, adjunctions, monads
+- Formal verification: Proving program correctness
+- Categorical laws: Verifying coherence conditions, distributive laws
+- Type system design: Creating sound and complete systems
+- Proof assistants: Coq, Lean, IDRIS2, Agda
+- Algebraic structures: Groups, rings, fields, lattices in type systems
+
+**Consulted For**:
+- ✅ Teaching type system progression across historical eras
+- ✅ Creating IDRIS2 proofs of algorithm correctness
+- ✅ Verifying type safety properties
+- ✅ Proving monad laws
+- ✅ Ensuring dependent type system soundness
+- ✅ Designing type-safe abstractions
+
+**Type System Progression**:
+1. **Untyped**: Assembly, early LISP
+2. **Implicitly Typed**: Python (runtime), dynamic functional
+3. **Explicitly Typed**: C, Java (manifest types)
+4. **Parametrically Polymorphic**: Haskell (System F instance)
+5. **Dependent Types**: IDRIS2 (dependent pairs, proofs)
+6. **System F**: Lambda calculus with universal quantification
+7. **Higher-Kinded Types**: Haskell type families
+
+**Key Principle**: Mathematical rigor must connect to implementable concepts.
+
+**Example Task**:
+> "Explain System F (polymorphic lambda calculus) at three levels: mathematical (category theory), type system (inference rules), practical (Haskell implementation). Show how universal quantification enables parametric polymorphism."
+
+---
+
+### 4. Multi-Agent-Orchestrator
+
+**Location**: `.github/agents/multi-agent-orchestrator.md`
+
+**Responsibility**: Coordinates specialized agents for complex problems spanning multiple domains.
+
+**Core Expertise**:
+- Problem decomposition across domains
+- Agent routing and task allocation
+- Context management across specialists
+- Conflict resolution between different expertise
+- Integration validation across domains
+- Quality assurance across all phases
+
+**Consulted For**:
+- ✅ Complex features requiring multiple specialties
+- ✅ Cross-cutting concerns (performance, security, architecture)
+- ✅ Major architecture changes or refactors
+- ✅ Comprehensive quality assurance
+- ✅ When specialists recommend conflicting approaches
+- ✅ Ensuring outputs from different agents integrate coherently
+
+**Workflow: Adding New Historical Module**:
+```
+1. logic-computation-historian → Module structure, timeline, concepts
+2. polyglot-systems-architect → Code examples across languages
+3. category-theory-expert → Formal proofs of correctness
+4. phd-software-engineer → Code review, testing, quality
+5. Validation → Historical accuracy, type safety, production readiness
+```
+
+**Key Principle**: Don't hide disagreements; use them to deepen analysis.
+
+**Example Task**:
+> "Adding Coq language service requires: architect (system design), expert (formal verification), engineer (implementation), historian (pedagogy). Orchestrate their expertise into coherent service with learning content."
+
+---
+
+### 5. PhD-Software-Engineer
+
+**Location**: `.github/agents/phd-software-engineer.md`
+
+**Responsibility**: Ensures production-ready code quality and architectural excellence across all systems.
+
+**Core Expertise**:
+- Software architecture and design patterns
+- Performance optimization and profiling
+- Multi-language programming best practices
+- Type safety and static analysis
+- Testing strategy and CI/CD
+- Code quality and maintainability
+- Research translation to production code
+
+**Consulted For**:
+- ✅ Code review before deployment
+- ✅ Architecture design for complex systems
+- ✅ Performance analysis and optimization
+- ✅ Testing strategy and coverage targets
+- ✅ Refactoring and technical debt management
+- ✅ Language-specific best practices
+- ✅ Production readiness validation
+
+**Quality Standards**:
+```
+Testing Strategy:
+  ✓ Unit tests: > 80% coverage
+  ✓ Integration tests: Component interactions
+  ✓ End-to-end tests: User workflows
+  ✓ Performance tests: Performance targets
+  ✓ Security tests: Sandboxing and isolation
+
+Performance Standards:
+  ✓ Language service startup: < 5 seconds
+  ✓ Code execution response: < 10 seconds
+  ✓ API response time: < 500ms (non-execution)
+  ✓ Memory usage per request: < 256MB
+```
+
+**Key Principle**: Clear code beats clever code; measure before optimizing.
+
+**Example Task**:
+> "Review orchestration layer for: proper abstractions, error handling, performance bottlenecks, security vulnerabilities. Propose refactoring to separate validation, business logic, database access, and response formatting."
+
+---
+
+## Requirements for GitHub Website
+
+### Documentation Structure
+- ✅ Master agent index: `AGENTS.md` (this file, root level)
+- ✅ Detailed agent docs: `.github/agents/` directory
+- ✅ Quick reference: `.github/agents/README.md`
+- ✅ Individual agent specs: `.github/agents/*-*.md` files
+
+### Visibility & Accessibility
+- **Root Level**: `AGENTS.md` visible on main GitHub page
+- **Directory**: `.github/agents/` easily accessible from root
+- **Navigation**: Clear links between overview and detailed docs
+- **Search**: Files named clearly for GitHub search
+- **Format**: Standard GitHub markdown with syntax highlighting
+
+### Content Requirements
+- ✅ Clear agent roles and responsibilities
+- ✅ Specific use cases for each agent
+- ✅ Example tasks demonstrating expertise
+- ✅ Integration patterns showing collaboration
+- ✅ When/when-not-to-consult guidance
+- ✅ Contact points and routing information
+- ✅ Project constraints and principles
+- ✅ FAQ addressing common questions
+
+### Technical Formatting
+- ✅ Proper GitHub markdown syntax
+- ✅ Code blocks with language specification
+- ✅ Tables for quick reference
+- ✅ ASCII diagrams for architecture
+- ✅ Headers for navigation
+- ✅ Links between related sections
+- ✅ Version and date stamps
+
+### Information Architecture
+```
+AGENTS.md (Entry point)
+├── Overview
+├── System architecture diagram
+├── Individual agent specifications
+│   ├── Role & responsibility
+│   ├── Core expertise
+│   ├── When to consult
+│   ├── Key principles
+│   └── Example tasks
+├── Collaboration patterns
+├── GitHub requirements (this section)
+├── Communication patterns
+├── FAQ
+└── References
+
+.github/agents/ (Detailed reference)
+├── README.md (Master index)
+├── logic-computation-historian.md
+├── polyglot-systems-architect.md
+├── category-theory-expert.md
+├── multi-agent-orchestrator.md
+└── phd-software-engineer.md
+```
+
+---
+
+## How Agents Work Together
+
+### Single-Domain Task
+```
+Task: "Implement factorial in Haskell"
+→ Consult: polyglot-systems-architect directly
+→ No coordination needed
+```
+
+### Multi-Domain Task
+```
+Task: "Add new historical module with curriculum, code examples,
+        formal proofs, and production deployment"
+
+→ Route through multi-agent-orchestrator
+→ Coordinates: historian, architect, expert, engineer
+→ Each specialist provides their expertise
+→ Orchestrator ensures integration and coherence
+```
+
+---
+
+## When to Consult Each Agent
+
+### Quick Reference
+
+| Task | Agent | Rationale |
+|------|-------|-----------|
+| Write lesson content | Logic-Computation-Historian | Accuracy, pedagogy, historical context |
+| Design language service | Polyglot-Systems-Architect | Multi-language expertise |
+| Prove algorithm correct | Category-Theory-Expert | Mathematical rigor |
+| Code review | PhD-Software-Engineer | Quality, architecture |
+| Complex feature | Multi-Agent-Orchestrator | Coordinating expertise |
+| Timeline validation | Logic-Computation-Historian | Historical accuracy |
+| API design | Polyglot-Systems-Architect | System interfaces |
+| Type system design | Category-Theory-Expert | Mathematical soundness |
+| Performance tuning | PhD-Software-Engineer | Optimization expertise |
+
+---
+
+## Getting Started with Agents
+
+### For New Contributors
+
+1. Read `AGENTS.md` (this file) for overview
+2. Review `.github/agents/README.md` for detailed guide
+3. Identify which agents are relevant for your task
+4. Consult appropriate agent documentation
+5. Follow agent guidance for your domain
+
+### For Complex Features
+
+1. Break down task into constituent domains
+2. Use multi-agent-orchestrator to route
+3. Consult specialists in sequence
+4. Validate outputs integrate coherently
+5. Document decisions and trade-offs
+
+---
+
+## FAQ
+
+**Q: Why multiple agents instead of one general AI?**
+A: Specialized expertise ensures depth in each domain. Polyglot systems require deep knowledge of type theory, history, software architecture, and implementation—no single generalist can match specialists.
+
+**Q: What if agents disagree?**
+A: That's valuable! Use the disagreement to deepen understanding. Orchestrator helps synthesize different perspectives.
+
+**Q: Should I consult an agent for simple tasks?**
+A: No. Use agents for complex problems requiring specialized expertise.
+
+**Q: Can agents be wrong?**
+A: Yes. Always validate advice against actual code and requirements.
+
+**Q: How often should I consult agents?**
+A: As needed. Some phases require frequent consultation; others minimal.
+
+---
+
+## References
+
+- **Detailed Agent Docs**: [.github/agents/](https://github.com/Oichkatzelesfrettschen/ancient-compute/tree/master/.github/agents)
+- **Master Index**: [.github/agents/README.md](https://github.com/Oichkatzelesfrettschen/ancient-compute/blob/master/.github/agents/README.md)
+- **Project Overview**: [README.md](https://github.com/Oichkatzelesfrettschen/ancient-compute)
+- **Architecture**: [ARCHITECTURE.md](https://github.com/Oichkatzelesfrettschen/ancient-compute/blob/master/ARCHITECTURE.md)
+
+---
 
 **Document Version**: 1.0
-**Last Updated**: 2025-10-31
-**Status**: Phase 1 Complete, Phase 2 In Progress
+**Date**: November 1, 2025
+**Status**: Production Ready
+**Visibility**: Public (GitHub)
 
-This document defines how multiple AI agents coordinate work on Ancient Compute, a 28,000-line polyglot project with 8 language services, frontend, backend, and documentation subsystems.
-
----
-
-## Executive Summary
-
-Ancient Compute requires coordinated multi-agent work because:
-1. **Scale**: 28,000+ lines across 5+ technology stacks (Python, TypeScript, Haskell, C, LaTeX)
-2. **Complexity**: 8 language services with identical 4-phase compiler pipelines
-3. **Integration**: Frontend ↔ Backend ↔ Docker services all must work together
-4. **Specialization**: Some tasks require domain experts (compiler design, type systems, DevOps)
-
-**Coordination Model**: Sequential phases with parallel work within phases, managed through:
-- Explicit task decomposition (TodoWrite)
-- Specialized agent routing (via Task tool subagent_type)
-- Clear dependency documentation
-- Staged integration points
-
----
-
-## Project Structure & Navigation
-
-- **`backend/`** contains the FastAPI app in `src/` (config, database, API routers, services) plus Alembic migrations and pytest suite. New domains should mirror the existing `src/<domain>/` pattern and document cross-service changes in `CLAUDE.md` (AI assistant guide) and `backend/requirements.md`.
-
-- **`frontend/`** hosts the SvelteKit client; compose UI under `src/lib/components`, routes in `src/routes`, and keep Vitest specs in `frontend/tests/`. Shared state belongs in `src/lib/stores`. See `frontend/requirements.md` for detailed frontend architecture.
-
-- **`services/`** provides per-language sandboxes (C, Python, Haskell, IDRIS2, LISP, System F, Java, Assembly) with Docker isolation. Each follows the same 4-phase compiler pipeline. See `services/requirements.md` for container architecture and resource limits.
-
-- **`docs/`** contains XeLaTeX curriculum (7 volumes, 50+ exercises, 300+ TikZ diagrams). See `docs/requirements.md` for build requirements and structure.
-
-- **Strategic documents**:
-  - `TECHNICAL_DEBT.md` - Known issues and quality improvements (15+ items prioritized)
-  - `OPTION_B_IMPLEMENTATION_ROADMAP.md` - Phase 2 detailed plan (4 language services, 6-7 weeks)
-  - `OPTION_C_PHASE_3_VISION.md` - Phase 3 emulator and tools design
-  - `PROJECT_STATUS.md` - Comprehensive metrics and completion tracking
-  - `requirements.md` - Project-wide and per-module requirements documentation
-
-## Build, Test & Development Commands
-```bash
-make setup        # Install backend (pip) + frontend (pnpm) deps and pre-commit
-make dev          # Compose stack: FastAPI :8000, SvelteKit :3000, Postgres, Redis
-make dev-backend  # Uvicorn live-reload from backend/src/main.py
-make dev-frontend # Vite dev server with HMR
-make test         # Runs backend pytest then frontend vitest
-make lint         # Backend pylint + mypy, frontend eslint
-make build        # Bazel backend targets + Svelte production build
-make docker-up    # Detached containers for local integration testing
-```
-Lean on `bazel build //backend:all` and `bazel test //...` for targeted polyglot builds, and prefer Make targets so pre-commit stays consistent.
-
-## Coding Style & Naming Conventions
-- Python adheres to Black (100 cols) and strict mypy; keep modules `snake_case`, classes `PascalCase`, functions `snake_case`, and run `make format` (Black + isort) before committing.
-- TypeScript/Svelte follows Prettier (tabs, single quotes, 100 cols). Components use `PascalCase.svelte`, stores/utilities `camelCase.ts`, and API clients sit under `frontend/src/lib/api/`.
-- Bazel, Make, and script targets stay lowercase with hyphen separators (`build-backend`, `test-frontend`).
-
-## Testing Guidelines
-- Backend unit tests live in `backend/tests/` (mirroring package layout); add integration suites under `backend/tests/integration` as they come online per `ARCHITECTURE_AND_DESIGN/PROJECT_STRUCTURE.md`. Use `make test-backend` and `make test-coverage` before PR handoff.
-- Frontend Vitest specs belong in `frontend/tests/` or alongside components when snapshots help readability. Use `pnpm test --runInBand` for flaky debugging.
-- Curriculum data fixtures ride with the relevant module folders; note any generated data sources in PR descriptions so content reviewers can validate historical timelines.
-
-## Commit & Pull Request Guidelines
-- Follow the narrative convention from `git log` (`Week N Day M: <scope>`). Summaries should state the sprint context first, then the functional change.
-- Branch naming: `feature/<slug>`, `fix/<slug>`, `docs/<slug>`, `chore/<slug>`; avoid direct pushes to `main`.
-- Every PR should provide: change overview, verification commands (`make test`, `make lint`, etc.), relevant doc links (roadmap, architecture), and UI screenshots/GIFs when visual layers change. Request reviewers from both backend and frontend when touching shared contracts or API DTOs.
-
-## Roadmap Awareness for Agents
-- `ARCHITECTURE_AND_DESIGN/IMPLEMENTATION_ROADMAP.md` and `DEVELOPMENT_GUIDES/WEEK_2_IMPLEMENTATION_PLAN.md` outline upcoming milestones: completing all eight language executors, layering gVisor/seccomp security, expanding content schemas, and launching the interactive timeline. Reference these when prioritizing tasks or proposing scope changes.
-- Escalate deviations that impact the planned sequence (Language Services -> Content CMS -> Interactive Components) so project leads can adjust timelines or staffing.
-
-## Specialized Agent Types and Roles
-
-### 1. Compiler/Language Service Specialist (`chickenos-*` agents)
-
-**Specialization**: Deep expertise in language implementation, compiler design, type systems
-
-**Best For**:
-- Implementing new language services (LISP, IDRIS2, System F, Java)
-- Debugging compiler pipelines (lexing, parsing, semantic analysis, IR generation)
-- Type system design and validation
-- Performance optimization of language runtimes
-
-**When to Use**:
-- Any language service implementation task
-- Cross-language compatibility testing
-- Compiler phase optimization
-
-**Example Workflow**:
-```
-User: "Implement LISP Language Service"
-→ Route to: chickenos-compiler-specialist
-→ Agent uses standard 4-phase pipeline
-→ Outputs: lexer, parser, type system, compiler (1,800-2,200 lines)
-→ Deliverable: Service with 65+ tests, 100% pass rate
-```
-
-### 2. System Architecture Specialist (`polyglot-systems-architect`)
-
-**Specialization**: Cross-language integration, system design, polyglot orchestration
-
-**Best For**:
-- Integrating multiple language services together
-- Backend-service communication patterns
-- Cross-component dependency resolution
-- Performance profiling and optimization
-
-**When to Use**:
-- Phase transitions (end of language implementation → integration testing)
-- Multi-component issues spanning 2+ subsystems
-- Architecture improvements or refactoring
-
-**Example Workflow**:
-```
-User: "Execute Week 12 integration testing"
-→ Route to: polyglot-systems-architect
-→ Agent coordinates all 4 language services
-→ Validates cross-language compilation
-→ Outputs: Integration test suite + performance metrics
-```
-
-### 3. Type Theory Specialist (`category-theory-expert`)
-
-**Specialization**: Advanced type theory, formal verification, dependent types
-
-**Best For**:
-- IDRIS2 dependent type system design
-- System F rank-2 polymorphism implementation
-- Type checking algorithm validation
-- Proof of correctness for type operations
-
-**When to Use**:
-- IDRIS2 or System F language service work
-- Type system edge cases or conflicts
-- Formal specification of type semantics
-
-### 4. Frontend/UI Specialist
-
-**Specialization**: SvelteKit, TypeScript, visualization libraries, interactive components
-
-**Best For**:
-- Frontend component implementation
-- D3.js timeline visualization
-- Three.js 3D scene development
-- API client integration
-
-**When to Use**:
-- Frontend feature development
-- Interactive visualization work
-- UI/UX integration challenges
-
-### 5. DevOps/Infrastructure Specialist (`chickenos-driver-specialist` or general)
-
-**Specialization**: Docker, Kubernetes, build systems, CI/CD, sandbox security
-
-**Best For**:
-- Docker container management
-- Sandbox security validation
-- Build system configuration (Bazel)
-- Performance monitoring and profiling
-
-**When to Use**:
-- Container or deployment issues
-- Security sandbox validation
-- Build system debugging
-- Performance baseline measurements
-
----
-
-## Multi-Agent Workflow Patterns
-
-### Pattern 1: Sequential Phase Completion
-
-**Scenario**: Complete Week 9 (LISP Language Service)
-
-1. **Planning Phase** (Human + General Agent)
-   - Review `OPTION_B_IMPLEMENTATION_ROADMAP.md` section on LISP
-   - Create TodoWrite with 7 subtasks (lexer, parser, type system, compiler, tests, service, integration)
-   - Estimated effort: 20-25 hours
-
-2. **Implementation Phase** (Compiler Specialist)
-   - Assign subagent: `chickenos-bare-metal-runtime` (LISP compilation)
-   - Focus: Implement all 4 phases following proven C/Python/Haskell patterns
-   - Checkpoint: Each phase must have 100% test pass rate before proceeding
-
-3. **Integration Phase** (Systems Architect)
-   - Integrate LISP service into backend service factory
-   - Validate with cross-language test suite
-   - Measure compilation times, memory usage
-
-4. **Documentation Phase** (General Agent)
-   - Update CLAUDE.md with LISP service status
-   - Update requirements.md with LISP-specific requirements
-   - Create performance baseline metrics
-
-### Pattern 2: Parallel Work Within Phase
-
-**Scenario**: Week 12 Integration Testing (all 4 language services)
-
-All work can happen in parallel with staged integration:
-
-1. **Language Service Specialists** (4 concurrent agents)
-   - Each validates their service individually
-   - Creates service-specific test suite
-   - No inter-service dependencies yet
-
-2. **Systems Architect** (consolidation)
-   - Takes all 4 service test suites
-   - Creates cross-language test suite
-   - Validates all 4 services work together
-   - Measures overall system performance
-
-3. **DevOps Specialist** (final validation)
-   - Runs full Docker stack with all 4 services
-   - Measures resource limits, sandbox isolation
-   - Validates CI/CD pipeline passes
-
-### Pattern 3: Specialized Domain Work
-
-**Scenario**: Type Theory Milestone (IDRIS2 + System F)
-
-1. **Type Theory Specialist**
-   - Define IDRIS2 dependent type semantics
-   - Specify System F polymorphism constraints
-   - Create test matrices for type checking
-
-2. **Compiler Specialists** (2 parallel agents)
-   - IDRIS2: Implement dependent type system
-   - System F: Implement rank-2 polymorphism
-   - Validate against type theory specs
-
-3. **Systems Architect**
-   - Integrate both services
-   - Validate type system interactions
-   - Test cross-language type compatibility
-
----
-
-## Dependency Management and Critical Paths
-
-### Phase 2 Dependencies (Weeks 9-12)
-
-```
-Week 9: LISP Service
-  ├─ Blocker: None (independent implementation)
-  └─ Gate: 65+ tests, 100% pass rate
-
-Week 10.1: IDRIS2 Service
-  ├─ Blocker: None (independent implementation)
-  └─ Gate: 70+ tests, type checking validation
-
-Week 10.2: System F Service
-  ├─ Blocker: None (independent implementation)
-  └─ Gate: 60+ tests, polymorphism validation
-
-Week 11.1: Java Service
-  ├─ Blocker: None (independent implementation)
-  └─ Gate: 70+ tests, OOP feature coverage
-
-Week 12: Integration Testing
-  ├─ Blocker: All 4 services complete (previous weeks)
-  ├─ Gate: 100+ integration tests, cross-language validation
-  └─ Outputs: Performance metrics, documentation updates
-```
-
-### Critical Decision Points
-
-1. **Week 9 Completion**: Can proceed to Week 10 in parallel?
-   - YES - LISP, IDRIS2, System F are independent
-   - NO - If dependencies discovered → escalate to Systems Architect
-
-2. **Week 12 Go/No-Go**: Can ship Phase 2?
-   - YES - All 4 services at 85% completion + integration tests pass
-   - NO - Fix blockers, delay ship
-
----
-
-## Communication and Handoff Protocols
-
-### Information Exchange Between Agents
-
-**When Agent A hands off to Agent B**:
-
-1. **Summary**: 1-2 sentences of what was completed
-2. **Metrics**: Lines of code, test count, pass rate
-3. **Blockers**: Any unresolved issues or questions
-4. **Files Modified**: List of changed files
-5. **Next Steps**: What Agent B should focus on
-
-**Example Handoff**:
-```
-Agent: chickenos-compiler-specialist (LISP implementation)
-Completed: LISP lexer, parser, type system, compiler (1,900 lines)
-Tests: 55/65 passing (85%), 2 failing on nested list handling
-Blockers: Symbol evaluation corner cases need type theory guidance
-Files: backend/src/compilers/lisp_*.py, backend/tests/test_lisp.py
-Next: category-theory-expert to review symbol binding semantics
-```
-
-### TodoWrite as Coordination Tool
-
-**Update TodoWrite when**:
-- Agent completes a task (mark as `completed`)
-- Agent encounters a blocker (note in description, keep as `in_progress`)
-- New task discovered during implementation (add to list)
-- Task complexity changes (update estimate in description)
-
-**Keep TodoWrite in sync with reality** - it's the single source of truth for project progress
-
----
-
-## Agent Workflow Tips
-
-- **Leverage Proven Patterns**: When implementing a new language, copy the proven 4-phase pipeline from C, Python, or Haskell. Don't reinvent from scratch.
-
-- **Test-Driven Development**: Each phase should have tests BEFORE implementation. Use pytest for all language services.
-
-- **Use Make Targets**: `make test`, `make lint`, `make format` keep everything consistent.
-
-- **Check CLAUDE.md First**: Multi-agent coordination norms are documented there. Consult before modifying architecture.
-
-- **Performance Baselines**: When completing a language service, measure:
-  - Compilation time per function
-  - Memory usage per execution
-  - IR size before/after optimization
-
-- **Document as You Go**: Update requirements.md files immediately after implementing a subsystem. Don't batch documentation at the end.
-
-- **Escalate Early**: If a task requires expertise outside your specialization, propose handing off to the appropriate specialist agent.
-
----
-
-## Example: Coordinating Week 9 LISP Implementation
-
-**Monday 8:00 AM**: User requests "Implement LISP Language Service (Week 9)"
-
-```
-1. Create TodoWrite with 7 subtasks (2 min)
-   - Implement lisp_lexer.py
-   - Implement lisp_parser.py
-   - Implement lisp_types.py
-   - Implement lisp_compiler.py
-   - Implement test_lisp_compiler.py
-   - Integrate with service factory
-   - Measure performance baselines
-
-2. Route to specialized agent (1 min)
-   Task: chickenos-compiler-specialist
-   Subagent: chickenos-bare-metal-runtime
-   Input: OPTION_B_IMPLEMENTATION_ROADMAP.md (Week 9.1)
-
-3. Agent executes (5-6 hours)
-   - Implements lexer with 40+ token types
-   - Implements parser for S-expressions
-   - Implements type system for dynamic dispatch
-   - Implements 4-phase compiler
-   - Writes 65+ tests
-   - Reports back when complete
-
-4. Handoff to systems architect (30 min)
-   - Integrates service factory entry
-   - Validates with existing services
-   - Creates cross-language test
-   - Measures performance vs. baseline
-
-5. Handoff to documentation (15 min)
-   - Update CLAUDE.md with LISP service metrics
-   - Update requirements.md with LISP specifics
-   - Create commit message with detailed summary
-```
-
-**Elapsed Time**: 6.5 hours for complete, tested, documented LISP Language Service
-
----
-
-## References and Cross-Links
-
-- **CLAUDE.md**: Development guide for AI assistants (team coordination norms)
-- **README.md**: Project overview and Phase status
-- **OPTION_B_IMPLEMENTATION_ROADMAP.md**: Detailed specifications for Phase 2 work
-- **OPTION_C_PHASE_3_VISION.md**: Phase 3 emulator and tools architecture
-- **requirements.md** files: Module-specific requirements and architecture
-- **TECHNICAL_DEBT.md**: Known issues to address during implementation
-
----
-
-**End of Multi-Agent Coordination Strategy**
