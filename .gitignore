@@ -101,3 +101,11 @@ Thumbs.db
 *.bak
 *.swp
 .cache/
+
+# Java
+*.class
+*.jar
+*.war
+*.ear
+target/
+*.iml
