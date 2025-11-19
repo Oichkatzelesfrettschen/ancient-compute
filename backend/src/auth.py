@@ -15,8 +15,11 @@ from typing import Optional
 from fastapi import HTTPException, Security, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel
+from sqlalchemy.orm import Session
 
 from ..config import settings
+from ..database import get_db
+from ..models.user import User
 
 security = HTTPBearer()
 
@@ -98,6 +101,7 @@ def decode_token(token: str) -> TokenData:
 
 async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Security(security),
+    db: Session = Depends(get_db),
 ) -> UserResponse:
     """
     Validate JWT token and return current user.
@@ -107,12 +111,13 @@ async def get_current_user(
 
     Args:
         credentials: HTTP Authorization credentials (Bearer token)
+        db: Database session for user verification
 
     Returns:
         UserResponse object with authenticated user information
 
     Raises:
-        HTTPException: If authentication fails
+        HTTPException: If authentication fails or user not found
 
     Example:
         @app.get("/protected")
@@ -122,10 +127,17 @@ async def get_current_user(
     token = credentials.credentials
     token_data = decode_token(token)
 
-    # TODO: Query user from database to verify they still exist and are active
-    # For now, return user data from token
+    # Query user from database to verify they still exist and are active
+    db_user = db.query(User).filter(User.id == token_data.user_id).first()
+
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
     user = UserResponse(
-        id=token_data.user_id, username=token_data.username, email=token_data.email, is_active=True
+        id=db_user.id,
+        username=db_user.username,
+        email=db_user.email,
+        is_active=db_user.is_active,
     )
 
     if not user.is_active:
