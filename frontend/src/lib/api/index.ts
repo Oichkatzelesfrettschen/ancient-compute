@@ -26,3 +26,7 @@ export type {
   TimelineFilter,
   FullTimeline,
 } from './timeline';
+
+// Education-specific exports
+export { default as educationApi } from './education';
+export * from './education';
