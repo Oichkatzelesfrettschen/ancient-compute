@@ -15,6 +15,8 @@
   } from '$lib/visualization/providers/VisualizationProvider';
   import { StateWorker } from '$lib/visualization/workers/StateWorker';
   import { VisualizationCLI } from '$lib/visualization/cli/VisualizationCLI';
+  import KeyboardShortcutManager from '$lib/utils/KeyboardShortcutManager';
+  import HelpPanel from '$lib/components/common/HelpPanel.svelte';
 
   // Props
   export let initialState: MachineState | null = null;
@@ -29,6 +31,7 @@
   let factory: ProviderFactory;
   let stateWorker: StateWorker | null = null;
   let cli: VisualizationCLI | null = null;
+  let keyboardManager: KeyboardShortcutManager;
 
   let isLoading = true;
   let error: string | null = null;
@@ -37,6 +40,7 @@
   let performanceMetrics: any = null;
   let showSettings = false;
   let showCLI = false;
+  let showHelp = false;
   let cliInput = '';
   let cliOutput: string[] = [];
 
@@ -97,6 +101,14 @@
     try {
       isLoading = true;
       error = null;
+
+      // Initialize keyboard shortcuts
+      keyboardManager = KeyboardShortcutManager.getInstance();
+      keyboardManager.init();
+      keyboardManager.setContext('emulator');
+
+      // Register emulator keyboard shortcuts
+      registerKeyboardShortcuts();
 
       // Get factory instance
       factory = ProviderFactory.getInstance();
@@ -197,7 +209,127 @@
     if (factory) {
       factory.clearCache();
     }
+
+    // Cleanup keyboard shortcuts
+    if (keyboardManager) {
+      keyboardManager.unregister('emulator-run');
+      keyboardManager.unregister('emulator-step');
+      keyboardManager.unregister('emulator-reset');
+      keyboardManager.unregister('emulator-screenshot');
+      keyboardManager.unregister('emulator-settings');
+      keyboardManager.unregister('emulator-help');
+      keyboardManager.unregister('emulator-escape');
+      keyboardManager.destroy();
+    }
   });
+
+  // Register keyboard shortcuts
+  function registerKeyboardShortcuts() {
+    if (!keyboardManager) return;
+
+    // F5 - Continue/Run (toggle running state)
+    keyboardManager.register(
+      'emulator-run',
+      'f5',
+      () => {
+        if (isRunning) {
+          stopAnimation();
+        } else {
+          startAnimation();
+        }
+      },
+      {
+        context: 'emulator',
+        description: 'Continue execution (Run/Stop)',
+      }
+    );
+
+    // F10 - Step over (execute one cycle)
+    keyboardManager.register(
+      'emulator-step',
+      'f10',
+      () => {
+        if (!isRunning) {
+          stepMachine();
+        }
+      },
+      {
+        context: 'emulator',
+        description: 'Step over (execute one cycle)',
+      }
+    );
+
+    // Ctrl+R - Reset machine
+    keyboardManager.register(
+      'emulator-reset',
+      'r',
+      () => {
+        resetMachine();
+      },
+      {
+        modifiers: { ctrl: true },
+        context: 'emulator',
+        description: 'Reset machine state',
+      }
+    );
+
+    // Ctrl+Shift+S - Screenshot
+    keyboardManager.register(
+      'emulator-screenshot',
+      's',
+      () => {
+        captureScreenshot();
+      },
+      {
+        modifiers: { ctrl: true, shift: true },
+        context: 'emulator',
+        description: 'Capture screenshot',
+      }
+    );
+
+    // Ctrl+, - Settings
+    keyboardManager.register(
+      'emulator-settings',
+      ',',
+      () => {
+        showSettings = !showSettings;
+      },
+      {
+        modifiers: { ctrl: true },
+        context: 'emulator',
+        description: 'Toggle settings panel',
+      }
+    );
+
+    // Ctrl+/ - Help
+    keyboardManager.register(
+      'emulator-help',
+      '/',
+      () => {
+        showHelp = !showHelp;
+      },
+      {
+        modifiers: { ctrl: true },
+        context: 'emulator',
+        description: 'Toggle help panel',
+      }
+    );
+
+    // Escape - Close all modals
+    keyboardManager.register(
+      'emulator-escape',
+      'escape',
+      () => {
+        showSettings = false;
+        showCLI = false;
+        showHelp = false;
+      },
+      {
+        context: 'emulator',
+        description: 'Close all panels',
+      }
+    );
+  }
 
   // Handle window resize
   function handleResize() {
@@ -619,6 +751,9 @@
       <button class="btn-close" on:click={() => (showCLI = false)}>Close</button>
     </div>
   {/if}
+
+  <!-- Help Panel -->
+  <HelpPanel bind:visible={showHelp} />
 </div>
 
 <style>
