@@ -1,0 +1,535 @@
+/**
+ * Sample Timeline Data
+ *
+ * Complete 12,500-year timeline with 8 historical eras and key milestones
+ */
+
+import type { TimelineEra, Milestone } from '$lib/api/timeline';
+
+// ============================================================================
+// ERA COLOR PALETTE
+// ============================================================================
+
+export const ERA_COLORS = {
+  'era-0': '#8B4513', // Prehistory - Brown
+  'era-1': '#FFD700', // Ancient - Gold
+  'era-2': '#4169E1', // Medieval - Royal Blue
+  'era-3': '#DC143C', // Early Modern - Crimson
+  'era-4': '#2F4F4F', // Foundations - Dark Slate
+  'era-5': '#FF8C00', // Electronic - Dark Orange
+  'era-6': '#9370DB', // Type Theory - Medium Purple
+  'era-7': '#00CED1', // Modern - Dark Turquoise
+};
+
+// ============================================================================
+// MILESTONES
+// ============================================================================
+
+export const SAMPLE_MILESTONES: Milestone[] = [
+  // Era 0: Prehistory of Counting (20,000 BC - 3,000 BC)
+  {
+    id: 'milestone-ishango',
+    year: -18000,
+    title: 'Ishango Bone',
+    description: 'Oldest known mathematical artifact showing tally marks and possible lunar calendar.',
+    category: 'invention',
+    civilization: 'African (Congo)',
+    eraId: 'era-0',
+  },
+  {
+    id: 'milestone-clay-tokens',
+    year: -8000,
+    title: 'Clay Tokens',
+    description: 'Mesopotamian clay tokens used for counting goods, precursor to writing.',
+    category: 'invention',
+    civilization: 'Mesopotamian',
+    eraId: 'era-0',
+  },
+  {
+    id: 'milestone-tallying',
+    year: -5000,
+    title: 'One-to-One Correspondence',
+    description: 'Development of systematic tallying across multiple cultures.',
+    category: 'theory',
+    civilization: 'Multiple',
+    eraId: 'era-0',
+  },
+
+  // Era 1: Ancient Foundations (3,000 BC - 500 AD)
+  {
+    id: 'milestone-cuneiform',
+    year: -3000,
+    title: 'Cuneiform Numerals',
+    description: 'First written number system using base-60 in Mesopotamia.',
+    category: 'invention',
+    civilization: 'Sumerian',
+    eraId: 'era-1',
+  },
+  {
+    id: 'milestone-egyptian-fractions',
+    year: -1650,
+    title: 'Rhind Mathematical Papyrus',
+    description: 'Egyptian fraction mathematics and early algorithms.',
+    category: 'invention',
+    civilization: 'Egyptian',
+    eraId: 'era-1',
+  },
+  {
+    id: 'milestone-euclid',
+    year: -300,
+    title: 'Euclid\'s Elements',
+    description: 'Axiomatic approach to geometry and algorithm for GCD.',
+    category: 'theory',
+    civilization: 'Greek',
+    eraId: 'era-1',
+  },
+  {
+    id: 'milestone-antikythera',
+    year: -100,
+    title: 'Antikythera Mechanism',
+    description: 'Ancient analog computer for astronomical calculations.',
+    category: 'invention',
+    civilization: 'Greek',
+    eraId: 'era-1',
+  },
+  {
+    id: 'milestone-brahmagupta',
+    year: 628,
+    title: 'Brahmagupta\'s Zero',
+    description: 'Formal treatment of zero and negative numbers in mathematics.',
+    category: 'theory',
+    civilization: 'Indian',
+    eraId: 'era-1',
+  },
+
+  // Era 2: Medieval Transmission (500 - 1,500 AD)
+  {
+    id: 'milestone-al-khwarizmi',
+    year: 825,
+    title: 'Al-Khwarizmi\'s Algebra',
+    description: 'Systematic methods for solving equations, origin of "algorithm".',
+    category: 'theory',
+    civilization: 'Islamic',
+    eraId: 'era-2',
+  },
+  {
+    id: 'milestone-al-kindi',
+    year: 850,
+    title: 'Al-Kindi\'s Cryptanalysis',
+    description: 'First use of frequency analysis for code-breaking.',
+    category: 'theory',
+    civilization: 'Islamic',
+    eraId: 'era-2',
+  },
+  {
+    id: 'milestone-fibonacci',
+    year: 1202,
+    title: 'Liber Abaci',
+    description: 'Introduction of Hindu-Arabic numerals to Europe.',
+    category: 'event',
+    civilization: 'European',
+    eraId: 'era-2',
+  },
+  {
+    id: 'milestone-lull',
+    year: 1305,
+    title: 'Ramon Lull\'s Ars Magna',
+    description: 'Early combinatorial logic and mechanical reasoning.',
+    category: 'theory',
+    civilization: 'European',
+    eraId: 'era-2',
+  },
+
+  // Era 3: Early Modern Symbolic Revolution (1,500-1,850)
+  {
+    id: 'milestone-napier',
+    year: 1614,
+    title: 'Napier\'s Logarithms',
+    description: 'Invention of logarithms for simplifying calculations.',
+    category: 'theory',
+    civilization: 'Scottish',
+    eraId: 'era-3',
+  },
+  {
+    id: 'milestone-pascal',
+    year: 1642,
+    title: 'Pascal\'s Calculator',
+    description: 'First mechanical calculator (Pascaline) for addition and subtraction.',
+    category: 'invention',
+    civilization: 'French',
+    eraId: 'era-3',
+  },
+  {
+    id: 'milestone-leibniz',
+    year: 1679,
+    title: 'Leibniz Binary Arithmetic',
+    description: 'Development of binary number system and stepped reckoner.',
+    category: 'theory',
+    civilization: 'German',
+    eraId: 'era-3',
+  },
+  {
+    id: 'milestone-boolean',
+    year: 1854,
+    title: 'Boolean Algebra',
+    description: 'Symbolic logic algebra forming basis of digital circuits.',
+    category: 'theory',
+    civilization: 'British',
+    eraId: 'era-3',
+  },
+  {
+    id: 'milestone-babbage',
+    year: 1837,
+    title: 'Analytical Engine',
+    description: 'Babbage\'s design for programmable mechanical computer.',
+    category: 'invention',
+    civilization: 'British',
+    eraId: 'era-3',
+  },
+  {
+    id: 'milestone-lovelace',
+    year: 1843,
+    title: 'Ada Lovelace\'s Notes',
+    description: 'First published algorithm and vision of computing beyond numbers.',
+    category: 'theory',
+    civilization: 'British',
+    eraId: 'era-3',
+  },
+
+  // Era 4: Foundations Crisis (1,850-1,940)
+  {
+    id: 'milestone-frege',
+    year: 1879,
+    title: 'Frege\'s Begriffsschrift',
+    description: 'First formal notation for predicate logic.',
+    category: 'theory',
+    civilization: 'German',
+    eraId: 'era-4',
+  },
+  {
+    id: 'milestone-hilbert',
+    year: 1900,
+    title: 'Hilbert\'s Problems',
+    description: '23 unsolved problems shaping 20th-century mathematics.',
+    category: 'event',
+    civilization: 'German',
+    eraId: 'era-4',
+  },
+  {
+    id: 'milestone-russell',
+    year: 1903,
+    title: 'Russell\'s Paradox',
+    description: 'Discovery of paradox in naive set theory.',
+    category: 'theory',
+    civilization: 'British',
+    eraId: 'era-4',
+  },
+  {
+    id: 'milestone-principia',
+    year: 1910,
+    title: 'Principia Mathematica',
+    description: 'Russell and Whitehead\'s attempt to ground mathematics in logic.',
+    category: 'theory',
+    civilization: 'British',
+    eraId: 'era-4',
+  },
+  {
+    id: 'milestone-godel',
+    year: 1931,
+    title: 'Gödel\'s Incompleteness Theorems',
+    description: 'Proof that no consistent system can prove all truths.',
+    category: 'theory',
+    civilization: 'Austrian',
+    eraId: 'era-4',
+  },
+  {
+    id: 'milestone-church',
+    year: 1936,
+    title: 'Lambda Calculus',
+    description: 'Church\'s formal system for expressing computation.',
+    category: 'theory',
+    civilization: 'American',
+    eraId: 'era-4',
+  },
+  {
+    id: 'milestone-turing',
+    year: 1936,
+    title: 'Turing Machine',
+    description: 'Mathematical model of computation and halting problem.',
+    category: 'theory',
+    civilization: 'British',
+    eraId: 'era-4',
+  },
+
+  // Era 5: Electronic Age (1,940-1,980)
+  {
+    id: 'milestone-eniac',
+    year: 1945,
+    title: 'ENIAC',
+    description: 'First general-purpose electronic computer.',
+    category: 'invention',
+    civilization: 'American',
+    eraId: 'era-5',
+  },
+  {
+    id: 'milestone-von-neumann',
+    year: 1945,
+    title: 'Von Neumann Architecture',
+    description: 'Stored-program computer architecture.',
+    category: 'theory',
+    civilization: 'American',
+    eraId: 'era-5',
+  },
+  {
+    id: 'milestone-shannon',
+    year: 1948,
+    title: 'Information Theory',
+    description: 'Shannon\'s mathematical theory of communication.',
+    category: 'theory',
+    civilization: 'American',
+    eraId: 'era-5',
+  },
+  {
+    id: 'milestone-fortran',
+    year: 1957,
+    title: 'FORTRAN',
+    description: 'First high-level programming language.',
+    category: 'invention',
+    civilization: 'American',
+    eraId: 'era-5',
+  },
+  {
+    id: 'milestone-lisp',
+    year: 1958,
+    title: 'LISP',
+    description: 'McCarthy\'s functional programming language.',
+    category: 'invention',
+    civilization: 'American',
+    eraId: 'era-5',
+  },
+  {
+    id: 'milestone-algol',
+    year: 1960,
+    title: 'ALGOL 60',
+    description: 'Influential structured programming language.',
+    category: 'invention',
+    civilization: 'International',
+    eraId: 'era-5',
+  },
+
+  // Era 6: Type Theory Evolution (1,970-2,000)
+  {
+    id: 'milestone-curry-howard',
+    year: 1969,
+    title: 'Curry-Howard Correspondence',
+    description: 'Isomorphism between proofs and programs.',
+    category: 'theory',
+    civilization: 'International',
+    eraId: 'era-6',
+  },
+  {
+    id: 'milestone-system-f',
+    year: 1974,
+    title: 'System F',
+    description: 'Girard\'s polymorphic lambda calculus.',
+    category: 'theory',
+    civilization: 'French',
+    eraId: 'era-6',
+  },
+  {
+    id: 'milestone-hindley-milner',
+    year: 1978,
+    title: 'Hindley-Milner Type Inference',
+    description: 'Automatic type inference algorithm for ML.',
+    category: 'theory',
+    civilization: 'British/American',
+    eraId: 'era-6',
+  },
+  {
+    id: 'milestone-martin-lof',
+    year: 1984,
+    title: 'Martin-Löf Type Theory',
+    description: 'Intuitionistic type theory with dependent types.',
+    category: 'theory',
+    civilization: 'Swedish',
+    eraId: 'era-6',
+  },
+
+  // Era 7: Paradigm Synthesis (1,980-2,025)
+  {
+    id: 'milestone-haskell',
+    year: 1990,
+    title: 'Haskell',
+    description: 'Purely functional language with advanced type system.',
+    category: 'invention',
+    civilization: 'International',
+    eraId: 'era-7',
+  },
+  {
+    id: 'milestone-coq',
+    year: 1989,
+    title: 'Coq Proof Assistant',
+    description: 'Interactive theorem prover based on calculus of constructions.',
+    category: 'invention',
+    civilization: 'French',
+    eraId: 'era-7',
+  },
+  {
+    id: 'milestone-agda',
+    year: 2007,
+    title: 'Agda',
+    description: 'Dependently-typed functional programming language.',
+    category: 'invention',
+    civilization: 'Swedish',
+    eraId: 'era-7',
+  },
+  {
+    id: 'milestone-idris',
+    year: 2011,
+    title: 'Idris',
+    description: 'Practical dependent types with type-driven development.',
+    category: 'invention',
+    civilization: 'British',
+    eraId: 'era-7',
+  },
+  {
+    id: 'milestone-hott',
+    year: 2013,
+    title: 'Homotopy Type Theory',
+    description: 'Connection between type theory and algebraic topology.',
+    category: 'theory',
+    civilization: 'International',
+    eraId: 'era-7',
+  },
+];
+
+// ============================================================================
+// ERAS
+// ============================================================================
+
+export const SAMPLE_ERAS: TimelineEra[] = [
+  {
+    id: 'era-0',
+    name: 'Prehistory',
+    fullName: 'Prehistory of Counting',
+    startYear: -20000,
+    endYear: -3000,
+    color: ERA_COLORS['era-0'],
+    description: 'Tally marks, Ishango bone, clay tokens - the origins of numerical thinking.',
+    historicalContext: 'From 20,000 BCE to 3,000 BCE, humans developed the fundamental concept of counting through physical objects and marks.',
+    order: 0,
+    milestones: SAMPLE_MILESTONES.filter(m => m.eraId === 'era-0'),
+    moduleCount: 2,
+    lessonCount: 8,
+  },
+  {
+    id: 'era-1',
+    name: 'Ancient',
+    fullName: 'Ancient Foundations',
+    startYear: -3000,
+    endYear: 500,
+    color: ERA_COLORS['era-1'],
+    description: 'Mesopotamian algorithms, Egyptian fractions, Greek logic, Indian mathematics.',
+    historicalContext: 'The ancient civilizations of Mesopotamia, Egypt, Greece, India, and China developed sophisticated mathematical systems and algorithmic thinking.',
+    order: 1,
+    milestones: SAMPLE_MILESTONES.filter(m => m.eraId === 'era-1'),
+    moduleCount: 5,
+    lessonCount: 24,
+  },
+  {
+    id: 'era-2',
+    name: 'Medieval',
+    fullName: 'Medieval Transmission',
+    startYear: 500,
+    endYear: 1500,
+    color: ERA_COLORS['era-2'],
+    description: 'Islamic Golden Age, scholastic logic, Ramon Lull\'s combinatorial methods.',
+    historicalContext: 'During the medieval period, Islamic scholars preserved and extended Greek and Indian mathematics while European scholars developed formal logic.',
+    order: 2,
+    milestones: SAMPLE_MILESTONES.filter(m => m.eraId === 'era-2'),
+    moduleCount: 4,
+    lessonCount: 18,
+  },
+  {
+    id: 'era-3',
+    name: 'Early Modern',
+    fullName: 'Early Modern Symbolic Revolution',
+    startYear: 1500,
+    endYear: 1850,
+    color: ERA_COLORS['era-3'],
+    description: 'Leibniz, Pascal, Boolean algebra, Babbage\'s Analytical Engine.',
+    historicalContext: 'The early modern period saw the development of symbolic mathematics, mechanical calculators, and the conceptual foundations of computing.',
+    order: 3,
+    milestones: SAMPLE_MILESTONES.filter(m => m.eraId === 'era-3'),
+    moduleCount: 6,
+    lessonCount: 28,
+  },
+  {
+    id: 'era-4',
+    name: 'Foundations',
+    fullName: 'Foundations Crisis',
+    startYear: 1850,
+    endYear: 1940,
+    color: ERA_COLORS['era-4'],
+    description: 'Frege, Russell, Gödel, Church, Turing - the mathematical foundations of computation.',
+    historicalContext: 'The late 19th and early 20th centuries witnessed profound investigations into the foundations of mathematics, leading to the theoretical basis of computer science.',
+    order: 4,
+    milestones: SAMPLE_MILESTONES.filter(m => m.eraId === 'era-4'),
+    moduleCount: 7,
+    lessonCount: 32,
+  },
+  {
+    id: 'era-5',
+    name: 'Electronic',
+    fullName: 'Electronic Age',
+    startYear: 1940,
+    endYear: 1980,
+    color: ERA_COLORS['era-5'],
+    description: 'ENIAC, Von Neumann architecture, LISP, ALGOL - the birth of electronic computing.',
+    historicalContext: 'The electronic computing era transformed theoretical concepts into practical machines and high-level programming languages.',
+    order: 5,
+    milestones: SAMPLE_MILESTONES.filter(m => m.eraId === 'era-5'),
+    moduleCount: 8,
+    lessonCount: 36,
+  },
+  {
+    id: 'era-6',
+    name: 'Type Theory',
+    fullName: 'Type Theory Evolution',
+    startYear: 1970,
+    endYear: 2000,
+    color: ERA_COLORS['era-6'],
+    description: 'Curry-Howard, System F, Hindley-Milner, Martin-Löf - formal type systems.',
+    historicalContext: 'The development of sophisticated type systems provided formal foundations for program correctness and enabled powerful abstraction mechanisms.',
+    order: 6,
+    milestones: SAMPLE_MILESTONES.filter(m => m.eraId === 'era-6'),
+    moduleCount: 6,
+    lessonCount: 28,
+  },
+  {
+    id: 'era-7',
+    name: 'Modern',
+    fullName: 'Paradigm Synthesis',
+    startYear: 1980,
+    endYear: 2025,
+    color: ERA_COLORS['era-7'],
+    description: 'Haskell, dependent types, proof assistants, quantum computing - synthesis and future.',
+    historicalContext: 'The modern era synthesizes multiple paradigms and extends computation into new domains including proof assistants and quantum computing.',
+    order: 7,
+    milestones: SAMPLE_MILESTONES.filter(m => m.eraId === 'era-7'),
+    moduleCount: 9,
+    lessonCount: 42,
+  },
+];
+
+// ============================================================================
+// EXPORT FULL TIMELINE
+// ============================================================================
+
+export const SAMPLE_TIMELINE_DATA = {
+  eras: SAMPLE_ERAS,
+  milestones: SAMPLE_MILESTONES,
+  totalMilestones: SAMPLE_MILESTONES.length,
+  civilizations: Array.from(new Set(SAMPLE_MILESTONES.map(m => m.civilization))).sort(),
+  categories: ['invention', 'theory', 'person', 'event'],
+};

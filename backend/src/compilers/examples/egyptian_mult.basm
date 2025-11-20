@@ -1,0 +1,356 @@
+; Egyptian Multiplication in Babbage Assembly
+; ============================================
+;
+; Historical Context:
+; Charles Babbage's Analytical Engine (designed 1837, never fully built) was
+; the first general-purpose computational device. Ada Lovelace recognized it
+; could process not just numbers but symbols - making it truly programmable.
+;
+; This implementation shows how the ancient Egyptian algorithm (c. 2000 BCE)
+; would run on Babbage's Victorian-era mechanical computer, bridging nearly
+; 4,000 years of computational thought.
+;
+; The Analytical Engine had:
+; - The Mill (ALU): Performed arithmetic operations
+; - The Store (Memory): Held variables and constants
+; - Punch cards: For program and data input
+; - Anticipating carriage: For handling carries in multi-digit arithmetic
+;
+; Instruction format:
+; OPERATION [destination] [source1] [source2]
+;
+; Available operations:
+; LOAD, STORE, ADD, SUB, MUL, DIV, SHL (shift left), SHR (shift right)
+; AND, OR, JMP, JZ (jump if zero), JNZ (jump if not zero), CMP, HALT
+;
+; Registers: V0-V999 (Babbage planned for 1000 variables)
+; The Mill uses internal registers for computation
+
+; =============================================================================
+; EGYPTIAN MULTIPLICATION ALGORITHM
+; Multiply V0 (multiplicand A) by V1 (multiplicand B), result in V2
+; =============================================================================
+
+.DATA
+    ; Input values (would be read from punch cards)
+    INPUT_A:    13      ; First multiplicand
+    INPUT_B:    17      ; Second multiplicand
+
+    ; Constants
+    ZERO:       0
+    ONE:        1
+    TWO:        2
+
+    ; Working variables
+    LEFT:       0       ; V3: Left column (doubles each iteration)
+    RIGHT:      0       ; V4: Right column (halves each iteration)
+    RESULT:     0       ; V5: Accumulator for result
+    TEMP:       0       ; V6: Temporary for calculations
+    ODD_FLAG:   0       ; V7: Flag for odd/even check
+
+    ; Display buffer for output
+    STEP_CTR:   0       ; V8: Step counter for display
+
+.CODE
+MAIN:
+    ; ==========================================================
+    ; INITIALIZATION
+    ; ==========================================================
+
+    ; Load input values into working registers
+    LOAD    V0, INPUT_A     ; V0 = multiplicand A
+    LOAD    V1, INPUT_B     ; V1 = multiplicand B
+
+    ; Initialize variables for Egyptian algorithm
+    LOAD    V3, V0          ; LEFT = A
+    LOAD    V4, V1          ; RIGHT = B
+    LOAD    V5, ZERO        ; RESULT = 0
+    LOAD    V8, ZERO        ; STEP_CTR = 0
+
+    ; Print header (conceptually - would output to printer)
+    ; In actual Analytical Engine, this would trigger the printing apparatus
+    PRINT   "EGYPTIAN MULTIPLICATION"
+    PRINT   "======================"
+    PRINT   "Multiplying V0 × V1"
+
+    ; ==========================================================
+    ; MAIN ALGORITHM LOOP
+    ; ==========================================================
+
+EGYPTIAN_LOOP:
+    ; Check if RIGHT (V4) is zero
+    CMP     V4, ZERO
+    JZ      DONE            ; If RIGHT = 0, we're done
+
+    ; Increment step counter
+    ADD     V8, V8, ONE
+
+    ; Check if RIGHT is odd (RIGHT & 1)
+    ; Babbage's Engine could check the least significant digit
+    LOAD    V6, V4          ; TEMP = RIGHT
+    AND     V7, V6, ONE     ; ODD_FLAG = RIGHT & 1
+
+    ; If RIGHT is odd, add LEFT to RESULT
+    CMP     V7, ZERO
+    JZ      SKIP_ADD        ; If even, skip addition
+
+    ; Add LEFT to RESULT (for odd RIGHT)
+    ADD     V5, V5, V3      ; RESULT += LEFT
+
+    ; Output current step (odd case)
+    PRINT   "Step", V8
+    PRINT   "  LEFT =", V3
+    PRINT   "  RIGHT =", V4
+    PRINT   "  Adding LEFT to sum"
+    PRINT   "  Running sum =", V5
+    JMP     CONTINUE_LOOP
+
+SKIP_ADD:
+    ; Output current step (even case)
+    PRINT   "Step", V8
+    PRINT   "  LEFT =", V3
+    PRINT   "  RIGHT =", V4
+    PRINT   "  RIGHT is even, skip"
+
+CONTINUE_LOOP:
+    ; Double LEFT (shift left by 1)
+    SHL     V3, V3, ONE     ; LEFT = LEFT << 1
+
+    ; Halve RIGHT (shift right by 1)
+    SHR     V4, V4, ONE     ; RIGHT = RIGHT >> 1
+
+    ; Continue loop
+    JMP     EGYPTIAN_LOOP
+
+    ; ==========================================================
+    ; COMPLETION AND OUTPUT
+    ; ==========================================================
+
+DONE:
+    ; Store final result
+    STORE   V2, V5          ; Store RESULT in V2
+
+    ; Print final result
+    PRINT   "=================="
+    PRINT   "FINAL RESULT:"
+    PRINT   "V0 × V1 =", V2
+
+    ; Verification using built-in multiplication
+    ; (Babbage's Engine had a multiplication mechanism)
+    MUL     V6, V0, V1      ; TEMP = A × B (direct)
+    PRINT   "Verification:", V6
+
+    ; Check if our result matches
+    CMP     V2, V6
+    JNZ     ERROR
+    PRINT   "SUCCESS: Results match!"
+    JMP     END_PROGRAM
+
+ERROR:
+    PRINT   "ERROR: Result mismatch!"
+
+END_PROGRAM:
+    HALT                    ; Stop the Engine
+
+; =============================================================================
+; SUBROUTINE: EGYPTIAN_MULTIPLY
+; Callable version of the algorithm
+; Input: V10 (A), V11 (B)
+; Output: V12 (Result)
+; Uses: V13-V16 as temporaries
+; =============================================================================
+
+EGYPTIAN_MULTIPLY:
+    ; Save return address (Babbage used a chain mechanism for this)
+    STORE   V99, RETURN_ADDR
+
+    ; Initialize
+    LOAD    V13, V10        ; LEFT = A
+    LOAD    V14, V11        ; RIGHT = B
+    LOAD    V12, ZERO       ; RESULT = 0
+
+MULT_LOOP:
+    ; Check if RIGHT is zero
+    CMP     V14, ZERO
+    JZ      MULT_DONE
+
+    ; Check if RIGHT is odd
+    AND     V15, V14, ONE
+    CMP     V15, ZERO
+    JZ      MULT_SKIP_ADD
+
+    ; Add LEFT to RESULT
+    ADD     V12, V12, V13
+
+MULT_SKIP_ADD:
+    ; Double LEFT, halve RIGHT
+    SHL     V13, V13, ONE
+    SHR     V14, V14, ONE
+    JMP     MULT_LOOP
+
+MULT_DONE:
+    ; Return (jump to saved return address)
+    LOAD    V98, V99
+    JMP     V98
+
+; =============================================================================
+; SUBROUTINE: HANDLE_NEGATIVE
+; Extended algorithm for negative numbers
+; (Note: Babbage's Engine used sign-magnitude representation)
+; Input: V20 (A with sign), V21 (B with sign)
+; Output: V22 (Result with correct sign)
+; =============================================================================
+
+HANDLE_NEGATIVE:
+    ; Extract signs (Babbage used a separate sign position)
+    LOAD    V23, SIGN_A
+    LOAD    V24, SIGN_B
+
+    ; Calculate result sign (XOR of input signs)
+    XOR     V25, V23, V24
+
+    ; Get absolute values
+    ABS     V26, V20
+    ABS     V27, V21
+
+    ; Call Egyptian multiply with absolute values
+    LOAD    V10, V26
+    LOAD    V11, V27
+    CALL    EGYPTIAN_MULTIPLY
+
+    ; Apply sign to result
+    LOAD    V22, V12
+    CMP     V25, ZERO
+    JZ      POSITIVE_RESULT
+    NEG     V22, V22
+
+POSITIVE_RESULT:
+    RET
+
+; =============================================================================
+; HISTORICAL EXAMPLES
+; Demonstrations from ancient papyri
+; =============================================================================
+
+HISTORICAL_DEMO:
+    PRINT   "HISTORICAL EXAMPLES"
+    PRINT   "==================="
+
+    ; Rhind Papyrus Problem 79: Powers of 7
+    PRINT   "Rhind Papyrus - Powers of 7:"
+    LOAD    V10, 7
+    LOAD    V11, 49         ; 7^2
+    CALL    EGYPTIAN_MULTIPLY
+    PRINT   "7 × 49 =", V12
+
+    ; Pure doubling sequence
+    PRINT   "Pure Doubling (Powers of 2):"
+    LOAD    V10, 1
+    LOAD    V11, 64         ; 2^6
+    CALL    EGYPTIAN_MULTIPLY
+    PRINT   "1 × 64 =", V12
+
+    RET
+
+; =============================================================================
+; PERFORMANCE MEASUREMENT
+; Count operations for algorithm analysis
+; =============================================================================
+
+COUNT_OPERATIONS:
+    ; Initialize counters
+    LOAD    V30, ZERO       ; Addition counter
+    LOAD    V31, ZERO       ; Shift counter
+    LOAD    V32, ZERO       ; Comparison counter
+
+    ; Modified algorithm that counts operations
+    LOAD    V33, V0         ; LEFT
+    LOAD    V34, V1         ; RIGHT
+    LOAD    V35, ZERO       ; RESULT
+
+COUNT_LOOP:
+    ADD     V32, V32, ONE   ; Count comparison
+    CMP     V34, ZERO
+    JZ      COUNT_DONE
+
+    AND     V36, V34, ONE
+    ADD     V32, V32, ONE   ; Count comparison
+    CMP     V36, ZERO
+    JZ      COUNT_SKIP
+
+    ADD     V35, V35, V33
+    ADD     V30, V30, ONE   ; Count addition
+
+COUNT_SKIP:
+    SHL     V33, V33, ONE
+    SHR     V34, V34, ONE
+    ADD     V31, V31, TWO   ; Count two shifts
+    JMP     COUNT_LOOP
+
+COUNT_DONE:
+    PRINT   "Operation counts:"
+    PRINT   "  Additions:", V30
+    PRINT   "  Shifts:", V31
+    PRINT   "  Comparisons:", V32
+
+    ; Calculate total (each operation took different time on Analytical Engine)
+    ; Addition: ~3 seconds, Shift: ~1 second, Comparison: ~2 seconds
+    MUL     V37, V30, 3
+    ADD     V38, V37, V31
+    MUL     V39, V32, 2
+    ADD     V40, V38, V39
+    PRINT   "Estimated time (seconds):", V40
+
+    RET
+
+; =============================================================================
+; DATA TABLES
+; For lookup and verification
+; =============================================================================
+
+.DATA
+    ; Multiplication table for verification (3×3)
+    ; Generated using Egyptian algorithm
+    TABLE_3X3:
+        1,  2,  3       ; 1×1, 1×2, 1×3
+        2,  4,  6       ; 2×1, 2×2, 2×3
+        3,  6,  9       ; 3×1, 3×2, 3×3
+
+    ; Powers of 2 for binary decomposition
+    POWERS_OF_2:
+        1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024
+
+    ; Test cases from papyri
+    PAPYRUS_TESTS:
+        13, 17, 221     ; Classic example
+        7,  7,  49      ; Square
+        12, 12, 144     ; Another square
+        25, 4,  100     ; Power of 2 multiplier
+
+; =============================================================================
+; CONCLUSION
+; =============================================================================
+
+; This Babbage Assembly implementation demonstrates:
+;
+; 1. MECHANICAL COMPUTATION: The Egyptian algorithm maps perfectly to the
+;    mechanical operations of the Analytical Engine - shifting gears and
+;    adding columns exactly as the Egyptians doubled and added.
+;
+; 2. STORED PROGRAM: Unlike the Difference Engine, the Analytical Engine
+;    could store and execute programs - making it truly programmable.
+;
+; 3. CONDITIONAL LOGIC: The Engine's conditional cards (JZ, JNZ) implement
+;    the algorithm's decision logic for odd/even testing.
+;
+; 4. SUBROUTINES: Babbage envisioned calling mechanisms, allowing code reuse
+;    similar to modern function calls.
+;
+; 5. HISTORICAL BRIDGE: From Egyptian papyri (2000 BCE) to Babbage's designs
+;    (1837 CE) to modern assembly - the algorithm remains unchanged.
+;
+; 6. ADA'S INSIGHT: Ada Lovelace would have recognized this algorithm could
+;    process symbols, not just numbers - the birth of computer science.
+;
+; The Egyptian scribes' algorithm would have run perfectly on Babbage's
+; never-built Engine, demonstrating the timelessness of computational thought.

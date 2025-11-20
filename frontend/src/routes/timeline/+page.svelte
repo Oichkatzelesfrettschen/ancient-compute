@@ -1,199 +1,394 @@
 <script lang="ts">
-	// Ancient Compute - Timeline Page
-	import { onMount } from 'svelte';
-	import { timelineApi } from '$lib/api';
-	import type { TimelineEvent } from '$lib/api';
+  /**
+   * Timeline Page - Interactive 12,500-year computational history
+   *
+   * Features:
+   * - D3.js timeline visualization
+   * - Era navigation
+   * - Zoom controls
+   * - Milestone tooltips
+   * - Responsive layout
+   */
 
-	let events: TimelineEvent[] = [];
-	let loading = true;
-	let error = '';
+  import { onMount } from 'svelte';
+  import { timelineVizStore, loadTimelineData, setLoading, setError } from '$lib/stores/timelineVisualizationStore';
+  import { fetchTimeline } from '$lib/api/timeline';
+  import { SAMPLE_TIMELINE_DATA } from '$lib/data/sampleTimelineData';
 
-	onMount(async () => {
-		try {
-			const data = await timelineApi.list();
-			events = data.timeline || [];
-		} catch (e: any) {
-			error = e.message || 'Failed to load timeline';
-			console.error('Error loading timeline:', e);
-		} finally {
-			loading = false;
-		}
-	});
+  // Components
+  import TimelineD3 from '$lib/components/timeline/TimelineD3.svelte';
+  import EraNavigator from '$lib/components/timeline/EraNavigator.svelte';
+  import ZoomController from '$lib/components/timeline/ZoomController.svelte';
+  import TimelineTooltip from '$lib/components/timeline/TimelineTooltip.svelte';
+
+  // State
+  $: state = $timelineVizStore;
+  $: isLoading = state.isLoading;
+  $: error = state.error;
+
+  /**
+   * Load timeline data from API (with fallback to sample data)
+   */
+  async function loadData() {
+    setLoading(true);
+
+    try {
+      // Try to fetch from API
+      const data = await fetchTimeline();
+      loadTimelineData(data.eras, data.eras.flatMap(e => e.milestones));
+    } catch (err) {
+      console.warn('Failed to load timeline from API, using sample data:', err);
+      // Fallback to sample data
+      loadTimelineData(SAMPLE_TIMELINE_DATA.eras, SAMPLE_TIMELINE_DATA.milestones);
+    }
+  }
+
+  // Load data on mount
+  onMount(() => {
+    loadData();
+  });
 </script>
 
 <svelte:head>
-	<title>Historical Timeline - Ancient Compute</title>
+  <title>Interactive Timeline - Ancient Compute</title>
+  <meta
+    name="description"
+    content="Explore 12,500 years of computational history from prehistoric counting to modern type theory through an interactive timeline visualization."
+  />
 </svelte:head>
 
 <div class="timeline-page">
-	<header class="page-header">
-		<h1>Computational History Timeline</h1>
-		<p class="page-description">
-			An interactive journey through 12,500 years of human innovation in
-			computation, logic, and symbolic reasoning. From prehistoric counting
-			to modern dependent type theory.
-		</p>
-	</header>
+  <!-- Page header -->
+  <header class="page-header">
+    <div class="header-content">
+      <h1>Computational History Timeline</h1>
+      <p class="page-description">
+        An interactive journey through 12,500 years of human innovation in
+        computation, logic, and symbolic reasoning. From prehistoric counting
+        to modern dependent type theory.
+      </p>
+    </div>
+  </header>
 
-	<div class="timeline-visualization">
-		<div class="coming-soon">
-			<h2>Interactive Timeline Coming Soon</h2>
-			<p>
-				This page will feature an interactive D3.js visualization showing
-				the chronological progression of computational concepts across
-				civilizations.
-			</p>
-		</div>
-	</div>
+  {#if isLoading}
+    <!-- Loading state -->
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Loading timeline data...</p>
+    </div>
+  {:else if error}
+    <!-- Error state -->
+    <div class="error-container">
+      <h2>Failed to Load Timeline</h2>
+      <p>{error}</p>
+      <button class="retry-btn" on:click={loadData}>
+        Retry
+      </button>
+    </div>
+  {:else}
+    <!-- Main content -->
+    <div class="timeline-content">
+      <!-- Era navigator -->
+      <div class="section era-navigator-section">
+        <EraNavigator />
+      </div>
 
-	<div class="timeline-content">
-		{#if loading}
-			<div class="loading">
-				<p>Loading timeline...</p>
-			</div>
-		{:else if error}
-			<div class="error">
-				<p>{error}</p>
-			</div>
-		{:else if events.length > 0}
-			<div class="events-list">
-				<h2>Historical Events</h2>
-				{#each events as event}
-					<article class="event-card">
-						<div class="event-year">
-							{event.year < 0 ? `${Math.abs(event.year)} BC` : `${event.year} AD`}
-						</div>
-						<div class="event-content">
-							<h3>{event.title}</h3>
-							<p>{event.description}</p>
-							{#if event.civilization}
-								<span class="civilization-badge">{event.civilization}</span>
-							{/if}
-						</div>
-					</article>
-				{/each}
-			</div>
-		{:else}
-			<div class="empty">
-				<p>No timeline events available yet.</p>
-			</div>
-		{/if}
-	</div>
+      <!-- Visualization and controls -->
+      <div class="section visualization-section">
+        <div class="visualization-grid">
+          <!-- Main timeline -->
+          <div class="timeline-main">
+            <TimelineD3 height={500} />
+          </div>
+
+          <!-- Zoom controller -->
+          <aside class="timeline-sidebar">
+            <ZoomController />
+          </aside>
+        </div>
+      </div>
+
+      <!-- Statistics -->
+      <div class="section stats-section">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value">{state.eras.length}</div>
+            <div class="stat-label">Historical Eras</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">{state.allMilestones.length}</div>
+            <div class="stat-label">Key Milestones</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">12,500+</div>
+            <div class="stat-label">Years of History</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">{state.availableCivilizations.length}</div>
+            <div class="stat-label">Civilizations</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Instructions -->
+      <div class="section instructions-section">
+        <h2>How to Use the Timeline</h2>
+        <div class="instructions-grid">
+          <div class="instruction-card">
+            <div class="instruction-icon">🖱️</div>
+            <h3>Navigate</h3>
+            <p>Click on era tabs to zoom to specific periods. Scroll or pan to explore the timeline.</p>
+          </div>
+          <div class="instruction-card">
+            <div class="instruction-icon">🔍</div>
+            <h3>Zoom</h3>
+            <p>Use zoom controls or keyboard shortcuts (Ctrl +/-) to adjust detail level.</p>
+          </div>
+          <div class="instruction-card">
+            <div class="instruction-icon">📍</div>
+            <h3>Explore</h3>
+            <p>Hover over milestone markers to see details. Click to learn more.</p>
+          </div>
+          <div class="instruction-card">
+            <div class="instruction-icon">⌨️</div>
+            <h3>Shortcuts</h3>
+            <p>Arrow keys navigate between eras. Ctrl+0 resets to overview.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  {/if}
+
+  <!-- Tooltip (always rendered, visibility controlled by component) -->
+  <TimelineTooltip />
 </div>
 
 <style>
-	.timeline-page {
-		max-width: 1000px;
-		margin: 0 auto;
-	}
+  .timeline-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  }
 
-	.page-header {
-		text-align: center;
-		margin-bottom: 3rem;
-	}
+  /* Header */
+  .page-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 3rem 2rem;
+    text-align: center;
+  }
 
-	.page-header h1 {
-		font-size: 2.5rem;
-		color: #1a1a2e;
-		margin-bottom: 1rem;
-	}
+  .header-content {
+    max-width: 800px;
+    margin: 0 auto;
+  }
 
-	.page-description {
-		font-size: 1.1rem;
-		color: #555;
-		line-height: 1.6;
-		max-width: 800px;
-		margin: 0 auto;
-	}
+  .page-header h1 {
+    font-size: 2.5rem;
+    margin: 0 0 1rem 0;
+    font-weight: 700;
+  }
 
-	.timeline-visualization {
-		background: white;
-		border-radius: 8px;
-		padding: 3rem;
-		margin-bottom: 3rem;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-	}
+  .page-description {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    opacity: 0.95;
+    margin: 0;
+  }
 
-	.coming-soon {
-		text-align: center;
-		color: #666;
-	}
+  /* Loading state */
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    gap: 1rem;
+  }
 
-	.coming-soon h2 {
-		color: #667eea;
-		margin-bottom: 1rem;
-	}
+  .spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #e0e0e0;
+    border-top-color: #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
 
-	.events-list h2 {
-		font-size: 2rem;
-		color: #1a1a2e;
-		margin-bottom: 2rem;
-	}
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
 
-	.event-card {
-		display: flex;
-		gap: 2rem;
-		padding: 1.5rem;
-		background: white;
-		border-left: 4px solid #667eea;
-		border-radius: 4px;
-		margin-bottom: 1.5rem;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-	}
+  .loading-container p {
+    color: #666;
+    font-size: 1.1rem;
+  }
 
-	.event-year {
-		flex-shrink: 0;
-		width: 120px;
-		font-weight: 700;
-		font-size: 1.1rem;
-		color: #667eea;
-	}
+  /* Error state */
+  .error-container {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
 
-	.event-content {
-		flex: 1;
-	}
+  .error-container h2 {
+    color: #d32f2f;
+    margin: 0 0 1rem 0;
+  }
 
-	.event-content h3 {
-		margin: 0 0 0.5rem 0;
-		color: #1a1a2e;
-		font-size: 1.25rem;
-	}
+  .error-container p {
+    color: #666;
+    margin: 0 0 1.5rem 0;
+  }
 
-	.event-content p {
-		margin: 0 0 0.75rem 0;
-		color: #555;
-		line-height: 1.5;
-	}
+  .retry-btn {
+    padding: 0.75rem 1.5rem;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
 
-	.civilization-badge {
-		display: inline-block;
-		background: #f0f0f0;
-		color: #666;
-		padding: 0.25rem 0.75rem;
-		border-radius: 12px;
-		font-size: 0.875rem;
-	}
+  .retry-btn:hover {
+    background: #5568d3;
+  }
 
-	.loading, .error, .empty {
-		text-align: center;
-		padding: 3rem;
-		background: white;
-		border-radius: 8px;
-	}
+  /* Main content */
+  .timeline-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
 
-	.error {
-		color: #d32f2f;
-		background: #ffebee;
-	}
+  .section {
+    margin-bottom: 2rem;
+  }
 
-	@media (max-width: 768px) {
-		.event-card {
-			flex-direction: column;
-			gap: 0.5rem;
-		}
+  /* Visualization section */
+  .visualization-grid {
+    display: grid;
+    grid-template-columns: 1fr 240px;
+    gap: 1.5rem;
+  }
 
-		.event-year {
-			width: auto;
-		}
-	}
+  .timeline-main {
+    min-height: 500px;
+  }
+
+  /* Stats section */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .stat-card {
+    background: white;
+    border-radius: 8px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  }
+
+  .stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #667eea;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-label {
+    font-size: 1rem;
+    color: #666;
+    font-weight: 500;
+  }
+
+  /* Instructions section */
+  .instructions-section h2 {
+    font-size: 2rem;
+    color: #1a1a2e;
+    margin: 0 0 1.5rem 0;
+    text-align: center;
+  }
+
+  .instructions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .instruction-card {
+    background: white;
+    border-radius: 8px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .instruction-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .instruction-card h3 {
+    font-size: 1.25rem;
+    color: #1a1a2e;
+    margin: 0 0 0.75rem 0;
+  }
+
+  .instruction-card p {
+    color: #666;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .visualization-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .timeline-sidebar {
+      order: -1;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .page-header {
+      padding: 2rem 1rem;
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+    }
+
+    .page-description {
+      font-size: 1rem;
+    }
+
+    .timeline-content {
+      padding: 1rem;
+    }
+
+    .stats-grid,
+    .instructions-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+    }
+  }
 </style>
