@@ -1,0 +1,784 @@
+<HTML>
+<HEAD>
+  <TITLE>bab-tech</TITLE>
+   
+</HEAD>
+
+<BODY BGCOLOR="#EFFFFF" LINK="#0000FF" VLINK="#FF0000" ALINK="#008000">
+
+<FONT SIZE=-1><A HREF="bab-intro.html">Back to Home Page</A> </FONT> <BR>
+<P>
+
+<CENTER>
+
+<FONT SIZE=+1><B>
+Charles Babbage's Difference Engine No. 2 Technical Description</B></FONT>
+</CENTER>
+
+ <BR>
+<BLOCKQUOTE>
+<TABLE  align=center border=1 cellpadding=5 >
+<TR><TD>
+<CENTER><B>Notes to viewers</B></CENTER>
+<P>
+The paper version of this document was obtained from
+
+<A HREF="mailto:doron.swade@blueyonder.co.uk">Doron Swade</A> then of the 
+British <A HREF="http://www.nmsi.ac.uk/">National Museum of  Science & Industry</A>
+
+on August 6, 1999 and is published here with his permission.
+
+<P>
+Please recognize that scanning and OCRing and conversion to HTML
+is an imperfect art, and differences from the original must be considered to be present.
+<DD> ---<A HREF="DE2TechDescn1996.pdf">Original in .pdf format with different cover sheet</A> 9.4 megabytes
+
+<P>
+Notes to viewers
+<OL>
+<LI> I could have made references to Figure Numbers - such as (163) - into "links".
+	I recommend instead that when you want to look at a drawing on line that you
+	start another "instance" of your browser, and while in that browser go the  
+	<A HREF="bab_tech.html#bab-t-append">Appendix: Drawings</A> and use that
+	"instance" to access the drawings.  There are many advantages using this
+	method for such large files.
+<P><LI> The drawing marked <A HREF="bab_tech.html#bab-t-append">Modern Timing</A>
+
+	in "Appendix: Drawings" (above) is a modern drawing used to run the
+	current machine. Small changes had to be made from Babbage's original
+	timing in light of the physical constraints of allowable acceleration.
+
+</OL>
+
+
+<P>
+Converter's comments
+<OL>
+<LI> I sympathize with the problem of reproducing Babbage's drawings in the book. 
+  The original drawings were
+  large, but to make a book that is reasonable to manufacture, there is great
+  pressure to make each drawing sheet fit on a book page.  Manufacturing and reading a
+  document with "oversize" fold out pages is not pleasant. Unfortunately there
+  is a limit to the resolution (dots/length) of printing and Xeroxing.
+  <P>
+  The Babbage drawings were scaled down to fit the 8-3/16 by 11-11/16 inch
+  page of the manual. I  scanned the drawings at 300 dots per inch (118 dots per cm)
+  which is the effective limit of the drawings as printed. 
+  <P> At some future date I may be able to present more readable drawings   :-)
+  
+</OL>
+
+<P>
+<!Converter's questions
+<!
+<OL>
+<! <LI><! on page 18, 2 sentences before "Paper Feed" section, has what appears to be a 
+<!<SUP><! 7</SUP><! <B><! C</B><! <SUP><! 3?<! </SUP><! ,  
+<!<LI><! on page 23, just above Cams header, is what appears to be <SUP><! ?</SUP><! <B><! W</B><! .
+<!<LI><! on page 25, just above Ink Roller Cam header, is <SUP><! ?</SUP><! <B><! W</B><! .
+<!<LI><! on page 26, first sentence of last paragraph, is <B><! I</B><!  [J?] soft.
+<!<LI><! on page 29, second paragraph, is "(172, 173) so loading using " which might
+	not be intended  :-)
+<!<LI><! around page 28 - 30 there are frequent references to a Knnn series such as
+	K416A, K446, K448, K24.  Where, what are these?
+<!<LI><! in the paper loading sequence starting on page 32, I fixed the duplicate
+	sequence number starting on page 33
+<!<LI><! page 42, 5th line from the bottom, is the <SUP><! 5</SUP><! <B><! B</B><! <SUP><! 2</SUP><! 
+	format correct?
+<!<LI><! page 43, end of top paragraph,  <SUP><! ?</SUP><! <B><! K</B><!  
+<!<LI><! page 45, top of 3rd paragraph,  ??
+	(<SUP><! 3</SUP><! <B><! L</B><! <SUB><! 2</SUB><! , <SUP><! 3</SUP><! <B><! L</B><! <SUB><! 2</SUB><! )
+
+<!<LI><! page 45, top of 3rd paragraph,  ??
+	(<B><! T</B><! <SUB><! 1</SUB><! , <SUP><! 2</SUP><! <B><! T</B><! <SUB><! 1</SUB><! ) 
+<!<LI><! page 68, top, "This can be seen in re is plan view shows "  ????
+<!<LI><! page 72, middle "warned position of the lozenge at the"  is this word what you wish?
+	(I have not seen any usage of the word before this point.)
+
+<!</OL>
+<! -->
+<P>
+A serious viewer's comments <A HREF="#Comments">here</A>.
+
+
+
+
+    </TABLE>
+
+<A NAME="top-doc">
+<P>
+<HR>
+<BR>
+<Table align=CENTER>
+<TR><TD>
+
+<FONT SIZE=+1><B>
+Charles Babbage's Difference Engine No. 2
+<BR>
+Technical Description</B>
+ <BR>
+ <BR>
+</FONT>
+<TR><TD>
+Science Museum Papers in the History of Technology
+ <BR>
+No 5
+ <BR>
+<BR>
+Doron Swade
+
+<BR>
+<BR>
+<BR>
+September 1996
+</TABLE>
+
+<HR>
+<CENTER>
+<FONT SIZE=+1>
+<B><U>CONTENTS</U></B> of Entire Document
+ <BR>
+ <BR>
+</FONT>
+</CENTER>
+
+
+<TABLE ALIGN=CENTER >
+<TR><TD><A HREF="#bab-t-preface">Preface</A> <TD> 1
+<TR><TD><A HREF="#bab-t-forward">Forward</A> <TD> 3
+<TR><TD><A HREF="bab_tech_printing.html#bab-t-printing">Printing</A> <TD> 7
+<TR><TD><A HREF="bab_tech_stereo.html#bab-t-stereotype">Stereotype Table</A> <TD> 37
+
+<TR><TD><A HREF="bab_tech_calc.html#bab-t-calculation">Calculation</A> <TD> 65
+<TR><TD><A HREF="bab_tech_circular.html">Circular Motions</A> <TD> 83
+<TR><TD><A HREF="bab_tech_vertical.html">Vertical Motions</A> <TD> 89
+<TR><TD><A HREF="bab_tech_drive.html">Drive</A> <TD> 113
+<TR><TD><A HREF="bab_tech_drive.html#bab-t-framing">Framing</A> <TD> 123
+
+<TR><TD><A HREF="bab_tech_build.html#bab-t-build">Build</A> <TD> 131
+<TR><TD><A HREF="#bab-t-append">Appendix: Drawings</A> <TD> 147
+</TABLE>
+
+
+<P>
+<A HREF="bab-t-photo.jpg"><IMG SRC="bab-t-photo-t.jpg">
+	<BR>Photo of Babbage Difference Engine No 2</A> <FONT SIZE=-1>(214 K bytes)</FONT>
+
+<P>
+
+<! start page001 -->
+
+<A NAME="bab-t-preface">
+<P>
+<HR>
+<P>
+
+<CENTER>
+<H2>Preface</H2>
+</center>
+
+
+The accompanying account provides a technical description of Difference Engine No. 2.
+It consists of an interpretation of Babbage's original design drawings and records the design
+and engineering decisions made in the preparation of modern piece-part drawings for the
+construction of the engine completed in 1991.
+<P>
+
+The documentation project started in January 1993. The account is the product of a series of
+debriefing sessions between the author and Reg Crick, the engineer who played the
+major part in the production of the new drawings and in the construction of the engine. The
+documentation process is described in the Foreword to the Work in Progress' report
+(included below) issued in February last year.
+<P>
+This first draft is issued to mark the completion of the debriefing phase of the documentation
+process. Since the work will now be intermitted it is also issued as a form of security in the
+event that the work is not resumed. The contents of the Work in Progress report (February
+1995) remains unchanged. However, two sections have been added to the account during
+the last year. The overall account runs to 58,000 words. These sections complete the
+description of the stereotype table and add a final section covering issues that arose during
+the physical assembly.
+<P>
+The account is intended as an interpretative companion to the set of twenty original
+full-sized design drawings and twelve tracings for Difference Engine No. 2, produced by
+Babbage, or under his instruction, between 1847 and 1849. Babbage made liberal use of
+his Mechanical Notation in the depletion of the engine in these drawings. The Notation
+is an elaborate system of symbols devised by Babbage to identify parts and describe their
+operation. It consists of alphabetic characters of various kinds which identify fixed and moving
+parts, and numerical superscripts and subscripts which indicate the operational relationship
+between parts. The original drawings are large (typically 1000 x 600 mm)
+and well able to convey the fine detail of the Notational annotations. Reduced copies of
+the twenty main drawings are provided here in an Appendix. Most, though not all of the
+alphabetic annotations are legible in these copies but the notational super- and sub-scripts
+
+<! start page002 -->
+have inevitably suffered in the reduction. The textual account relies on the Notation to
+identify parts but in general does not rely on it for the description of the operation of
+mechanisms. Despite the diminished detail of the reduced copies the account that follows
+does provide a freestanding description of the engine without reference to the full-sized
+original.  However, for detailed study of the Notation and its use in Babbage's description of
+the engine three is no substitute for reference to the full-sized primary sources.
+<P>
+Some progress was made on the Mechanical Notation during the last year and this helped to
+resolve a major issue in the design of the stereotype table.  However, current understanding
+of the Notation is still in complete and its study is a research task that remains outstanding.
+<P>
+Doron Swade<BR>
+15 March 1996<BR>
+9 September 1996
+
+<! start page003 -->
+
+<A NAME="bab-t-forward">
+<P>
+<HR>
+<P>
+<B><U>Work in Progress (February 1995)</U></B>
+<P>
+
+This account documents the construction of Difference Engine No. 2 taking the original set of
+Babbage's drawings as an uninterpreted datum. The purpose of the account is to place on
+record the detailed interpretation of a Babbage engine design,  it also serves to provide a technical
+record of the process by which a project, arrested in 1849, was resumed and
+culminated in the completion, in 1991, of an operational machine.
+
+<P>
+<HR>
+<CENTER>
+<H2>Foreword</H2>
+</CENTER>
+<P>
+
+The accompanying account describes Charles Babbage's Difference Engine No. 2. The
+machine was built by the Science Museum to original designs dating from between 1847
+and 1849. The engine was completed in 1991, the bicentennial year of Babbage's birth.
+The set of original design drawings consists of twenty main views and a small number of
+derivative tracings. The set is believed to be complete i.e. there is no evidence of drawings
+being missing. The drawings collectively constitute a comprehensive operational description of
+the engine: they are sufficiently detailed to describe the shape and nominal size of individual
+parts, their physical interrelationship and their intended function.  However, for all the richness
+they contain the drawings are not 'working drawings' i.e. they are not sufficiently detailed to
+provide the full specification necessary for the manufacture of parts. No information is
+provided in the originals as to choice of materials, methods of manufacture, requisite
+precision, or finish.  In this respect they provide a schematic description, comprehensive in
+itself, but insufficiently detailed to serve directly as a specification for manufacture.
+<P>
+The drawings are deficient in other respects: they contain dimensioning inconsistencies
+(the same parts are shown differently sized in different views); there are incompletenesses in
+the design, instances of omitted devices, as well as redundant assemblies. The drawings also
+contain design errors one of which is central to the fundamental operation of the engine.
+None of these deficiencies compromises the validity of the basic logic, design or intended
+function of the engine. Babbage made no practical attempt to construct the engine and the
+deficiencies for the most part represent the gap between an advanced design arrested in an
+incomplete stage of engineering development, and the final working mechanical entity. The
+gap, in short, is one of engineering completeness rather than logical or operational principle.
+The drawings constitute the only original account of the engine. Babbage provides almost no
+other explanation, textual description or justification for the design. The drawings are
+
+
+<! start page004 -->
+
+therefore a free-standing source from which his intentions are to be decoded and
+reconstructed.
+<P>
+The manufacture of parts required fully specified working drawings. These include detailed
+piece-part drawings, parts lists specifying quantities of individual components, layouts and
+general assembly drawings detailing the physical interrelation of assembled parts. The
+production of these drawings required detailed interpretation of the originals to establish the
+purpose and function of parts and subassemblies. This interpretation then informed the
+provision of supplementary data, otherwise missing from the originals, but essential for
+manufacture. Composition analysis of contemporary gunmetal informed the choice and grade
+of modem bronze; which parts where to be made from bronze, cast iron or steel, methods
+of manufacture, finish and tolerancing were informed by expert curatorial advice based on
+detailed knowledge of nineteenth-century practice. The guiding principle throughout was
+authenticity, and care was taken to ensure that no part was made with greater precision than
+is known from measurement to have been deliverable in Babbage's time.   Dimensioning
+inconsistencies were resolved, incompletenesses in the design remedied, modifications to
+correct design errors specified and omissions and redundancies catered for. These researches
+and deliberations were embodied in a set of some fifty working drawings which completely
+specify the engine.  During the design and build Reg Crick, the senior engineer responsible for
+the production of the modem drawings and for the supervision
+of the construction, kept an Engineer's Log (The Red Book) which is an episodic diary of
+notable issues. Apart from this we were as guilty as Babbage during the design and build
+phases of the project in providing little descriptive account of the technical issues
+underpinning the design. The attached account is intended to remedy this, at least in part.
+<P>
+The documentation process started in January 1993 and has continued fairly consistently since
+then. The account is based on debriefing sessions between myself and Reg Crick. During the
+debriefing sessions the interpretation of the original drawings is retraced and reexamined so
+as to reconstruct the supposed intention and function of the various devices. Deficiencies,
+where they occur, are identified, and the means and justification by which they were resolved
+described. The Engineer's Log (The Red Book) is used as a checklist of notable issues. My
+role in these sessions progresses from disciple, to inquisitor, and finally, to that of scribe. The
+debriefing sessions are recorded in handwritten summary session notes by me. These are
+then taken away and used in solitude as the basis of an expanded account written usually on
+the same day or in the days immediately following. In the next session Reg Crick would
+proof read the text Secondary questions raised during the drafting process, as well as
+
+<! start page005 -->
+
+amendments to the text from the proofing process would be discussed, clarified and resolved.
+The account would then be redrafted accordingly and re-read at the start of the following
+session. The pages attached are the outcome of the process to date.
+<P>
+There are two flagged incompletenesses in the account. These are provisional omissions
+which require curatorial research outside Reg Crick's or my immediate knowledge. One
+of the topics is the use of Babbage's Mechanical Notation. Despite the central importance
+attached by Babbage to the Notation as an interpretative and descriptive tool, we did not use
+it to decode the drawings nor in the construal of Babbage's intentions.  While I have used the
+Notation in the later sections as a short-hand to identify parts, this is the main use to which it
+has so far been put in the written record. The account will need to be reviewed in the light
+of a more informed understanding of the Notation to verify and confirm interpretative
+decisions taken without its aid. An investigation of the notational conventions devised by
+Babbage is a necessary curatorial research task but is being held in abeyance until the technical
+account, which relies on Reg Crick's unique experience and knowledge, is complete. The
+second issue is the historical account of a major design error in the addition mechanism. This
+requires reconstructing the sequence of interpretative exchanges between Prof. Allan Bromley
+and the engine team. Retracing the trajectory of understanding here is not essential to the
+debriefing process. This too has been postponed for the meanwhile but will need to be
+returned to for completeness.
+<P>
+The engine depicted in the original design drawings consists of a calculating section to which is
+attached a printing and stereotyping apparatus. Only the calculating section has so far been
+built.  The description of the calculating section is retrospective i.e. this part of the engine
+existed as a <I>fait accomplis</I> at the time of writing. The account is therefore 'descriptive' in the
+literal sense (de - down, scribo - I write) and my role here is largely that of a scribe 
+retracing, recovering, articulating and recording, via a process of understanding, a set of
+considerations and events already enacted. The account, however, also covers the printing
+and stereotyping section which remains unbuilt but for which working drawings were
+produced in the interval since the bicentennial year, funded by independent sponsorship from
+the United States. The relationship between the process of documentation and the process
+of design is in this case different.
+
+<P>
+<! start page006 -->
+
+The printing and stereotyping section is integral to the concept of the machine and forms an
+essential part of the engine's control system. The apparatus is at least as complex as the
+calculating section, and calls for an additional 4,000 parts - about the same number as
+required for the calculating section already built - but with substantially less repetition of
+similar parts.  Documenting the printing and stereotyping apparatus involved the familiar
+process of re-examining the existing interpretation of the original design intention, and
+retracing the decisions made in designing the incompletely designed parts of the mechanism.
+The opportunity for curatorial scrutiny was greater here than circumstances allowed during
+the earlier build of the calculating section, and since there still existed the possibility to
+re-interpret the design, the curatorial responsibility was correspondingly greater. The process
+of reviewing the design substantially altered our understanding of the printing mechanism and
+revealed features of startling subtlety formerly overlooked. The design
+was subsequently altered to accommodate this partial re-interpretation. I cite this to illustrate
+how, in the case of the printing apparatus, the documentation process and the design process
+directly interacted and breached what had until then been separate activities.
+<P>
+The account consists of seven sections which collectively run to 45,460 words. A total of
+300 hours has been spent on debriefing and writing up since January 1993 (192 hours in
+1993, 96 hours in 1994, and 12 hours in 1995). The ratio between debriefing time and
+write-up is about 1:2 i.e. each hour of debriefing requires a further two hours of formulation,
+research and writing. The technical account based on one-to-one debriefing sessions is within
+an estimated 6,000 words of completion (2,000 words outstanding for the stereotype
+apparatus and 4,000 words for the final section which will describes the assembly of the
+engine). The writing rate is typically 180-200 words per hour.
+<P>
+The order in which the sections are presented is in the reverse order of writing i.e. the earlier
+sections are last, the most recent first The genre of writing is highly intemalist and allows
+little linguistic licence.  The earlier sections (appearing last) tend to be costive, taut and formal.
+As the genre developed the style, though inevitably still constrained, tends nonetheless to be
+slightly more expansive.
+<P>
+Doron Swade<BR>
+25 February 1995
+
+<! start page007 -->
+<P>
+Go to <B> next section</B> <A HREF="bab_tech_printing.html#bab-t-printing">Printing</A>
+
+<BR>
+Go to <A HREF="bab_tech.html#top-doc">top of Babbage Technical Description</A>
+
+<A NAME="bab-t-append">
+<P>
+<HR>
+<P>
+<B><U>Appendix: Drawings</U></B> - permission to post from Doron Swade
+<P>
+</TABLE>
+
+<TABLE>
+<TR><TD>
+<A HREF="bab-t-147.jpg"><IMG SRC="bab-t-147-t.jpg"><BR> Drawing 147</A> 
+	<BR>Stereotype frames for Analytical and Difference Engines
+	<BR><FONT SIZE=-1>473 K bytes
+
+<TD>
+<A HREF="bab-t-159.jpg"><IMG SRC="bab-t-159-t.jpg"><BR> Drawing 159</A> 
+	<BR>General Plan and Details of Cams for Driving Calculating Axes
+	<BR><FONT SIZE=-1>783 K bytes
+<TD>
+<A HREF="bab-t-160.jpg"><IMG SRC="bab-t-160-t.jpg"><BR> Drawing 160</A>
+	<BR>[Untitled] 
+	<BR><FONT SIZE=-1>810 K bytes
+<TD>
+<A HREF="bab-t-161.jpg"><IMG SRC="bab-t-161-t.jpg"><BR> Drawing 161</A> 
+	<BR>General Plan and Detail of the Driving of the Calculating part of Difference
+	Engine No. 2
+	<BR><FONT SIZE=-1>891 K bytes
+
+
+<TR><TD>
+<A HREF="bab-t-162.jpg"><IMG SRC="bab-t-162-t.jpg"><BR> Drawing 162</A>
+	<BR>Part of Frame for Supporting Stereotype axes 
+	<BR><FONT SIZE=-1>279 K bytes
+<TD>
+<A HREF="bab-t-163.jpg"><IMG SRC="bab-t-163-t.jpg"><BR> Drawing 163</A> 
+	<BR>Elevation for Difference Engine No. 2
+	<BR><FONT SIZE=-1>596 K bytes
+<TD>
+<A HREF="bab-t-164.jpg"><IMG SRC="bab-t-164-t.jpg"><BR> Drawing 164</A> 
+	<BR>Plan of Difference Engine No. 2
+	<BR><FONT SIZE=-1>343 K bytes
+
+<TD>
+<A HREF="bab-t-165.jpg"><IMG SRC="bab-t-165-t.jpg"><BR> Drawing 165</A>
+	<BR>- End View and Elevation of Paper Rollers
+	<BR>- End View and Plan of Carrying Axis and Driver
+	<BR>- End View and Elevation of Supports
+	<BR><FONT SIZE=-1>675 K bytes
+
+<TR><TD>
+<A HREF="bab-t-166.jpg"><IMG SRC="bab-t-166-t.jpg"><BR> Drawing 166</A> 
+	<BR>Apparatus for moving Stereotype frames for Analytical and Difference Engines
+	<BR><FONT SIZE=-1>611 K bytes
+<TD>
+<A HREF="bab-t-167.jpg"><IMG SRC="bab-t-167-t.jpg"><BR> Drawing 167</A> 
+	<BR>Elevation and End View of Part of General Framing
+	<BR><FONT SIZE=-1>393 K bytes
+
+<TD>
+<A HREF="bab-t-168.jpg"><IMG SRC="bab-t-168-t.jpg"><BR> Drawing 168</A> 
+	<BR>Plan and End View of Cams etc. for Vertical Motion to Calculating axes
+	<BR><FONT SIZE=-1>399 K bytes
+<TD>
+<A HREF="bab-t-169.jpg"><IMG SRC="bab-t-169-t.jpg"><BR> Drawing 169</A> 
+	<BR>Plan of Cams for Locking Odd Difference Figure Wheels and for Vertical
+		motion of Even Difference warning
+	<BR><FONT SIZE=-1>309 K bytes
+
+<TR><TD>
+<A HREF="bab-t-170.jpg"><IMG SRC="bab-t-170-t.jpg"><BR> Drawing 170</A> 
+	<BR>Plan of Cams for Circular Motion of Even Difference Axes
+	<BR><FONT SIZE=-1>355 K bytes
+
+<TD>
+<A HREF="bab-t-171.jpg"><IMG SRC="bab-t-171-t.jpg"><BR> Drawing 171</A> 
+	<BR>Difference Engine No. 2 Addition of Carriage and mode of Driving the Axes
+	<BR><FONT SIZE=-1>546 K bytes
+<TD>
+<A HREF="bab-t-172.jpg"><IMG SRC="bab-t-172-t.jpg"><BR> Drawing 172</A> 
+	<BR>End View of Inking Printing Paper and Stereotype Apparatus
+	<BR><FONT SIZE=-1>786 K bytes
+<TD>
+<A HREF="bab-t-173.jpg"><IMG SRC="bab-t-173-t.jpg"><BR> Drawing 173</A> 
+	<BR>Plan of Inking Printing and Stereotype Apparatus
+	<BR><FONT SIZE=-1>790 K bytes
+
+
+<TR><TD>
+<A HREF="bab-t-174.jpg"><IMG SRC="bab-t-174-t.jpg"><BR> Drawing 174</A> 
+	<BR>Rack Pinions for connecting Table figure wheels with Printing Stereotype
+		Sectors
+	<BR><FONT SIZE=-1>802 K bytes
+<TD>
+<A HREF="bab-t-175.jpg"><IMG SRC="bab-t-175-t.jpg"><BR> Drawing 175</A> 
+	<BR>Plan of Cams for Punching with small stereotype sectors, and Cams for
+		removing Paper Rollers
+	<BR><FONT SIZE=-1>384 K bytes
+<TD>
+<A HREF="bab-t-176.jpg"><IMG SRC="bab-t-176-t.jpg"><BR> Drawing 176</A> 
+	<BR>Plan of Calculating part of Difference Engine with the means of conveying
+		numbers to Stereotype sectors
+	<BR><FONT SIZE=-1>785 K bytes
+
+<TD>
+<A HREF="bab-t-177.jpg"><IMG SRC="bab-t-177-t.jpg"><BR> Drawing 177</A> 
+	<BR>Difference Engine No. 2. Bars and Levers for lifting Axes
+	<BR><FONT SIZE=-1>665 K bytes
+
+<TR><TD>
+<A HREF="bab-t-337.jpg"><IMG SRC="bab-t-337-t.jpg"><BR> Drawing 337</A>
+	<BR> Addition Carriage (Modified)
+	<BR><FONT SIZE=-1>896 K bytes
+<TD>
+<A HREF="bab-t-385.jpg"><IMG SRC="bab-t-385-t.jpg"><BR> Drawing 385</A> 
+	<BR>Notation of Units for Difference Engine No. 2
+	<BR><FONT SIZE=-1>985 K bytes
+
+
+<TD>
+<A HREF="bab-t-timing.jpg"><IMG SRC="bab-t-timing-t.jpg"><BR>Modern Timing</A> 
+	<BR>Current timing diagram Difference Engine No. 2
+	<BR><FONT SIZE=-1>675 K bytes (not in technical manual)
+
+</TABLE>
+<P>
+<HR>
+<P>
+<A NAME="Comments">
+<P>
+<B>A serious viewer's comments here</b>.
+<UL>
+
+<LI> from <A HREF="#LaViolette">Marc LaViolette </A> July 3, 2012
+
+<LI> from <A HREF="#Robinson">Tim Robinson</A> March 8, 2006
+
+<LI> from <A HREF="#Bleser">Jan-willem De Bleser</A> March 7, 2006
+<LI> from <A HREF="#calzas">from Alain Calzas</A> August 29, 2005
+</UL>
+
+<P>
+
+<A name="LaViolette">
+from Marc LaViolette < laviolette-m (at) rmc . ca > July 3, 2012
+<BR>"So Mr Swade's description is exact."
+
+<TABLE width=90% align=center border cellpadding=5 >
+<TD><PRE><B>
+I was reading the comments at the end of "Charles Babbage's Difference
+Engine No. 2 Technical Description" by Mr. Swade. The answer to why Mr
+Swade description appears to be in error is that both Alain Calzas and
+Jan-willem De Bleser assume all the columns are digit wheels are
+numbered in the same manner (all increasing as they rotate clockwise).
+
+This is not true and can be seen in many of the videos available on
+youtube. The numbering alternates from increasing in the clockwise
+direction to increasing counterclockwise direction for each column from
+left to right. This is clearly shown in Tim Robinson's video of his
+meccano version named "part 2 front close up".
+
+So Mr Swade's description is exact.
+
+Marc LaViolette
+Assistant Professor
+Dept. Mechanical and Aeronautical Engineering
+Royal Military College of Canada
+Kingston, Ontario, Canada
+</TABLE>
+
+
+
+
+<P>
+<A NAME="Robinson">
+<HR WIDTH=50%>
+<P>
+
+from Tim Robinson < tbr00 (at) pacbell . net > March 8, 2006
+<DD>The model Tim made and talks about <A HREF="http://www.meccano.us/difference_engines/rde_2/index.html">may be seen here</A>.  :-))  
+<DD> Also see Tim's model of  part of Babbage's <A HREF="http://www.meccano.us/analytical_engine/index.html">Analytical Engine</A>
+	and <A HREF="http://www.meccano.us/differential_analyzers/robinson_da/index.html">Tim Robinson's Differential Analyzer</A>.
+<TABLE width=90% align=center border cellpadding=5 >
+<TD><PRE><B>
+Jan-willem De Bleser wrote:
+> That would most certainly be another valid way to design it. To know 
+> which  was Babbage's design you'd have to study his timing diagram - 
+> something I  haven't found the time for yet.
+>
+   His timing diagram (which has some errors) definitely assumes the 
+   alternating columns.  The reason is that with alternating columns you 
+   can overlap the restoring of the source wheels with the carry operation 
+   on the result wheels.  If instead you made all the columns in the same 
+   order then you would have to transfer the value to the sector from the 
+   source, restore source and add, and then finally carry, so all these 
+   three would have to be sequential and it would slow the cycle down. 
+
+   Since Babbage was quite obsessed with speed, it seems very unlikely he 
+   would have done this just to avoid mirroring the columns.  However the 
+   timing diagram and the details of the cam profiles make it clear he 
+   intended to use the alternating column approach.
+
+> You say this reversed setup is how the actual machine in the Science  
+> Museum is built? Have never seen it myself, sadly enough.
+> 
+   Yes, they did make this change.  In my own model I followed the same 
+   path, however I did find some further optimizations which reduced the 
+   number of independent controls from what Babbage used.  I don't know if 
+   he simply overlooked these.  More likely he chose not to exploit them, 
+   preferring to keep the flexibility of fully "horizontal" control.  He 
+   may also have been concerned about uneven wear from the greater load 
+   which some control paths would have to take with the optimizations in place.
+
+   Tim Robinson
+</TABLE>
+
+<P>
+<A NAME="Bleser">
+<HR WIDTH=50%>
+<P>
+from Jan-willem De Bleser < jan-willem . debleser @student .kuleuven .be > March 7, 2006
+<TABLE width=90% align=center border cellpadding=5 >
+<TD><PRE><B>
+I am no expert on the difference engine but I believe that what Alain  
+states is correct - his explanation is in fact one way it would work as  
+drawn.
+
+Consider Doron's  description of the "Giving Off" phase:
+
+1) The sector wheel is fully engaged and the right hand drive axis is  
+lowered.
+2) The right axis is rotated 81 degrees clockwise, reducing the count to  
+zero and driving the left wheel via the sector wheel.
+3) The right wheel is now zero and the left wheel is the sum of the  
+original value and the right value.
+
+There is one inconsistency in this explanation: both figure wheels are  
+rotating in the same direction and thus must both be decremented or  
+incremented, assuming the same direction of numbering. This means that it  
+is impossible for the right wheel to be reduced to zero while  
+simultaneously increasing the value of the left wheel. Alain's solution  
+solves this, as first the right figure wheel is reduced in value, followed  
+by both figure wheels being increased in value.
+
+Jw
+</PRE></TABLE>
+<P>
+
+
+
+<A NAME="calzas">
+<HR width=50% >
+
+<BR>from Alain Calzas < calzas @cppm . in2p3 . fr > August 29, 2005
+<DD>Re: Nike web site: diff. eng. 2. clz
+<BR><I>Alain has apparently studied the drawings and mechanisms much more than I (Ed Thelen) have.
+<DD>I am not qualified to comment on his comments - can someone else comment? </I>
+
+<BR>
+<TABLE width=90% align=center border cellpadding=5 >
+<TD><PRE><B>
+
+please reply at
+calzas @ cppm . in2p3 . fr
+
+making sure you have`clz' in the subject
+
+--------------------------------------------------------------------------------
+
+bab-tech-ac August 29, 2005
+
+Concerning Babbage Difference Engine #2 realisation shown 
+in National Museum of Science and Industry I have just visited in
+august.
+
+
+Dear Ed,
+
+      I jump on your kindly invitation for comments.
+
+      Tell me where I am wrong.
+
+From the original drawings it is clear that all figure wheels
+rotate anticlockwise during addition. There is very little to change
+from the Calculating Cycle description, to match what - I believe (*) -
+is the original design. Namely the addition phase is not during the 
+giving off but during the restoration phase. By the way, the latter 
+is absolutely true for the NCR cash register I have.
+
+I had very few changes to make to rewrite the Calculating Cycle
+according this view. My changes are between <> brakets.
+
+(*) I could not decipher the original timing chart.
+
+I am looking forward your answer,
+Alain Calzas.
+
+please reply at     calzas@cppm.in2p3.fr
+
+making sure you have`clz' in the subject
+___________________________________________________
+
+   
+      The Calculating Cycle 
+
+      Initial Conditions -unchanged-
+
+     < Giving off > 
+      The cycle commences with the lowering of the sectors into 
+    < partial engagement ( i.e. they are meshed with the right hand figure 
+      wheels and disengaged from the left hand figure wheels ) >. 
+      Lowering the sectors unlocks them by 
+      disengaging the locking lug on the zero stop from the slot in the sector. 
+      In the same interval the right hand figure wheel axis and zero stops are 
+      lowered so that the drive arms are in the plane of the internal nibs and 
+      the zero stops are in the plane of the external nibs. The left hand figure 
+      wheel axis remains in the raised position with the drive arms and zero 
+      stops disengaged. This allows the external nib to pass the zero stop 
+      position which will occur if the number on the figure wheel exceeds 9. 
+
+      The locks on 
+    < the right hand > figure wheel column are then raised i.e. disengaged, 
+      and the right hand figure wheel axis rotates clockwise from its rest 
+      position though its full travel of 81o i.e. 9o ( one tooth pitch ) short of 
+      a full quadrant. During this sweep the right hand wheel is reduced to zero 
+      and the zero stop prevents any overshoot by blocking the path of the outer 
+      nib. The number held of the figure wheel at the start of the cycle (in the 
+      case shown in 170 this is zero ) is transferred tooth for tooth to the 
+      sector wheel.
+     < >
+     < In the description so far the right hand figure wheel rotates clockwise 
+      when giving off, the sector is driven anticlockwise. >
+
+     < Restoration and Addition > 
+      The end of the giving off < > phase leaves  
+    < the right hand figure >
+      wheels at zero with the drive arms rotated fully clockwise. The right 
+      hand figure wheels have therefore lost their initial values. However, the 
+      sectors are displaced from zero by the number of teeth equal to the number 
+      value on the right hand figure wheels at the start of the half cycle and 
+      the values are restored to the right hand figure wheels in the next phase 
+      of the half-cycle. 
+      The locks disengage from < both > figure wheels and the sector 
+      restoring arms rotate in a clockwise sweep. During the sweep the restoring 
+      arms engage with the pegs on the sectors and restore the sectors to zero. 
+    < which in turn drives ANTICLOCKWISE the left hand figure wheel 
+      since the sectors are 
+    < also engaged in > the left hand figure wheels. 
+    < The number 
+      on the left hand figure wheel is increased by the number on the right hand 
+      wheel and this is the basic operation of addition. >
+      The sector zero stops prevent any overshoot by obstructing the cutaway 
+      section of the sector.
+
+
+      The right hand figure wheels are driven by the sectors and the restoration 
+      of the sectors to zero restores the figure wheels to their positions at 
+      the start of the cycle before giving off. During the restoration process 
+      the right hand figure wheel axis rotates anticlockwise to the position 
+      shown in 171 i.e. returns the drive arms to the position at the start of 
+      cycle. This does not affect restoration as the figure wheel axis is in the 
+      raised position i.e. the drive arms are lifted clear of the internal nibs. 
+      The figure wheel locks then engage to correct minor displacements and 
+      prevent spurious derangement. 
+
+
+      Warning -unchanged-
+      Carry  -unchanged-
+      Secondary Carries  -unchanged-
+      Resetting  -unchanged-
+
+
+
+
+</TABLE>
+<P>
+<HR>
+<P>
+
+
+
+
+
+
+
+ 
+<BR>
+Go to <A HREF="bab_tech.html#top-doc">top of Babbage Technical Description</A>
+<BR>
+

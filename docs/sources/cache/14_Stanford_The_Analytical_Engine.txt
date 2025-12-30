@@ -1,0 +1,275 @@
+The Analytical Engine
+
+Chris Gregg, based on slides by Eric Roberts
+CS 208E
+September 23, 2021
+
+CS 208E—Topic Overview
+Week 1
+
+Introductions; course overview; Babbage machines; Ada Lovelace
+
+Week 2
+
+Karel the Robot; beginning JavaScript; algorithms
+
+Week 3
+
+Binary arithmetic; digital logic
+
+Week 4
+
+Stored-program machines; the Toddler machine
+
+Week 5
+
+Guest Lecture: Dr. Enigma, Turing machines; the Busy Beaver problem; undecidability
+
+Week 6
+
+Computational complexity; the P = NP question
+
+Week 7
+
+Cryptography; public-key cryptography; digital signatures
+
+Week 8
+
+Networking; networking algorithms; Artificial Intelligence
+
+Week 9
+
+Early Programming Languages / Reflections on Trusting Trust
+
+Week 10 Historiography of Computing
+
+Augusta Ada Byron,
+Lady Lovelace (1815–1852)
+
+Augusta Ada Byron, the daughter of the
+English poet Lord Byron and his wife
+Anne, was encouraged to pursue her
+interests in science and mathematics at a
+time when few women were allowed to
+study those subjects. At the age of 17,
+Ada met Charles Babbage and became
+fascinated by his machines. Ada was
+convinced of the potential of Babbage’s
+Analytical Engine and wrote extensive
+notes on its design, along with several
+complex mathematical programs that
+have led many people to characterize her
+as the first programmer. In 1980, the
+U.S. Department of Defense named the
+programming language Ada in her honor.
+
+Ada Lovelace: The First Programmer
+
+https://www.youtube.com/watch?v=IZptxisyVqQ
+
+The Analytical Engine
+• As Babbage built prototypes of his Difference Engine, he began
+to envision a much more powerful computing device he called
+the Analytical Engine.
+• Babbage’s initial notes on the Analytical Engine appear in 1837,
+but the most complete description appears in a 1842 paper by
+Luigi Federico Menabrea, who was reporting on a lecture
+Babbage gave in 1840. Ada Lovelace translated Menabrea’s
+paper from French into English and provided notes that were
+three times longer than the original.
+• The essential difference between the Difference Engine and the
+Analytical Engine is that the Analytical Engine was designed to
+be programmable, allowing users to perform any sequence of
+calculations. The programs were encoded on punched cards in
+the manner of the Jacquard loom, which Ada and her mother had
+seen in their visits to the English industrial areas.
+
+Jacquard Loom
+
+Jacquard Loom
+
+https://www.youtube.com/watch?v=K6NgMNvK52A
+
+Products of the Jacquard Loom
+
+Structure of the Analytical Engine
+
+the “mill”
+
+the “store”
+
+The Store and the Mill
+
+The Analytical Engine: Computerphile
+https://www.youtube.com/watch?v=5rtKoKFGFSM
+
+Notes:
+http://www.eprg.org/computerphile/new-adatalk.pdf
+
+The “Store”
+
+• Each column holds a single integer as in the Difference Engine.
+• Numbers in the Analytical Engine are signed.
+• Each column has a numeric address: v0, v1, v2, v3, and so on.
+
+The “Mill”
+• The op indicator holds the current
+operation (+, –, ×, ÷)
+• The mill has five columns:
+
+– I1 and I2 are the input values
+– E is the output value
+– I1ʹ and Eʹ are used to store extra
+digits for the × and ÷ operations
+
+• The runup indicator is set when
+the result of an operation changes
+sign.
+
+Instructions for the Analytical Engine
+N address value
++
+–
+×
+÷
+
+Store value in address
+Set the machine to addition
+Set the machine to subtraction
+Set the machine to multiplication
+Set the machine to division
+
+L address
+Z address
+S address
+P address
+
+Load from address, preserving data
+Load from address, clearing data
+Store egress register in address
+Print value in address
+
+Program to Add Two Numbers
+N 0 25
+N 1 17
+
+/* First number is in v0
+/* Second number is in v1
+
+*/
+*/
+
++
+L 0
+L 1
+S 2
+P 2
+
+/* Set machine for addition
+/* Load first number into I1
+/* A second load does the add
+/* Store result in v2
+/* Print the result
+
+*/
+*/
+*/
+*/
+*/
+
+Adding Control Operations
+N address value
++
+–
+×
+÷
+
+Store value in address
+Set the machine to addition
+Set the machine to subtraction
+Set the machine to multiplication
+Set the machine to division
+
+L address
+Z address
+S address
+P address
+
+Load from address, preserving data
+Load from address, clearing data
+Store egress register in address
+Print value in address
+
+B number
+F number
+?B number
+?F number
+
+Move backward specified number of cards
+Move forward specified number of cards
+Move backward if runup lever is set
+Move forward if runup lever is set
+
+Exercise: Produce a Table of Squares
+Use the Analytical Engine to produce a table of squares.
+0
+1
+4
+9
+16
+25
+49
+64
+81
+
+The simplest approach is to simulate the operation used by the
+Difference Engine to accomplish the same task.
+
+Multiplication and Division
+• Babbage recognized that multiplying two integers produces a
+result that typically has twice the number of digits that appear in
+the original values.
+• To take account of this fact, the multiplication operation for the
+Analytical Engine produces its result in a pair of columns.
+Column E shows the low-order digits of the product, which are
+the digits on the right that include the units value. Column Eʹ
+shows the high-order digits.
+• The division operation uses two columns to store the dividend.
+You set up the division by loading the low-order digits into
+column I1 and the high-order digits (if any) into column I1ʹ.
+• As long as you know that the numbers won’t exceed the number
+of digits in a column, you can ignore Eʹ and I1ʹ altogether.
+
+Exercise: Calculate Factorials
+How would you program the Analytical Engine to calculate the
+factorial of a number supplied as data using a number card.
+N! = 1 × 2 × 3 × . . . × N
+
+Bernoulli Numbers
+
+Ada’s Program for Bernoulli Numbers
+
+https://twobithistory.org/2018/08/18/ada-lovelace-note-g.html
+
+How the Analytical Engine Worked
+
+The Mythical Man-Month
+11. Plan to Throw One Away
+In most projects, the first system built
+is barely usable. It may be too slow,
+too big, awkward to use, or all three.
+There is no alternative but to start
+again, smarting but smarter, and build
+a redesigned version in which these
+problems are solved. . . .
+<p>The management question,
+therefore, is not whether to build a
+pilot system and throw it away. You
+will do that. The only question is
+whether to plan in advance to build a
+throwaway, or to promise to deliver the
+throwaway to customers.
+
+The End
+
+

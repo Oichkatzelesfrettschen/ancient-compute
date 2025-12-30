@@ -209,9 +209,7 @@ class BaseExecutor:
                 execution_time = time.time() - start_time
 
                 return ExecutionResult(
-                    status=(
-                        ExecutionStatus.SUCCESS if exit_code == 0 else ExecutionStatus.RUNTIME_ERROR
-                    ),
+                    status=ExecutionStatus.SUCCESS if exit_code == 0 else ExecutionStatus.RUNTIME_ERROR,
                     stdout=stdout[:10_000],  # Limit output to 10KB
                     stderr="",
                     execution_time=execution_time,

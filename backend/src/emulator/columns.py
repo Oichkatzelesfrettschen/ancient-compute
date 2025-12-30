@@ -37,13 +37,13 @@ class ColumnSnapshot:
     - Phase information
     """
 
-    column_index: int  # Which column (0-7)
-    digits: List[int]  # 31 digit positions
-    carry_in: bool  # Incoming carry
-    carry_out: bool  # Outgoing carry
-    is_latched: bool  # Latch closed?
-    is_advancing: bool  # Advancing to next row?
-    phase: str  # Current mechanical phase
+    column_index: int                    # Which column (0-7)
+    digits: List[int]                    # 31 digit positions
+    carry_in: bool                       # Incoming carry
+    carry_out: bool                      # Outgoing carry
+    is_latched: bool                     # Latch closed?
+    is_advancing: bool                   # Advancing to next row?
+    phase: str                           # Current mechanical phase
 
 
 class DigitColumn:

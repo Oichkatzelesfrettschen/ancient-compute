@@ -1,18 +1,7 @@
 # Ancient Compute - LISP Compiler
 
 from .lisp_ast import ASTNode, SExpression, Symbol, Number, String
-from ..ir_types import (
-    IRBuilder,
-    Program,
-    Function,
-    BasicBlock,
-    Constant,
-    ReturnTerminator,
-    IRType,
-    VariableValue,
-    BranchTerminator,
-)
-
+from ..ir_types import IRBuilder, Program, Function, BasicBlock, Constant, ReturnTerminator, IRType, VariableValue, BranchTerminator
 
 class LispCompiler:
     def __init__(self):
@@ -32,11 +21,11 @@ class LispCompiler:
 
         first = sexp.children[0]
         if isinstance(first, Symbol):
-            if first.value == "defun":
+            if first.value == 'defun':
                 return self._compile_defun(sexp)
-            elif first.value == "if":
+            elif first.value == 'if':
                 return self._compile_if(sexp)
-            elif first.value in ["+", "-", "*", "/"]:
+            elif first.value in ['+', '-', '*', '/']:
                 return self._compile_arithmetic(sexp)
             else:
                 return self._compile_function_call(sexp)
@@ -48,7 +37,7 @@ class LispCompiler:
 
         self.builder = IRBuilder(func_name, params)
         self.builder.function.local_variables = {p: IRType.DEC50 for p in params}
-        self.builder.new_block("entry")
+        self.builder.new_block('entry')
 
         for expr in body:
             self._compile_expression(expr)
@@ -93,13 +82,11 @@ class LispCompiler:
         op1 = self._compile_expression(condition.children[1])
         op2 = self._compile_expression(condition.children[2])
 
-        then_block = self.builder.new_block("then")
-        else_block = self.builder.new_block("else")
-        merge_block = self.builder.new_block("merge")
+        then_block = self.builder.new_block('then')
+        else_block = self.builder.new_block('else')
+        merge_block = self.builder.new_block('merge')
 
-        entry_block.set_terminator(
-            BranchTerminator(cond_op, op1, op2, then_block.label, else_block.label)
-        )
+        entry_block.set_terminator(BranchTerminator(cond_op, op1, op2, then_block.label, else_block.label))
 
         self.builder.current_block = then_block
         then_val = self._compile_expression(then_branch)
@@ -112,6 +99,7 @@ class LispCompiler:
         self.builder.current_block = merge_block
         # For now, we don't handle the PHI node, so we just return the then_val
         # self.builder.emit_assignment("if_result", then_val)
+
 
     def _compile_function_call(self, sexp: SExpression):
         func_name = sexp.children[0].value

@@ -158,14 +158,10 @@ async def submit_exercise_code(
     db.add(submission)
 
     # Update or create progress
-    progress = (
-        db.query(ExerciseProgress)
-        .filter(
-            ExerciseProgress.user_id == current_user_id,
-            ExerciseProgress.exercise_id == exercise_id,
-        )
-        .first()
-    )
+    progress = db.query(ExerciseProgress).filter(
+        ExerciseProgress.user_id == current_user_id,
+        ExerciseProgress.exercise_id == exercise_id,
+    ).first()
 
     if progress:
         progress.attempts += 1

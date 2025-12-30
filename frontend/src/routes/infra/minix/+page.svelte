@@ -96,7 +96,7 @@
   </ul>
   <div class="chart">
     <h3>Boot Time Trend (recent runs)</h3>
-    {@html lineChart((summary.recent || []).map((r) => r.boot_duration_ms), { color: '#7b61ff' })}
+    {@html lineChart((summary.recent || []).map((r:any) => r.boot_duration_ms), { color: '#7b61ff' })}
   </div>
   {:else}
   <p>No summary available.</p>

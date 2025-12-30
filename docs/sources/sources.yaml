@@ -1,0 +1,39 @@
+meta:
+  generated: 2025-12-30
+  provenance: first-party institutional links
+sources:
+  - id: smg-babbage-papers
+    title: The Babbage Papers
+    type: archive
+    url: "https://collection.sciencemuseumgroup.org.uk/documents/aa110000003/the-babbage-papers"
+    org: Science Museum Group
+  - id: sm-de2-techdesc
+    title: Difference Engine No.2 Technical Description
+    type: pdf
+    url: "https://www.sciencemuseum.org.uk/sites/default/files/2023-09/DE2_Technical_Description.pdf"
+    org: Science Museum
+  - id: sm-de2-user-manual
+    title: Difference Engine User Manual
+    type: pdf
+    url: "https://www.sciencemuseum.org.uk/sites/default/files/2023-08/User_Manual_PDF_Vsn_1.1_Final_SEC1.pdf"
+    org: Science Museum
+  - id: smg-tech-drawings
+    title: Technical drawings (Difference Engine)
+    type: catalog
+    url: "https://collection.sciencemuseumgroup.org.uk/objects/co75079/technical-drawings"
+    org: Science Museum Group
+  - id: oxford-babbage-archive
+    title: The Babbage Archive (Oxford)
+    type: archive
+    url: "https://mhs.web.ox.ac.uk/the-babbage-archive"
+    org: History of Science Museum, Oxford
+  - id: bl-scientific-memoirs-1843
+    title: Scientific Memoirs (1843) Lovelace Notes
+    type: scan
+    url: "https://books.google.com/books?id=hPRmnQEACAAJ"
+    org: British Library / Google Books
+  - id: gallica-leibniz-1703
+    title: Explication de l’Arithmétique Binaire (1703)
+    type: scan
+    url: "https://gallica.bnf.fr/ark:/12148/bpt6k99776x/f121.image"
+    org: BnF Gallica

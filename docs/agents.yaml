@@ -1,0 +1,25 @@
+metadata:
+  version: "2.0"
+  last_updated: "2025-12-30"
+agents:
+  historian:
+    file: docs/general/LOGIC_COMPUTATION_HISTORIAN.md
+    model: opus
+    lines: 150
+    focus: history
+    when_to_use: verification and curriculum
+    related_agents: [measurement, documentation]
+  measurement:
+    file: docs/history/MEASUREMENT_SPECIALIST_GUIDE.md
+    model: opus
+    lines: 120
+    focus: benchmarking
+    when_to_use: baselines and regression
+    related_agents: [historian]
+  documentation:
+    file: docs/history/DOCUMENTATION_ARCHITECT_AGENT.md
+    model: opus
+    lines: 300
+    focus: information architecture
+    when_to_use: organizing docs and registries
+    related_agents: [historian, measurement]

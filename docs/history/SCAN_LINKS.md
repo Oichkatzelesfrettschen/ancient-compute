@@ -1,0 +1,12 @@
+Primary Scan Links
+- Leibniz 1703 binary: https://gallica.bnf.fr/ark:/12148/bpt6k3222q.item
+- EDVAC 1945 report: https://library.si.edu/digital-library/book/firstdraftofrepo00vonn
+- Lovelace 1843 Notes: https://www.fourmilab.ch/babbage/sketch.html
+- Stanford LISP PDF: https://web.stanford.edu/class/cs242/readings/mccarthy-lisp.pdf
+- Harvard Khipu DB: https://www.khipudatabase.com
+- UNESCO Ishango PDF: https://web.astronomicalheritage.org/images/astronomicalheritage.org/thematic-study/ch01cs3.pdf
+- Plimpton 322 (Columbia RBML): https://library.columbia.edu/libraries/rbml/exhibitions/past-exhibits/plimpton322.html
+- Nine Chapters OUP (1999): https://global.oup.com/academic/product/the-nine-chapters-on-the-mathematical-art-9780198539364
+- Akan Goldweights (British Museum search): https://www.britishmuseum.org/collection/search?keyword=akan%20goldweight
+- House of Wisdom overview (Encyclopaedia of Islam via Brill): https://referenceworks.brillonline.com/entries/encyclopaedia-of-islam-2/bayt-al-hikma-SIM_1229
+- Gerard of Cremona translator list (Oxford Bibliographies): https://www.oxfordbibliographies.com/display/document/obo-9780195396587/obo-9780195396587-0200.xml

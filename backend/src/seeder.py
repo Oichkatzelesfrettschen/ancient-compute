@@ -3,7 +3,6 @@
 from .database import SessionLocal, engine, Base
 from .models import Era, Module, Lesson, User
 
-
 def seed_database():
     """Populate the database with initial data."""
     db = SessionLocal()
@@ -86,7 +85,6 @@ def seed_database():
 
     finally:
         db.close()
-
 
 if __name__ == "__main__":
     Base.metadata.create_all(bind=engine)

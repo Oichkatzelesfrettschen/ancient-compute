@@ -1,7 +1,7 @@
 ---
 # Ancient Compute - CI/CD Pipeline
 name: CI
-'on':
+on:
   push:
     branches: [master, main, develop]
   pull_request:
@@ -21,12 +21,12 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
-          cache-dependency-path: backend/requirements.txt
 
       - name: Install dependencies
         run: |
           cd backend
           pip install -r requirements.txt
+          pip install black isort pylint mypy flake8
 
       - name: Run black
         run: cd backend && black --check --diff src/ tests/
@@ -84,7 +84,6 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
-          cache-dependency-path: backend/requirements.txt
 
       - name: Install dependencies
         run: |
@@ -112,11 +111,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
-
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -124,19 +118,22 @@ jobs:
           cache: pnpm
           cache-dependency-path: frontend/pnpm-lock.yaml
 
+      - name: Install pnpm
+        run: npm install -g pnpm
+
       - name: Install dependencies
         run: cd frontend && pnpm install
 
       - name: Run ESLint
-        run: cd frontend && pnpm run lint:ci
+        run: cd frontend && pnpm eslint . --ext .js,.ts,.svelte --max-warnings 0
         # FAIL on any warnings
 
       - name: Run Prettier check
-        run: cd frontend && pnpm run format:check
+        run: cd frontend && pnpm prettier --check .
         # FAIL on formatting issues
 
       - name: Run TypeScript check
-        run: cd frontend && pnpm run check
+        run: cd frontend && pnpm tsc --noEmit --strict
         # FAIL on type errors
 
   test-frontend:
@@ -145,11 +142,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
-
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -157,11 +149,14 @@ jobs:
           cache: pnpm
           cache-dependency-path: frontend/pnpm-lock.yaml
 
+      - name: Install pnpm
+        run: npm install -g pnpm
+
       - name: Install dependencies
         run: cd frontend && pnpm install
 
       - name: Run tests
-        run: cd frontend && pnpm run test
+        run: cd frontend && pnpm test
         continue-on-error: true
 
   build-backend:
@@ -205,9 +200,6 @@ jobs:
   security-scan:
     name: Security Scan
     runs-on: ubuntu-latest
-    permissions:
-      security-events: write
-      contents: read
     steps:
       - uses: actions/checkout@v4
 
@@ -223,4 +215,3 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: 'trivy-results.sarif'
-        continue-on-error: true

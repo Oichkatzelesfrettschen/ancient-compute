@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "/home/eirikr/Github/ancient_compute/logs/.75de130180e49d6a32c42a8940287f2bfde25df2-audit.json",
+    "files": [
+        {
+            "date": 1767113125985,
+            "name": "/home/eirikr/Github/ancient_compute/logs/mcp-puppeteer-2025-12-30.log",
+            "hash": "19d0e5885f8dfd3ce40ca5c710fa15871b4dc43d2a32dccf1dd675f4adb82b90"
+        }
+    ],
+    "hashType": "sha256"
+}

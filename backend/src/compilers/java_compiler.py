@@ -12,26 +12,13 @@ from __future__ import annotations
 from typing import Dict, Optional
 
 from backend.src.ir_types import (
-    IRType,
-    Value,
-    Constant,
-    VariableValue,
-    UndefValue,
-    BasicBlock,
-    Function,
-    Program,
-    IRBuilder,
+    IRType, Value, Constant, VariableValue, UndefValue,
+    BasicBlock, Function, Program, IRBuilder
 )
 from backend.src.compilers.java_lexer import JavaLexer
 from backend.src.compilers.java_parser import JavaParser
 from backend.src.compilers.java_ast import (
-    Expr,
-    Literal,
-    Variable,
-    FieldAccess,
-    MethodCall,
-    BinaryOp,
-    UnaryOp,
+    Expr, Literal, Variable, FieldAccess, MethodCall, BinaryOp, UnaryOp
 )
 from backend.src.compilers.java_types import JavaTypeSystem
 
@@ -67,7 +54,7 @@ class JavaCompiler:
         for type_decl in compilation_unit.type_decls:
             try:
                 # Register types in symbol table
-                if hasattr(type_decl, "name"):
+                if hasattr(type_decl, 'name'):
                     self.type_system.register_symbol(type_decl.name, type_decl)
             except Exception as e:
                 if self.verbose:
@@ -92,14 +79,14 @@ class JavaCompiler:
     def _compile_type_decl(self, decl) -> None:
         """Compile type declaration to IR"""
         # For classes, compile all methods
-        if hasattr(decl, "members"):
+        if hasattr(decl, 'members'):
             for member in decl.members:
-                if hasattr(member, "body") and member.body is not None:
+                if hasattr(member, 'body') and member.body is not None:
                     self._compile_method(member)
 
     def _compile_method(self, method_decl) -> None:
         """Compile method to IR"""
-        if not hasattr(method_decl, "body"):
+        if not hasattr(method_decl, 'body'):
             return
 
         # Register parameters as variables
@@ -108,34 +95,34 @@ class JavaCompiler:
             self.symbol_table[param.name] = VariableValue(var_name)
 
         # Compile method body
-        if hasattr(method_decl.body, "statements"):
+        if hasattr(method_decl.body, 'statements'):
             for stmt in method_decl.body.statements:
                 self._compile_stmt(stmt)
 
     def _compile_stmt(self, stmt) -> None:
         """Compile statement to IR"""
         # Variable declaration
-        if hasattr(stmt, "name") and hasattr(stmt, "type_"):
+        if hasattr(stmt, 'name') and hasattr(stmt, 'type_'):
             var_name = f"var_{stmt.name}"
             self.symbol_table[stmt.name] = VariableValue(var_name)
-            if hasattr(stmt, "initializer") and stmt.initializer:
+            if hasattr(stmt, 'initializer') and stmt.initializer:
                 self._compile_expr(stmt.initializer)
 
         # Block statement
-        elif hasattr(stmt, "statements"):
+        elif hasattr(stmt, 'statements'):
             for s in stmt.statements:
                 self._compile_stmt(s)
 
         # If statement
-        elif hasattr(stmt, "condition"):
+        elif hasattr(stmt, 'condition'):
             self._compile_expr(stmt.condition)
-            if hasattr(stmt, "then_stmt"):
+            if hasattr(stmt, 'then_stmt'):
                 self._compile_stmt(stmt.then_stmt)
-            if hasattr(stmt, "else_stmt") and stmt.else_stmt:
+            if hasattr(stmt, 'else_stmt') and stmt.else_stmt:
                 self._compile_stmt(stmt.else_stmt)
 
         # Return statement
-        elif hasattr(stmt, "expr") and stmt.__class__.__name__ == "ReturnStmt":
+        elif hasattr(stmt, 'expr') and stmt.__class__.__name__ == 'ReturnStmt':
             if stmt.expr:
                 self._compile_expr(stmt.expr)
 

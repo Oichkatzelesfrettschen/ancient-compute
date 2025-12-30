@@ -2,7 +2,6 @@
 Ancient Compute - Unit Tests for Executors (No Docker Required)
 These tests can run without Docker being installed or running
 """
-
 import pytest
 import asyncio
 from unittest.mock import Mock, patch, AsyncMock, MagicMock
@@ -10,10 +9,10 @@ import sys
 import os
 
 # Add parent directory to path for imports
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../src")))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../src')))
 
 # Mock docker before importing executors
-sys.modules["docker"] = MagicMock()
+sys.modules['docker'] = MagicMock()
 
 from services.base_executor import ExecutionStatus, ExecutionResult
 from services.languages.python_service import PythonExecutor, RestrictedPythonRunner
@@ -156,7 +155,7 @@ class TestPythonExecutor:
     @pytest.mark.asyncio
     async def test_security_check_blocks_dangerous_code(self):
         """Test that dangerous patterns are detected"""
-        with patch("services.base_executor.docker"):
+        with patch('services.base_executor.docker'):
             executor = PythonExecutor()
             executor.docker_available = False  # Force RestrictedPython
 
@@ -171,14 +170,14 @@ class TestPythonExecutor:
                 result = await executor.execute(code)
                 assert result.status in [
                     ExecutionStatus.SECURITY_VIOLATION,
-                    ExecutionStatus.RUNTIME_ERROR,
+                    ExecutionStatus.RUNTIME_ERROR
                 ]
                 assert result.stderr != ""
 
     @pytest.mark.asyncio
     async def test_fallback_to_restricted_python(self):
         """Test fallback to RestrictedPython when Docker not available"""
-        with patch("services.base_executor.docker"):
+        with patch('services.base_executor.docker'):
             executor = PythonExecutor()
             executor.docker_available = False
 
@@ -191,7 +190,7 @@ class TestPythonExecutor:
     @pytest.mark.asyncio
     async def test_ascii_enforcement(self):
         """Test that non-ASCII characters are handled"""
-        with patch("services.base_executor.docker"):
+        with patch('services.base_executor.docker'):
             executor = PythonExecutor()
             executor.docker_available = False
 
@@ -209,15 +208,15 @@ class TestCExecutor:
     @pytest.mark.asyncio
     async def test_security_patterns_blocked(self):
         """Test that dangerous C patterns are blocked"""
-        with patch("services.base_executor.docker"):
+        with patch('services.base_executor.docker'):
             executor = CExecutor()
             executor.docker_available = True
 
             dangerous_codes = [
-                "#include <sys/socket.h>",
+                '#include <sys/socket.h>',
                 'system("ls");',
-                "fork();",
-                '__asm__("nop");',
+                'fork();',
+                '__asm__("nop");'
             ]
 
             for code in dangerous_codes:
@@ -228,11 +227,11 @@ class TestCExecutor:
     @pytest.mark.asyncio
     async def test_docker_not_available_error(self):
         """Test error when Docker is not available"""
-        with patch("services.base_executor.docker.from_env") as mock_docker:
+        with patch('services.base_executor.docker.from_env') as mock_docker:
             mock_docker.side_effect = Exception("Docker not found")
 
             executor = CExecutor()
-            code = "#include <stdio.h>\nint main() { return 0; }"
+            code = '#include <stdio.h>\nint main() { return 0; }'
 
             # Should handle Docker not being available
             # Actual behavior depends on implementation
@@ -244,10 +243,10 @@ class TestHaskellExecutor:
     @pytest.mark.asyncio
     async def test_unsafe_io_blocked(self):
         """Test that unsafe IO is blocked"""
-        with patch("services.base_executor.docker"):
+        with patch('services.base_executor.docker'):
             executor = HaskellExecutor()
 
-            code = "import System.IO.Unsafe"
+            code = 'import System.IO.Unsafe'
             result = await executor.execute(code)
 
             assert result.status == ExecutionStatus.SECURITY_VIOLATION
@@ -266,7 +265,7 @@ class TestExecutionResult:
             compile_output=None,
             execution_time=0.5,
             memory_used=1024,
-            exit_code=0,
+            exit_code=0
         )
 
         assert result.status == ExecutionStatus.SUCCESS
@@ -314,7 +313,8 @@ def mock_docker_client():
     client.ping.return_value = True
     client.images.list.return_value = []
     client.containers.run.return_value = Mock(
-        wait=Mock(return_value={"StatusCode": 0}), logs=Mock(return_value=b"Test output")
+        wait=Mock(return_value={"StatusCode": 0}),
+        logs=Mock(return_value=b"Test output")
     )
     return client
 
@@ -322,7 +322,7 @@ def mock_docker_client():
 @pytest.fixture
 def mock_docker_not_available():
     """Mock Docker when it's not available"""
-    with patch("docker.from_env") as mock:
+    with patch('docker.from_env') as mock:
         mock.side_effect = Exception("Docker daemon not running")
         yield mock
 

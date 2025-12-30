@@ -87,34 +87,12 @@ class Lexer:
     """Tokenizes Babbage assembly language."""
 
     MNEMONICS = {
-        "NOP",
-        "ADD",
-        "SUB",
-        "MULT",
-        "DIV",
-        "SQRT",
-        "ABS",
-        "NEG",
-        "LOAD",
-        "STOR",
-        "MOV",
-        "JMP",
-        "JZ",
-        "JNZ",
-        "JLT",
-        "JGT",
-        "JLE",
-        "JGE",
-        "CMP",
-        "CALL",
-        "RET",
-        "PUSH",
-        "POP",
-        "RDCRD",
-        "WRPCH",
-        "WRPRN",
-        "SHL",
-        "SHR",
+        "NOP", "ADD", "SUB", "MULT", "DIV", "SQRT", "ABS", "NEG",
+        "LOAD", "STOR", "MOV",
+        "JMP", "JZ", "JNZ", "JLT", "JGT", "JLE", "JGE", "CMP",
+        "CALL", "RET", "PUSH", "POP",
+        "RDCRD", "WRPCH", "WRPRN",
+        "SHL", "SHR",
     }
 
     REGISTERS = {"A", "B", "C", "D"}
@@ -285,34 +263,13 @@ class InstructionEncoder:
     """Encodes Babbage instructions to 50-bit machine code."""
 
     OPCODES = {
-        "NOP": 0x00,
-        "ADD": 0x01,
-        "SUB": 0x02,
-        "MULT": 0x03,
-        "DIV": 0x04,
-        "SQRT": 0x05,
-        "LOAD": 0x06,
-        "STOR": 0x07,
-        "JMP": 0x08,
-        "JZ": 0x09,
-        "JNZ": 0x0A,
-        "JLT": 0x0B,
-        "JGT": 0x0C,
-        "JLE": 0x0D,
-        "JGE": 0x0E,
-        "CMP": 0x0F,
-        "CALL": 0x10,
-        "RET": 0x11,
-        "PUSH": 0x12,
-        "POP": 0x13,
-        "RDCRD": 0x14,
-        "WRPCH": 0x15,
-        "WRPRN": 0x16,
-        "MOV": 0x17,
-        "NEG": 0x18,
-        "ABS": 0x19,
-        "SHL": 0x1A,
-        "SHR": 0x1B,
+        "NOP": 0x00, "ADD": 0x01, "SUB": 0x02, "MULT": 0x03,
+        "DIV": 0x04, "SQRT": 0x05, "LOAD": 0x06, "STOR": 0x07,
+        "JMP": 0x08, "JZ": 0x09, "JNZ": 0x0A, "JLT": 0x0B,
+        "JGT": 0x0C, "JLE": 0x0D, "JGE": 0x0E, "CMP": 0x0F,
+        "CALL": 0x10, "RET": 0x11, "PUSH": 0x12, "POP": 0x13,
+        "RDCRD": 0x14, "WRPCH": 0x15, "WRPRN": 0x16, "MOV": 0x17,
+        "NEG": 0x18, "ABS": 0x19, "SHL": 0x1A, "SHR": 0x1B,
     }
 
     REGISTER_MAP = {"A": 0, "B": 1, "C": 2, "D": 3}
@@ -504,9 +461,7 @@ class Assembler:
 
             # Encode instruction
             try:
-                machine_word = encoder.encode(
-                    instr.mnemonic, resolved_operands, self.symbol_table.symbols
-                )
+                machine_word = encoder.encode(instr.mnemonic, resolved_operands, self.symbol_table.symbols)
                 self.machine_code.append(machine_word)
             except AssemblyError as e:
                 self.errors.append(f"Line {instr.line_number}: {str(e)}")

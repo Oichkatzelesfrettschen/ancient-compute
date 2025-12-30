@@ -29,35 +29,35 @@ from enum import Enum
 class PrinterState(Enum):
     """State of printer mechanism."""
 
-    IDLE = "IDLE"  # Waiting for command
-    POSITIONING = "POSITIONING"  # Moving to next print position
-    INKING = "INKING"  # Inking roller engaged
-    STRIKING = "STRIKING"  # Hammer striking paper
-    ADVANCING = "ADVANCING"  # Advancing to next line
+    IDLE = "IDLE"                      # Waiting for command
+    POSITIONING = "POSITIONING"        # Moving to next print position
+    INKING = "INKING"                  # Inking roller engaged
+    STRIKING = "STRIKING"              # Hammer striking paper
+    ADVANCING = "ADVANCING"            # Advancing to next line
 
 
 @dataclass
 class PrinterSnapshot:
     """Complete state of printer mechanism at a point in time."""
 
-    state: PrinterState  # Current mechanical state
-    type_wheels: List[int]  # 8 digit positions (0-9 each)
-    inking_engaged: bool  # Inking roller active
-    hammer_ready: bool  # Hammer positioned
-    platen_position: int  # Current line number
+    state: PrinterState                 # Current mechanical state
+    type_wheels: List[int]              # 8 digit positions (0-9 each)
+    inking_engaged: bool                # Inking roller active
+    hammer_ready: bool                  # Hammer positioned
+    platen_position: int                # Current line number
     printed_lines: List[str] = field(default_factory=list)  # Lines printed so far
-    total_operations: int = 0  # Total print operations
+    total_operations: int = 0           # Total print operations
 
 
 @dataclass
 class StereotyperSnapshot:
     """Complete state of stereotyper mechanism."""
 
-    x_position: int  # 0-7 (digit column positions)
-    y_position: int  # 0-49 (line positions)
+    x_position: int                     # 0-7 (digit column positions)
+    y_position: int                     # 0-49 (line positions)
     mold_image: Dict[Tuple[int, int], bool] = field(default_factory=dict)  # (x,y) -> raised
-    molds_completed: int = 0  # Completed and extracted molds
-    current_height: int = 0  # Current y-position for mold build
+    molds_completed: int = 0            # Completed and extracted molds
+    current_height: int = 0             # Current y-position for mold build
 
 
 class Printer:
@@ -80,9 +80,9 @@ class Printer:
     """
 
     # Printer specifications
-    NUM_COLUMNS = 8  # 8 digit columns (matches 8 computation columns)
-    LINES_PER_PAGE = 50  # Standard page size
-    DIGITS_PER_NUMBER = 8  # Formatted as 8-digit numbers
+    NUM_COLUMNS = 8                     # 8 digit columns (matches 8 computation columns)
+    LINES_PER_PAGE = 50                 # Standard page size
+    DIGITS_PER_NUMBER = 8               # Formatted as 8-digit numbers
 
     def __init__(self):
         """Initialize printer with empty state."""
@@ -90,7 +90,7 @@ class Printer:
         self.type_wheels: List[int] = [0] * self.NUM_COLUMNS  # 8 wheels, each 0-9
         self.inking_engaged = False
         self.hammer_ready = False
-        self.platen_position = 0  # Current line (0 = top of page)
+        self.platen_position = 0        # Current line (0 = top of page)
         self.printed_lines: List[str] = []
         self.total_operations = 0
 
@@ -273,14 +273,14 @@ class Stereotyper:
     - Raised (1) vs. flat (0) represents digit pattern
     """
 
-    MOLD_WIDTH = 8  # 8 digit columns
-    MOLD_HEIGHT = 50  # 50 rows per mold
-    MAX_MOLDS = 100  # Max molds in storage
+    MOLD_WIDTH = 8                      # 8 digit columns
+    MOLD_HEIGHT = 50                    # 50 rows per mold
+    MAX_MOLDS = 100                     # Max molds in storage
 
     def __init__(self):
         """Initialize stereotyper with empty mold."""
-        self.x_position = 0  # Current column (0-7)
-        self.y_position = 0  # Current row (0-49)
+        self.x_position = 0              # Current column (0-7)
+        self.y_position = 0              # Current row (0-49)
         self.mold_image: Dict[Tuple[int, int], bool] = {}  # (x,y) -> raised (True/False)
         self.completed_molds: List[Dict[Tuple[int, int], bool]] = []
         self.total_operations = 0
@@ -450,9 +450,7 @@ class PrinterStereotyperSystem:
         self.stereotyper = Stereotyper()
         self.total_operations = 0
 
-    def output_number(
-        self, number: int, to_printer: bool = True, to_stereotyper: bool = True
-    ) -> str:
+    def output_number(self, number: int, to_printer: bool = True, to_stereotyper: bool = True) -> str:
         """
         Output a number to printer and/or stereotyper.
 

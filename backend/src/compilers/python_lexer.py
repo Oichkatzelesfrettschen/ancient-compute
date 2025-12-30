@@ -27,7 +27,6 @@ from typing import List, Optional
 
 class TokenType(str, Enum):
     """Token type enumeration"""
-
     # Keywords
     KEYWORD = "KEYWORD"
     DEF = "DEF"
@@ -92,7 +91,6 @@ class TokenType(str, Enum):
 @dataclass
 class Token:
     """Token with type, value, line, column"""
-
     type: TokenType
     value: str
     line: int
@@ -106,23 +104,23 @@ class PythonLexer:
     """Lexer for Python source code"""
 
     KEYWORDS = {
-        "def": TokenType.DEF,
-        "return": TokenType.RETURN,
-        "if": TokenType.IF,
-        "elif": TokenType.ELIF,
-        "else": TokenType.ELSE,
-        "while": TokenType.WHILE,
-        "for": TokenType.FOR,
-        "in": TokenType.IN,
-        "pass": TokenType.PASS,
-        "break": TokenType.BREAK,
-        "continue": TokenType.CONTINUE,
-        "and": TokenType.AND,
-        "or": TokenType.OR,
-        "not": TokenType.NOT,
-        "True": TokenType.TRUE,
-        "False": TokenType.FALSE,
-        "None": TokenType.NONE,
+        'def': TokenType.DEF,
+        'return': TokenType.RETURN,
+        'if': TokenType.IF,
+        'elif': TokenType.ELIF,
+        'else': TokenType.ELSE,
+        'while': TokenType.WHILE,
+        'for': TokenType.FOR,
+        'in': TokenType.IN,
+        'pass': TokenType.PASS,
+        'break': TokenType.BREAK,
+        'continue': TokenType.CONTINUE,
+        'and': TokenType.AND,
+        'or': TokenType.OR,
+        'not': TokenType.NOT,
+        'True': TokenType.TRUE,
+        'False': TokenType.FALSE,
+        'None': TokenType.NONE,
     }
 
     def __init__(self, source: str) -> None:
@@ -144,14 +142,14 @@ class PythonLexer:
                 break
 
             # Handle newlines
-            if self._current_char() == "\n":
-                self.tokens.append(Token(TokenType.NEWLINE, "\n", self.line, self.column))
+            if self._current_char() == '\n':
+                self.tokens.append(Token(TokenType.NEWLINE, '\n', self.line, self.column))
                 self._advance()
                 self._handle_indentation()
                 continue
 
             # Handle comments
-            if self._current_char() == "#":
+            if self._current_char() == '#':
                 self._skip_comment()
                 continue
 
@@ -166,7 +164,7 @@ class PythonLexer:
                 continue
 
             # Handle identifiers and keywords
-            if self._current_char().isalpha() or self._current_char() == "_":
+            if self._current_char().isalpha() or self._current_char() == '_':
                 self.tokens.append(self._read_identifier())
                 continue
 
@@ -177,40 +175,38 @@ class PythonLexer:
                 continue
 
             # Unknown character
-            raise SyntaxError(
-                f"Unexpected character '{self._current_char()}' at {self.line}:{self.column}"
-            )
+            raise SyntaxError(f"Unexpected character '{self._current_char()}' at {self.line}:{self.column}")
 
         # Emit remaining DEDENT tokens
         while len(self.indent_stack) > 1:
             self.indent_stack.pop()
-            self.tokens.append(Token(TokenType.DEDENT, "", self.line, self.column))
+            self.tokens.append(Token(TokenType.DEDENT, '', self.line, self.column))
 
-        self.tokens.append(Token(TokenType.EOF, "", self.line, self.column))
+        self.tokens.append(Token(TokenType.EOF, '', self.line, self.column))
         return self.tokens
 
     def _current_char(self) -> str:
         """Get current character without advancing"""
         if self.pos >= len(self.source):
-            return ""
+            return ''
         return self.source[self.pos]
 
     def _peek_char(self, offset: int = 1) -> str:
         """Peek ahead at character"""
         pos = self.pos + offset
         if pos >= len(self.source):
-            return ""
+            return ''
         return self.source[pos]
 
     def _advance(self) -> str:
         """Move to next character"""
         if self.pos >= len(self.source):
-            return ""
+            return ''
 
         char = self.source[self.pos]
         self.pos += 1
 
-        if char == "\n":
+        if char == '\n':
             self.line += 1
             self.column = 1
         else:
@@ -220,19 +216,19 @@ class PythonLexer:
 
     def _skip_whitespace_except_indent(self) -> None:
         """Skip spaces and tabs, but not newlines"""
-        while self.pos < len(self.source) and self._current_char() in (" ", "\t"):
+        while self.pos < len(self.source) and self._current_char() in (' ', '\t'):
             self._advance()
 
     def _skip_comment(self) -> None:
         """Skip comment to end of line"""
-        while self.pos < len(self.source) and self._current_char() != "\n":
+        while self.pos < len(self.source) and self._current_char() != '\n':
             self._advance()
 
     def _handle_indentation(self) -> None:
         """Handle indentation changes at line start"""
         indent_level = 0
-        while self.pos < len(self.source) and self._current_char() in (" ", "\t"):
-            if self._current_char() == " ":
+        while self.pos < len(self.source) and self._current_char() in (' ', '\t'):
+            if self._current_char() == ' ':
                 indent_level += 1
             else:  # tab
                 indent_level += 8
@@ -240,18 +236,18 @@ class PythonLexer:
             self._advance()
 
         # Skip blank lines and comments
-        if self.pos >= len(self.source) or self._current_char() in ("\n", "#"):
+        if self.pos >= len(self.source) or self._current_char() in ('\n', '#'):
             return
 
         current_indent = self.indent_stack[-1]
 
         if indent_level > current_indent:
             self.indent_stack.append(indent_level)
-            self.tokens.append(Token(TokenType.INDENT, "", self.line, self.column))
+            self.tokens.append(Token(TokenType.INDENT, '', self.line, self.column))
         elif indent_level < current_indent:
             while len(self.indent_stack) > 1 and self.indent_stack[-1] > indent_level:
                 self.indent_stack.pop()
-                self.tokens.append(Token(TokenType.DEDENT, "", self.line, self.column))
+                self.tokens.append(Token(TokenType.DEDENT, '', self.line, self.column))
 
             if self.indent_stack[-1] != indent_level:
                 raise SyntaxError(f"Indentation error at {self.line}:{self.column}")
@@ -263,20 +259,20 @@ class PythonLexer:
         quote_char = self._current_char()
         self._advance()
 
-        value = ""
+        value = ''
         while self.pos < len(self.source) and self._current_char() != quote_char:
-            if self._current_char() == "\\":
+            if self._current_char() == '\\':
                 self._advance()
                 if self.pos < len(self.source):
                     escape_char = self._current_char()
-                    if escape_char == "n":
-                        value += "\n"
-                    elif escape_char == "t":
-                        value += "\t"
-                    elif escape_char == "r":
-                        value += "\r"
-                    elif escape_char == "\\":
-                        value += "\\"
+                    if escape_char == 'n':
+                        value += '\n'
+                    elif escape_char == 't':
+                        value += '\t'
+                    elif escape_char == 'r':
+                        value += '\r'
+                    elif escape_char == '\\':
+                        value += '\\'
                     elif escape_char == quote_char:
                         value += quote_char
                     else:
@@ -296,7 +292,7 @@ class PythonLexer:
         """Read numeric literal"""
         start_line = self.line
         start_col = self.column
-        value = ""
+        value = ''
 
         # Integer part
         while self.pos < len(self.source) and self._current_char().isdigit():
@@ -304,11 +300,8 @@ class PythonLexer:
             self._advance()
 
         # Decimal part
-        if (
-            self.pos < len(self.source)
-            and self._current_char() == "."
-            and self._peek_char().isdigit()
-        ):
+        if self.pos < len(self.source) and self._current_char() == '.' and \
+           self._peek_char().isdigit():
             value += self._current_char()
             self._advance()
 
@@ -322,11 +315,10 @@ class PythonLexer:
         """Read identifier or keyword"""
         start_line = self.line
         start_col = self.column
-        value = ""
+        value = ''
 
-        while self.pos < len(self.source) and (
-            self._current_char().isalnum() or self._current_char() == "_"
-        ):
+        while self.pos < len(self.source) and \
+              (self._current_char().isalnum() or self._current_char() == '_'):
             value += self._current_char()
             self._advance()
 
@@ -340,55 +332,55 @@ class PythonLexer:
         char = self._current_char()
 
         # Two-character operators
-        if char == "=" and self._peek_char() == "=":
+        if char == '=' and self._peek_char() == '=':
             self._advance()
             self._advance()
-            return Token(TokenType.EQUAL_EQUAL, "==", start_line, start_col)
+            return Token(TokenType.EQUAL_EQUAL, '==', start_line, start_col)
 
-        if char == "!" and self._peek_char() == "=":
+        if char == '!' and self._peek_char() == '=':
             self._advance()
             self._advance()
-            return Token(TokenType.NOT_EQUAL, "!=", start_line, start_col)
+            return Token(TokenType.NOT_EQUAL, '!=', start_line, start_col)
 
-        if char == "<" and self._peek_char() == "=":
+        if char == '<' and self._peek_char() == '=':
             self._advance()
             self._advance()
-            return Token(TokenType.LESS_EQUAL, "<=", start_line, start_col)
+            return Token(TokenType.LESS_EQUAL, '<=', start_line, start_col)
 
-        if char == ">" and self._peek_char() == "=":
+        if char == '>' and self._peek_char() == '=':
             self._advance()
             self._advance()
-            return Token(TokenType.GREATER_EQUAL, ">=", start_line, start_col)
+            return Token(TokenType.GREATER_EQUAL, '>=', start_line, start_col)
 
-        if char == "/" and self._peek_char() == "/":
+        if char == '/' and self._peek_char() == '/':
             self._advance()
             self._advance()
-            return Token(TokenType.DOUBLE_SLASH, "//", start_line, start_col)
+            return Token(TokenType.DOUBLE_SLASH, '//', start_line, start_col)
 
-        if char == "*" and self._peek_char() == "*":
+        if char == '*' and self._peek_char() == '*':
             self._advance()
             self._advance()
-            return Token(TokenType.POWER, "**", start_line, start_col)
+            return Token(TokenType.POWER, '**', start_line, start_col)
 
         # Single-character operators and delimiters
         operators = {
-            "+": TokenType.PLUS,
-            "-": TokenType.MINUS,
-            "*": TokenType.STAR,
-            "/": TokenType.SLASH,
-            "%": TokenType.PERCENT,
-            "=": TokenType.EQUAL,
-            "<": TokenType.LESS,
-            ">": TokenType.GREATER,
-            "(": TokenType.LPAREN,
-            ")": TokenType.RPAREN,
-            "[": TokenType.LBRACKET,
-            "]": TokenType.RBRACKET,
-            "{": TokenType.LBRACE,
-            "}": TokenType.RBRACE,
-            ":": TokenType.COLON,
-            ",": TokenType.COMMA,
-            ".": TokenType.DOT,
+            '+': TokenType.PLUS,
+            '-': TokenType.MINUS,
+            '*': TokenType.STAR,
+            '/': TokenType.SLASH,
+            '%': TokenType.PERCENT,
+            '=': TokenType.EQUAL,
+            '<': TokenType.LESS,
+            '>': TokenType.GREATER,
+            '(': TokenType.LPAREN,
+            ')': TokenType.RPAREN,
+            '[': TokenType.LBRACKET,
+            ']': TokenType.RBRACKET,
+            '{': TokenType.LBRACE,
+            '}': TokenType.RBRACE,
+            ':': TokenType.COLON,
+            ',': TokenType.COMMA,
+            '.': TokenType.DOT,
         }
 
         if char in operators:

@@ -1,0 +1,10 @@
+op,engine_clock_delta
+NOP,0
+ADD,8
+SUB,8
+MULT,400
+DIV,750
+SQRT,250
+LOAD,15
+STOR,15
+JMP,4

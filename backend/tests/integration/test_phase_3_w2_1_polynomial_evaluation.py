@@ -58,8 +58,8 @@ class TestPolynomialEvaluationIntegration:
 
         # Expected values
         expected = [
-            3,  # f(1) = 1 + 1 + 1 = 3
-            7,  # f(2) = 4 + 2 + 1 = 7
+            3,   # f(1) = 1 + 1 + 1 = 3
+            7,   # f(2) = 4 + 2 + 1 = 7
             13,  # f(3) = 9 + 3 + 1 = 13
             21,  # f(4) = 16 + 4 + 1 = 21
             31,  # f(5) = 25 + 5 + 1 = 31
@@ -128,9 +128,8 @@ class TestPolynomialEvaluationIntegration:
         ]
 
         for i, op in enumerate(history_tail):
-            assert (
-                op.operation == expected_phases[i]
-            ), f"Phase {i}: expected {expected_phases[i]}, got {op.operation}"
+            assert op.operation == expected_phases[i], \
+                f"Phase {i}: expected {expected_phases[i]}, got {op.operation}"
 
     def test_polynomial_snapshot_validity(self):
         """Verify snapshots are valid and consistent after polynomial eval."""
@@ -199,9 +198,9 @@ class TestPolynomialEvaluationIntegration:
         results = de.evaluate_polynomial(coefficients, x_range)
 
         expected = [
-            5,  # f(1) = 2×1 + 3 = 5
-            7,  # f(2) = 2×2 + 3 = 7
-            9,  # f(3) = 2×3 + 3 = 9
+            5,   # f(1) = 2×1 + 3 = 5
+            7,   # f(2) = 2×2 + 3 = 7
+            9,   # f(3) = 2×3 + 3 = 9
             11,  # f(4) = 2×4 + 3 = 11
         ]
 
@@ -230,9 +229,9 @@ class TestPolynomialEvaluationIntegration:
         results = de.evaluate_polynomial(coefficients, x_range)
 
         expected = [
-            10,  # f(1) = 1 + 2 + 3 + 4 = 10
-            26,  # f(2) = 8 + 8 + 6 + 4 = 26
-            58,  # f(3) = 27 + 18 + 9 + 4 = 58
+            10,   # f(1) = 1 + 2 + 3 + 4 = 10
+            26,   # f(2) = 8 + 8 + 6 + 4 = 26
+            58,   # f(3) = 27 + 18 + 9 + 4 = 58
         ]
 
         assert results == expected
@@ -277,9 +276,9 @@ class TestPolynomialEvaluationIntegration:
         results = de.evaluate_polynomial(coefficients, x_range)
 
         expected = [
-            1,  # f(0) = 0 + 1 = 1
-            2,  # f(1) = 1 + 1 = 2
-            5,  # f(2) = 4 + 1 = 5
+            1,   # f(0) = 0 + 1 = 1
+            2,   # f(1) = 1 + 1 = 2
+            5,   # f(2) = 4 + 1 = 5
             10,  # f(3) = 9 + 1 = 10
             17,  # f(4) = 16 + 1 = 17
             26,  # f(5) = 25 + 1 = 26
@@ -297,8 +296,8 @@ class TestPolynomialEvaluationIntegration:
         results = de.evaluate_polynomial(coefficients, x_range)
 
         expected = [
-            2,  # f(1) = 1 + 0 + 1 = 2
-            5,  # f(2) = 4 + 0 + 1 = 5
+            2,   # f(1) = 1 + 0 + 1 = 2
+            5,   # f(2) = 4 + 0 + 1 = 5
             10,  # f(3) = 9 + 0 + 1 = 10
         ]
 
@@ -365,8 +364,8 @@ class TestPolynomialEvaluationStress:
         assert de.cycle_count == 11
 
         # Sample some values
-        assert results[0] == 1  # f(0) = 1
-        assert results[1] == 3  # f(1) = 3
+        assert results[0] == 1   # f(0) = 1
+        assert results[1] == 3   # f(1) = 3
         assert results[5] == 31  # f(5) = 31
         assert results[10] == 111  # f(10) = 121? Let's calculate: 100 + 10 + 1 = 111
 
@@ -380,9 +379,9 @@ class TestPolynomialEvaluationStress:
         results = de.evaluate_polynomial(coefficients, x_range)
 
         expected = [
-            60,  # f(1) = 30 + 20 + 10 = 60
-            150,  # f(2) = 120 + 40 + 10 = 170? No: 30*4 + 20*2 + 10 = 120+40+10 = 170
-            330,  # f(3) = 30*9 + 20*3 + 10 = 270 + 60 + 10 = 340
+            60,    # f(1) = 30 + 20 + 10 = 60
+            150,   # f(2) = 120 + 40 + 10 = 170? No: 30*4 + 20*2 + 10 = 120+40+10 = 170
+            330,   # f(3) = 30*9 + 20*3 + 10 = 270 + 60 + 10 = 340
         ]
 
         # Recalculate: f(x) = 30x² + 20x + 10
@@ -403,7 +402,6 @@ class TestPolynomialEvaluationProperties:
 
         Same inputs should always produce same outputs.
         """
-
         def eval_poly():
             de = DEMachine()
             coefficients = [1, 1, 1]

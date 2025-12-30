@@ -1,0 +1,263 @@
+Ada Lovelace and the Logic of the Analytical Engine
+
+Philip Welch, School of Mathematics.
+
+Annabella Milbanke 1792-1860
+
+George Byron 1788-1824
+
+Byron leaving England
+
+George Cruickshank 1816
+
+Augusta Ada Byron 1815-1852
+
+Ada Byron, Age 17
+
+Charles Babbage 1791-1871
+
+Difference Engine No. 1 (portion) 1832
+
+William King, Earl of Ockham,
+later Lord Lovelace 1805-1893
+
+Byron in Abyssinian dress
+
+Ashley Combe, Somerset
+
+“ ‘Mathematics’ should be written on my jaw ”
+
+as Lady King, (Age 20)
+by Margaret Carpenter, 1835
+
+after a sketch by A.E. Chalon 1838. (Age 23)
+
+J.R. Jacquard 1752-1834
+
+A Jacquard Loom
+
+The Analytical Engine
+
+Punched Cards: Operator & Variable
+
+Lovelace: ”The bounds of arithmetic were outstepped the moment of
+applying the cards had occured”
+
+And 150 years later . . .
+
+Luigi Federico Menabrea, 1805-1893
+
+& later Prime Minister of Italy
+
+Menabrea’s article - 1842
+
+• He describes the Analytical Engine in great detail - not the would be
+physical construction, but the methodology of the computations.
+• He gives three examples of calculations. We’ll look at that for a simple
+(2 £ 2) simultaneous equation with unknowns x and y:
+mx + ny
+m0 x + n0 y
+
+=
+=
+
+d
+d0
+
+y=
+
+d0 m ° dm0
+mn0 ° m0 n
+
+This will have solution:
+x=
+
+dn0 ° d0 n
+n0 m ° nm0
+
+;
+
+Bernoulli Numbers
+• These are a sequence of fractions B1 , B3 , B5 , . . . B2n+1 , . . . They crop up
+again and again in analysis and number theory. There are many ways to
+define them.
+• We can define them through a power series
+x
+
+ex °1
+Or explicitly:
+
+2
+
+4
+
+6
+
+= 1 ° x2 + B1 x2! + B3 x4! + B5 x6! + · · ·
+√ !
+k vm
+B2m+1 =
+(°1)v
+.
+v
+k
++
+1
+k=0 v=0
+m X
+k
+X
+
+Lovelace chose:
+
+B2m+1 = °
+
+m°1
+X
+k=0
+
+√
+
+!
+
+2m + 1
+B2k+1
+.
+2k + 1 2m ° 2k + 1
+
+Her choice looks like:
+
+B2m+1 = a1 B1 + a3 B3 + · · · + a2m°1 B2m°1
+Rearranging:
+
+Rearranging:
+
+B3 = a1 B1
+B5 = d1 B1 + d3 B3
+B7 = e1 B1 + e3 B3 + e5 B5
+• So her programme to compute B7 proceeds by computing first B1 , then
+B3 from B1 ; then B5 from B3 and B1 etc.
+• This is known as a course-of-values recursion because it requires the
+complete course of all the previous values to get the next one.
+• An (ordinary) recursion would just have defined B3 in terms of B1 , and B5
+in terms of B3 , B7 in terms of B5 , that is using only the most immediate
+previous value etc.
+
+B3 = a1 B1
+B5 = d30 B3
+B7 = e50 B5
+
+Lovelace’s programme to compute Bernoulli Numbers
+
+Was the Analytical Engine just a larger Difference Engine?
+
+• The Difference Engine, although it had the same arithmetical operations
+as the Analytical Engine, was logically on a lower plane.
+
+Was the Analytical Engine just a larger Difference Engine?
+
+• The Difference Engine, although it had the same arithmetical operations
+as the Analytical Engine, was logically on a lower plane.
+The DE could perform the following operations:
+œ
+œ
+œ
+
+The arithmetical operations +, £, ° are operations.
+Any sequence of operations is an operation.
+
+(Iteration) Any finite iteration of an operation is an operation.
+
+Was the Analytical Engine just a larger Difference Engine?
+
+• The Difference Engine, although it had the same arithmetical operations
+as the Analytical Engine, was logically on a lower plane.
+The DE could perform the following operations:
+œ
+œ
+œ
+
+The arithmetical operations +, £, ° are operations.
+Any sequence of operations is an operation.
+
+(Iteration) Any finite iteration of an operation is an operation.
+
+(Today we should say that the DE could compute any primitively recursive
+function.) But the Analytical Engine additionally had:
+œ
+
+Conditional iteration If P is an operation and T is a test on register
+contents, then the result of iterating P until T succeeds is an
+operation.
+
+Flowchart for a Shepherdson-Sturgis-Minsky Register Machine
+
+Was the Analytical Engine ‘Universal’?
+
+• A universal computer is one equipped with a universal program that is
+one that could theoretically emulate the action of every other program.
+Turing, defining the term, proved that his ‘machines’ were universal.
+• What Babbage and Lovelace lacked, was a coding method, a way of
+coding up program instructions by numbers, which a universal machine
+could decode and then simulate.
+• Kurt Gödel (1930) gave a way of coding alphabets, then words, then
+sentences for use in his famous Incompleteness Theorems. Turing then
+used this idea to code up programs (1936). Using this a Shep.-S-M Register
+machine only needs a half dozen Registers to be a fully universal machine.
+
+Was the Analytical Engine ‘Universal’?
+
+• A universal computer is one equipped with a universal program that is
+one that could theoretically emulate the action of every other program.
+Turing, defining the term, proved that his ‘machines’ were universal.
+• What Babbage and Lovelace lacked, was a coding method, a way of
+coding up program instructions by numbers, which a universal machine
+could decode and then simulate.
+• Kurt Gödel (1930) gave a way of coding alphabets, then words, then
+sentences for use in his famous Incompleteness Theorems. Turing then
+used this idea to code up programs (1936). Using this a Shep.-S-M Register
+machine only needs a half dozen Registers to be a fully universal machine.
+So the answer is “Yes”: the Analytical Engine, using Turing and Gödel’s
+ideas, can be seen to be universal.
+Moreover as Turing showed, the programs could also be treated as data, and
+simple be stored inside the machine prior to operation.
+
+The vistas beyond
+
+Neither Babbage, nor Lovelace knew of universality, but both saw
+potentialities beyond the calculations they programmed.
+Babbage’s thesis:
+“These two memoirs [Menabrea’s and Lovelace’s articles] furnish a
+complete demonstration - that the whole of the development and
+operations of analysis are capable of being executed by machinery.”
+(Babbage’s italics.)
+
+Do machines think? “Lovelace’s Objection”
+
+Lovelace:
+“It is desirable to guard against the possibility of exaggerated ideas that
+might arise as to the powers of the Analytical Engine [which] has no
+pretensions whatever to originate anything. It can do whatever we know
+how to order it to perform . . . . but it has no power of anticipating any
+analytical relations or truths.”
+• This is discussed in a famous paper by Turing in the journal Mind on the
+possibility of machines having intelligent thought.
+
+But again. . . .
+
+Lovelace:
+“Again it might act upon things other than number, . . . Supposing for
+instance , that the fundamental relations of pitched sounds in the science
+of harmony and of musical composition were susceptible of such
+expression and adaptations, the engine might compose elaborate and
+scientific pieces of music of any degree of complexity or extent.”
+
+The effect on computing machinery on pure mathematics
+
+Lovelace again:
+“It is however pretty evident, on general principles, that in devising for
+mathematical truths a new form in which to record and throw themselves
+out for actual use, views are likely to be induced, which should again react
+on the more theoretical phase of the subject”
+
+

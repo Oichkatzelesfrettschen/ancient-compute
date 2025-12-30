@@ -16,29 +16,14 @@ Example: Vect n a (vector of length n containing type a)
 from __future__ import annotations
 from typing import Dict, List, Optional, Tuple, Union
 from backend.src.compilers.idris_ast import (
-    Type,
-    BaseType,
-    TypeVariable,
-    FunctionType,
-    DependentType,
-    TypeFamily,
-    RefinementType,
-    Expr,
-    Var,
-    Literal,
-    Lambda,
-    Application,
-    LetExpr,
-    CaseExpr,
-    IfExpr,
-    ProofExpr,
-    DataConstructor,
+    Type, BaseType, TypeVariable, FunctionType, DependentType, TypeFamily, RefinementType,
+    Expr, Var, Literal, Lambda, Application, LetExpr, CaseExpr, IfExpr, ProofExpr,
+    DataConstructor
 )
 
 
 class IDRISTypeError(Exception):
     """Type error in IDRIS2 expression"""
-
     pass
 
 
@@ -82,7 +67,9 @@ class IDRISTypeSystem:
 
         # Built-in data constructors
         self.symbols["Zero"] = IDRISType(BaseType("Nat"))
-        self.symbols["Succ"] = IDRISType(FunctionType(BaseType("Nat"), BaseType("Nat")))
+        self.symbols["Succ"] = IDRISType(
+            FunctionType(BaseType("Nat"), BaseType("Nat"))
+        )
         self.symbols["True"] = IDRISType(BaseType("Bool"))
         self.symbols["False"] = IDRISType(BaseType("Bool"))
 
@@ -100,7 +87,10 @@ class IDRISTypeSystem:
         self.symbols[name] = IDRISType(func_type, is_dependent=True)
 
     def register_data_type(
-        self, name: str, type_params: List[Tuple[str, Type]], constructors: List[Tuple[str, Type]]
+        self,
+        name: str,
+        type_params: List[Tuple[str, Type]],
+        constructors: List[Tuple[str, Type]]
     ) -> None:
         """Register data type definition"""
         self.data_types[name] = (type_params, constructors)
@@ -165,9 +155,9 @@ class IDRISTypeSystem:
 
         # If multiple parameters, nest the types
         if len(expr.parameters) > 1:
-            return FunctionType(
-                param_type, self._infer_lambda_type(Lambda(expr.parameters[1:], expr.body))
-            )
+            return FunctionType(param_type, self._infer_lambda_type(
+                Lambda(expr.parameters[1:], expr.body)
+            ))
 
         return FunctionType(param_type, body_type)
 
@@ -186,7 +176,9 @@ class IDRISTypeSystem:
                 return func_type.return_type
             return func_type
 
-        raise IDRISTypeError(f"Cannot apply non-function type: {func_type}")
+        raise IDRISTypeError(
+            f"Cannot apply non-function type: {func_type}"
+        )
 
     def _infer_let_type(self, expr: LetExpr) -> Type:
         """Infer type of let expression"""
@@ -210,7 +202,9 @@ class IDRISTypeSystem:
 
         # Both branches should have same type
         if not self._types_equal(then_type, else_type):
-            raise IDRISTypeError(f"If branches have different types: {then_type} vs {else_type}")
+            raise IDRISTypeError(
+                f"If branches have different types: {then_type} vs {else_type}"
+            )
 
         return then_type
 
@@ -223,9 +217,8 @@ class IDRISTypeSystem:
             return t1.name == t2.name
 
         if isinstance(t1, FunctionType) and isinstance(t2, FunctionType):
-            return self._types_equal(t1.arg_type, t2.arg_type) and self._types_equal(
-                t1.return_type, t2.return_type
-            )
+            return (self._types_equal(t1.arg_type, t2.arg_type) and
+                    self._types_equal(t1.return_type, t2.return_type))
 
         if isinstance(t1, TypeFamily) and isinstance(t2, TypeFamily):
             if t1.family_name != t2.family_name:

@@ -20,37 +20,13 @@ from __future__ import annotations
 from typing import List, Optional
 from backend.src.compilers.haskell_lexer import Token, TokenType, HaskellLexer
 from backend.src.compilers.haskell_ast import (
-    Expr,
-    Stmt,
-    Module,
-    FunctionDef,
-    FunctionEquation,
-    Literal,
-    Variable,
-    BinOp,
-    UnaryOp,
-    Lambda,
-    Application,
-    Let,
-    Case,
-    CaseBranch,
-    IfThenElse,
-    List as HList,
-    Tuple,
-    Constructor,
-    TypeAnnotation,
-    Pattern,
-    PatternLiteral,
-    PatternVariable,
-    PatternConstructor,
-    PatternTuple,
-    PatternList,
-    PatternWildcard,
-    TypeDecl,
-    DataDecl,
-    DataConstructor,
-    ClassDecl,
-    InstanceDecl,
+    Expr, Stmt, Module, FunctionDef, FunctionEquation,
+    Literal, Variable, BinOp, UnaryOp, Lambda, Application,
+    Let, Case, CaseBranch, IfThenElse, List as HList, Tuple,
+    Constructor, TypeAnnotation,
+    Pattern, PatternLiteral, PatternVariable, PatternConstructor,
+    PatternTuple, PatternList, PatternWildcard,
+    TypeDecl, DataDecl, DataConstructor, ClassDecl, InstanceDecl
 )
 
 
@@ -61,7 +37,7 @@ class HaskellParser:
         """Initialize parser with token list"""
         self.tokens = tokens
         self.pos = 0
-        self.current_token = tokens[0] if tokens else Token(TokenType.EOF, "", 0, 0)
+        self.current_token = tokens[0] if tokens else Token(TokenType.EOF, '', 0, 0)
 
     def parse(self) -> Module:
         """Parse module (top-level program)"""
@@ -90,9 +66,7 @@ class HaskellParser:
             if stmt:
                 declarations.append(stmt)
 
-        return Module(
-            name=module_name if "module_name" in locals() else None, declarations=declarations
-        )
+        return Module(name=module_name if 'module_name' in locals() else None, declarations=declarations)
 
     def _advance(self) -> None:
         """Move to next token"""
@@ -105,7 +79,7 @@ class HaskellParser:
         pos = self.pos + offset
         if pos < len(self.tokens):
             return self.tokens[pos]
-        return Token(TokenType.EOF, "", 0, 0)
+        return Token(TokenType.EOF, '', 0, 0)
 
     def _expect(self, token_type: TokenType) -> Token:
         """Consume token of expected type or raise error"""
@@ -136,10 +110,8 @@ class HaskellParser:
             return None
 
         # Type declaration: name :: type
-        if (
-            self.current_token.type == TokenType.IDENTIFIER
-            and self._peek().type == TokenType.DOUBLE_COLON
-        ):
+        if self.current_token.type == TokenType.IDENTIFIER and \
+           self._peek().type == TokenType.DOUBLE_COLON:
             name_token = self._expect(TokenType.IDENTIFIER)
             self._expect(TokenType.DOUBLE_COLON)
             type_sig = self._parse_type_signature()
@@ -244,7 +216,8 @@ class HaskellParser:
         self._skip_to_end_of_line()
 
         # Parse additional equations (same function name)
-        while self.current_token.type == TokenType.IDENTIFIER and self.current_token.value == name:
+        while self.current_token.type == TokenType.IDENTIFIER and \
+              self.current_token.value == name:
             self._advance()
             patterns = self._parse_patterns()
             guard = None
@@ -271,13 +244,7 @@ class HaskellParser:
         """Parse a single pattern"""
         if self.current_token.type == TokenType.NUMBER:
             value_token = self._expect(TokenType.NUMBER)
-            return PatternLiteral(
-                value=(
-                    int(value_token.value)
-                    if "." not in value_token.value
-                    else float(value_token.value)
-                )
-            )
+            return PatternLiteral(value=int(value_token.value) if '.' not in value_token.value else float(value_token.value))
 
         elif self.current_token.type == TokenType.STRING:
             value_token = self._expect(TokenType.STRING)
@@ -298,20 +265,9 @@ class HaskellParser:
             name_token = self._expect(TokenType.IDENTIFIER)
 
             # Check if followed by patterns (constructor application)
-            if self.current_token.type in (
-                TokenType.IDENTIFIER,
-                TokenType.NUMBER,
-                TokenType.LBRACKET,
-                TokenType.LPAREN,
-            ):
+            if self.current_token.type in (TokenType.IDENTIFIER, TokenType.NUMBER, TokenType.LBRACKET, TokenType.LPAREN):
                 patterns = []
-                while self.current_token.type not in (
-                    TokenType.PIPE,
-                    TokenType.EQUALS,
-                    TokenType.COMMA,
-                    TokenType.RPAREN,
-                    TokenType.RBRACKET,
-                ):
+                while self.current_token.type not in (TokenType.PIPE, TokenType.EQUALS, TokenType.COMMA, TokenType.RPAREN, TokenType.RBRACKET):
                     patterns.append(self._parse_pattern())
                 return PatternConstructor(name=name_token.value, patterns=patterns)
             else:
@@ -360,9 +316,9 @@ class HaskellParser:
 
     def _parse_type_signature(self) -> str:
         """Parse type signature (simplified - returns as string)"""
-        sig = ""
+        sig = ''
         while self.current_token.type not in (TokenType.NEWLINE, TokenType.EOF, TokenType.EQUALS):
-            sig += self.current_token.value + " "
+            sig += self.current_token.value + ' '
             self._advance()
         return sig.strip()
 
@@ -478,21 +434,16 @@ class HaskellParser:
         """Parse comparison: expr (==|/=|<|<=|>|>=) expr"""
         left = self._parse_additive()
 
-        while self.current_token.type in (
-            TokenType.EQUAL_EQUAL,
-            TokenType.NOT_EQUAL,
-            TokenType.LESS,
-            TokenType.LESS_EQUAL,
-            TokenType.GREATER,
-            TokenType.GREATER_EQUAL,
-        ):
+        while self.current_token.type in (TokenType.EQUAL_EQUAL, TokenType.NOT_EQUAL,
+                                          TokenType.LESS, TokenType.LESS_EQUAL,
+                                          TokenType.GREATER, TokenType.GREATER_EQUAL):
             op_map = {
-                TokenType.EQUAL_EQUAL: "==",
-                TokenType.NOT_EQUAL: "/=",
-                TokenType.LESS: "<",
-                TokenType.LESS_EQUAL: "<=",
-                TokenType.GREATER: ">",
-                TokenType.GREATER_EQUAL: ">=",
+                TokenType.EQUAL_EQUAL: '==',
+                TokenType.NOT_EQUAL: '/=',
+                TokenType.LESS: '<',
+                TokenType.LESS_EQUAL: '<=',
+                TokenType.GREATER: '>',
+                TokenType.GREATER_EQUAL: '>=',
             }
             op = op_map[self.current_token.type]
             self._advance()
@@ -519,9 +470,9 @@ class HaskellParser:
 
         while self.current_token.type in (TokenType.STAR, TokenType.SLASH, TokenType.PERCENT):
             op_map = {
-                TokenType.STAR: "*",
-                TokenType.SLASH: "/",
-                TokenType.PERCENT: "%",
+                TokenType.STAR: '*',
+                TokenType.SLASH: '/',
+                TokenType.PERCENT: '%',
             }
             op = op_map[self.current_token.type]
             self._advance()
@@ -537,7 +488,7 @@ class HaskellParser:
         if self.current_token.type == TokenType.POWER:
             self._advance()
             right = self._parse_power()  # Right-associative
-            return BinOp(left=left, op="^", right=right)
+            return BinOp(left=left, op='^', right=right)
 
         return left
 
@@ -556,30 +507,15 @@ class HaskellParser:
         func = self._parse_primary()
 
         args = []
-        while self.current_token.type not in (
-            TokenType.NEWLINE,
-            TokenType.EOF,
-            TokenType.EQUALS,
-            TokenType.THEN,
-            TokenType.ELSE,
-            TokenType.IN,
-            TokenType.ARROW,
-            TokenType.OF,
-            TokenType.COMMA,
-            TokenType.RPAREN,
-            TokenType.RBRACKET,
-            TokenType.PIPE,
-            TokenType.SEMICOLON,
-            TokenType.DEDENT,
-        ):
+        while self.current_token.type not in (TokenType.NEWLINE, TokenType.EOF, TokenType.EQUALS,
+                                               TokenType.THEN, TokenType.ELSE, TokenType.IN,
+                                               TokenType.ARROW, TokenType.OF, TokenType.COMMA,
+                                               TokenType.RPAREN, TokenType.RBRACKET,
+                                               TokenType.PIPE, TokenType.SEMICOLON,
+                                               TokenType.DEDENT):
             # Check if this looks like an argument
-            if self.current_token.type in (
-                TokenType.IDENTIFIER,
-                TokenType.NUMBER,
-                TokenType.STRING,
-                TokenType.LPAREN,
-                TokenType.LBRACKET,
-            ):
+            if self.current_token.type in (TokenType.IDENTIFIER, TokenType.NUMBER, TokenType.STRING,
+                                           TokenType.LPAREN, TokenType.LBRACKET):
                 args.append(self._parse_primary())
             else:
                 break
@@ -594,20 +530,20 @@ class HaskellParser:
             value_str = self.current_token.value
             self._advance()
 
-            if "." in value_str:
-                return Literal(value=float(value_str), type_name="float")
+            if '.' in value_str:
+                return Literal(value=float(value_str), type_name='float')
             else:
-                return Literal(value=int(value_str), type_name="int")
+                return Literal(value=int(value_str), type_name='int')
 
         elif self.current_token.type == TokenType.STRING:
             value = self.current_token.value
             self._advance()
-            return Literal(value=value, type_name="string")
+            return Literal(value=value, type_name='string')
 
         elif self.current_token.type == TokenType.CHAR:
             value = self.current_token.value
             self._advance()
-            return Literal(value=value, type_name="char")
+            return Literal(value=value, type_name='char')
 
         elif self.current_token.type == TokenType.IDENTIFIER:
             name = self.current_token.value

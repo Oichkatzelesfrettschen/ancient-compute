@@ -1,0 +1,21 @@
+Master Timeline (draft)
+- Prehistory (Ishango ~20,000 BP)
+- Mesopotamia/Egypt (algorithms, numerals)
+- India (Ganita; numerals)
+- China (Nine Chapters; CRT)
+- Islamic world (al-jabr; tables)
+- Europe (scholastic; Boole)
+- Modern (lambda; Turing; type theory)
+Status: pending verification.
+- 1800–1600 BCE: Babylonian algorithms (Plimpton 322) [verify]
+- 700–200 BCE: Chinese Nine Chapters & rod calculus [verify]
+- c. 500 CE: Indian numerals diffusion [verify]
+- 820 CE: Al-Khwarizmi al-jabr [primary]
+- 1703: Leibniz binary [primary]
+- 1843: Lovelace Notes [primary]
+- 1854: Boole Laws of Thought [primary]
+- 1879: Frege Begriffsschrift [primary]
+- 1910: Russell & Whitehead Principia [primary]
+- 1931: Gödel incompleteness [primary]
+- 1945: EDVAC report [primary]
+- 1960: McCarthy LISP [primary]

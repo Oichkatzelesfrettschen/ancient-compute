@@ -7,24 +7,23 @@ from ..base_executor import ExecutionStatus
 # Note: These tests require Docker to be running and images to be built
 # Run with: pytest backend/services/tests/test_executors.py -v
 
-
 @pytest.mark.asyncio
 @pytest.mark.skipif(
     not pytest.config.getoption("--run-docker", default=False),
-    reason="Docker tests require --run-docker flag",
+    reason="Docker tests require --run-docker flag"
 )
 async def test_c_hello_world():
     """Test C hello world execution"""
     from ..languages import CExecutor
 
     executor = CExecutor()
-    code = """
+    code = '''
 #include <stdio.h>
 int main() {
     printf("Hello, Ancient Compute!");
     return 0;
 }
-    """
+    '''
     result = await executor.execute(code)
     assert result.status == ExecutionStatus.SUCCESS
     assert "Hello" in result.stdout
@@ -36,13 +35,13 @@ async def test_c_security_violation():
     from ..languages import CExecutor
 
     executor = CExecutor()
-    code = """
+    code = '''
 #include <stdio.h>
 #include <sys/socket.h>
 int main() {
     return 0;
 }
-    """
+    '''
     result = await executor.execute(code)
     assert result.status == ExecutionStatus.SECURITY_VIOLATION
     assert "socket" in result.stderr.lower() or "sys/" in result.stderr
@@ -54,10 +53,10 @@ async def test_python_security_violation():
     from ..languages import PythonExecutor
 
     executor = PythonExecutor()
-    code = """
+    code = '''
 import os  # Should be blocked
 print("Should not execute")
-    """
+    '''
     result = await executor.execute(code)
     assert result.status == ExecutionStatus.SECURITY_VIOLATION
     assert "os" in result.stderr.lower()

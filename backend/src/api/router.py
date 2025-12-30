@@ -82,13 +82,11 @@ async def list_minix_runs(arch: str = "i386"):
         if bt.exists():
             try:
                 data = json.loads(bt.read_text())
-                runs.append(
-                    {
-                        "runId": run_dir.name,
-                        "timestamp": data.get("timestamp"),
-                        "bootDurationMs": data.get("boot_duration_ms"),
-                    }
-                )
+                runs.append({
+                    "runId": run_dir.name,
+                    "timestamp": data.get("timestamp"),
+                    "bootDurationMs": data.get("boot_duration_ms"),
+                })
             except Exception:
                 continue
     return {"arch": arch, "runs": runs}
@@ -114,7 +112,7 @@ async def get_minix_run(run_id: str, arch: str = "i386"):
             "resource": (base / "resource_timeseries.csv").exists(),
             "bootLog": (base / "boot.log").exists(),
             "debugLog": (base / "qemu-debug.log").exists(),
-        },
+        }
     }
     return resp
 

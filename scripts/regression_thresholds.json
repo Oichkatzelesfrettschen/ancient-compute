@@ -1,0 +1,5 @@
+{
+  "emulator_avg_max": 0.001,
+  "frontend_build_avg_max": 5.0,
+  "backend_latency_avg_max": 0.5
+}

@@ -16,7 +16,6 @@ from backend.src.emulator.columns import ColumnBank, DigitColumn
 # Initialization Tests (5 tests)
 # ============================================================================
 
-
 def test_column_bank_init_empty():
     """Test ColumnBank initialization with no initial values."""
     bank = ColumnBank()
@@ -75,7 +74,6 @@ def test_column_bank_init_wrong_count():
 # Column Access Tests (5 tests)
 # ============================================================================
 
-
 def test_column_bank_get_column_valid():
     """Test getting specific columns by index."""
     bank = ColumnBank(initial_differences=[1, 2, 3, 4, 5, 6, 7, 8])
@@ -130,7 +128,6 @@ def test_column_bank_set_all_values():
 # ============================================================================
 # Synchronized Operation Tests (10 tests)
 # ============================================================================
-
 
 def test_column_bank_add_difference_row_simple():
     """Test adding difference row across all columns."""
@@ -269,7 +266,6 @@ def test_column_bank_sequential_operations():
 # State Management Tests (8 tests)
 # ============================================================================
 
-
 def test_column_bank_reset_all():
     """Test resetting all columns to zero."""
     bank = ColumnBank(initial_differences=[10, 20, 30, 40, 50, 60, 70, 80])
@@ -362,7 +358,6 @@ def test_column_bank_independent_column_operations():
 # Consistency and Edge Cases (7 tests)
 # ============================================================================
 
-
 def test_column_bank_large_values_consistency():
     """Test that large values are consistently managed across columns."""
     large_val = 10**30 - 1  # 31 nines
@@ -424,16 +419,7 @@ def test_column_bank_mixed_operations():
     bank.add_difference_row(diff_rows)
 
     # Column 2, 5 reset to 0, others increment by 5
-    expected = [
-        6,
-        7,
-        5,
-        9,
-        10,
-        5,
-        12,
-        13,
-    ]  # Column 2 = 3+5-3 = 5 (after reset), Column 5 = 6+5-6 = 5 (after reset)
+    expected = [6, 7, 5, 9, 10, 5, 12, 13]  # Column 2 = 3+5-3 = 5 (after reset), Column 5 = 6+5-6 = 5 (after reset)
     assert bank.get_all_values() == expected
 
 
@@ -468,7 +454,6 @@ def test_column_bank_repr():
 # ============================================================================
 # Integration Tests (5 tests)
 # ============================================================================
-
 
 def test_column_bank_polynomial_table():
     """Test building complete polynomial difference table."""

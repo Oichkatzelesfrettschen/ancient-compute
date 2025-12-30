@@ -25,7 +25,6 @@ from typing import List, Optional
 
 class TokenType(str, Enum):
     """Token type enumeration for System F"""
-
     # Keywords
     FORALL = "FORALL"
     LET = "LET"
@@ -79,7 +78,6 @@ class TokenType(str, Enum):
 @dataclass
 class Token:
     """Represents a single token"""
-
     type: TokenType
     value: str
     line: int
@@ -93,17 +91,17 @@ class SystemFLexer:
     """Tokenizes System F source code"""
 
     KEYWORDS = {
-        "forall": TokenType.FORALL,
-        "let": TokenType.LET,
-        "in": TokenType.IN,
-        "if": TokenType.IF,
-        "then": TokenType.THEN,
-        "else": TokenType.ELSE,
-        "fix": TokenType.FIX,
-        "Nat": TokenType.NAT,
-        "Int": TokenType.INT,
-        "Bool": TokenType.BOOL,
-        "String": TokenType.STRING,
+        'forall': TokenType.FORALL,
+        'let': TokenType.LET,
+        'in': TokenType.IN,
+        'if': TokenType.IF,
+        'then': TokenType.THEN,
+        'else': TokenType.ELSE,
+        'fix': TokenType.FIX,
+        'Nat': TokenType.NAT,
+        'Int': TokenType.INT,
+        'Bool': TokenType.BOOL,
+        'String': TokenType.STRING,
     }
 
     def __init__(self, source: str) -> None:
@@ -118,85 +116,85 @@ class SystemFLexer:
         """Tokenize entire source and return token list"""
         while self.pos < len(self.source):
             # Skip whitespace
-            if self.current() in " \t":
+            if self.current() in ' \t':
                 self._skip_whitespace()
                 continue
 
             # Handle newlines
-            if self.current() == "\n":
+            if self.current() == '\n':
                 self.line += 1
                 self.column = 0
                 self._advance()
                 continue
 
             # Line comments
-            if self.current() == "-" and self.peek() == "-":
+            if self.current() == '-' and self.peek() == '-':
                 self._skip_line_comment()
                 continue
 
             # Block comments
-            if self.current() == "{" and self.peek() == "-":
+            if self.current() == '{' and self.peek() == '-':
                 self._skip_block_comment()
                 continue
 
             ch = self.current()
 
             # Type lambda /\
-            if ch == "/" and self.peek() == "\\":
-                self._add_token(TokenType.TYPE_BACKSLASH, "/\\")
+            if ch == '/' and self.peek() == '\\':
+                self._add_token(TokenType.TYPE_BACKSLASH, '/\\')
                 self._advance()
                 self._advance()
                 continue
 
             # Arrow operators
-            if ch == "-" and self.peek() == ">":
-                self._add_token(TokenType.ARROW, "->")
+            if ch == '-' and self.peek() == '>':
+                self._add_token(TokenType.ARROW, '->')
                 self._advance()
                 self._advance()
                 continue
 
-            if ch == "=" and self.peek() == ">":
-                self._add_token(TokenType.FAT_ARROW, "=>")
+            if ch == '=' and self.peek() == '>':
+                self._add_token(TokenType.FAT_ARROW, '=>')
                 self._advance()
                 self._advance()
                 continue
 
             # Single character tokens
-            if ch == "(":
-                self._add_token(TokenType.LPAREN, "(")
+            if ch == '(':
+                self._add_token(TokenType.LPAREN, '(')
                 self._advance()
-            elif ch == ")":
-                self._add_token(TokenType.RPAREN, ")")
+            elif ch == ')':
+                self._add_token(TokenType.RPAREN, ')')
                 self._advance()
-            elif ch == "[":
-                self._add_token(TokenType.LBRACKET, "[")
+            elif ch == '[':
+                self._add_token(TokenType.LBRACKET, '[')
                 self._advance()
-            elif ch == "]":
-                self._add_token(TokenType.RBRACKET, "]")
+            elif ch == ']':
+                self._add_token(TokenType.RBRACKET, ']')
                 self._advance()
-            elif ch == "{":
-                self._add_token(TokenType.LBRACE, "{")
+            elif ch == '{':
+                self._add_token(TokenType.LBRACE, '{')
                 self._advance()
-            elif ch == "}":
-                self._add_token(TokenType.RBRACE, "}")
+            elif ch == '}':
+                self._add_token(TokenType.RBRACE, '}')
                 self._advance()
-            elif ch == ":":
-                self._add_token(TokenType.COLON, ":")
+            elif ch == ':':
+                self._add_token(TokenType.COLON, ':')
                 self._advance()
-            elif ch == ".":
-                self._add_token(TokenType.DOT, ".")
+            elif ch == '.':
+                self._add_token(TokenType.DOT, '.')
                 self._advance()
-            elif ch == ";":
-                self._add_token(TokenType.SEMICOLON, ";")
+            elif ch == ';':
+                self._add_token(TokenType.SEMICOLON, ';')
                 self._advance()
-            elif ch == ",":
-                self._add_token(TokenType.COMMA, ",")
+            elif ch == ',':
+                self._add_token(TokenType.COMMA, ',')
                 self._advance()
-            elif ch == "=":
-                self._add_token(TokenType.EQUALS, "=")
+            elif ch == '=':
+                self._add_token(TokenType.EQUALS, '=')
                 self._advance()
-            elif ch == "\\":
-                self._add_token(TokenType.BACKSLASH, "\\")
+            elif ch == '\\':
+                self._add_token(TokenType.BACKSLASH, '\\')
                 self._advance()
 
             # Number
@@ -208,13 +206,13 @@ class SystemFLexer:
                 self._scan_string()
 
             # Identifier or keyword
-            elif ch.isalpha() or ch == "_":
+            elif ch.isalpha() or ch == '_':
                 self._scan_identifier()
 
             else:
                 self._advance()
 
-        self._add_token(TokenType.EOF, "")
+        self._add_token(TokenType.EOF, '')
         return self.tokens
 
     def current(self) -> Optional[str]:
@@ -233,7 +231,7 @@ class SystemFLexer:
     def _advance(self) -> None:
         """Move to next character"""
         if self.pos < len(self.source):
-            if self.source[self.pos] == "\n":
+            if self.source[self.pos] == '\n':
                 self.line += 1
                 self.column = 1
             else:
@@ -242,12 +240,12 @@ class SystemFLexer:
 
     def _skip_whitespace(self) -> None:
         """Skip whitespace"""
-        while self.current() in " \t":
+        while self.current() in ' \t':
             self._advance()
 
     def _skip_line_comment(self) -> None:
         """Skip line comment"""
-        while self.current() and self.current() != "\n":
+        while self.current() and self.current() != '\n':
             self._advance()
 
     def _skip_block_comment(self) -> None:
@@ -257,11 +255,11 @@ class SystemFLexer:
 
         depth = 1
         while self.pos < len(self.source) and depth > 0:
-            if self.current() == "{" and self.peek() == "-":
+            if self.current() == '{' and self.peek() == '-':
                 depth += 1
                 self._advance()
                 self._advance()
-            elif self.current() == "-" and self.peek() == "}":
+            elif self.current() == '-' and self.peek() == '}':
                 depth -= 1
                 self._advance()
                 self._advance()
@@ -272,15 +270,15 @@ class SystemFLexer:
         """Scan numeric literal"""
         start_line = self.line
         start_col = self.column
-        value = ""
+        value = ''
 
         while self.current() and self.current().isdigit():
             value += self.current()
             self._advance()
 
         # Float
-        if self.current() == "." and self.peek() and self.peek().isdigit():
-            value += "."
+        if self.current() == '.' and self.peek() and self.peek().isdigit():
+            value += '.'
             self._advance()
             while self.current() and self.current().isdigit():
                 value += self.current()
@@ -294,19 +292,19 @@ class SystemFLexer:
         start_col = self.column
         self._advance()  # consume opening "
 
-        value = ""
+        value = ''
         while self.pos < len(self.source) and self.current() != '"':
-            if self.current() == "\\" and self.peek():
+            if self.current() == '\\' and self.peek():
                 self._advance()
                 next_ch = self.current()
-                if next_ch == "n":
-                    value += "\n"
-                elif next_ch == "t":
-                    value += "\t"
-                elif next_ch == "r":
-                    value += "\r"
-                elif next_ch == "\\":
-                    value += "\\"
+                if next_ch == 'n':
+                    value += '\n'
+                elif next_ch == 't':
+                    value += '\t'
+                elif next_ch == 'r':
+                    value += '\r'
+                elif next_ch == '\\':
+                    value += '\\'
                 elif next_ch == '"':
                     value += '"'
                 else:
@@ -325,9 +323,9 @@ class SystemFLexer:
         """Scan identifier or keyword"""
         start_line = self.line
         start_col = self.column
-        value = ""
+        value = ''
 
-        while self.current() and (self.current().isalnum() or self.current() in "_'"):
+        while self.current() and (self.current().isalnum() or self.current() in '_\''):
             value += self.current()
             self._advance()
 

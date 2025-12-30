@@ -1,0 +1,350 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>The Analytical Engine Table of Contents</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="stylesheet" href="/documents/styles/standard_screen.css" type="text/css" />
+<meta name="keywords" content="Babbage, analytical, engine, computer, mechanical, emulator, Ada, Lovelace, Menabrea" />
+<meta name="description" content="The Analytical Engine" />
+<meta name="author" content="John Walker" />
+<meta name="robots" content="index, follow" />
+
+<style type="text/css">
+    body {
+        margin-left: 15%;
+        margin-right: 10%;
+        background-color: #FFFFFF;
+        background-image: url(figures/engineback.png);
+        color: #000000;
+    }
+
+    h1 {
+        text-align: center;
+        margin-bottom: 0px;
+    }
+
+    h1.subtitle {
+        text-align: center;
+        font-style: italic;
+        margin-top: 0px;
+    }
+
+    span.shrill {
+        font-weight: bold;
+        color: #FF0000;
+        background-color: inherit;
+    }
+
+    /*  Straightforward image bullets.  Bullets appear a tad too high.
+    ul.outer li {
+        list-style-image: url(figures/goldscrew.png);
+        list-style-type: disc;
+        font-weight: bold;
+        margin-top: 2ex;
+    }
+
+    ul.inner li {
+        list-style-image: url(figures/silverscrew.png);
+        list-style-type: square;
+        font-weight: normal;
+        margin-top: 1ex;
+        text-align: justify;
+    }
+    */
+
+    /*  Grotesque code to shift the image bullet down a few pixels.  */
+    ul.outer li {
+        position: relative;
+        list-style-type: none;
+        font-weight: bold;
+        margin-top: 2ex;
+        text-align: justify;
+    }
+
+    ul.outer li:before {
+        content: "";
+        position: absolute;
+        top: 2px;
+        left: -24px;
+        width: 16px;
+        height: 16px;
+        background-image: url(figures/goldscrew.png);
+    }
+
+    ul.inner li {
+        position: relative;
+        list-style-type: none;
+        font-weight: normal;
+        margin-top: 1ex;
+        text-align: justify;
+    }
+
+    ul.inner li:before {
+        content: "";
+        position: absolute;
+        top: 2px;
+        left: -24px;
+        width: 16px;
+        height: 16px;
+        background-image: url(figures/silverscrew.png);
+    }
+</style>
+<script type="text/javascript" src="/documents/scripts/externalLinks.js">
+</script>
+</head>
+
+<body onload="externalLinks();">
+
+<h1><img src="figures/aetitlewt.png" width="513" height="51"
+    alt="The Analytical Engine" /></h1>
+<h1 class="subtitle">Table of Contents</h1>
+
+<p class="c">
+<img src="figures/scrule.png" width="448" height="16" alt="----------------------------------------" />
+</p>
+
+<p class="j">
+All documents, programs, and downloadable software associated
+with <em>The Analytical Engine</em> are linked
+to entries in the following table of contents.
+</p>
+
+<ul class="outer">
+<li><a href="./">Introduction</a></li>
+
+<li><b>Historical Documents</b>
+    <ul class="inner">
+    <li><a href="sketch.html">&ldquo;Sketch of the Analytical Engine&rdquo;</a> by
+            L. F. Menabrea, translated and with extensive commentary
+            by Ada Augusta, Countess of Lovelace.  This 1842 document is the
+            definitive exposition of the Analytical Engine, which
+            described many aspects of computer architecture and
+            programming more than a hundred years before they were &ldquo;discovered&rdquo;
+            in the twentieth century.  If you have ever doubted, even for
+            a nanosecond, that Lady Ada was, indeed, the First Hacker,
+            perusal of this document will demonstrate her primacy beyond a shadow
+            of a doubt.</li>
+
+
+    <li><a href="lpae.html">&ldquo;On the Analytical Engine&rdquo;</a>, Chapter VIII of
+            Charles Babbage's 1864 autobiography, <cite>Passages from
+            the Life of a Philosopher</cite>.</li>
+
+
+    <li><a href="baas.html">The Report of the Committee</a> of the
+            British Association for the Advancement of Science which,
+            in 1878, recommended against constructing
+            the Analytical Engine.</li>
+
+
+    <li><a href="hpb.html">&ldquo;The Analytical Engine&rdquo;</a>, paper by
+            Major-General Henry P. Babbage (Charles Babbage's son),
+            read at Bath on September 12th, 1888; published in the
+            <cite>Proceedings of the British Association, 1888</cite>.</li>
+
+
+    <li><a href="hpb1910.html">&ldquo;Babbage's Analytical Engine&rdquo;</a>, a 1910 paper by
+            Henry P. Babbage published in the
+            <cite>Monthly Notices of the Royal Astronomical Society</cite>
+            <b>70</b>, 517&ndash;526, 645 [Errata] (1910), describing his
+            construction of a portion of the Mill and Printing Apparatus,
+            used to compute a table of multiples of &pi;.</li>
+
+
+    <li><a href="pascal.html">&ldquo;Pascal's Calculating Machine&rdquo;</a>.  After
+            years of work, in 1645 Blaise Pascal built a gear-based
+            mechanical adding machine.  This document is Pascal's
+            disclosure of the operation of the machine and the
+            grant of a patent upon it in 1649 by Louis XIV, king of France.
+            This is the original text; even if you're comfortable
+            reading modern French, you'll probably find this
+            seventeenth century document rather quaint.</li>
+    </ul>
+</li>
+
+<li>The Analytical Engine Emulator
+    <ul class="inner">
+    <li><a href="cards.html"><em>Programming Cards.</em></a>  A detailed description of the various
+        cards used to program The Analytical Engine emulator, including
+        a number of ready-to-run examples.</li>
+
+    <li><a href="emulator.html"><em>The Web Emulator</em></a> describes
+        an Analytical Engine emulator which runs within a Web page.
+        If your browser supports HTML5 and JavaScript, you can
+        run Analytical Engine simulations with no additional
+        software or installation.</li>
+
+    <li><a href="cmdline.html"><em>The Command-Line Emulator.</em></a>  Documentation,
+        in Unix manual page style, of <b>aes</b>, a command-line
+        emulator for The Analytical Engine which you can download
+        in either ready-to-run object code or source code form, which
+        runs on any computer with a compatible Java virtual machine
+        implementation.</li>
+
+    <li><a href="sample.html"><em>Sample Programs</em></a> describes
+        several programs, all of which you can run in the Web
+        Emulator, which illustrate applications of The Analytical
+        Engine in a variety of fields.</li>
+
+    <li><a href="authentic.html"><em>Is the Emulator Authentic?</em></a> discusses
+        the challenges one faces in developing an emulator for a machine
+        which was never actually built, and the rationale behind some
+        of the design decisions made in implementing it.  Various aspects of
+        The Analytical Engine are compared to those of both early electronic
+        and present-day computers.</li>
+
+    <li><a href="library.html"><em>The Mathematical Function Library.</em></a>  Babbage
+        immediately recognised that one great advantage of the Engine was that
+        once a given formula was prepared for it, the cards for that formula could
+        be placed in a library and called on whenever evaluation of it was needed
+        in the future.  This document describes a modest library of cards for
+        evaluating the elementary transcendental functions, illustrating how
+        the Engine might compute them.</li>
+
+    <li><a href="applet.html"><em>The Java Applet Emulator</em></a> describes
+        an Analytical Engine emulator which runs as a Java applet
+        within a Web page.  (<em>Due to security and compatibility
+        problems, fewer and fewer modern browsers support Java applets.
+        Most users should use the <a href="emulator.html">Web Emulator</a>
+        instead.</em>)</li>
+    </ul>
+</li>
+
+<li><a href="glossary.html">Glossary of Babbage's Terminology</a></li>
+
+<li>Download
+<p class="j" style="font-weight: normal">
+These are ZIP compressed archives, some of which contain subdirectories;
+be sure to specify the appropriate options when extracting to preserve
+the directory structure.  In addition, the source and object code archives
+contain long, upper and lower case file names.  If extracted with a
+utility which flattens such names into MS-DOS <tt>FILENAME.EXT</tt>
+format, they will neither compile or execute correctly.
+</p>
+    <ul class="inner">
+
+    <li><a href="release/aemsource.zip">Source code</a> for the
+            <a href="emulator.html">Web Emulator</a>.
+            This archive also includes source code for all of the
+            example and sample programs and the mathematical library in
+            the UTF-8 character set used by the Web Emulator.
+            <em>Emulator source code is intended for experienced JavaScript and HTML developers,
+                and is utterly unsupported.  The program is in the public domain
+                and you can do anything you like with it, but you're entirely on your own.</em></li>
+
+    <li><a href="release/aeclass.zip">Object code</a> (.class files) for the
+            <a href="cmdline.html">command-line emulator.</a></li>
+
+    <li><a href="release/library.zip">Source code</a> for the mathematical
+            function library.  Includes the examples from the <a href="library.html">function
+            library document</a> and test programs for each function.
+            Programs are in the ISO&nbsp;8859-1 character set for the command-line
+            and Java applet emulators.</li>
+
+    <li><a href="release/examples.zip">Source code for sample</a>
+            programs for The Analytical Engine emulator which appear in 
+            documents linked to this page.  Programs are in the 
+            ISO&nbsp;8859-1 character set for the command-line and Java 
+            applet emulators.</li>
+
+    <li><a href="release/aesource.zip">Source code</a> (.java files) for both the
+            <a href="applet.html">applet</a> and
+            <a href="cmdline.html">command-line</a> emulators.
+            <em>Emulator source code is intended for experienced Java developers,
+                and is utterly unsupported.  The program is in the public domain
+                and you can do anything you like with it, but you're entirely on your own.</em></li>
+    </ul>
+</li>
+
+<li>Just for Fun
+    <ul class="inner">
+    <li><a href="lockpick.html">&ldquo;Picking Locks and Deciphering&rdquo;</a>,
+            Chapter XVIII of Charles Babbage's 1864 autobiography,
+            <cite>Passages from the Life of a Philosopher</cite>,
+            should lay to rest any lingering doubts you may harbour
+            about Charles Babbage's being a kindred spirit to
+            present-day computer people.</li>
+
+    <li><a href="sqbish.html"><cite>Squaring the Bishop</cite></a>.
+            Charles Babbage closes his above memoir on <a href="lockpick.html">picking locks
+            and deciphering</a> by <a href="lockpick.html#squaring">posing a word puzzle</a> which, to
+            his knowledge, was unsolved.  This document reports the results
+            of a present-day computer assault on the puzzle.
+            <span class="shrill">Spoiler warning!</span>  Obviously,
+            if you'd like to have a go at solving the puzzle yourself,
+            don't read this page beforehand.</li>
+
+    <li><a href="figures/babbage.jpg">Portrait</a> of Charles Babbage.</li>
+
+    <li><a href="figures/ladyada.jpg">Portrait</a> of Ada Augusta,
+            Countess of Lovelace.  You can also <a href="figures/ladyada.zip">download</a>
+            ZIPped PostScript source code for a full-page version of this
+            drawing.</li>
+    </ul>
+</li>
+
+<li>Analytical Engine Resources at Other Sites
+    <ul class="inner">
+<!--
+    <li><a href="http://www.sciencemuseum.org.uk/images/I033/10303307.aspx"
+        rel="Target:Fourmilab_Babbage_Aux"><em>Difference
+        Engine No. 2</em></a>, completed in 1991 at the <a href="http://www.sciencemuseum.org.uk/"
+        rel="Target:Fourmilab_Babbage_Aux">Science
+        Museum</a> in London.</li>
+-->
+
+    <li>A brief <a href="http://www.cbi.umn.edu/about/babbage.html"
+        rel="Target:Fourmilab_Babbage_Aux">biography of Charles
+        Babbage and reading list</a> is published by the University of Minnesota's
+        <a href="http://www.cbi.umn.edu/"
+        rel="Target:Fourmilab_Babbage_Aux">Charles Babbage Institute</a>.</li>
+
+    <li>A <a href="http://ei.cs.vt.edu/~history/Babbage.html"
+        rel="Target:Fourmilab_Babbage_Aux">detailed
+        biography</a> of Charles Babbage, in the
+        <a href="http://ei.cs.vt.edu/~history/"
+        rel="Target:Fourmilab_Babbage_Aux">History of Computing</a>
+        by J.A.N. Lee at <a href="http://www.vt.edu/"
+        rel="Target:Fourmilab_Babbage_Aux">Virginia Tech</a>.</li>
+
+    <li>A brief <a href="http://www.agnesscott.edu/lriddle/women/love.htm"
+        rel="Target:Fourmilab_Babbage_Aux">biography
+        of Ada Augusta</a>, Countess of Lovelace, the first programmer, with
+        links to other resources related to Ada.</li>
+    </ul>
+</li>
+</ul>
+
+<h4>Acknowledgements</h4>
+
+<p class="j">
+Development of The Analytical Engine emulator was tremendously
+assisted by the incorporation of the Java <tt>BigInt</tt> multiple
+precision integer arithmetic package, developed by Stephen Adams
+at the <a href="http://web.mit.edu/"
+    rel="Target:Fourmilab_Babbage_Aux">Massachusetts Institute of Technology</a>,
+<a href="http://www.eecs.mit.edu/"
+    rel="Target:Fourmilab_Babbage_Aux">Department of Electrical
+Engineering and Computer Science</a>, and the JavaScript
+<tt><a href="https://github.com/peterolson/BigInteger.js/tree/master"
+    rel="Target:Fourmilab_Babbage_Aux">BigInteger.js</a></tt>
+package developed by <a href="https://github.com/peterolson"
+    rel="Target:Fourmilab_Babbage_Aux">Peter Olson</a>.
+</p>
+
+
+<p class="c">
+<img src="figures/scrule.png" width="448" height="16" alt="----------------------------------------" />
+</p>
+
+<h3 class="nav"><a href="/?topic=history">Other Computing History Resources at Fourmilab</a></h3>
+<h3 class="nav"><a href="/">Fourmilab Home Page</a></h3>
+
+<p />
+
+<address>
+by <a href="/index.html">John Walker</a>
+</address>
+</body>
+</html>

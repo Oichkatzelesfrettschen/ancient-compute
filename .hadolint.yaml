@@ -2,8 +2,8 @@
 # Warnings as errors
 
 # Ignore specific rules (if absolutely necessary)
-ignored:
-  - DL3008  # Pin versions in apt-get install (impractical for base system packages)
+# ignored:
+#   - DL3008  # Pin versions in apt-get install
 
 # Treat warnings as errors
 failure-threshold: warning

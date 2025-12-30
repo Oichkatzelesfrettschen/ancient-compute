@@ -1,0 +1,1635 @@
+The Construction of Charles Babbage’s
+Difference Engine No. 2
+Doron D. Swade
+Charles Babbage designed Difference Engine No. 2 between 1846
+and 1848. Contemporary drawings illustrate a machine—never built
+during his lifetime—that calculates and tabulates polynomials,
+printing results in hard copy and producing stereotype molds for
+plates intended for use in conventional printing presses. This article
+describes construction of the first complete physical realization of a
+full Babbage engine design and outlines Babbage’s ambitions for this
+advanced engine.
+
+The failed attempt to construct Difference
+Engine No. 1 is perhaps the best known of the
+many recounted episodes in Charles Babbage’s
+life. Practical attempts to build the machine
+were abandoned in March 1833 when, after a
+decade of design and development, Joseph
+Clement, Babbage’s engineer, downed tools and
+fired several of his workers employed on
+Babbage’s project following a dispute over compensation.1 While accounts of Difference Engine
+No. 1 and its fate have tended to dominate the
+literature, it is the Analytical Engine, conceived
+by 1834, to which Babbage largely owes his reputation as the “first computer pioneer.”2 His later
+difference engine, Difference Engine No. 2,
+designed after the main work on the Analytical
+Engine was complete, usually gets no more than
+passing mention. The history of the three
+machines, however, is intimately connected.
+
+Origins of Difference Engine No. 2
+During the dispute with Clement, Babbage
+was forcibly distanced from the nuts and bolts
+of mechanical construction. Deprived of his
+drawings and engine parts, he revisited some of
+his early ideas on calculating engines. Using
+the “beautiful fragment”—a small section of
+the engine assembled by Clement in 1832—as
+a physical aid and with drawings back in his
+possession in July 1834, Babbage made the
+essential transition from calculation to computation—from the mechanized arithmetic of
+the Difference Engine to programmable general-purpose computation the principles of
+which he embodied in the designs for the
+Analytical Engine.3
+The designs for the Analytical Engine incorporate most of the essential logical features
+commonly found in a present-day general-pur-
+
+70
+
+IEEE Annals of the History of Computing
+
+pose digital computer.4 These include programmability (Babbage used punched cards), an
+internal repertoire of automatically executable
+arithmetical functions (direct multiplication,
+division, addition, and subtraction) and a range
+of system and circuit functions including microprogramming, pipelining, iteration or looping,
+conditional branching, and parallel processing.
+A further feature of the design is the engine’s
+internal architecture that separates the “memory” he from the “processor.” Using descriptions borrowed from the textile industry,
+Babbage called the memory “the store,” and the
+processor “the mill.” The separation of store
+and mill foreshadowed von Neumann’s scheme
+that has dominated computer architectures in
+the electronic era. The designs do not feature
+facilities for internally storing programs:
+Instruction sequences as well as data were held
+externally on fanfold, pasteboard punched
+cards and input from mechanical card readers.
+It is important to note that Babbage nowhere
+used the terminology invoked here to describe
+logical features. The use of terms such as program, microprogram, pipelining, iterative looping, conditional branching, and processing is a
+backward projection from the modern computer
+age and is fraught with the known historiographic hazards of anachronical interpretation—
+views of the past that do not take account of the
+alteration of perceptions with time.
+In 1846, with the major work on the
+Analytical Engine design done, Babbage began
+to design a new machine, Difference Engine
+No. 25 (see the sidebar, “Babbage’s Difference
+Engine No. 2: Overview,” for additional information). Though concerted work on the new
+engine dates from 1847, there is evidence that
+Babbage had been actively mindful of the
+
+Published by the IEEE Computer Society
+
+1058-6180/05/$20.00 © 2005 IEEE
+
+Babbage’s Difference Engine No. 2: Overview
+Difference Engine No. 2 was designed between 1846
+and 1848. The built machine weighs 5 metric tons and
+consists of 8,000 parts equally divided between the printing and stereotyping apparatus, and the calculating section (see Figure 5 in the main text). The side view of the
+machine (Figure 4 in the main text) is one of the main
+drawings in the original set of 20, and one that is most
+evocative of its overall shape. The drawing shows a
+machine 11 feet long and 7 feet high with the depth varying between 18 inches and 4 feet. The three main sections
+of the machine are the control mechanism alongside the
+crank handle on the right, the calculating section consisting of eight vertical column assemblies located in the central rectangle, and the printing and stereotyping
+apparatus, on the left.
+The engine is operated by turning the crank handle.
+The handle drives, via bevel gears, a set of cams arranged
+in a vertical stack. There are 14 pairs of conjugate cams—
+that is, each of 14 cams has a companion cam the profile
+of which is a geometric inversion of its mate. This paired
+arrangement provides positive bidirectional drive: Shafts
+and columns are lifted and positively driven downward
+rather than relying on gravity. The 28 cams control the lifting, turning, and sliding motions required to execute the
+repeated additions for the method of finite differences. The
+crank handle also drives the printer and stereotype apparatus from a long shaft that runs the length of the underside of the machine and which is driven by a large bevel
+gear on the underside of the cam stack.
+Numbers are stored and operated on using figure
+wheels engraved with the decimal numbers zero through
+nine (Figure A). Each digit value in a multidigit number is
+represented by a separate figure wheel. Negative values
+are represented by complements. Numbers are stored and
+operated on in columns of figure wheels with units at the
+bottom, tens next above, hundreds next above, and so on.
+The machine has eight columns, or axes, each with 31
+figure wheels, one column for each of seven differences,
+and a column for the tabular result. The tabular value
+appears on the leftmost figure wheel column in Figure 4
+in the main text, the first difference column is next and so
+on. The seventh difference column is on the extreme right.
+The engine automatically calculates and tabulates any
+seventh-order polynomial to 31 decimal places using the
+method of finite differences, prints the result to 30 places
+on a paper roll, and impresses the same results on soft
+material to produce stereotype molds from which printing
+plates can be made. Initial values are set by hand from a
+precalculated table by rotating the figure wheels after disabling the security mechanisms.
+
+Difference Engine during the design of the
+Analytical Engine. A drawing dating from as
+early as March 1842, for example, shows an
+improved version of the successive carriage
+
+Typically, when finite differences are used as a manual
+technique, one adds the higher order difference to the next
+lower order difference in a fixed series of separate additions.
+Mapped onto the engine, this requires adding the constant
+difference on the seventh difference column to the sixth
+difference column, the sixth difference to the fifth difference, and so on. However, instead of stepwise repeated
+serial addition of this kind, Babbage split the addition cycle
+into two. During the first half-cycle, the values on the odd
+difference columns are added to the adjacent even difference columns, and in the second half-cycle the even differences are added to the odd differences. Provided the
+initial setup values are offset appropriately, this pipelining
+arrangement has the same effect as adding differences in a
+sequence of seven separate additions. The advantage of the
+half-cycle arrangement is a shortened calculating cycle,
+more efficient use of hardware, and a fixed cycle time that
+is independent of the number of differences.1
+For a seventh-order polynomial, the machine executes
+seven 31-digit decimal additions each calculating cycle to
+produce each next value in the table. Each new tabular
+value is automatically transferred to the output apparatus
+for printing and stereotyping. For polynomials of order less
+than seven, the higher-order difference columns are set to
+zero and play no part. The engine, eased through use, produces one result every six seconds.
+
+References and notes
+1. D. Swade, Charles Babbage’s Difference Engine No. 2:
+Technical Description, Science Museum Papers in the
+History of Technology, Science Museum, 1996, pp. 66-67.
+
+Figure A. Figure wheel. One of 248 similar wheels. The
+outer nibs warn the tens carriage mechanism. If a figure
+wheel exceeds 9, a carry is required to the next decade. As
+the wheel passes from 9 through to 0, the outer nib
+latches a device that warns that a carry is still required.
+(Photo courtesy of the Science Museum, London.)
+
+mechanism first used in Difference Engine No.
+1.6 The timing of Babbage’s preoccupation with
+a new difference engine is confirmed by his
+later recollection:
+
+July–September 2005
+
+71
+
+Charles Babbage’s Difference Engine No. 2
+
+About twenty years after I had commenced the
+first Difference Engine, and after the greater part
+of these drawings had been completed, I found
+that almost every contrivance in it had been
+superseded by new and more simple mechanism,
+which the construction of the Analytical Engine
+had rendered necessary.7
+
+Babbage was consistent in his portrayal of
+the Analytical Engine’s influence on an
+improved difference engine design. In 1864 he
+again recalled:
+… in labouring to perfect this Analytical
+Machine of greater power and wider range of
+computation, I have discovered the means of
+simplifying and expediting the mechanical
+process of the first Difference Engine.8
+
+As a design challenge, the functions of the
+Analytical Engine were vastly more demanding
+than those for the earlier machine. The mechanisms for direct multiplication and division,
+for example, required intricacy and complexity well beyond those for the repeated additions
+in the Difference Engine.
+Babbage’s near obsession with minimizing
+the execution time of all arithmetical functions
+led him to devise more-efficient techniques for
+simple addition, not least to make room in the
+timing cycle for multiplication and division that
+were irreducibly more time-consuming, relying
+as they did on sequences of repeated operations.
+The anticipating carriage mechanism, for example—which was devised as a time-saving
+improvement to the mechanism used in the earlier Difference Engine—he extravagantly ranked
+as “the most important part of the Analytical
+Engine.”9 The technique allowed all the tens carries in a number to be executed at the same
+time, rather than serially as in his earlier design.
+The anticipating carriage mechanism is one
+example of many in which the demands of the
+Analytical Engine raised Babbage’s design capabilities to new levels of sophistication, economy,
+and elegance. Though he did not use the anticipating carriage technique in Difference Engine
+No. 2, Babbage is explicit about the influence on
+its design of his work on the Analytical Engine.
+He wrote that, for his new difference engine, he
+“proposed to take advantage of all the improvements and simplifications which years of
+unwearied study had produced for the
+Analytical Engine.”10 This was no false claim.
+Difference Engine No. 2 uses roughly three times
+fewer parts (8,000 compared to 25,000) for a
+similar calculating capacity.
+There is a further direct and intimate con-
+
+72
+
+IEEE Annals of the History of Computing
+
+nection between Difference Engine No. 2 and
+the Analytical Engine: The two machines share
+the same plans for the stereotyping apparatus.11
+The designs for Difference Engine No. 2
+were offered to the government in 1852 in a
+letter to the prime minister, Lord Derby. In
+offering an improved machine, it seems that
+Babbage was concerned to discharge some
+residual discomfort at the failure to complete
+Difference Engine No. 1. Babbage wrote:
+I feel, in laying this representation before your
+Lordship, and in making the offer I now make,
+that I have discharged to the utmost limit every
+implied obligation I originally contracted with
+the country.12
+
+The offer to the government was rebuffed,
+and Babbage retreated yet again into a series of
+bitter grievances. No attempt was made to construct the machine in Babbage’s lifetime. The
+plans remained on the drawing board for 140
+years—until metal was first cut for an experimental trial piece in December 1986.13
+
+Sources and interpretation
+The set of drawings for Difference Engine No.
+2 consists of 20 main views, several derivative
+tracings, and technical descriptions expressed in
+Babbage’s Mechanical Notation—an elaborate
+idiosyncratic system of signs and symbols that
+served as an abstract descriptive language he
+developed as a design aid.14 The drawings and
+notations make no concessions to anyone seeking to understand the machine from scratch.
+Apart from the drawings and notations there is
+practically no introductory material, guiding
+explanation, textual description, or clues to the
+logic or rationale for the designs. The material
+cited represents a free-standing source from
+which his intentions had to be decoded.
+The drawings for Difference Engine No. 2
+are the most complete set that Babbage produced. There is no evidence that any are missing, and since no attempt was made to
+construct the machine, the set of drawings was
+never split up for the execution of separate
+tasks or exposed to the hazards of dirt and damage in a workshop environment. They were
+also spared the revisions and improvements to
+which Babbage subjected most of his other
+designs, often leaving the machines imperfectly specified or in transitional states of incompleteness. It seems that, for once, Babbage was
+content to leave well enough alone.
+The original drawings and notations represent
+the principal contemporary data source for the
+construction of the machine. However, the small
+
+team at the Science Museum was fortunate not to
+have to start from scratch in its attempts to
+understand the functions of the mechanisms.
+Bromley, Australian computer scientist and historian, had, as Visiting Research Fellow, studied
+the technical archive of Babbage’s drawings held
+in the Science Museum Library, London, during
+a series of short sabbaticals from the University of
+Sydney starting in 1979. As part of a larger analysis of Babbage’s calculating engines, Bromley had
+decoded the drawings for Difference Engine No.
+2, arrived at an understanding of the overall
+design, general layout and operation of the
+machine’s basic elements, and produced a short
+draft summary for an unpublished book chapter
+that described the machine’s essential features.15
+At that time, Bromley’s paper was the only written description of the engine.16 It was the authority of Bromley’s detailed work on this and other
+of Babbage’s engine designs, and his conviction
+that the drawings represented the design of a
+viable working machine, that gave credibility to
+the undertaking to construct it.
+The original sources are sufficiently detailed
+to describe the shape and nominal size of individual parts, their physical interrelationship,
+and, through interpretation, their intended
+function. However, for all their richness, the
+drawings are not sufficiently detailed to serve
+as a specification for manufacture: No information is provided as to choice of materials,
+methods of manufacture, order of assembly,
+lubrication, precision, or finish.
+The drawings are deficient in other respects.
+There are dimensioning inconsistencies where
+the same parts are shown differently sized in different views; layout errors; and there are incompletenesses in the design (omitting any detail for
+driving the inking rollers, or for advancing the
+stereotype trays, for example).17 As well as
+instances of omitted mechanisms, there are
+redundant assemblies. For example, a complete
+carriage axis is shown for the highest difference
+column (the seventh difference), which, being
+the last, performs no function at all: Once set
+with an initial value, none of the associated figure wheels can exceed 10 in ordinary operation.
+The drawings contain other errors, one of which
+(in the mechanism for the carriage of tens) is
+fatal to the correct operation of the engine.
+Although this litany of deficiencies sounds
+damning, none of them compromises the
+validity of the basic logic, design principles, or
+intended function of the machine. Babbage
+made no attempt to construct the engine, and
+the deficiencies in the specification for the
+most part represent the gap between an
+advanced design—arrested in an incomplete
+
+state of engineering development—and a working machine. The gap, in short, is one of engineering completeness rather than of logical or
+operational principle.
+
+The trial piece
+The proposal to construct Difference Engine
+No. 2 was made by Bromley in May 1985 during one of his sabbatical visits from Sydney. I
+had recently been appointed curator of computing at the Science Museum, and Bromley
+appeared on my doorstep to introduce himself
+to the new incumbent.
+The timing of Bromley’s arrival was uncanny. Part of my curatorial responsibilities included care of the defining set of surviving
+mechanical assemblies of Babbage’s machines.
+I was aware that almost every published
+account of Babbage’s efforts attributed his failure to the limitations of 19th-century mechanical engineering. I was both perplexed and
+incredulous that, with advances in manufacturing, no one had attempted to realize any of
+his designs once the supposed limitations of his
+time had been removed. Nagging historical
+questions had troubled Babbage scholars—did
+the complex circumstances of Babbage’s failures mask the technical or logical impossibility of his machines? Had the machine been
+built, would it have worked? Was Babbage an
+impractical dreamer or a designer of the highest caliber? Here was Bromley, with an ambitious scheme that might advance the debate.
+Part of the motivational landscape was a serious historical agenda.
+Bromley explained in a covering letter to
+Dame Margaret Weston, director of the Science
+Museum, that he was convinced from his studies that the drawings represented a viable
+design for a working machine, and that building a working engine would have historical
+value beyond simply proving the viability of
+this particular design. He wrote that
+Construction of the Difference Engine No. 2
+would not only confirm the soundness of
+Babbage’s logical and mechanical design principles in this case but would also lend conviction
+to the entire range of his designs for automatic
+computing engines.18
+
+The proposal concluded with the suggestion
+that the complete engine would memorialize
+Babbage as the first pioneer of the computer.
+He wrote
+The completed Difference Engine No. 2 would
+stand as a tribute to the forefather of the modern
+
+July–September 2005
+
+73
+
+Charles Babbage’s Difference Engine No. 2
+
+Figure 1. Trial piece, 1989. Adds a two-digit decimal number to a threedigit number and takes account of the tens carriage. (Photo courtesy
+of the Science Museum, London.)
+
+computer and one of the most ingenious mechanicians of the nineteenth century. It should be
+finished in time for the 200th anniversary of
+Babbage’s birth on 26 December 1991.18
+
+The proposal made no mention of funding,
+management, or manufacturing capacity.
+The upshot of the proposal was approval to
+construct a small section of the engine as a test
+piece. The trial piece was a critical staging post
+in the construction of the engine.19 It would
+allow verification of the basic arithmetical
+mechanism and exploration of a variety of
+technical concerns. I was also aware of the
+strategic value of a working trial piece to promote the project and as a fund-raising aid.
+The trial piece added a two-digit number to
+a three-digit number with the result correct to
+three digits. The full engine is automatic in that
+the lifting and turning motions necessary for
+the repeated additions are executed automatically by an internal control system driven by
+turning the crank handle. The trial piece did
+not have the benefit of this complex drive
+mechanism. Instead, it was operated manually: The dozen or so separate operations
+involved in the nondestructive addition of two
+numbers were executed by manually lifting
+and turning knobs, catches, and sliders in the
+prescribed sequence to add, restore, and carry,
+and also to perform the locking operations that
+secured the mechanism from derangement at
+different points in the cycle (see Figure 1).
+The original timetable allowed for one year
+to complete the trial piece. Ultimately, for
+
+74
+
+IEEE Annals of the History of Computing
+
+cumulatively mundane reasons, it took four.
+The trial piece had a false start. The designs prepared hastily during a short visit from Bromley
+in January 1986 were incomplete at the time of
+his return to Sydney to meet university commitments. Though Bromley had spotted the
+design error in the original drawings, in the
+rushed circumstances of January 1986 he had
+not attempted a solution.
+In July 1987, the project was joined part
+time by Peter Turvey, a member of the curatorial staff in the museum’s engineering department, and a weekend marine engineering
+hobbyist. His brief was to coordinate the production of the trial piece.
+After a desultory attempt by the Science
+Museum’s workshops to use the incomplete
+drawings, this first attempt was scrapped in
+October 1987. For the second attempt, I contracted out the design drawings to Rhoden
+Partners Ltd., a small UK engineering design
+company that had, in the 1950s, been commissioned to produce replicas of Babbage’s
+engines for IBM, and now specialized in designing and building one-off prototypes for the
+manufacturing industry. Rhoden was conveniently situated in Acton, West London, a few
+miles away from the Science Museum. The first
+meeting with Rhoden took place in January
+1988. We were starting from scratch two years
+after the start of the first attempt.
+Reg Crick was the Rhoden engineer assigned
+to the project. Crick, close to 60 at the time, was
+a seasoned mechanical design engineer. He had
+philosophically survived the professional insecurities of life in engineering design—the
+sudden scrapping of projects, the financial vicissitudes of companies in engineering development, and the roughhouse of commercial
+imperatives. He was modest and methodical,
+with an inventive flair more often associated
+with more overtly volatile temperaments. Crick
+played a critically important role in the construction project. The team I now had consisted
+of Crick, Turvey (part time), and, when needed,
+occasional remote consultation by telex to
+Bromley, 11,000 miles away in Australia.
+As mentioned, there is a flaw in the carriage
+mechanism as depicted by Babbage. Figure 2
+shows the layout of the cluster of axes around
+each figure wheel column. The layout is righthanded and is the same for both the odd and
+even difference columns as is clearly indicated
+in several plan views. As drawn, there is a conflict between two functions: If the figure wheels
+rotate in the correct direction to add, then the
+associated warning mechanism for the carriage
+of tens fouls and jams. The principle of the
+
+mechanism is valid, but the layout as depicted
+in the drawings is unworkable. Bromley had
+spotted the problem in his original analysis and
+had offered several solutions.15
+The solution we chose as the one most likely
+to have been adopted by Babbage was to make a
+mirror image of the carriage mechanism for
+alternate axes. Crick found that using oppositehanded parts had unforeseen consequences:
+The new arrangement involved small but critical alterations to the angular positioning of end
+stops and locks, and this adjustment would
+have to be carried through the whole specification for each of the eight axes. The new arrangement also involved a reversal of the direction of
+rotation for certain circular motions.
+New fully specified drawings for the trial
+piece were available in March 1988; the mirrored configuration used in the trial piece, and
+adopted in the full engine, is shown in Figure
+3. Testing the mirror configuration became the
+main purpose of the trial piece. Issues of clearances, tolerances, wear and tear, gear tooth profile, choice of materials, and torque that had so
+preoccupied us took a back seat.
+The trial piece was built in the Science
+Museum workshops and completed in February
+1989, three years behind schedule. Exquisitely
+made, bright, shiny, and elegantly complex, it
+was an immediate hit (see Figure 1). It attracted media coverage and, as we hoped, impressed
+trustees and sponsors. The trial piece proved
+conclusively that the modifications to implement the mirror-imaged solution to the design
+flaw worked and would
+serve as a sound technique
+on which to base the full
+construction. It also served
+as a pedagogic aid to
+demonstrate the essential
+arithmetical
+function.
+What was unexpected was
+the role it played in visualizing the working of the
+machine during the design
+and the preparation of full
+drawings.
+
+tal question of authenticity. If the engine was
+built as drawn, then we had no expectation that
+it would work. The final object, if achieved,
+would be an intriguing piece of Victorian sculpture but one that would prove nothing about
+the essential viability of Babbage’s schemes. If,
+on the other hand, the original designs were
+modified, in what sense could a working engine
+
+Figure 2. Design drawing. Addition and carriage mechanism
+(Science Museum Library Babbage Papers, drawing BAB [A]
+171 part, “Difference Engine No. 2. Addition Carriage and
+mode of Driving the Axes,” undated). This original layout by
+Babbage has a design flaw. (Drawing courtesy of the Science
+Museum, London.)
+
+Authenticity
+The flaw in the layout
+of the carriage mechanism
+was the most significant
+and potentially damaging
+of the errors we identified.
+Modifying the design in
+any way at all presented a
+basic curatorial dilemma
+and raised the fundamen-
+
+Figure 3. Design drawing. Addition and carriage mechanism with mirror-imaged solution to
+the design flaw, 1991. (Drawing courtesy of the Science Museum, London.)
+
+July–September 2005
+
+75
+
+Charles Babbage’s Difference Engine No. 2
+
+claim to be a vindication of Babbage’s work?
+The way out of the impasse was the realization that it was a mistake to view Babbage’s
+design as sacrosanct and unimpeachably perfect. Building the engine was not the slavish
+physical implementation of an abstract ideal
+with doom attending even the smallest deviation from the master’s instructions. The project
+was more in the nature of a resumption of a
+practical engineering project that had been
+arrested in 1848. Had Babbage proceeded from
+design to manufacture, the deficiencies in the
+drawings would have become evident. There
+would have been no way of avoiding them,
+and he would have sought solutions. We were
+simply picking up where he left off, and the
+task for us was to find solutions with conscientious regard for contemporary practice while
+using the best knowledge available of Babbage’s
+style of working. We approached each new
+need with the question, What would Babbage
+have done? and proceeded to seek historically
+sensitive solutions.
+The issue of authenticity was a central concern. I was determined that nothing would compromise the value of the construction in drawing
+historically meaningful conclusions about
+Babbage’s world. We would need to be able to
+robustly resist the charge that “Yes, you built the
+engine, but Babbage could not have.” Credible
+defense against this charge provided the ruling
+principle for all issues of authenticity. For each
+design modification, we first sought solutions
+that Babbage had used elsewhere in his designs;
+we only resorted to fresh thinking once this
+quest was exhausted. A second principle was that
+of reversibility, that is, to incorporate the facility
+for demounting any added assembly or modification so as to restore the machine to the state
+depicted by Babbage in the original drawings.
+The manufacture of parts for the full
+machine was beyond the capacity of the
+Science Museum’s in-house workshops and was
+contracted out. Further, the manufacturing and
+build costs were beyond anything the Science
+Museum could reasonably fund from its everdiminishing Grant-in-Aid from the government. Sponsorship was the only solution. We
+needed fully detailed piece part drawings for
+fixed-price quotes to fix the sponsorship target.
+In November 1988, the Science Museum
+approved funds for the Rhoden engineering
+designers to estimate the cost and timescale for
+producing fully detailed drawings, tooling, and
+materials for a complete machine. At this stage
+we downscaled our expectations and abandoned the prospect of building the printing
+and stereotyping apparatus for the bicentenni-
+
+76
+
+IEEE Annals of the History of Computing
+
+al deadline. I judged that the cost of building
+the printer would put the sponsorship target
+out of reach, and we were already several years
+behind schedule.
+Producing detailed specifications raised production issues—choice of materials, methods
+of manufacture, precision, finish, typography
+for engraving, and lubrication—all issues that
+went well beyond those addressed in the manufacture of the small trial piece. To help resolve
+historical issues of this kind, the project had
+the benefit of Michael Wright, the Science
+Museum’s curator of mechanical engineering.
+Wright’s knowledge of 19th-century workshop
+practice is encyclopedic. The history of tools
+and workshops is his profession, his vocation,
+and his private passion. Stepping into his private workshop with its period treadle lathes,
+oil-stained wooden benches, leather drive belts,
+and work in progress is to step into the world
+of Babbage and Clement.
+Tolerancing and the interchangeability of
+parts were critical issues. One of the features of
+the engine designs is the repetition of near
+identical parts. Babbage did not have available
+to him production techniques that offered
+inherent repeatability—stamping and pressure
+die-casting, for example—and parts were made
+one at a time by a combination of machining
+and hand fitting. The understanding between
+the designer and the machinist, whether specified explicitly on a drawing or not, was that a
+part would be made to fit—that is, trimmed
+and tweaked by hand at the discretion of the
+machinist until it functioned correctly.
+Babbage designed the engine at a time when
+manufacturing was in transition between craft
+and mass production techniques and methods
+for manufacturing repeated parts were still
+incipient. Until the 1850s there was practically
+no standardization in manufacturing. Each
+workshop had its own lathes, often custom
+built, and the master screw from which screw
+threads were cut usually differed from lathe to
+lathe even in the same workshop. The notion
+of a tolerance, the interval within which the
+dimension of a part will fall, is an anachronism—a backward projection from a later age.
+With 4,000 parts to make, we abandoned
+any wistful notions of recreating a period workshop and building the engine using contemporary 19th-century tools and practices. There was
+simply no time. We unashamedly used modern
+techniques including computer-controlled
+manufacture. But no part was made more precisely than was achievable by Babbage himself,
+although possibly by other means. Wright and
+Bromley, friends and colleagues before the
+
+engine project began, had taken measurements
+from parts of Difference Engine No. 1 and established that Clement was able to make repeated
+parts within a tolerance of two-thousandths of
+an inch. This became the taboo threshold: An
+absolute condition was that repeated parts
+would be made to tolerances no finer than this.
+The choice of materials for the construction
+was resolved through expert advice and inspection of the relics of Babbage’s partial assemblies.
+These studies indicated that the use of gunmetal, cast iron, and steel was consistent with
+the period. Gunmetal, a form of bronze, was in
+common use in Babbage’s day. What we did
+not know was whether Babbage would have
+tweaked the mix of copper, tin, and zinc by the
+addition of other elements such as lead and
+phosphorous to achieve particular properties of
+durability, workability, brittleness, and sliding
+friction. No one on hand seemed to know
+much about the state of metallurgical knowledge in the 1840s. To resolve the issue we prevailed on the Department of Materials,
+Imperial College, to analyze the composition
+of loose parts left over from Babbage’s earlier
+works that were in the Museum’s collection. Xray microanalysis showed that the mix was
+within an acceptable and recognizable standard, and a close modern match was found.20
+Although we now had clear ideas on what
+materials Babbage would have used, the original drawings left us in the dark about what
+materials would be used for which part.
+In January 1990, I assembled an advisory
+team and convened a series of blockbuster
+meetings. Bromley happened to be in London
+en route to Greece to work on the Antikythera
+mechanism, the oldest known geared instrument, and was able to join the group. The
+posse of curators, historians, and engineers
+consisted of Crick, Bromley, Wright, Turvey,
+and me. The five of us met for four full days of
+marathon consultations sustained only by tea,
+coffee, and an occasional gobbled sandwich.
+The work was grueling and painstaking, and
+the level of detail oppressive. We went through
+the drawings for the 4,000 parts and, for each,
+debated the material, method of manufacture,
+visual and functional authenticity, finish, and
+did a final check on precision. By the end of the
+last meeting, on 17 January 1990, Crick had
+enough information to complete the drawings.
+
+Run-up to the build
+With historical issues of specification
+resolved, Crick translated Babbage’s 20 main
+views into 100 new working drawings that fully
+detailed each of the 4,000 parts of the calculat-
+
+ing section of the engine drawn to conform to
+modern manufacturing conventions. By now
+Crick had the most detailed understanding of
+the workings, engineering design, and manufacturing issues of Babbage’s engine. He
+designed and drew up the omitted mechanisms, and each went through a curatorial
+approval system. For the few instances in
+which we were unable to resolve technical
+issues from the original drawings, I turned, as
+a last resort, to the notations. Traditional drawing boards and drafting pencils were used: The
+production of the new drawings was unaided
+by CAD technology.
+Barrie Holloway, a Rhoden engineer, managed the independent three-party tender
+process required by government procurement
+policy. Each of three companies quoted for all
+4,000 parts, and Holloway undertook the complex process of splitting the order to mix and
+match the most economic combinations of
+supply. The permutations were nightmarish.
+The final figures were available in May 1990.
+The cost had gone up from an estimated
+£201,000 to £246,000. No one was surprised.
+With drawings complete, funding secure,
+fixed price quotations in hand, 18 months
+until the deadline, and Rhoden Partners on tap,
+it looked as though we were in with a chance.
+But without warning, Rhoden went bust. The
+situation was rescued by prevailing on the
+Science Museum to hire Crick and Holloway
+immediately. My own role until then had been
+that of project director, project and contracts
+manager, curator with responsibilities for technical interpretation and authenticity, technical
+adjudicator of design options, fundraiser, and
+publicist. I would now also have direct line
+management for Crick and Holloway and
+directly manage the build through to completion including the subcontracted manufacture
+of parts to companies specializing in various
+processes—milling, pattern making, casting,
+gear cutting, spring winding, case hardening,
+and so on. Crick and Holloway showed up for
+work at the Science Museum on a fixed-term
+contract on Friday, 8 June 1990, three days after
+they had been fired.
+
+The build
+The engine was assembled in full public
+view on a prime site on the ground floor of the
+Science Museum. An enclosure was built
+around the machine (known as the pen) in
+which Crick and Holloway, white-coated, slowly assembled the machine. The pen included
+two workbenches with engineer’s vises and
+basic hand tools for filing, drilling, reaming, fit-
+
+July–September 2005
+
+77
+
+Charles Babbage’s Difference Engine No. 2
+
+Figure 4. Design drawing. Main elevation showing crank handle (right), calculating section (center),
+and output apparatus (left). Science Museum Library Babbage Papers, drawing BAB [A] 163, “Elevation
+for Difference Engine No. 2.” (Drawing courtesy of the Science Museum, London.)
+
+ting, and finishing. These processes were
+undertaken in open view. Parts requiring
+machining were taken to engineering workshops in the museum’s basement or returned
+to the suppliers for modification.
+The 4,000 parts were made in six months by
+a total of 46 separate specialist subcontractors.
+The first deliveries arrived from the contractors
+in September 1990, and the 4,000 parts were
+supplied in batches over the next six months.
+The strategy for the build was not to assemble
+the machine in its entirety and then test it in one
+dramatic episode.21 This may have been theatrical but ran against proven engineering practice.
+The machine was, after all, a prototype. There
+were too many unknowns. Instead, the engine
+was assembled in small stages, and each stage
+tested before we proceeded to the next. Initially,
+progress was tentative and exploratory. The
+heavy framing pieces that define the engine’s
+outline were assembled first, and then, at the
+crank handle end, the 28 cams that generate and
+orchestrate the sliding, lifting, and turning
+motions required for repeated addition were
+stacked. The drive trains for lifting and turning
+the columns followed next. These trains, located
+below the eight sets of vertical axes, consist of
+sets of racks and pinions for the circular motions,
+and of bell cranks driven by long links for the
+vertical motions (see Figure 4). Finally, the eight
+figure-wheel columns, the sector wheel columns,
+and carriage axes were progressively installed
+starting from the crank handle through to the
+tabular value at the opposite end (the sidebar,
+
+78
+
+IEEE Annals of the History of Computing
+
+“Babbage’s Difference Engine No. 2: Overview,”
+explains the relationship between the columns
+and the differences).
+In January 1991, with the cam stack and
+some of the cam followers assembled, the first
+attempt was made to turn the handle. As a precaution against unyielding loads, a four-to-one
+reduction gear had been inserted into the manual drive to ease the operator’s task. Despite
+this, after a small rotation, the crank handle
+would not budge. Analysis showed that the rise
+on the cams that controlled the locking action
+was too steep to allow rotation, and the cam
+follower, which is intended to follow the profile of the cam, could not mount what presented itself as a triangular obstruction and a shock
+load that could not be overcome.22 The timing
+cycle was too crowded to allow us to ease the
+angle to provide a gentler ramp.
+Elsewhere in the engine, Babbage had solved
+the problem of excessive loads by the use of
+counterbalancing springs. The heaviest load is
+that presented by the columns of figure wheels,
+sector wheels, and their vertical shafts that need
+to be lifted and lowered during each calculating
+cycle. Babbage provided strong springs at the
+top of each vertical shaft. The springs, which are
+in compression, support the columns in their
+resting position. A single example of this, with
+implied duplication, is shown at the top of the
+engine on the first difference column (the second column from the left) in Figure 4. Instead
+of having to lift, via the drive mechanism, the
+full weight of the columns, all that is required
+
+Figure 5. Difference Engine No. 2, on display at the Science Museum, 2005. Eleven feet long and 7 feet
+high, the engine weighs 5 metric tons and has 8,000 parts. Main crank handle is at the right; the
+calculating section is in the center; and the output apparatus (printer and stereotype mechanisms) are
+at the left. (Photo courtesy of the author.)
+
+is a nudge up or down from the equilibrium
+position. The forces for these deflections are
+small compared to the forces required to lift and
+lower the full weight of the assemblies, and the
+exertions of the operator are correspondingly
+relieved. Using this technique as a model, Crick
+devised a mechanism using a strong counterbalancing spring to relieve the load. The mechanism was fixed under the lowest framing piece,
+out of sight for normal viewing (see Figure 5).
+The phasing of internal actions is critical.
+The calculating cycle is crowded with little
+margin for deviation from strict synchrony. If
+a part moves fractionally late or early, the
+mechanism is likely to seize or break as it fouls
+a mating part. When parts were first positioned
+on the machine, they were rarely in their correct orientation. Each had to be adjusted and
+then fixed permanently. The drawings simply
+show all gears and rotating parts permanently
+pinned to their shafts already in their correct
+and final positions. There is no indication of
+how the correct positions are to be determined
+before pinning. Hundreds of parts were fitted
+one at a time by trial and error using grubscrews for incremental adjustment for each
+trial. Until all the parts were correctly phased,
+the machine would jam incessantly. Breakages,
+especially of the brittle bronze carry levers,
+which are the most fragile part of the carriage
+
+mechanism, were not uncommon, especially as
+the reduction gear in the drive reduced sensitivity to obstructions.
+Jamming is an intended feature of error detection built in by Babbage. The engine is a decimal
+digital machine. It uses the familiar Arabic number system, and it is digital in the sense that only
+discrete integers are legitimate representations of
+digit values. So the value represented by a
+toothed figure wheel at rest in an intermediate
+position between two digit-values is indeterminate, and the occurrence of this state signals that
+the integrity of the calculation has been compromised.
+What makes Babbage’s designs digital is not
+any inherent discreteness in the motions of the
+basic logical element (a gear wheel) but the locking and control mechanisms. The most common method used for “digitizing” the motions
+occurs in the form of a wedge that is driven
+between teeth of the gears at various points in
+the cycle. The wedge has three functions:
+• Locking. When inserted between two teeth,
+the wedge locks the wheel and prevents
+derangement except during specific predetermined windows in the timing cycle. The
+wedges, which run like sword blades up the
+columns and act on all 31 figure wheels at
+the same time, are called locks (see Figure 2).
+
+July–September 2005
+
+79
+
+Charles Babbage’s Difference Engine No. 2
+
+• Self-correction. Because of its angled profile,
+the insertion of the wedge has a self-correcting action: Small deviations from exactly discrete increments are corrected by the
+centering action of the wedge. This action is
+analogous to electronic pulse shaping.23
+• Error detection. The wedge acts as an error
+detector: If a toothed figure wheel has
+deranged by more than half the gap
+between teeth (2-1/4 degrees), then the
+tooth blocks the entry of the lock and causes a jam.24 The crank handle seizes, and the
+operator is alerted that the calculation has
+been compromised.
+The locking mechanisms, unique to
+Babbage’s designs, are intended to ensure the
+calculation’s absolute integrity. Babbage used a
+variety of security mechanisms, one of which
+is a device of extraordinary subtlety, the function of which was not fully understood until it
+was assembled and operated. The device in
+question involved horn-like attachments in the
+carriage mechanism (see Figure 2). In accordance with Babbage’s intentions, these were
+carried through to the new drawings, although
+their function was not fully evident at the time.
+In live operation, it became clear that the horns
+are a security measure that prevents the figure
+wheels from deranging while waiting for a possible carry from below. The device prevents the
+wheel from incrementing unless driven from
+the legitimate source at a particular point in the
+cycle. Babbage went to great lengths to make
+good his assertion that his machines break,
+jam, or operate as intended, that is to say, they
+would never deceive.25
+One of the greatest difficulties in the commissioning stages of the engine resulted from
+the absence of any provision for debugging.
+When the machine jammed, there was no provision for easily isolating one section from
+another to help localize the fault. The whole
+machine, including the printing and stereotype
+apparatus, is one monolithic “hard wired” unit.
+Drive gears and levers are pinned to their
+shafts. Drive rods and links are shown in the
+original drawings as pinned or riveted and
+therefore difficult to dismantle once assembled.
+In the event of a jam, all one could do was poke
+around with a screwdriver, or in extreme cases
+a crow bar, prying here and there for some give
+or play that would indicate that the jam
+occurred earlier in the machine. The hunt-andpeck technique was repeated until a moving
+part was found with no play, and the first
+occurrence of this was inspected as the possible
+source of the jam. During assembly and com-
+
+80
+
+IEEE Annals of the History of Computing
+
+missioning, the machine jammed countless
+times each day. When the machine was locked
+solidly, the starting point for fault detection
+was haphazard and demoralizing.
+Our first attempt to set up the machine to
+perform its first calculation took place on 23
+June 1991, four days before the exhibition
+opening. In anticipation, I had calculated the
+initial setting up values for a table of powers of
+seven, the first test calculation we would try,
+using a CP/M version of a Microsoft spreadsheet, package, Multiplan, running on a North
+Star Horizon computer I had bought back in
+the US in 1979. I also produced a printout of
+the first 80 values of the function y = x7 the first
+test calculation we would try. In the first trial
+we found that the setup procedure described by
+Babbage was self-corrupting. The odd and even
+axes are set up at different parts of the cycle,
+and advancing the machine to the second
+setup point deranged the settings already
+made. The solution was simple enough: to provide temporary locks (vertical metal strips with
+slotted fixing holes) that could be slid in and
+out and fixed in the engaged or unengaged
+position using knurled nuts. The self-corrupting sequence is an illustration of the earlier
+assertion that although the deficiencies in the
+original design were many and varied, none
+were issues of basic logic that compromised
+Babbage’s original intentions—that is, modifications were issues of engineering implementation rather than of principle.
+Fitting and assembly started in September
+1990, and the calculating section was fully
+assembled by late June 1991. At the time the
+machine went on exhibition on 27 June 1991,
+it was still plagued by jams. At the gala opening, the engine was demonstrated to international media with all figure wheels set to zero.
+This prevented jams and allowed the visually
+arresting spectacle of the rotating helices of the
+carriage mechanism to be shown. The sight of
+the rippling helices distracted the press from
+the historically inconclusive state of progress,
+and media coverage was uniformly positive.
+Commissioning and debugging continued
+in the intervals between twice-daily public
+demonstrations but without the protection of
+our enclosed pen. The sources of the jams were
+progressively eliminated, and, with use, the initial stiffness began to ease. The path to reliable
+working was a gradual process of eliminating
+more refined forms of minor fault.
+The final adjustments were to some of the
+carriage mechanisms. Babbage had insisted on
+the highest precision achievable at the time as
+a uniform standard. Michael Lindgren, for one,
+
+has argued that the lessons of the Scheutz difference engines, the first of which was finished
+in 1843, are that such precision was not only
+unnecessary but that the consequent costs and
+delays contributed to Babbage’s failure.26 We
+had thought that by using computer-controlled
+manufacture, repeated parts, would be sufficiently similar to be interchangeable. This
+proved not to be the case. The most delicate
+parts are the bronze carry levers which, because
+of their intricacy, were made in two parts soldered together in a jig. We found that some 10
+percent of the 210 carry levers required final
+adjustment by hand (through trial and error)
+using a specially made tool to bend the arms.
+The engine performed its first full automatic error-free tabulation of the function y = x7 on
+29 November 1991, 27 days before Babbage’s
+200th birthday. Though the final adjustments
+were finicky, the machine, once pinned and
+adjusted, has been, from the time of its first correct calculation, robustly and persistently reliable. Almost without exception, calculation
+errors have been traced to an earlier human
+setup or operational error.
+Each new tabular result requires seven 31digit decimal additions. At first the engine calculated at a rate of one result (seven 31-digit
+additions) every 10 seconds. As the machine
+eased with use, the rate speeded up to one
+result every 6 seconds.
+
+Output apparatus—Funding and
+preparation
+The automatic production of a machinereplicable record of results is an integral part of
+the conception of the engine. The output apparatus that prints and stereotypes results is
+described in the original set of drawings to the
+same level of detail as the calculating section.
+The operation of this compound output apparatus is described in the sidebar, “Difference
+Engine No. 2: Printing and Stereotyping.”
+The unique circumstances of the bicentenary provided a hard deadline as well as leverage to raise sponsorship through the benefit by
+association with a high-profile project. This had
+now passed. There was now no deadline and
+no public event on the back of which to attract
+corporate support.
+The funding breakthrough came, indirectly,
+through Bill Gates. The European press launch
+of his book The Road Ahead was held in the
+Science Museum on 3 December 1995, and the
+photo opportunity was to be the spectacle of
+Gates turning the engine’s handle. When he
+arrived at the museum, I gave Gates preliminary guidance on the turning technique while
+
+a rabid pack of some 40 paparazzi, corralled
+into a small area behind the engine, shouted
+his name to pop a shot as Gates turned in reflex
+to the caller. The atmosphere was aggressive
+and threatening, and Gates appeared discomfited by the assault. The confusion and noise of
+the situation prevented me from making a
+pitch, but a member of Gates’s party, Jonathan
+Lazarus, trailed behind and was interested in a
+source of Enigma machines. I took his card and
+we exchanged emails, in one of which I asked
+what Gates had thought of the machine.
+Lazarus relayed to me that Gates had thought
+that the “machine was ‘very cool’ and that he
+had been pleased to see it.”
+I sought Lazarus’s advice about any potential interest Gates or Microsoft might have in
+sponsoring the printer construction and
+emailed a project description. He referred me
+to Nathan Myhrvold, group vice president of
+applications and content, at Microsoft. What
+followed was a year-long email courtship with
+Myhrvold, aided by a visit and a demonstration, on 13 March 1997, of the completed section of the machine. He followed up shortly
+after with a proposal to personally fund the
+construction of two printers and another
+engine. The first printer would complete the
+Science Museum’s existing machine; the second printer–engine pair would be a replica of
+the whole engine for display, and occasional
+use, in Myhrvold’s house in Seattle. When I
+told Reg Crick, the now-retired engineer who
+had played a key role in constructing the calculating section, all he said, with what I hope
+was an audible smile, was “What took you so
+long?”
+Orders for parts were dispatched in October
+1998. Crick came out of retirement and assembly work in the gallery started late in 1999.
+Assembling Babbage’s machines is a two-person
+task, and Holloway had long since left. I had a
+young, well-qualified in-house conservator–
+machinist and engineering workshop enthusiast,
+Richard Horton, assigned to Crick for the build.
+He was to be Crick’s “apprentice” and was being
+groomed for the future.
+
+Building the printing and stereotype
+apparatus
+The output apparatus was built in public
+view directly onto the already completed calculating section of the engine. Building the
+apparatus was substantially more difficult,
+troublesome, and frustrating than building the
+calculating section. We originally estimated
+that it would take a year to assemble. It took
+well over double this time. The single biggest
+
+July–September 2005
+
+81
+
+Charles Babbage’s Difference Engine No. 2
+
+Difference Engine No. 2: Printing and Stereotyping
+printing plates for use in a conventional printing press.
+Figure B shows a plan view.
+The printing and stereotyping apparatus is directly coupled to the calculating section, and each new 30-digit tabular value is transferred automatically from the results
+column, via a system of racks, pinions, and spindles, to the
+print wheels. The tabular result is transferred at the same
+time to two sets of punches for stereotyping (see Figures C
+and D). Typesetting is automatic, and each result is printed
+and stereotyped during the calculating cycle in which it is
+generated: There is no buffering or storage of the result and
+there is no time overhead to print—that is, printing and
+stereotyping is accommodated in the calculating cycle and
+takes no additional time. Each cycle leaves an inked impression of a 30-digit result on the paper print roll that advances
+automatically to provide
+fresh paper for each line
+(see Figure 7 in the main
+text and Figure E). This
+hardcopy printout is
+intended as a record and
+checking copy only; the
+operator cannot alter the
+line spacing and format.
+The production of multiple
+copies for distribution is
+achieved through stereotyping.
+There are two sets of
+stereotype punches, one
+with a larger, and one with
+a smaller font. Each set
+consists of 30 wheels, one
+for each digit of the result,
+with hardened steel number punches fixed at the
+circumference (see Figure
+D). The wheels making up
+the punches have 2
+degrees of freedom only:
+Figure B. Plan of output apparatus. Science Museum Library Babbage Papers, drawing
+rotational (to register each
+BAB [A] 173, “Plan of Inking Printing & Stereotype Apparatus,” undated. (Drawing
+digit of the result), and vercourtesy of the Science Museum, London.)
+
+A central feature of Babbage’s calculating engine
+designs is the automatic capture of machine-replicable
+output. Difference Engine No. 2 features an output apparatus that automatically typesets, prints, and stereotypes
+results. The apparatus is shown on the left-hand side of
+Figure 4 in the main text. The upper section contains the
+print wheels, inking apparatus, and paper roll for hardcopy, as well as the stereotype wheel punches. The lower
+section is a movable platform that positions the stereotyping trays under the stereotype punches for each new
+result. The whole apparatus, which is bolted to the main
+framing, consists of some 4,000 parts and weighs and estimated 2.5 metric tons. As an ensemble, the two units produce one-off inked hardcopy results to 30 digits on a print
+roll as well as a stereotype mold for the production of
+
+difference between the two sections of the
+machine is that, although there is a large number of repeated parts and assemblies in the calculating section, there is very little repetition
+in the output apparatus. The learning curve
+throughout the fitting and assembly stayed relatively flat.
+Like the calculating section, Babbage drew
+the output apparatus as a single monolithic
+“hard wired” assembly with no provision for
+
+82
+
+IEEE Annals of the History of Computing
+
+adjustments. Unlike the calculating section, the
+output apparatus is dense and deep with poor
+access to its internal workings. Any small adjustment or fitting required lifting out the whole 2.5
+metric ton assembly to enable access. Each trialand-error adjustment meant countless separate
+cycles of removal and refixing. A large overhead
+gantry was mounted permanently to lift out the
+apparatus, sometimes several times a day.
+Inevitably, there were modifications to the
+
+Figure C. Output apparatus (computer simulation)
+showing figure wheels (top right), printing apparatus
+(left), and stereotyping punches and trays (bottom).
+(Photo courtesy of the Science Museum, London.)
+
+tical (lowering to impress the result, and raising to return to
+receive the next result). The wheel punches are assembled
+on the same shaft and are lowered and raised together as a
+set. Below each set of punches is a bronze tray to take the
+soft material to receive the impression (see Figure C).
+During each calculating cycle, the punches are driven
+downward into the trays below, and the material is
+impressed with all 30 digits at the same time in one action.
+After each impression, the tray advances automatically and
+repositions itself to receive the next result on a new line or
+column and the distance between the impressions (the line
+height) is determined by the incremental advance of the tray.
+The smaller tray advances by a proportionately smaller
+amount to give a reduced line height in keeping with the
+smaller font size. The platform or carriage supporting the
+stereotype trays has 2 horizontal degrees of freedom, which
+allow the trays to advance down the page (line to line) or
+across the page (column to column). The carriage is driven
+by falling weights that are rewound automatically at the end
+of a column or page. The layout of results can be programmed by the operator by selecting from a menu of pattern wheels, which control the incremental behavior of the
+moving platform. Programmable formatting features include
+line height, number of columns, margin widths, number of
+lines on a page, blank lines between groups of lines, and the
+
+designs. Some were precautionary. Others were
+in response to problems that arose during commissioning. Precautionary measures included
+the provision of counterbalancing weights to
+relieve the deadweight of the 30 vertical racks
+forming part of the drive train that transfers the
+tabular value from the last column to the print
+wheels. Another precaution was the provision
+of robust support brackets and legs to relieve
+the load on the bolts that fix the whole appa-
+
+Figure D. Stereotyping wheel punches for large font.
+(Photo courtesy of the Science Museum, London.)
+
+Figure E. Printing mechanism showing inking rollers and
+ink bath (top), and paper drums in raised position taking
+an inked impression from the print wheels. (Photo
+courtesy of the Science Museum, London.)
+
+ability to have results progress line to line with automatic column wrap, or column to column with automatic line wrap.
+A feedback mechanism from the output apparatus to
+the calculating section automatically halts the machine at
+the end of a stereotyped page to prevent an overrun. This
+ensures that the first new result on the fresh tray is the next
+result in the sequence and that no results are lost in the
+changeover.
+
+ratus to the engine frame. Such measures were
+reversible and unproblematic.
+Some modifications were introduced in
+response to operational difficulties during commissioning. There is, for example, no way of
+uncoupling the drive to the output apparatus
+from the calculating section: The drive is provided by a single unbroken shaft that runs the
+full length of the underside of the engine and
+is directly driven by a large bevel gear under the
+
+July–September 2005
+
+83
+
+Charles Babbage’s Difference Engine No. 2
+
+Figure 6. Difference Engine No. 2, 2002. Foreground: Printing and
+stereotyping apparatus. Rear: Calculating section and drive. (Photo
+courtesy of the Science Museum, London.
+
+cam stack (see Figure 4). So to run the printer,
+you need to run the engine. This is not practical either during commissioning and testing, or
+when using the machine for tabulation. With
+no provision for uncoupling, working on the
+output apparatus required two people, one at
+the crank handle, the other at the output end
+11 feet away. This, too, was impractical:
+Countless adjustments, visual inspections, and
+tests requiring incremental operation would be
+inconvenient or impossible to perform with
+two operators, one unsighted, stranded at the
+crank end. There was also the frequent need to
+work on the two units separately, and debugging was easier if the units could be uncoupled.
+A more serious problem would arise when
+using the machine for tabulation. In some situations, the output apparatus needs to be cycled
+without disturbing the engine. Priming the inking rollers by cycling the printing system is one
+such need. Advancing the stereotype trays so
+that they can be removed, refilled, or replaced is
+another. Both these operations may be required
+during a calculation run. However, without the
+facility for uncoupling, the only way to cycle the
+output apparatus was to cycle the engine, and
+doing so alters its internal state and destroys the
+
+84
+
+IEEE Annals of the History of Computing
+
+continuity of the calculation run.
+The solution was to sever the main drive
+shaft to the output apparatus and insert a
+clutch that could couple or break the drive as
+needed. Crick designed the clutch with manual interlocks so that the drive can be recoupled if and only if the output apparatus and
+the calculating section are correctly phased.
+A crank handle, a duplicate of the handle
+specified by Babbage, was provided at the
+printer end so that the output apparatus
+could be driven directly without affecting the
+calculation section. (See the left-hand side of
+Figures 5 and 6).
+One intriguing additional device was a
+“bounce catcher.” An inking roller swings
+downward each calculating cycle to ink the
+printing wheels immediately before an impression is taken. At the end of the return swing, it
+was found to rebound from its end stop and
+foul the paper roller, which was in the upward
+swing of its trajectory. With the timing cycle
+too tight to separate the actions, Crick designed
+a mechanism to trap the roller in its home position on the return swing. In preventing
+unwanted oscillations the action of the mechanism is not unlike that—by way of electronic
+analogy—of a Schmidt trigger, which latches
+the output in a fixed state when a noisy input
+signal passes through a reference threshold.
+The biggest single difficulty that bedeviled
+getting the output apparatus operational was
+friction in the drive trains that transfer the
+results from the calculating section and the
+output apparatus. The main source of this was
+sliding friction between 30 vertical racks. The
+racks slide against each other, and we found
+that surface tension using any form of oil created surprisingly high resistance to sliding. We
+tried various forms of wet and dry lubrication
+without success. A combination of relieving the
+contact surfaces by milling selected shapes in
+the faces of the racks, skimming down the
+overall width, and using dry graphite lubrication ultimately solved the problem. The stiffness in the train hampered progress almost
+until the end and masked several other faults
+in the process.
+One fundamental design issue threatened to
+undermine Babbage’s ambitions for the output
+apparatus. The output apparatus automatically
+typesets the printed and stereotyped results. In
+doing so, the mechanism aligns the appropriate digits on the printing wheels and stereotype
+wheel punches for each result. As described earlier, in the calculating section Babbage used
+wedge-shaped locks, which have a centering
+action that helps to ensure fully digital opera-
+
+tion. The same locking mechanism is used in
+several places in the output apparatus. The
+question that remained unanswered until last
+was whether the action of the wedge-shaped
+locks would be sufficient to align the stereotyping punches accurately enough—that is, to
+the analog standards of exactness for a typographically acceptable result.
+The first clue that the wedge-shaped locking
+system might not be adequate was the imperfect alignment of the experimental inked
+paper-roll hardcopy output (see Figure 7).
+Examination revealed that the forces with
+which the locks operated were not sufficient to
+align the stereotype punches, and this had
+been masked by the stiffness in the vertical
+racks. Crick devised a collapsed link mechanism that drove one of the existing locks home
+with sufficient force to align the punches to an
+acceptable standard.
+The various intended features of the output
+apparatus were exercised for the first time in
+March 2002. Although refinements to the inking apparatus were made subsequently, this
+date marks the completion of the machine, as
+originally designed.
+The project to construct the engine started
+with Bromley’s proposal in May 1985. It took just
+under 17 years to realize an operational machine.
+
+Lessons
+It is legitimate to ask what was learned from
+this project, and what was learned that could
+not otherwise be learned. The machine was
+built to tolerances achievable by Babbage, using
+materials available to him, and introducing
+reversible modifications to the design using
+solutions used by Babbage elsewhere. Despite
+many modifications, no flaws were found that
+compromised the design’s essential logic or
+principles. Given that the machine works, and
+was built with conscientious attention to issues
+of authenticity, the project provided definitive
+answers to some of the earlier historical questions about Babbage’s standing. It is fair to conclude that had Babbage built the machine, it
+would have worked. Second, the fact of its
+working vindicates Babbage as a designer of
+extraordinary practical inventiveness, this in
+addition to the already recognized intellectual
+accomplishments of his designs for computing
+engines. So we can demonstrably say that
+Babbage was not an impractical dreamer but a
+designer of the highest caliber. These assertions
+could not be made with the same conviction
+without the empirical confirmation of a working machine.
+There were lessons learned that in principle
+
+Figure 7. Experimental printout of a seventh-order polynomial. The
+argument is the left-hand three columns. (Photo courtesy of the
+Science Museum, London.)
+
+could have been learned without the construction, but were not. The subtle device for locking
+the figure wheels during the carriage cycle was
+not fully understood until built and operated.
+Another contingent finding was the maximum
+speed of operation and the limiting factor determining this. We found, after the mechanisms
+had eased with use, that the maximum speed of
+the machine as designed was 10 results per
+minute.27 Also, the limiting consideration was
+a gear that gets thrown out of mesh, and this is
+probably remediable by a stronger spring.
+In principle, one could have analyzed,
+inferred, and foreseen these and other features.
+But nobody did. Like playing chess, there is a
+limit to the number of moves one can foresee,
+and the explosion of uncertainties from more
+than a few counterfactual conditionals in the
+train of reasoning soon sabotages confidence in
+any conclusions one might draw. In some
+instances, there is no substitute for practice.
+Having a physical machine to operate
+focused attention on issues of operational procedure, and gave us insights into the implications for contemporary table making. One
+insight was into the possibility of suppressing
+leading zeros. The construction of the printwheels and stereotype wheel punches indicates
+that suppressing leading zeros in the printed
+hardcopy was clearly not intended. Replacing
+wheel punches with blank spacers is possible
+but not practical, and it is likely that leading
+zeros would have been cut or machined off the
+printing plate after it was cast.
+
+July–September 2005
+
+85
+
+Charles Babbage’s Difference Engine No. 2
+
+machine’s full digit capacity between the argument and result, contributes to the debate
+about the apparently extravagant digit precision of Babbage’s designs: The full digit capacity may not have been intended only for the
+results.
+
+Conclusion
+
+Figure 8. Experimental stereotype mold in plaster of paris. Detail.
+(Photo courtesy of the Science Museum, London.)
+
+Close contact with the practical procedures
+for stereotyping gave suggestive insights into
+issues that had remained puzzling. One such
+was the question of why Babbage’s designs
+showed engines working to so many digits of
+precision.28 Faced with the practical task of
+stereotyping a run of calculations raised the
+question of how the argument would be tabulated. If the full 30 digits are used in the printed result, then generating the argument
+requires a separate run using only one difference to increment each next value. The tabulated argument would then later have to be
+matched to the separately tabulated results at
+the stage of making the printing plates.
+A feature of the machine is that the calculating section can be split horizontally to isolate upper and lower sections. This is done by
+disabling the carriage of tens at any digit position on each of the eight columns of figure
+wheels. The manual adjustment to do this is
+simple and takes only a moment. Separate calculations can then be carried out in each of the
+isolated sections with the 30 digits apportioned
+between the two sections at will. So one section
+of the machine can perform the tabulation of
+a polynomial function of up to the seventh
+order, and a separate section can tabulate the
+argument using only one difference to progressively increment the argument. The argument and result both occupy the last column
+of the engine and are automatically printed
+and stereotyped on the same line alongside
+each other (see Figures 7 and 8).
+Generating the argument and the result in
+the same calculation run, by distributing the
+
+86
+
+IEEE Annals of the History of Computing
+
+The successful construction of the engine
+was instructive in furthering historical understanding of Babbage’s capabilities and achievements. Constructing the machine revealed
+features and subtleties that had not been fully
+appreciated through analysis of archival
+sources. Moreover, the fact that the machine
+works without material modification to the
+original drawings vindicates Babbage as a
+designer of the highest caliber. The meaning
+and value of the machine, both historical and
+technical, are far from exhausted: the existence
+of a complete and working Babbage tabulating
+engine offers an opportunity to further explore
+automatic tabulation as practiced in the 19th
+century and to acquire operational know-how
+inaccessible by nonempirical means.
+The physical artifact—large, intricate, and
+imposing—serves to memorialize Babbage as
+the great ancestral figure in the history of computing, and in this it achieves the purpose of its
+construction as articulated by Allan Bromley in
+1985. The engine rounds off a historical narrative. The successful construction of the
+machine closes an anguished chapter in computer pre-history: The Science Museum is a
+government institution funded from the
+Treasury, and the original deal between the
+government and Babbage to fund his machine
+to completion has finally been fulfilled.
+The sumptuous spectacle of the machine in
+operation is an arresting sight. The act of witnessing the startling choreography of its moving parts and the clanking synchrony of its
+motion prompt us to experience the promise of
+a future already past.29 Objects are interpreted
+and reinterpreted by successive generations.
+Others will find other meanings.
+
+Acknowledgments
+I would like to acknowledge the Science
+Museum for providing the context and environment for undertaking the project to construct Babbage’s calculating engine. Special
+thanks to two Science Museum directors in
+whose tenures this project fell: Margaret
+Weston, who encouraged and financially supported the late Allan Bromley’s pioneering work
+on Babbage’s engine designs, and Neil Cossons,
+who spiritedly backed the project to construct
+
+the engine at critical points in its eventful trajectory, despite the risks. Generous financial
+support was provided by ICL, Unisys, HewlettPackard, Rank Xerox, and Siemens Nixdorf for
+the construction of the calculating section completed in 1991. Tom Bales, director of Symbiosis
+Foundation, funded the preparation of the
+drawings for the printing and stereotyping
+apparatus. Special thanks to Nathan Myhrvold
+for generously funding the construction of the
+printing and stereotype apparatus completed in
+2002, as well as a complete replica engine, and
+for his good-humored patience awaiting the
+outcome. Most of the illustrations were photographed by David Exton.
+
+References and notes
+1. A. Hyman, Charles Babbage: Pioneer of the Computer, Oxford Univ. Press, 1982, pp. 124-131; D.
+Swade, The Cogwheel Brain: Charles Babbage and
+the Quest to Build the First Computer, 2000, Little,
+Brown (published in the US as The Difference
+Engine: Charles Babbage and the Quest to Build the
+First Computer, Viking, 2001, pp. 65-71).
+2. A.G. Bromley, “The Evolution of Babbage’s Calculating Engines,” Annals of the History of Computing, vol. 9, no. 2, 1987, pp. 113-136.
+3. The quoted phrase is Henry Prevost’s. See H.P.
+Babbage, ed., Babbage’s Calculating Engines: A Collection of Papers by Henry Prevost Babbage, E. and
+F.N. Spon, 1889, preface. (Reprinted in The
+Charles Babbage Institute Reprint Series for the History of Computing. vol. 2, Tomash Publishers, 1982.
+For historical evolution of Babbage’s ideas, see B.
+Collier, The Little Engines that Could’ve: The Calculating Engines of Charles Babbage, Garland, 1990.
+4. For a detailed technical description of the Analytical Engine, see A.G. Bromley, “Charles Babbage’s
+Analytical Engine, 1838,” Annals of the History of
+Computing, vol. 4, no. 3, 1982, pp. 196-217
+(reprinted in 1998, vol. 20, no. 4, pp. 29-45).
+Also see A.G. Bromley, “Babbage’s Analytical
+Engine Plans 28 and 28a—The Programmer’s
+Interface,” IEEE Annals of the History of Computing,
+vol. 22, no. 4, 2000, pp. 4-19.
+5. Collier, The Little Engines that Could’ve, p. 211;
+also see A.G. Bromley, The Babbage Papers in the
+Science Museum: A Cross-Referenced List, Science
+Museum, London, 1991, p. 11.
+6. Science Museum Library Babbage Papers , drawing BAB [A] 99, “Rough sketch of an element of a
+Difference Engine and method of Carrying Consecutively,” 1 March 1842.
+7. C. Babbage, The Exposition of 1851 or Views on
+the Industry, the Science, and the Government of
+England, 2nd ed., 1851; M. Campbell-Kelly, ed.,
+The Works of Charles Babbage, vol. 10, William
+Pickering, 1989, p. 108.
+
+8. C. Babbage to Lord Derby, 8 June 1852, quoted
+in C. Babbage, Passages from the Life of a Philosopher, Longman, Green, Longman, Roberts &
+Green, 1864, p. 104.
+9. For quoted phrase see Babbage, Passages from
+the Life, p. 114. For a technical description of the
+anticipating carriage mechanism, see A.G. Bromley, “Charles Babbage’s Analytical Engine, 1838,”
+Annals of the History of Computing, vol. 4, no. 3,
+1982, p. 202 and the following.
+10. Babbage, Passages, p. 97.
+11. Science Museum Library Babbage Papers , drawing BAB [A] 166, “Apparatus for moving Stereotype frames for Analytical & Difference Engines,”
+undated.
+12. Babbage, Passages, p. 107. See also p. 106 for
+reference to “imagined obligation.”
+13. Science Museum Registered File, ScM 2004/46/5
+pt. 1, “Babbage Difference Engine No. 2: Project
+Correspondence.” File Note recording first
+action, 7 Nov. 1986.
+14. For the listing, see Bromley, The Babbage Papers,
+1991, pp. A-13 to B-3.
+15. There are two drafts. The first is dated 13 June
+1985. The second is a slightly expanded version
+dated 27 March 1987; Science Museum
+Registered File, ScM 2004/46/19, “Babbage Difference Engine Project: Correspondence with Dr.
+A. Bromley.”
+16. For a comprehensive description, see D. Swade,
+Charles Babbage’s Difference Engine No. 2: Technical Description, Science Museum Papers in the
+History of Technology, Science Museum, London,
+1996.
+17. Science Museum Library Babbage Papers, drawing BAB [A] 172, “End View of Inking Printing
+Paper and Stereotype Apparatus,” undated.
+18. A. Bromley to M. Weston, 20 May 1985, Science
+Museum Registered File, ScM 2004/46/19.
+19. For a fuller narrative account of the trial piece,
+see Swade, Cogwheel Brain, chapter 13.
+20. For details of composition analysis see Science
+Museum Registered File, ScM 2004/46/29, “Babbage DE2: Technical Notes.”
+21. For a fuller narrative account of the build (excluding the output apparatus), see Swade, Cogwheel
+Brain, Part III, pp. 221-318.
+22. For cam profile details, see the Science Museum
+Library Babbage Papers, drawing BAB [A] 169,
+“Plan of Cams for Odd Difference Figure Wheels
+and for Vertical motion of Even Difference
+warning.”
+23. I am indebted to Eiiti Wada for this analogy. Personal communication, Tokyo, 24 July 1998.
+24. See Swade, Charles Babbage’s Difference Engine
+No. 2, 1996, pp. 70-71.
+25. C. Babbage, On the Mathematical Powers of the
+Calculating Engine, 1837; M. Campbell-Kelly, ed.,
+
+July–September 2005
+
+87
+
+Charles Babbage’s Difference Engine No. 2
+
+The Works of Charles Babbage, vol. 3, William
+Pickering, 1989, p. 39.
+26. M. Lindgren, Glory and Failure: The Difference
+Engines of Johann Muller, Charles Babbage, and
+Georg and Edvard Scheutz, 2nd ed., MIT Press,
+1990.
+27. Based on the earlier Analytical Engine designs,
+Bromley first estimated the speed of calculation
+for Difference Engine No. 2 at one result every
+7 seconds. He later amended this to 3.5
+seconds. See Ref. 15.
+28. For discussion of digit precision in the context of
+contemporary table-making, see D. Swade, Calculation and Tabulation in the 19th Century: Airy versus Babbage, doctoral dissertation, 2003, Univ.
+College London. For a summary account and use
+of Difference Engine No. 2, see D. Swade, “The
+‘Unerring Certainty of Mechanical Agency’”:
+Machines and Table Making in the Nineteenth
+Century,” The History of Mathematical Tables: From
+Sumer to Spreadsheets, M. Campbell-Kelly et al.,
+ed., Oxford Univ. Press, 2003, pp. 143-174.
+29. F. Spufford, “The Difference Engine and The Difference Engine,” Cultural Babbage: Technology,
+Time and Invention, F. Spufford and J. Uglow,
+eds., Faber and Faber, 1996.
+
+88
+
+IEEE Annals of the History of Computing
+
+Doron D. Swade is Visiting
+Professor (Interaction Design)
+at the Royal College of Art,
+London. Until 2002 he was
+assistant director and head of
+collections at the Science
+Museum, London. From 1985
+to 1999, he was the Science
+Museum’s senior curator of computing. Previously,
+he designed electronics and computer-based hardware for museum exhibits and consulted for the
+microcomputer industry in the UK and US. He has a
+BSc in electronics engineering and physics, an MSc
+in control engineering, and a PhD in the history of
+19th-century calculating machines. His most recent
+book is The Difference Engine: Charles Babbage and the
+Quest to Build the First Computer (Viking, 2001).
+
+Readers may contact Swade about this article at
+doron.swade@blueyonder.co.uk.
+
+For further information on this or any other computing topic, please visit our Digital Library at
+http://www.computer.org/publications/dlib.
+
+

@@ -22,39 +22,36 @@ from backend.src.emulator.timing import MechanicalPhase
 
 class BreakpointType(Enum):
     """Types of breakpoints."""
-
-    CYCLE = "CYCLE"  # Break at specific cycle number
-    PHASE = "PHASE"  # Break at specific mechanical phase
-    VALUE_CHANGE = "VALUE_CHANGE"  # Break when variable changes
-    CONDITION = "CONDITION"  # Break when condition is true
-    INSTRUCTION = "INSTRUCTION"  # Break at specific instruction
+    CYCLE = "CYCLE"                    # Break at specific cycle number
+    PHASE = "PHASE"                    # Break at specific mechanical phase
+    VALUE_CHANGE = "VALUE_CHANGE"      # Break when variable changes
+    CONDITION = "CONDITION"            # Break when condition is true
+    INSTRUCTION = "INSTRUCTION"        # Break at specific instruction
 
 
 @dataclass
 class SymbolEntry:
     """Entry in the debugger's symbol table."""
-
-    name: str  # Variable name
-    initial_value: int  # Initial value
-    current_value: int = 0  # Current value
-    read_count: int = 0  # Times read
-    write_count: int = 0  # Times written
+    name: str                           # Variable name
+    initial_value: int                  # Initial value
+    current_value: int = 0              # Current value
+    read_count: int = 0                 # Times read
+    write_count: int = 0                # Times written
     first_access_cycle: Optional[int] = None  # First access cycle
-    last_access_cycle: Optional[int] = None  # Last access cycle
+    last_access_cycle: Optional[int] = None   # Last access cycle
     access_history: List[Tuple[int, str, int]] = field(default_factory=list)  # (cycle, op, value)
 
 
 @dataclass
 class Breakpoint:
     """Represents a single breakpoint."""
-
-    breakpoint_id: int  # Unique ID
-    breakpoint_type: BreakpointType  # Type of breakpoint
-    enabled: bool = True  # Breakpoint enabled
-    hit_count: int = 0  # Times this breakpoint was hit
+    breakpoint_id: int                  # Unique ID
+    breakpoint_type: BreakpointType     # Type of breakpoint
+    enabled: bool = True                # Breakpoint enabled
+    hit_count: int = 0                  # Times this breakpoint was hit
     cycle_target: Optional[int] = None  # For CYCLE breakpoints
     phase_target: Optional[MechanicalPhase] = None  # For PHASE breakpoints
-    variable_name: Optional[str] = None  # For VALUE_CHANGE breakpoints
+    variable_name: Optional[str] = None # For VALUE_CHANGE breakpoints
     condition_func: Optional[Callable[[DEMachineSnapshot], bool]] = None  # For CONDITION
     trigger_on_change: Optional[int] = None  # Previous value for VALUE_CHANGE
 
@@ -62,14 +59,13 @@ class Breakpoint:
 @dataclass
 class ExecutionTrace:
     """Trace of a single execution step."""
-
-    cycle: int  # Cycle number
-    phase: MechanicalPhase  # Mechanical phase
-    angle: int  # Shaft angle
-    column_values: List[int]  # Column values before operation
-    operation: str  # Operation performed
-    result_values: List[int]  # Column values after operation
-    carry_signals: List[bool]  # Carry signals
+    cycle: int                          # Cycle number
+    phase: MechanicalPhase              # Mechanical phase
+    angle: int                          # Shaft angle
+    column_values: List[int]            # Column values before operation
+    operation: str                      # Operation performed
+    result_values: List[int]            # Column values after operation
+    carry_signals: List[bool]           # Carry signals
     breakpoint_hit: Optional[int] = None  # Breakpoint ID if hit
 
 
@@ -92,9 +88,7 @@ class SymbolTable:
         if name in self.symbols:
             raise ValueError(f"Symbol '{name}' already defined")
 
-        self.symbols[name] = SymbolEntry(
-            name=name, initial_value=initial_value, current_value=initial_value
-        )
+        self.symbols[name] = SymbolEntry(name=name, initial_value=initial_value, current_value=initial_value)
 
     def read_symbol(self, name: str, cycle: int) -> int:
         """
@@ -246,11 +240,7 @@ class BreakpointManager:
         del self.breakpoints[breakpoint_id]
 
     def check_breakpoints(
-        self,
-        cycle: int,
-        phase: MechanicalPhase,
-        snapshot: DEMachineSnapshot,
-        symbol_table: SymbolTable,
+        self, cycle: int, phase: MechanicalPhase, snapshot: DEMachineSnapshot, symbol_table: SymbolTable
     ) -> List[int]:
         """
         Check if any breakpoints are triggered.
@@ -375,15 +365,11 @@ class Debugger:
 
     def set_value_breakpoint(self, variable_name: str) -> int:
         """Set breakpoint when variable changes."""
-        return self.breakpoint_manager.set_breakpoint(
-            BreakpointType.VALUE_CHANGE, variable_name=variable_name
-        )
+        return self.breakpoint_manager.set_breakpoint(BreakpointType.VALUE_CHANGE, variable_name=variable_name)
 
     def set_condition_breakpoint(self, condition: Callable[[DEMachineSnapshot], bool]) -> int:
         """Set breakpoint when condition is true."""
-        return self.breakpoint_manager.set_breakpoint(
-            BreakpointType.CONDITION, condition_func=condition
-        )
+        return self.breakpoint_manager.set_breakpoint(BreakpointType.CONDITION, condition_func=condition)
 
     def disable_breakpoint(self, breakpoint_id: int) -> None:
         """Disable a breakpoint."""
@@ -399,10 +385,7 @@ class Debugger:
 
     def list_breakpoints(self) -> List[Dict[str, Any]]:
         """List all breakpoints."""
-        return [
-            self.breakpoint_manager.get_breakpoint_info(bp_id)
-            for bp_id in self.breakpoint_manager.breakpoints
-        ]
+        return [self.breakpoint_manager.get_breakpoint_info(bp_id) for bp_id in self.breakpoint_manager.breakpoints]
 
     def step_cycle(self) -> Optional[List[int]]:
         """
@@ -417,7 +400,7 @@ class Debugger:
             timing_angle=self.machine.timing.angle,
             column_values=self.machine.column_bank.get_all_values(),
             carry_signals=self.machine.carriage.carry_signals.copy(),
-            ae_accumulator=int(self.machine.analytical_engine.registers["A"]),
+            ae_accumulator=int(self.machine.analytical_engine.registers['A']),
             total_operations=self.machine.total_operations,
         )
 
@@ -431,7 +414,7 @@ class Debugger:
             timing_angle=self.machine.timing.angle,
             column_values=self.machine.column_bank.get_all_values(),
             carry_signals=self.machine.carriage.carry_signals.copy(),
-            ae_accumulator=int(self.machine.analytical_engine.registers["A"]),
+            ae_accumulator=int(self.machine.analytical_engine.registers['A']),
             total_operations=self.machine.total_operations,
         )
 
@@ -485,7 +468,7 @@ class Debugger:
             timing_angle=self.machine.timing.angle,
             column_values=self.machine.column_bank.get_all_values(),
             carry_signals=self.machine.carriage.carry_signals.copy(),
-            ae_accumulator=int(self.machine.analytical_engine.registers["A"]),
+            ae_accumulator=int(self.machine.analytical_engine.registers['A']),
             total_operations=self.machine.total_operations,
         )
 

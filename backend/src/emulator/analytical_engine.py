@@ -45,24 +45,24 @@ References:
 """
 
 TIMING_TABLE = {
-    "NOP": 0,
-    "ADD": 8,
-    "SUB": 8,
-    "CMP": 4,
-    "JMP": 4,
-    "JZ": 4,
-    "LOAD": 15,
-    "STOR": 15,
-    "MULT": 400,
-    "DIV": 750,
-    "SQRT": 250,
-    "RDCRD": 30,
-    "WRPCH": 30,
-    "WRPRN": 2,
-    "CALL": 8,
-    "RET": 4,
-    "PUSH": 4,
-    "POP": 4,
+    'NOP':      0,
+    'ADD':      8,
+    'SUB':      8,
+    'CMP':      4,
+    'JMP':      4,
+    'JZ':       4,
+    'LOAD':    15,
+    'STOR':    15,
+    'MULT':   400,
+    'DIV':    750,
+    'SQRT':   250,
+    'RDCRD':   30,
+    'WRPCH':   30,
+    'WRPRN':    2,
+    'CALL':     8,
+    'RET':      4,
+    'PUSH':     4,
+    'POP':      4,
 }
 
 
@@ -115,7 +115,7 @@ class BabbageNumber:
             # Truncate to 50 digits
             self.value = self.value % (10**50)
             if self.value > max_value:
-                self.value -= 10**50
+                self.value -= (10**50)
             return True
         return False
 
@@ -217,66 +217,66 @@ class Engine:
 
         # Registers: Mill components for arithmetic
         self.registers = {
-            "A": BabbageNumber(0),  # Accumulator
-            "B": BabbageNumber(0),  # Operand register
-            "C": BabbageNumber(0),  # Auxiliary
-            "D": BabbageNumber(0),  # Auxiliary
+            'A': BabbageNumber(0),  # Accumulator
+            'B': BabbageNumber(0),  # Operand register
+            'C': BabbageNumber(0),  # Auxiliary
+            'D': BabbageNumber(0),  # Auxiliary
         }
 
         # Control: Program sequencing and timing
-        self.PC = 0  # Program Counter
-        self.running = True  # Execution flag
-        self.clock_time = 0  # Simulated elapsed time
+        self.PC = 0                        # Program Counter
+        self.running = True                # Execution flag
+        self.clock_time = 0                # Simulated elapsed time
 
         # I/O: Punch cards and results
-        self.instruction_cards = []  # Loaded program
-        self.result_cards = []  # Output results
+        self.instruction_cards = []        # Loaded program
+        self.result_cards = []             # Output results
 
         # Flags: Condition codes from operations
         self.flags = {
-            "ZERO": False,  # Result was zero
-            "SIGN": False,  # Result was negative
-            "OVERFLOW": False,  # Arithmetic overflow
-            "GREATER": False,  # CMP: first > second
-            "LESS": False,  # CMP: first < second
-            "EQUAL": False,  # CMP: first == second
+            'ZERO': False,      # Result was zero
+            'SIGN': False,      # Result was negative
+            'OVERFLOW': False,  # Arithmetic overflow
+            'GREATER': False,   # CMP: first > second
+            'LESS': False,      # CMP: first < second
+            'EQUAL': False,     # CMP: first == second
         }
 
         # Control stacks: For subroutines and temporary storage
-        self.return_stack = []  # CALL/RET return addresses (max 16)
-        self.data_stack = []  # PUSH/POP temporary storage
+        self.return_stack = []             # CALL/RET return addresses (max 16)
+        self.data_stack = []               # PUSH/POP temporary storage
 
         # Debugging: Breakpoints and tracing
-        self.breakpoints = []  # Conditional breakpoints
-        self.trace_enabled = False  # Trace execution to console
-        self.paused = False  # Execution paused at breakpoint
-        self.interactive_mode = False  # Interactive debugging mode
+        self.breakpoints = []              # Conditional breakpoints
+        self.trace_enabled = False         # Trace execution to console
+        self.paused = False                # Execution paused at breakpoint
+        self.interactive_mode = False      # Interactive debugging mode
 
         # Instruction handlers: Maps opcode to execution function
         self._opcode_handlers = {
-            "NOP": self._execute_NOP,
-            "ADD": self._execute_ADD,
-            "SUB": self._execute_SUB,
-            "MULT": self._execute_MULT,
-            "DIV": self._execute_DIV,
-            "SQRT": self._execute_SQRT,
-            "LOAD": self._execute_LOAD,
-            "STOR": self._execute_STOR,
-            "JMP": self._execute_JMP,
-            "JZ": self._execute_JZ,
-            "JNZ": self._execute_JNZ,
-            "JLT": self._execute_JLT,
-            "JGT": self._execute_JGT,
-            "JLE": self._execute_JLE,
-            "JGE": self._execute_JGE,
-            "CMP": self._execute_CMP,
-            "CALL": self._execute_CALL,
-            "RET": self._execute_RET,
-            "PUSH": self._execute_PUSH,
-            "POP": self._execute_POP,
-            "RDCRD": self._execute_RDCRD,
-            "WRPCH": self._execute_WRPCH,
-            "WRPRN": self._execute_WRPRN,
+            'NOP': self._execute_NOP,
+            'ADD': self._execute_ADD,
+            'SUB': self._execute_SUB,
+            'MULT': self._execute_MULT,
+            'DIV': self._execute_DIV,
+            'SQRT': self._execute_SQRT,
+            'LOAD': self._execute_LOAD,
+            'STOR': self._execute_STOR,
+            'JMP': self._execute_JMP,
+            'JZ': self._execute_JZ,
+            'JNZ': self._execute_JNZ,
+            'JLT': self._execute_JLT,
+            'JGT': self._execute_JGT,
+            'JLE': self._execute_JLE,
+            'JGE': self._execute_JGE,
+            'CMP': self._execute_CMP,
+            'CALL': self._execute_CALL,
+            'RET': self._execute_RET,
+            'PUSH': self._execute_PUSH,
+            'POP': self._execute_POP,
+            'RDCRD': self._execute_RDCRD,
+            'WRPCH': self._execute_WRPCH,
+            'WRPRN': self._execute_WRPRN,
         }
 
     def _get_register_value(self, reg_name):
@@ -294,17 +294,17 @@ class Engine:
 
     def _update_flags(self, value1, value2=None, comparison_result=None):
         """Update condition flags based on operation result."""
-        self.flags["ZERO"] = value1 == BabbageNumber(0)
-        self.flags["SIGN"] = value1 < BabbageNumber(0)
+        self.flags['ZERO'] = (value1 == BabbageNumber(0))
+        self.flags['SIGN'] = (value1 < BabbageNumber(0))
 
         if comparison_result is not None:
-            self.flags["GREATER"] = comparison_result > 0
-            self.flags["LESS"] = comparison_result < 0
-            self.flags["EQUAL"] = comparison_result == 0
+            self.flags['GREATER'] = comparison_result > 0
+            self.flags['LESS'] = comparison_result < 0
+            self.flags['EQUAL'] = comparison_result == 0
         else:
-            self.flags["GREATER"] = False
-            self.flags["LESS"] = False
-            self.flags["EQUAL"] = False
+            self.flags['GREATER'] = False
+            self.flags['LESS'] = False
+            self.flags['EQUAL'] = False
 
     def _get_operand_value(self, operand_str):
         """
@@ -317,7 +317,7 @@ class Engine:
         """
         if operand_str in self.registers:
             return self._get_register_value(operand_str)
-        elif operand_str.startswith("[") and operand_str.endswith("]"):
+        elif operand_str.startswith('[') and operand_str.endswith(']'):
             mem_address = int(operand_str[1:-1])
             if 0 <= mem_address < len(self.memory):
                 return self.memory[mem_address]
@@ -340,7 +340,7 @@ class Engine:
         val2 = self._get_operand_value(operand)
         result = val1 + val2
         if result._check_overflow():
-            self.flags["OVERFLOW"] = True
+            self.flags['OVERFLOW'] = True
         self._set_register_value(reg_dest, result)
         self._update_flags(result)
 
@@ -350,7 +350,7 @@ class Engine:
         val2 = self._get_operand_value(operand)
         result = val1 - val2
         if result._check_overflow():
-            self.flags["OVERFLOW"] = True
+            self.flags['OVERFLOW'] = True
         self._set_register_value(reg_dest, result)
         self._update_flags(result)
 
@@ -387,10 +387,10 @@ class Engine:
         D_result = BabbageNumber(lower_50_digits)
 
         if A_result._overflow_flag or D_result._overflow_flag:
-            self.flags["OVERFLOW"] = True
+            self.flags['OVERFLOW'] = True
 
-        self._set_register_value("A", A_result)
-        self._set_register_value("D", D_result)
+        self._set_register_value('A', A_result)
+        self._set_register_value('D', D_result)
         self._update_flags(A_result)
 
     def _execute_DIV(self, reg_dest, operand):
@@ -401,7 +401,7 @@ class Engine:
             raise ZeroDivisionError("Division by zero")
         result = val1 / val2
         if result._check_overflow():
-            self.flags["OVERFLOW"] = True
+            self.flags['OVERFLOW'] = True
         self._set_register_value(reg_dest, result)
         self._update_flags(result)
 
@@ -457,7 +457,7 @@ class Engine:
 
     def _execute_LOAD(self, reg_dest, address):
         """Load from store: reg_dest = memory[address] or immediate (15 cycles)."""
-        if address.startswith("[") and address.endswith("]"):
+        if address.startswith('[') and address.endswith(']'):
             mem_address = int(address[1:-1])
             if 0 <= mem_address < len(self.memory):
                 value = self.memory[mem_address]
@@ -472,7 +472,7 @@ class Engine:
 
     def _execute_STOR(self, reg_source, address):
         """Store to store: memory[address] = reg_source (15 cycles)."""
-        if address.startswith("[") and address.endswith("]"):
+        if address.startswith('[') and address.endswith(']'):
             mem_address = int(address[1:-1])
             if 0 <= mem_address < len(self.memory):
                 value = self._get_register_value(reg_source)
@@ -494,42 +494,42 @@ class Engine:
 
     def _execute_JZ(self, address):
         """Jump if zero: PC = address if ZERO flag set (4 cycles)."""
-        if self.flags["ZERO"]:
+        if self.flags['ZERO']:
             self.PC = int(address)
             return True
         return False
 
     def _execute_JNZ(self, address):
         """Jump if not zero: PC = address if ZERO flag clear (4 cycles)."""
-        if not self.flags["ZERO"]:
+        if not self.flags['ZERO']:
             self.PC = int(address)
             return True
         return False
 
     def _execute_JLT(self, address):
         """Jump if less than: PC = address if LESS flag set (4 cycles)."""
-        if self.flags["LESS"]:
+        if self.flags['LESS']:
             self.PC = int(address)
             return True
         return False
 
     def _execute_JGT(self, address):
         """Jump if greater than: PC = address if GREATER flag set (4 cycles)."""
-        if self.flags["GREATER"]:
+        if self.flags['GREATER']:
             self.PC = int(address)
             return True
         return False
 
     def _execute_JLE(self, address):
         """Jump if less or equal: PC = address if LESS or EQUAL (4 cycles)."""
-        if self.flags["LESS"] or self.flags["EQUAL"]:
+        if self.flags['LESS'] or self.flags['EQUAL']:
             self.PC = int(address)
             return True
         return False
 
     def _execute_JGE(self, address):
         """Jump if greater or equal: PC = address if GREATER or EQUAL (4 cycles)."""
-        if self.flags["GREATER"] or self.flags["EQUAL"]:
+        if self.flags['GREATER'] or self.flags['EQUAL']:
             self.PC = int(address)
             return True
         return False
@@ -589,27 +589,23 @@ class Engine:
     def _execute_WRPCH(self, reg_source):
         """Write punch card: output register value to result card (30 cycles)."""
         value = self._get_register_value(reg_source)
-        self.result_cards.append(
-            {
-                "value": value,
-                "opcode": "WRPCH",
-                "operands": [reg_source],
-                "clock_time": self.clock_time,
-            }
-        )
+        self.result_cards.append({
+            'value': value,
+            'opcode': 'WRPCH',
+            'operands': [reg_source],
+            'clock_time': self.clock_time
+        })
         print(f"WRPCH: {value.to_decimal()}")
 
     def _execute_WRPRN(self, reg_source):
         """Write printer: output register value to printer (2 cycles)."""
         value = self._get_register_value(reg_source)
-        self.result_cards.append(
-            {
-                "value": value,
-                "opcode": "WRPRN",
-                "operands": [reg_source],
-                "clock_time": self.clock_time,
-            }
-        )
+        self.result_cards.append({
+            'value': value,
+            'opcode': 'WRPRN',
+            'operands': [reg_source],
+            'clock_time': self.clock_time
+        })
         print(f"WRPRN: {value.to_decimal()}")
 
     # ========================================================================
@@ -635,7 +631,7 @@ class Engine:
         handler = self._opcode_handlers.get(opcode_name)
         if handler:
             # Control flow instructions modify PC directly
-            if opcode_name in ["JMP", "JZ", "JNZ", "JLT", "JGT", "JLE", "JGE", "CALL", "RET"]:
+            if opcode_name in ['JMP', 'JZ', 'JNZ', 'JLT', 'JGT', 'JLE', 'JGE', 'CALL', 'RET']:
                 pc_modified = handler(*operands)
             else:
                 handler(*operands)
@@ -672,10 +668,10 @@ class Engine:
         program_lines = []
 
         # Read and strip comments
-        with open(filename, "r") as f:
+        with open(filename, 'r') as f:
             for line_num, line in enumerate(f, 0):
                 original_line = line.strip()
-                line = line.split("#")[0].strip()
+                line = line.split('#')[0].strip()
                 if not line:
                     continue
                 program_lines.append((line_num, line, original_line))
@@ -683,10 +679,10 @@ class Engine:
         # Pass 1: Identify labels and store instructions
         current_instruction_address = 0
         for line_num, line, original_line in program_lines:
-            if ":" in line:
-                label_name = line.split(":")[0].strip()
+            if ':' in line:
+                label_name = line.split(':')[0].strip()
                 labels[label_name] = current_instruction_address
-                line = line.split(":", 1)[1].strip()
+                line = line.split(':', 1)[1].strip()
                 if not line:
                     continue
 
@@ -717,7 +713,7 @@ class Engine:
         while self.running and self.PC < len(self.instruction_cards):
             if self.paused and self.interactive_mode:
                 user_input = input("Emulator paused. Press Enter to continue or 's' to step: ")
-                if user_input == "s":
+                if user_input == 's':
                     self.paused = False
                     self.step_one_instruction()
                     self.paused = True
@@ -739,7 +735,7 @@ class Engine:
 
         try:
             self.execute_instruction(instruction)
-            if instruction.opcode == "HALT":
+            if instruction.opcode == 'HALT':
                 self.running = False
         except Exception as e:
             print(f"Runtime Error at PC {self.PC}: {e}")
@@ -755,31 +751,31 @@ class Engine:
           - register: Break when register value matches
           - memory: Break when memory value matches
         """
-        self.breakpoints.append({"type": condition_type, "target": target, "enabled": True})
+        self.breakpoints.append({
+            'type': condition_type,
+            'target': target,
+            'enabled': True
+        })
 
     def check_breakpoints(self):
         """Check all breakpoints and pause if triggered."""
         for bp in self.breakpoints:
-            if not bp["enabled"]:
+            if not bp['enabled']:
                 continue
 
-            if bp["type"] == "address" and self.PC == bp["target"]:
+            if bp['type'] == 'address' and self.PC == bp['target']:
                 self.paused = True
                 print(f"Breakpoint hit: PC={self.PC}")
 
-            elif bp["type"] == "time" and self.clock_time >= bp["target"]:
+            elif bp['type'] == 'time' and self.clock_time >= bp['target']:
                 self.paused = True
                 print(f"Breakpoint hit: Clock={self.clock_time}s")
 
-            elif bp["type"] == "register" and self._get_register_value(bp["reg"]) == BabbageNumber(
-                bp["target"]
-            ):
+            elif bp['type'] == 'register' and self._get_register_value(bp['reg']) == BabbageNumber(bp['target']):
                 self.paused = True
                 print(f"Breakpoint hit: {bp['reg']}={bp['target']}")
 
-            elif bp["type"] == "memory" and self.memory[bp["address"]] == BabbageNumber(
-                bp["target"]
-            ):
+            elif bp['type'] == 'memory' and self.memory[bp['address']] == BabbageNumber(bp['target']):
                 self.paused = True
                 print(f"Breakpoint hit: Memory[{bp['address']}]={bp['target']}")
 
@@ -804,12 +800,12 @@ Memory (first 10 words):
 
     def save_result_cards(self, filename):
         """Save result cards to file in punch card format."""
-        with open(filename, "w") as f:
+        with open(filename, 'w') as f:
             for i, result_data in enumerate(self.result_cards):
-                value = result_data["value"]
-                opcode = result_data["opcode"]
-                operands = ", ".join(result_data["operands"])
-                clock_time = result_data["clock_time"]
+                value = result_data['value']
+                opcode = result_data['opcode']
+                operands = ', '.join(result_data['operands'])
+                clock_time = result_data['clock_time']
 
                 f.write(f"# RESULT CARD {i+1}\n")
                 f.write(f"# Instruction: {opcode} {operands}\n")

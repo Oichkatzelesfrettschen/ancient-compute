@@ -16,11 +16,8 @@ dist/
 downloads/
 eggs/
 .eggs/
-# Python lib directories (exclude frontend/src/lib which is Svelte source)
-/lib/
-/lib64/
-backend/lib/
-backend/lib64/
+lib/
+lib64/
 parts/
 sdist/
 var/
@@ -104,12 +101,12 @@ Thumbs.db
 *.bak
 *.swp
 .cache/
+mydatabase.db
 
-# Java
-*.class
-*.jar
-*.war
-*.ear
-target/
-*.iml
-build/
+# Generated indexes
+output/*.txt
+
+
+# Measurement outputs
+output/*_metrics.csv
+

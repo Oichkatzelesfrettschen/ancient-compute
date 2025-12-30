@@ -20,7 +20,6 @@ from backend.src.emulator.columns import DigitColumn, ColumnSnapshot
 # Initialization Tests (5 tests)
 # ============================================================================
 
-
 def test_digit_column_init_empty():
     """Test initialization with no initial value."""
     col = DigitColumn(column_index=0)
@@ -68,7 +67,6 @@ def test_digit_column_init_negative_value():
 # ============================================================================
 # Get/Set Digit Tests (10 tests)
 # ============================================================================
-
 
 def test_digit_column_get_digit_zero():
     """Test getting digit at position 0 (units place)."""
@@ -147,7 +145,6 @@ def test_digit_column_get_digit_out_of_range():
 # Value Conversion Tests (8 tests)
 # ============================================================================
 
-
 def test_digit_column_set_get_roundtrip():
     """Test that set_value_from_int → get_value_as_int is identity."""
     test_values = [0, 1, 10, 100, 1000, 12345, 123456789, 999999999]
@@ -200,7 +197,6 @@ def test_digit_column_zero_handling():
 # ============================================================================
 # Addition with Carry Tests (20 tests)
 # ============================================================================
-
 
 def test_digit_column_add_difference_simple():
     """Test simple addition without carry."""
@@ -315,7 +311,6 @@ def test_digit_column_add_single_wraparound():
 # State Management Tests (10 tests)
 # ============================================================================
 
-
 def test_digit_column_reset():
     """Test reset to zero."""
     col = DigitColumn(0, 12345)
@@ -344,7 +339,7 @@ def test_digit_column_get_carry_out():
     """Test get_carry_out method - overflow beyond 31 digits."""
     # Initialize with all 9s across 31 positions (max value before overflow)
     col = DigitColumn(0)
-    col.set_value_from_int(int("9" * 31))
+    col.set_value_from_int(int('9' * 31))
 
     # Add 1 to position 0, which cascades carry through all 31 positions
     diff = [1] + [0] * 30
@@ -421,7 +416,6 @@ def test_digit_column_phase_tracking():
 # ============================================================================
 # Edge Cases and Boundary Tests (15 tests)
 # ============================================================================
-
 
 def test_digit_column_max_value():
     """Test maximum 31-digit value."""
@@ -500,8 +494,8 @@ def test_digit_column_high_digit_positions():
 def test_digit_column_mixed_operations():
     """Test mixing different operations."""
     col = DigitColumn(0, 100)
-    col.set_digit(0, 5)  # Modify to 105
-    col.add_single(50)  # Add 50 → 155
+    col.set_digit(0, 5)      # Modify to 105
+    col.add_single(50)        # Add 50 → 155
     diff = [5] + [0] * 30
     col.add_difference(diff)  # Add 5 → 160
     assert col.get_value_as_int() == 160
@@ -510,7 +504,6 @@ def test_digit_column_mixed_operations():
 # ============================================================================
 # String Representation and Repr Tests (2 tests)
 # ============================================================================
-
 
 def test_digit_column_repr():
     """Test string representation."""

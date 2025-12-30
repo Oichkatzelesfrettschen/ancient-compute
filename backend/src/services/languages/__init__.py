@@ -9,14 +9,14 @@ from .systemf_service import SystemFService
 from .java_service import JavaService
 
 __all__ = [
-    "CService",
-    "PythonService",
-    "HaskellService",
-    "BabbageAssemblyService",
-    "LISPService",
-    "IDRISService",
-    "SystemFService",
-    "JavaService",
+    'CService',
+    'PythonService',
+    'HaskellService',
+    'BabbageAssemblyService',
+    'LISPService',
+    'IDRISService',
+    'SystemFService',
+    'JavaService',
 ]
 
 

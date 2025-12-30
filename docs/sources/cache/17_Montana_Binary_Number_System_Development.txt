@@ -1,0 +1,744 @@
+The Mathematics Enthusiast
+Volume 11
+Number 3 Number 3
+
+Article 6
+
+12-2014
+
+Development of the Binary Number System and the Foundations
+of Computer Science
+Daniel R. Lande
+
+Follow this and additional works at: https://scholarworks.umt.edu/tme
+Part of the Mathematics Commons
+
+Let us know how access to this document benefits you.
+Recommended Citation
+Lande, Daniel R. (2014) "Development of the Binary Number System and the Foundations of Computer
+Science," The Mathematics Enthusiast: Vol. 11 : No. 3 , Article 6.
+DOI: https://doi.org/10.54870/1551-3440.1315
+Available at: https://scholarworks.umt.edu/tme/vol11/iss3/6
+
+This Article is brought to you for free and open access by ScholarWorks at University of Montana. It has been
+accepted for inclusion in The Mathematics Enthusiast by an authorized editor of ScholarWorks at University of
+Montana. For more information, please contact scholarworks@mso.umt.edu.
+
+TME, vol. 11, no. 3, p. 513
+
+Development of the Binary Number System and the Foundations of Computer Science
+Daniel R. Lande 1
+University of Montana
+
+ABSTRACT: This paper discusses the formalization of the binary number system and the
+groundwork that was laid for the future of digital circuitry, computers, and the field of computer
+science. The goal of this paper is to show how Gottfried Leibniz formalized the binary number
+system and solidified his thoughts through an analysis of the Chinese I Ching. In addition, Leibniz’s work in logic and with computing machines is presented. This work laid the foundation for
+Boolean algebra and digital circuitry which was continued by George Boole, Augustus De Morgan, and Claude Shannon in the centuries following. Some have coined Leibniz the world’s first
+computer scientist, and this paper will attempt to demonstrate a validation of this conjecture.
+Keywords: binary number system, Boolean logic, Gottfried Leibniz, I Ching, hexagram, trigram
+
+1
+
+daniel.lande@umontana.edu
+
+The Mathematics Enthusiast, ISSN 1551-3440, vol. 11, no. 3, pp. 513-540
+2014© The Author(s) & Dept. of Mathematical Sciences-The University of Montana
+
+Lande, p. 514
+
+1 Introduction
+The binary number system is one of the most influential developments in the history of technology. The formalization of the system and its additions and refinements over the course of 200+
+years ultimately led to the creation of electronic circuitry constructed using logic gates. This creation ushered in the technological era and left the world forever changed. Important figures in the
+history of the binary number system and mathematical logic and less directly the history of computers and computer science include Gottfried Leibniz, George Boole, Augustus De Morgan and
+Claude Shannon. This paper focuses on Leibniz’s formalization of the binary system and his
+work in mathematical logic and computing machines.
+
+2 Numeric Systems
+In the most general sense, a number is an object used to count, label, and measure (Nechaev,
+2013). In turn, a numeral or number system is a system for expressing numbers in writing. In the
+history of mathematics, many different number systems have been developed and used in practice. The most common system currently in use is the Hindu-Arabic numeral system, which was
+developed between the 1st and 4th centuries and later spread to the western world during the Middle Ages (Smith & Karpinski, 1911). The Hindu-Arabic system is based on ten different symbols
+and is considered to be a base 10 system. Numeral systems with different bases have found use
+in applications where a different base provides certain advantages.
+Other numeral systems currently in use include the duodecimal system (base 12), hexadecimal system (base 16), and binary system (base 2). The duodecimal system uses the standard
+ten digits of the decimal system (0-9) and additionally represents ten as ‘A’ and eleven as ‘B’.
+The duodecimal system is useful because of its divisibility by 2, 3, 4, and 6. This allows the
+
+TME, vol. 11, no. 3, p. 515
+common fractions 1�2 , 1�3 , 2�3 , 1�4 , 3�4 to be represented by the decimal equivalents of 0.6, 0.4,
+
+0.8, 0.3 and 0.9 without repeating digits. Some have proposed the duodecimal system as superior
+to the base 10 decimal system (Dvorsky, 2013).
+The hexadecimal system adds the additional symbols of the letters A-F to the standard
+decimal system symbols. Hexadecimal numbers are often used in computer programming environments to represent things such as URIs and color references. Hexadecimal numbers are useful
+in computer contexts because of their easy conversion to binary numbers, while providing a
+shorter written representation. For example, the color red can be represented in hexadecimal as
+FF0000 with each pair of digits representing the amount of each primary color red, blue, and
+green (RGB). The equivalent numeral in decimal would be 16711680 and in binary 1111 1111
+0000 0000 0000 0000. The binary number system is represented by only two symbols, 0 and 1.
+Nearly all computers use the binary numeral system which maps directly to the OFF and ON
+conditions of an electrical switch.
+
+3 I Ching
+The I Ching, commonly known as The Classic of Changes or Book of Changes, is one of the oldest Chinese texts dating to the 3rd century BCE (Smith R. J., 2012). Many consider the origins of
+the I Ching to come from before the time of written history. Traditional Chinese belief was that
+the I Ching was supernaturally revealed to the mythical Chinese Emperor Fu Xi (Bi & Lynn,
+1994). The I Ching incorporates the Chinese philosophy concept of Yin-Yang (Huang, 1987).
+The concept describes the interconnection between forces in our world and is central to many
+classical Chinese scientific and philosophical ideas (Osgood & Richards, 1973). In the simplest
+sense, Yin represents dark and Yang represents light. Yin and Yang are thought to be comple-
+
+Lande, p. 516
+mentary to each other rather than opposing. Yin-Yang is often represented with the Taijitu symbol, portraying the accompanying contrast and interconnection between the two forces.
+
+Figure 1: Yin-Yang represented through the Taijitu symbol (Yin and Yang, 2007)
+
+Historically, the primary use of the I Ching has been as a divination text (Huang, 1987).
+Merriam-Webster dictionary describes divination as “the practice of using signs (such as an arrangement of tea leaves or cards) or special powers to predict the future” (Divination, 2014). By
+generating the symbols contained within the text, an attempt to interpret life and predict future
+events can be gleaned by the reader. Though its source is seeded in divination, the moral code
+present throughout the I Ching has been referenced and applied in a variety of ways throughout
+Chinese history (Huang, 1987).
+Trigrams and Hexagrams
+The I Ching represents Yin-Yang through the use of trigrams and in later versions of the text,
+hexagrams. In these representations, a solid line represents Yang and an open line represents
+Yin. The early version of the I Ching presents 23 = 8 trigrams, which is the possible combinations of three rows of lines representing Yin or Yang. Each one of these trigrams represents a
+
+sort of parable or concept. Figure 2 shows the eight trigrams with their accompanying interpretations and Chinese symbol.
+
+TME, vol. 11, no. 3, p. 517
+
+Figure 2: I Ching Trigrams (Trigrams, 2007)
+
+In order to create a hexagram, two trigrams are stacked on top of each other creating six
+lines allowing for 26 = 64 possible combinations of hexagrams. The 64 hexagrams are created
+in 32 pairs of two, with each item in the pair being the reverse of the other. Hexagrams often ap-
+
+pear in circular representations, sometimes combining other concepts such as the five elements.
+In Figure 3, the outer ring represents the 365 days in a year. The next ring represents the 64 hexagrams followed by the 13, 28 day months in a year. Finally, two different representations of the
+eight trigrams are displayed. The inner part of the circle represents the five Chinese elements of
+Wood, Earth, Water, Fire, and Metal.
+
+Lande, p. 518
+
+Figure 3: 64 Hexagrams of the I Ching (I Ching and the Year, 2012)
+
+The Chinese scholar and philosopher Shao Yung created the binary arrangement of hexagrams in the 11th century (Mungello, 1971). He displayed them both circularly and horizontally
+in the same order, so it was clear he understood the binary progression. There is, however, little
+evidence that the trigrams and hexagrams were ever used for counting (Mungello, 1971). Many
+other orderings of the hexagrams are present in Chinese history and these representations do not
+follow the binary progression. Despite the intent of the particular hexagram ordering, this binary
+progression proved to be influential later in history.
+Use of I Ching for Divination
+In their translation of the I Ching, Kerson and Rosemary Huang provide a detailed description of
+the use of the I Ching as a divination text (Huang, 1987). The basic idea is to cast a hexagram by
+generating the six lines using a system of rules. Several methods of casting the hexagrams exist
+
+TME, vol. 11, no. 3, p. 519
+with varying probability distributions. Common methods include using yarrow stalks; combinations of two, three, or four coins; or dice. Though using yarrow stalks was the original method,
+the most common is the three coin method due to its simplicity.
+When casting a hexagram, each line is generated as Yin or Yang and as changing or unchanging. Two hexagrams are created; the original or present hexagram and the changed or future hexagram. There are sixty-four possible hexagrams (26 = 64). Each hexagram can then
+
+change into sixty-four changed hexagrams. A total of 64 × 64 = 4,096 combinations are possi-
+
+ble within the divination system. Additionally, the hexagrams will be interpreted uniquely by
+each individual they are presented to, so an infinite number of meanings are possible.
+To cast a hexagram using three coins, the coins are tossed and then the outcome is observed as a combination of three heads, two heads, two tails, or three tales. Old Yang is represented by the number 9 and Young Yang by the number 7. Additionally, Old Yin is represented
+by the number 6 and Young Yin by the number 8. Figure 4 shows the possible results and the
+corresponding line represented. The coins are tossed a total of six times, with the line resulting
+from each toss written above the previous line. The stacked lines when disregarding the young
+and old represent the original or present hexagram. A changed or future hexagram is created by
+changing all of the Old Yin and Old Yang values to their opposite representation (e.g. Old Yin
+becomes Yang and Old Yang becomes Yin).
+
+Figure 4: Three Coin Method for Casting Hexagrams (How to Consult the I Ching, 2014)
+
+Lande, p. 520
+Once the hexagrams have been cast, the values they represent can be referenced within
+the text of the I Ching. The bottom three lines are the lower trigram and the top three lines the
+upper trigram. The I Ching contains a matrix in which the corresponding value of the hexagram
+can be looked up using the two trigrams. An example would be the upper trigram Wind and the
+lower trigram Water, known as Wind Over Water. When referenced in the matrix, this results in
+a hexagram value of fifty-nine which corresponds to the hexagram Flowing. This original hexagram can then be consulted, followed by the changed hexagram resulting from reversing the old
+values.
+A translation of The Wind Over Water hexagram reads as follows (Huang, 1987):
+The King goes to the temple.
+Auspicious to cross the great stream.
+Auspicious omen.
+
+In addition to the text of the hexagram as a whole, further interpretation is provided for each of
+the six lines of the hexagram. Further weight is given to the lines that result in the changed hexagram. It is also important to understand that the reading of the translations of these hexagrams by
+an English reader frequently neglects certain cultural aspects that were obvious and important to
+the ancient Chinese reader. Modern translations often provide a commentary to offer insight as to
+how the hexagrams would have been historically interpreted. In the example of the Wind Over
+Water hexagram, an understanding that “Flowing water, delightful when it is gentle, but menacing when it grows to a torrent, had a special meaning for the ancient Chinese” helps to explain
+the intent of the Flowing hexagram (Huang, 1987).
+
+TME, vol. 11, no. 3, p. 521
+
+4 Leibniz
+Gottfried Wilhelm Leibniz (1646-1716) is an important figure in the history of mathematics and
+philosophy (Belaval, 2014). Gauss is often considered the last mathematician to know all of
+mathematics; Leibniz has been referred to as the last universalist or “universal genius” with interests and contributions in all areas of European knowledge (Perkins, 2010). Leibniz made contributions in the disciplines of mathematics, physics, philosophy, logic, psychology, theology,
+technology, applied science, economics, medicine, history, and other areas (Perkins, 2010).
+Much of Leibniz’s life was spent trying to align his views on religion and philosophy with his
+findings in math and science.
+Leibniz’s most recognized achievements were his contributions in the area of calculus.
+Leibniz was also a prominent inventor of mechanical calculators, creating the Leibniz wheel that
+was used in mechanical calculators until the invention of electronic calculators in the 1970s.
+Though relatively unacknowledged during his lifetime, Leibniz’s advances in logic and his description and formulation of the binary number system played an important role in the development of computers in the twentieth century. Some consider Leibniz to be one of the most important figures in the history of computers and the world’s first computer scientist (Dalakov,
+n.d.). Despite Leibniz’s many achievements, he had fallen out of favor by the time of his death
+and his grave remained unmarked for 50 years.
+Characteristica Universalis
+Leibniz was a voluminous writer across many disciplines. A complete collection of the writings
+of Leibniz has yet to be published, but it is projected to have over forty volumes (Perkins, 2010).
+Many of his writings were not published during his lifetime. Leibniz did not write a thorough
+explanation of his philosophical views, so information must be combined from amongst his writ-
+
+Lande, p. 522
+ings. However, common within many of his works is the attempt to establish what he called a
+characteristica universalis or universal characteristic. When writing in French, Leibniz often referred to the spécieuse générale to represent the same concept.
+Leibniz intended for the universal characteristic to be a formal language that could represent ideas present in math, science, and other fields. He believed that all of human thought could
+be generalized with a few primitive thoughts and that if these thoughts could be represented as a
+set of characters, those using the characters for reasoning would never error (Peckhaus, 2004).
+The characters would be represented as pictographs and could be easily translated and understood by any individual regardless of language. The general characters representing simple
+thoughts could be combined together to form more complex thoughts.
+Early his career, Leibniz made some efforts in the formation of pictograms that could be
+applied to his characteristica universalis through a method of diagrammatic reasoning. Leibniz
+presented his first pictographs in his 1666 paper De Arte Combinatoria (On the Art of Combinations), which extended his doctoral dissertation in philosophy (Leibniz, Dissertation on the Art of
+Combinations, 1989). Figure 5 shows Leibniz’s representation of Aristotle’s four elements and
+Figure 6 shows his representation of the Aristotelian theory of all things being created from the
+four base elements. These writings came before Leibniz had formal training in math. He revisited
+this material throughout his career, but did not significantly expand his thoughts on these pictographs.
+
+Figure 5: Leibniz's pictographs of the elements of earth, water, air, and fire
+
+TME, vol. 11, no. 3, p. 523
+
+Figure 6: Leibniz's representation of Aristotelian Theory of creation from base elements
+
+Leibniz felt that the development of the universal characteristic would be highly beneficial to society. In 1679, Leibniz wrote that:
+Once the characteristic numbers for most concepts have been set up, however, the human
+race will have a new kind of instrument which will increase the power of the mind much
+more than optical lenses strengthen the eyes and which will be as far superior to microscopes or telescopes as reason is superior to sight (Leibniz, On the General
+Characteristic, 1989).
+Leibniz also stated that the distractions of his work in other areas prevented him from completely
+working out the universal characteristic. However, he believed that there were individuals that
+could work out the system in five years’ time (Leibniz, On the General Characteristic, 1989). He
+also stated the task could be completed in two years if only the doctrines of mortality and metaphysics, which he considered the most useful for life, were worked out. In 1714, Leibniz discussed his ideas with Marquis de l'Hôpital and others and felt they “paid no more attention to it
+
+Lande, p. 524
+than if I had told them about a dream of mine.” Leibniz acknowledged the difficulty in creating
+the universal characteristic especially “without the advantage of discussions with men who could
+stimulate and help me in work of this nature” (Leibniz, On the General Characteristic, 1989).
+Calculus Ratiocinator
+Important to the topic of this paper is Leibniz’s thoughts on what he called the calculus ratiocinator. The characteristica universalis has been interpreted in many ways and Leibniz’s true intent
+may never be fully understood. It has been speculated that Leibniz believed that the establishment of the characteristica universalis would allow the mechanical deduction of all truths from
+the thoughts represented within through what he called the calculus ratiocinator (Peckhaus,
+2004). This kind of logical deduction would be a form of calculating machine that would make
+decisions based on inputs from the symbols of the characteristica universalis. It is not clear
+whether Leibniz was thinking of the calculus ratiocinator as a more of a software or hardware
+solution. The calculus ratiocinator is a prequel to mathematical logic or “the algebra of logic” as
+stated by Leibniz that would be developed in the subsequent centuries.
+Leibniz and the I Ching
+According to David Mungello’s article “Leibniz’s Interpretation of Neo-Confucianism,” Leibniz
+expressed an interest in China early in his life (Mungello, 1971). He read many Chinese texts
+including the Confucius Sinarum Philosophus, which was a translated collection of three of the
+four Confucian Four Books. Between the years of 1697 and 1707, Leibniz had a correspondence
+with Joachim Bouvet, a French Jesuit who worked in China. Bouvet was a member of the Figurists, a group who attempted to understand how ancient Chinese rites should be interpreted by
+Christianity. The Figurists believed Fu Xi, whom traditional Chinese beliefs stated that the I
+
+TME, vol. 11, no. 3, p. 525
+Ching had been revealed to, was not Chinese but was rather the “original Lawgiver of all mankind” (Mungello, 1971).
+During his correspondence with Bouvet, Leibniz encountered the hexagrams of the I
+Ching previously discussed (Mungello, 1971). Leibniz had expressed in letters to Bouvet some
+of his ideas concerning his system of counting by twos. Bouvet recognized the patterns presented
+and sent images of the hexagrams he had encountered in China. After studying the hexagrams, in
+particular The Former Heaven ordering of the hexagrams, Leibniz felt confirmation that his work
+with binary numbers was important and valid. Fu Xi is thought to have created The Former
+Heaven order of hexagrams. Leibniz hoped that the binary system would aid him in the creation
+of the characteristica universalis, constructing a universal formal language for expressing math,
+science, and other concepts. The discovery of the hexagrams and their relation to his binary
+number system gave him encouragement in this area.
+Leibniz felt that the binary numeral system represented Christianity’s view of creation
+from nothing (Mungello, 1971). The numeral 1 represents God and the numeral 0 represents
+nothing. Leibniz’s interest in China led him to try to find ways to unite the philosophies of east
+and west. His assertion of the relationship between the Chinese hexagrams and his binary system
+was an attempt to forge that connection, despite the fact that the hexagrams served a different
+purpose to the Chinese than he had interpreted. Nonetheless, the connection he drew led him to
+further his studies in the area, continue his correspondences, and write his paper “Explanation of
+Binary Arithmetic.”
+Explanation of Binary Arithmetic
+In 1703, Leibniz published his paper “Explication de l'Arithmétique Binaire”, or “Explanation of
+Binary Arithmetic.” In this paper, Leibniz documents the basics of his binary number system in-
+
+Lande, p. 526
+cluding counting and examples of addition, subtraction, multiplication, and division (Leibniz,
+Explanation of binary arithmetic, 1703). Leibniz also comments on where the binary number
+system is useful. He does not propose replacing the decimal system, but rather suggests some of
+the advantages it offers over the decimal system in use at that time. Leibniz finishes his paper by
+connecting his system with the Chinese hexagrams and explaining how the Chinese had lost the
+intended meaning. Leibniz makes the statement that it has been up to him, a European, to restore
+the lost meaning (even though his interpretation has been found to likely be incorrect)
+(Mungello, 1971).
+Counting
+In his paper, Leibniz discusses that he has used the progression of proceeding by two for
+many years (Leibniz, Explanation of binary arithmetic, 1703). He uses only the characters 0 and
+1, and when he reaches two, he starts again. Figure 7 demonstrates Leibniz’s counting method
+from his published paper, with the far right column representing the decimal equivalent. Leibniz
+has boxed in the number of digits that must be present to represent a number. For example, in
+order to represent numbers 4-7, three digits must be present. He has also included leading zeroes
+on all of the numbers, which he later explains makes it easier to compare against the Chinese
+hexagrams.
+
+TME, vol. 11, no. 3, p. 527
+
+Figure 7: Leibniz's Method of Counting in Binary (Leibniz, Explanation of binary arithmetic, 1703)
+
+Leibniz also comments on what he calls the “celebrated property of the geometric progression by twos” in whole numbers (Leibniz, Explanation of binary arithmetic, 1703). He
+demonstrates that if provided with a binary number from each degree, all of the numbers below
+double the highest degree can be composed from those numbers. In Table 1, this geometric progression is demonstrated. With the combination of the numbers 1, 2, and 4, all numbers up to one
+less than 2 ∗ 4 = 8 − 1 = 7 can be represented. So, 1, 2, 3, 4, 5, 6, and 7 can be represented by a
+binary number of three digits. Leibniz then mentions that this property would allow “assayers to
+weigh all sorts of masses with few weights and could serve in coinage to give several values with
+few coins” (Leibniz, Explanation of binary arithmetic, 1703).
+
+Lande, p. 528
+1 0 0 4
+1 0 2
+1 1
+1 1 1 7
+Table 1: Geometric progression by twos
+
+Addition and Subtraction
+Leibniz next shows examples of how addition and subtraction can be performed using
+binary numbers (Leibniz, Explanation of binary arithmetic, 1703). He only discusses in passing
+these operations, stating that “all these operations are so easy that there would never be any need
+to guess or try out anything” (Leibniz, Explanation of binary arithmetic, 1703). When adding
+binary numbers, the following form holds:
+0 + 0 → 0, 0 + 1 → 1, 1 + 0 → 1, and 1 + 1 → 0.
+
+In the case of 1 + 1 → 0, an additional 1 will have to be added or carried to the next column.
+Table 2 shows the binary addition table and Table 3 shows the truth table for the logical OR operator (∨). Notice the values are the same with the exception being when both inputs are 1.
+0
+
+1
+
+0
+
+0
+
+1
+
+1
+
+1
+
+10
+
+Table 2: Binary Addition Table
+
+0
+
+1
+
+0
+
+0
+
+1
+
+1
+
+1
+
+1
+
+TME, vol. 11, no. 3, p. 529
+Table 3: Truth Table for Logical OR Operator (∨)
+
+Table 4 shows an example of Leibniz’s demonstration of addition. Addition with binary
+numbers is performed in much the same way as with decimal numbers using the carry method.
+Starting from the right column, 0 + 1 = 1. In the second column, 1 + 1 = 0 and 1 is carried to
+
+the next column. For the third column, 1 + 1 + 1 = 1 and 1 is carried to the next column. The
+result is 1101, with the decimal equivalent being 13. As an interesting aside, the representation of
+the binary equivalents of 7 and 6 were incorrect in the English translation of Leibniz’s paper, but
+were correct in his original manuscript. Table 5 demonstrates subtraction with binary numbers,
+
+which is again very similar to subtraction with the decimal system. In order to subtract 1 from 0,
+borrowing from the column to the left is performed.
+1
+
+1
+
+1
+
+7
+
+1
+
+1
+
+0
+
+6
+
+0
+
+1
+
+13
+
+.
+
+.
+
+1
+
+1
+
+Table 4: Addition with Binary Numbers
+
+1
+
+1
+
+0
+
+1
+
+13
+
+1
+
+1
+
+1
+
+7
+
+1
+
+1
+
+0
+
+6
+
+Table 5: Subtraction with Binary Numbers
+
+Multiplication and Division
+Multiplication is again performed very similarly to multiplication with decimal numbers.
+Multiplication is performed digit-by-digit with the results being added together in the method
+
+Lande, p. 530
+previously presented. Table 6 shows an example of binary multiplication as demonstrated by
+Leibniz. Table 7 shows the binary multiplication table. The binary multiplication table is identical to the truth table for the logical AND operator (∧). Much like the other operations, binary division is similar to decimal division. Table 8 shows Leibniz’s example of binary division, which
+is functionally similar to long division with decimal numbers, just notated in a slightly different
+manner.
+
+1
+
+1
+
+1
+
+3
+
+1
+
+1
+
+3
+
+1
+
+1
+
+1
+
+.
+1
+
+0
+
+0
+
+1
+
+9
+
+Table 6: Multiplication with Binary Numbers
+
+0
+
+1
+
+0
+
+0
+
+0
+
+1
+
+0
+
+1
+
+Table 7: Binary Multiplication Table and Truth Table for the Logical AND Operator (∧)
+
+15
+
+1
+
+1
+
+1
+
+1
+
+3
+
+1
+
+1
+
+1
+
+1
+
+1
+
+1
+
+1
+
+0
+
+1
+
+Table 8: Division with Binary Numbers
+
+5
+
+TME, vol. 11, no. 3, p. 531
+Fu Xi and Chinese Trigrams
+At this point in his paper, Leibniz discusses what he calls the “mystery of the lines of an
+ancient King and philosopher named Fuxi” (Leibniz, Explanation of binary arithmetic, 1703).
+Leibniz displays an example of the I Ching trigram he calls the Figure of the Eight Cova (Figure
+8) connected with his number system of counting by twos. Next, Leibniz makes some bold
+statements. He states that the Chinese have lost the meanings of these figures and that he has
+solved the mystery with the aide of Father Bouvet (Leibniz, Explanation of binary arithmetic,
+1703). Leibniz further mentions that the 64 hexagrams align perfectly with his number system
+(Leibniz, Explanation of binary arithmetic, 1703). The paper is concluded with Leibniz’s discussion that there may be even more knowledge to be derived from the Chinese hexagrams if the
+origins of Chinese writing could be discovered.
+
+Figure 8: Figure of the Eight Cova, Binary Numbers, and Decimal Numbers (Leibniz, Explanation of binary
+arithmetic, 1703)
+
+Leibniz’s short paper (3-5 pages depending on publication) introducing his binary number system had a significant impact on the scientific community (Glaser, 1971), but had an even
+greater effect on his own personal thoughts in theology and philosophy. Though not discussed in
+this paper, in letters to Rudolph August, Duke of Brunswick, Leibniz expressed that his system
+of numbers were a suitable analogy to God’s omnipotence. Leibniz states:
+
+Lande, p. 532
+It might be said that nothing is a better analogy to, or even demonstration of such creation
+than the origin of numbers as here represented, using only unity and zero or nothing. And
+it would be difficult to find a better illustration of this secret in nature or philosophy.
+As was the case with many of his mathematical and scientific studies, Leibniz was trying to tie
+the fields of theology and philosophy to his new discoveries.
+Formal Logic
+In addition to the binary number system, Leibniz made significant advances in the field of formal
+logic, even though his papers were not published during his lifetime. Some would say that he advanced the field in a way that had not been seen since Aristotle (Bertrand, 1945). In his unpublished papers, Leibniz articulated the modern day properties of conjunction, disjunction, negation, identity, inclusion, and the empty set. Many of Leibniz’s papers in this area were not published until the 20th century, and it is only then that the full extent of his advances was revealed.
+It was not until George Boole and Augustus De Morgan in the nineteenth century that many of
+the same developments were achieved (Bertrand, 1945). Though his discoveries in logic did not
+influence people of his era or those that followed in the subsequent 150 years, it is clear that
+Leibniz was ahead of his time with his thoughts on formal logic.
+Computation
+Leibniz invented a mechanical calculating machine known as the stepped reckoner in 1672, with
+a working model being built in 1694 (Martin, 1925). This machine was the first that could perform the operations of addition, subtraction, multiplication, and division. Though the machine
+was sound in design, the complicated and precise nature made it difficult to construct during that
+time in history. Only three of the machines were produced due to the difficulty of construction.
+
+TME, vol. 11, no. 3, p. 533
+Though Leibniz did not use his binary number system in this machine, the systems still became
+influential in later designs of computing machines (Martin, 1925).
+Leibniz’s machine uses a mechanism that became known as the Leibniz wheel (Martin,
+1925). The Leibniz wheel has nine teeth to represent each of the single digit decimal numbers 19. A second gear then meshes with the teeth of the wheel depending on position. The input is set
+using a series of eight knobs and then the operator is set using a dial. By turning a crank, the calculation is performed and the result is displayed on 16 windows on the rear of the machine. The
+design of the wheel inside this machine was later used by inventors of other calculating machines. Figure 9 shows a sketch of the Leibniz wheel and it functions.
+
+Figure 9: Leibniz Wheel (Dalokov, n.d.)
+
+Perhaps more important to the history of binary numbers and computers was Leibniz’s
+work on a concept to create a machine that represented binary numbers using marbles governed
+by punch cards. In his work “Progressione Dyadica” (as cited in Bauer, 2010), Leibniz describes
+his machine operating on the binary principle:
+This type of calculation could also be carried out using a machine. The following method
+would certainly be very easy and without effort: a container should be provided with
+
+Lande, p. 534
+holes in such a way that they can be opened and closed. They are to be open at those positions that correspond to a 1 and closed at those positions that correspond to a 0. The
+open gates permit small cubes or marbles to fall through into a channel; the closed gates
+permit nothing to fall through. They are moved and displaced from column to column as
+called for by the multiplication. The channels should represent the columns, and no ball
+should be able to get from one channel to another except when the machine is put into
+motion. Then all the marbles run into the next channel, and whenever one falls into an
+open hole it is removed. Because it can be arranged that two always come out together,
+and otherwise they should not come out.
+Though this machine was never created by Leibniz, his description describes precisely how electronic computers function. Gravity and movement of marbles are replaced by electrical circuits,
+but the principle functions in the same way.
+Figure 10 shows a modern binary addition machine built in a manner similar to that described by Leibniz. To perform addition, the first number is loaded into the machine by placing
+marbles through the holes in the top for each place represented. For example, to load the number
+one, a marble would be placed through the 1 hole. This would place the rocker in that position to
+be toggled to the right, still holding the marble. When the rockers are rocked to the left, they represent zero and when they are rocked to the right they represent one. If another marble was
+dropped into the 1 hole, the rocker would be tipped to the left, releasing the first marble from the
+machine and transferring the second marble to the 2 position representing 1+1=2. Adding one
+more marble into the 1 hole would result in marbles in the 1 and 2 positions with those rockers to
+the right representing 1+1+1=3 or the binary representation 11 due to the 1 and 2 rockers being
+in the right position. More advanced addition can be performed by loading marbles and then
+
+TME, vol. 11, no. 3, p. 535
+viewing the state of the machine at the end of the operation. A video demonstrating the use of
+this machine is available at https://www.youtube.com/watch?v=GcDshWmhF4A.
+
+Figure 10: Binary Addition Machine (Wandel)
+
+To perform the addition of 7 + 6, marbles would be initially loaded into the 1, 2, and 4
+positions for the binary representation of 7 as111. Table 9 shows the state of the machine after
+loading the number 7. To add 6, marbles would be dropped through the 2 and 4 holes, corresponding to the binary representation 110. When the marbles are placed through these holes, the
+original marble in the 2 position will drop out of the machine, the new 2 marble will carry to the
+4 position releasing the original 4 marble. This marble will then carry to the 8 position. The marble that was dropped into the 4 hole will remain in the 4 position resulting in marbles in the 8, 4,
+and 1 positions representing 13 in binary as 1101. Table 10 shows the state of the machine at this
+point. Further additions can be performed by dropping more marbles through the holes.
+
+Lande, p. 536
+32
+
+16
+
+8
+
+4
+
+2
+
+1
+O
+
+O
+O
+
+Table 9: Binary Addition Machine Representing 7
+
+32
+
+16
+
+8
+
+4
+
+2
+
+1
+O
+
+O
+O
+
+Table 10: Binary Addition Machine Representing 13
+
+5 Later Developments in Mathematical Logic
+Few major advances in the area of the binary system and mathematical logic occurred in the 125
+years following Leibniz’s death until the development of a system of symbolic logic by George
+Boole in the middle of the nineteenth century (Boole, 1854). Boole’s book, An Investigation of
+the Law of Thought introduced his form of algebraic logic, a system of algebra based on the truth
+values true and false (1 and 0) and the conjunction (AND), disjunction (OR), and negation
+(NOT) operators. This symbolic system was eventually given Boole’s name and is now referred
+to as Boolean algebra.
+Another important individual in the development of formal logic was Augustus De Morgan. He published his book Formal Logic: Or, The Calculus of Inference, Necessary and Probable in 1847 (De Morgan, 1847). This book introduced De Morgan’s early thoughts on logic. In
+later publications, De Morgan presented a series of transformation rules that later became known
+
+TME, vol. 11, no. 3, p. 537
+as De Morgan’s Laws. Many of the ideas presented by Boole and De Morgan had been previously proposed by Leibniz but were not published until late in the nineteenth century.
+In the early twentieth century, Claude Shannon proved that binary arithmetic combined
+with Boolean algebra could be applied to electrical relays. His Master’s thesis in 1937 essentially
+founded digital circuitry design and ushered in the era of the modern-day computer (Shannon,
+1936). As previously discussed, Leibniz proposed a mechanical calculator over 200 years earlier
+that functioned using the same basic ideas for calculation. Though many of these connections
+were not drawn until a later time, a clear path from Leibniz to Boole and De Morgan to Shannon
+is easily apparent in retrospect.
+
+6 Conclusion
+It is clear to this author that Leibniz’s contributions of the formalization of the binary number
+system, his unpublished writings on formal logic, and his work on calculating machines justify
+giving him the title as the world’s first computer scientist. His work was clearly ahead of his
+time; many of his findings were not furthered or rediscovered for the next 150-230 years. The
+framework that Leibniz laid provided the impetus for the advances that eventually lead to the
+invention of the digital computer. Some of his work in this area may have gone unrecognized
+during his time, but as hindsight has shown, his place in the history of computer science is hard
+to discount.
+
+Lande, p. 538
+
+References
+Bauer, F. (2010). Origins and Foundations of Computing. Springer Berlin Heidelberg.
+Belaval, Y. (2014, January 21). Gottfried Wilhelm Leibniz. Retrieved March 12, 2014, from Encylopedia Britannica: http://www.britannica.com/EBchecked/topic/335266/GottfriedWilhelm-Leibniz
+Bertrand, R. (1945). A History of Western Philosophy. New York: Simon & Schuster.
+Bi, W., & Lynn, R. J. (1994). The Classic of Changes: I Ching. New York: Columbia University
+Press.
+Boole, G. (1854). An Investigation of the Laws of Thought on Which are Founded the Mathematical Theories of Logic and Probabilities. Macmillan.
+Dalakov, G. (n.d.). Gottfried Leibniz. Retrieved February 25, 2014, from History of Computers:
+http://history-computer.com/Dreamers/Leibniz.html
+Dalokov, G. (n.d.). History of Computers. Retrieved March 14, 2014, from The Stepped Reckoner of Gottfried Leibniz: http://historycomputer.com/MechanicalCalculators/Pioneers/Lebniz.html
+De Morgan, A. (1847). Formal Logic: Or, The Calculus of Inference, Necessary and Probable.
+London: Taylor and Walton.
+Divination. (2014). Retrieved May 4, 2014, from Merriam-Webster: http://www.merriamwebster.com/dictionary/divination
+Dvorsky, G. (2013, January 18). Why We Should Switch To A Base-12 Counting System. Retrieved March 2, 2014, from http://io9.com/5977095/why-we-should-switch-to-a-base12-counting-system/all
+Glaser, A. (1971). History of Binary and Other Nondecimal Numeration. Tomash Publishers.
+How to Consult the I Ching. (2014). Retrieved May 2, 2014, from Divination Foundation:
+http://divination.com/resources/articles/iching-reading/
+Huang, K. a. (1987). I Ching: A new translation restores the authentic spirit of the ancient text.
+New York: Workman Publishing.
+
+TME, vol. 11, no. 3, p. 539
+I Ching and the Year. (2012, June 23). Retrieved March 17, 2014, from theAbysmal:
+http://theabysmal.wordpress.com/tag/hexagram/
+Ifrah, G. (2000). The Universal History of Numbers: From Prehistory to the Invention of the
+Computer. New York: J. Wiley.
+Leibniz, G. W. (1703). Explanation of binary arithmetic.
+Leibniz, G. W. (1989). Dissertation on the Art of Combinations. In L. E. Loemker (Ed.), Philosophical Papers and Letters (Vol. 2, pp. 73-84). Dordrecht, Holland: Springer Netherlands. (Original work published 1666).
+Leibniz, G. W. (1989). On the General Characteristic. In L. E. Loemker (Ed.), Philosophical Papers and Letters (Vol. 2, pp. 221-228). Dordrecht, Holland: Springer Netherlands. (Original work published 1679).
+Martin, E. (1925). The Calculating Machines Their History and Development. The Charles Babbage Institute.
+Mungello, D. E. (1971, Jan.). Leibniz's Interpretation of Neo-Confucianism. Philosophy East and
+West, Vol. 21, No. 1, pp. 3-22.
+Nechaev, V. (2013). Number. Retrieved March 20, 2014, from Encyclopedia of Mathematics:
+http://www.encyclopediaofmath.org/index.php?title=Number&oldid=31090
+Osgood, C. E., & Richards, M. M. (1973). From Yang and Yin to and or but. Language, Vol. 49,
+No. 2, 380-412.
+Peckhaus, V. (2004). Calculus Ratiocinator vs. Characteristica Universalis? The Two Traditions
+in Logic, Revisited. History and Philosophy of Logic, 25(1), 3-14.
+Perkins, F. (2010). Leibniz: A Guide for the Perplexed. London, GBR: Continuum International
+Publishing.
+Shannon, E. C. (1936). A Symbolic Analysis of Relay and Switching Circuits. Massachusetts
+Institue of Technology.
+Smith, D. E., & Karpinski, L. C. (1911). The Hindu-Arabic Numerals. Boston and London: Ginn
+and Company.
+
+Lande, p. 540
+Smith, R. J. (2012). The I Ching: A Biography. Princeton, New Jersey: Princeton University
+Press.
+Strickland, L. (2010). Shorter Leibniz Texts: A Collection of New Translation. London, GBR:
+Continuum International Publishing.
+Trigrams. (2007, June 2). Retrieved March 19, 2014, from Wikimedia Commons:
+http://en.wikipedia.org/wiki/File:Trigrams2.svg
+Wandel, M. (n.d.). Binary marble adding machine. Retrieved June 27, 2014, from Woodgears.ca:
+https://woodgears.ca/marbleadd/index.html
+Yin and Yang. (2007, December 7). Retrieved March 17, 2014, from Wikimedia Commons:
+http://en.wikipedia.org/wiki/File:Yin_and_Yang.svg
+
+

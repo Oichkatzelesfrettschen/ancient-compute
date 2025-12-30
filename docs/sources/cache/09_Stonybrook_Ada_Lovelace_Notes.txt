@@ -1,0 +1,79 @@
+ADA LOVELACE
+"The analytical engine has no pretensions
+to originate anything. It can do whatever
+we know how to order it to perform. It
+can follow analysis, but it has no power
+of anticipating any analytical relations or
+truths."
+Ada Lovelace (1815-1852) was an English mathematician and writer, known for her
+work on the Analytical Engine - a mechanical general-purpose computer proposed
+by Charles Babbage. Lovelace is considered to be the world's first computer
+programmer, as she wrote the first algorithm intended to be processed by a
+machine. Lovelace's contributions to computer science were largely unrecognized
+during her lifetime, but she is now celebrated as a pioneer in the field, and her
+legacy has inspired countless women to pursue careers in STEM.
+
+The First Computer Programmer
+
+The Analytical Engine was a theoretical mechanical computer that used punch cards
+to input data and perform calculations, much like modern computers. Lovelace
+recognized its potential to perform more than just mathematical calculations, e.g.
+manipulating symbols and creating new forms of artistic expression.
+Her most famous work, "Notes on the Analytical Engine," describes how the
+machine could be programmed to perform a variety of tasks, including creating
+music and graphics. She also wrote an algorithm for the engine to calculate
+Bernoulli numbers, a sequence of rational numbers that arise in number theory.
+
+More information
+
+Ada Lovelace Documentary
+
+Notes on The Analytical Engine
+
+The ADA computer language
+
+Fibonacci sequence
+
+The Fibonacci sequence is a sequence of numbers in which each number is the sum of the
+two preceding ones. The sequence starts with 0 and 1, and the next number in the sequence
+is the sum of the previous two numbers. So the first few numbers in the sequence are 0, 1, 1,
+2, 3, 5, 8, 13, 21, ... The equation for the nth fibonacci number is:
+
+Experiment
+
+𝐹! = 𝐹!"# + 𝐹!"$
+
+Implement the Fibonacci sequence in Python. There are several ways to do this, and here we
+provide some hints:
+1. Definte a function that takes an input nth, and outputs Fn
+2. Use if statements to initialize F0 = 0, and F1 = 1.
+3. Use for loops to obtain plotting coordinates of spiral
+
+What you need
+
+Python Online Editor: Google Colaboratory Notebook
+Python Modules to import: matplotlyb, math
+Coordinates to plot:
+2𝜋𝑛
+𝑥! = 𝐹! cos(
+)
+𝜙
+1.
+2.
+3.
+
+2𝜋𝑛
+𝑦! = 𝐹! sin(
+)
+𝜙
+
+𝜋 = 3.141
+𝜙 = 1.618
+
+What do you observe on the plot?
+What happens if you use different values for N?
+Can you find other sequences with interesting patterns?
+
+𝑛 = 1, … , 𝑁.
+
+

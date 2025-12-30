@@ -12,16 +12,8 @@ import pytest
 from backend.src.compilers.java_lexer import JavaLexer, TokenType
 from backend.src.compilers.java_parser import JavaParser
 from backend.src.compilers.java_ast import (
-    PrimitiveType,
-    ReferenceType,
-    ArrayType,
-    Variable,
-    Literal,
-    MethodCall,
-    BinaryOp,
-    MethodDecl,
-    ClassDecl,
-    CompilationUnit,
+    PrimitiveType, ReferenceType, ArrayType, Variable, Literal,
+    MethodCall, BinaryOp, MethodDecl, ClassDecl, CompilationUnit
 )
 from backend.src.compilers.java_compiler import JavaCompiler
 from backend.src.compilers.java_types import JavaTypeSystem
@@ -30,7 +22,6 @@ from backend.src.compilers.java_types import JavaTypeSystem
 # ==============================================================================
 # LEXER TESTS
 # ==============================================================================
-
 
 class TestJavaLexer:
     """Test Java lexer tokenization"""
@@ -217,7 +208,6 @@ class TestJavaLexer:
 # ==============================================================================
 # PARSER TESTS
 # ==============================================================================
-
 
 class TestJavaParser:
     """Test Java parser AST construction"""
@@ -430,7 +420,6 @@ class TestJavaParser:
 # TYPE SYSTEM TESTS
 # ==============================================================================
 
-
 class TestJavaTypeSystem:
     """Test Java type system"""
 
@@ -582,7 +571,6 @@ class TestJavaTypeSystem:
 # COMPILER TESTS
 # ==============================================================================
 
-
 class TestJavaCompiler:
     """Test Java compiler IR generation"""
 
@@ -665,7 +653,6 @@ class TestJavaCompiler:
 # ==============================================================================
 # INTEGRATION TESTS
 # ==============================================================================
-
 
 class TestJavaIntegration:
     """Integration tests for complete Java compilation"""

@@ -1,0 +1,615 @@
+Redeeming Charles Babbage’s
+Mechanical Computer
+A successful e›ort to build a working, three-ton
+Babbage calculating engine suggests that history
+has misjudged the pioneer of automatic computing
+by Doron D. Swade
+
+C
+
+harles Babbage is celebrated as
+the great ancestral ﬁgure in the
+history of computing. The designs for his vast mechanical calculators
+rank among the most startling intellectual achievements of the 19th century.
+Yet Babbage failed in his e›orts to realize those plans in physical form. Histories of computing routinely assert that
+Babbage faltered primarily because the
+demands of his devices lay beyond the
+capabilities of Victorian mechanical engineering. Curiously, no contemporary
+evidence supports that view.
+In 1985 my colleagues and I at the Science Museum in London set out to resolve or at least illuminate the question
+by building a full-size Babbage computing engine based on his original designs. Our endeavor ﬁnally bore fruit in
+November 1991, a month before the bicentenary of Babbage’s birth. At that
+time, the device—known as Di›erence
+Engine No. 2—ﬂawlessly performed its
+ﬁrst major calculation. The success of
+our undertaking a¤rmed that Babbage’s
+failures were ones of practical accomplishment, not of design.
+Those failures have become inextricably associated with his creative ge-
+
+DORON D. SWADE is both an electronics engineer and a historian of computing. He has been senior curator of the
+computing and control section of the Science Museum in London since 1985 and
+has published articles on curatorship
+and on the history of computing. He has
+recently written two books: Charles Babbage and His Calculating Engines, which
+accompanies the Babbage exhibition that
+Swade curated, and, in collaboration with
+Jon Palfreman, The Dream Machine: Exploring the Computer Age, a companion
+to the television series of the same name.
+Swade led the project to construct a fullscale Babbage calculating engine.
+
+86
+
+CHARLES BABBAGE sat for this daguerreotype around 1847, the year he began
+work on Di›erence Engine No. 2.
+
+nius. Babbage, proud and principled,
+was famed for the vigor and sarcasm
+of his public denunciations of the scientiﬁc establishment. The demise of his
+engine project added a sense of injustice, bitterness and even despair to his
+celebrated diatribes. Since then, he has
+acquired an image of testiness and eccentricity; the ﬁrst biography of Babbage, written by Maboth Moseley and
+published in 1964, was titled Irascible
+Genius: A Life of Charles Babbage, Inventor. Our work at the Science Museum
+emphasizes a distinctly di›erent side
+of Babbage: a meticulous inventor whose
+designs were hugely ambitious but well
+within the realm of possibility.
+Babbage’s desire to mechanize calculation arose from the exasperation he
+felt at the inaccuracies in printed mathematical tables. Scientists, bankers, actuaries, navigators, engineers and the
+like relied on such tables to perform
+calculations requiring accuracy to more
+
+SCIENTIFIC AMERICAN February 1993
+
+than a few ﬁgures. But the production
+of tables was tedious and prone to error at each stage of preparation, from
+calculation to transcription to typesetting. Dionysius Lardner, a well-known
+popularizer of science, wrote in 1834
+that a random selection of 40 volumes
+of mathematical tables incorporated
+3,700 acknowledged errata, some of
+which themselves contained errors.
+Babbage was both a connoisseur of
+tables and a fastidious analyst of tabular errors. He traced clusters of errors
+common to di›erent editions of tables
+and deduced where pieces of loose type
+had been incorrectly replaced after falling out. On one occasion, he collaborated with John Herschel, the renowned
+British astronomer, to check two independently prepared sets of calculations
+for astronomical tables; the two men
+were dismayed by the numerous discrepancies. “I wish to God these calculations had been executed by steam! ”
+Babbage exclaimed in 1821.
+Mechanical computers should, Babbage thought, o›er a means to eliminate
+at a stroke all the sources of mistakes in
+mathematical tables. He envisioned a
+machine that not only would calculate
+ﬂawlessly but would eradicate transcription and typesetting errors by automatically impressing the results of its cal^
+culations onto papier-maché
+strips or
+plates of soft metal. A printed record
+could then be generated directly from
+those plates, thereby eliminating every
+opportunity for the genesis of errors.
+In 1822 Babbage built an experimental model intended to carry him toward
+his goal. He called his mechanical calculator a “di›erence engine” because it
+is based on a mathematical principle
+known as the method of ﬁnite di›erences. The method permits one to determine successive values of polynomial functions using only addition [see
+box on page 90 ]. Multiplication and di-
+
+Copyright 1993 Scientific American, Inc.
+
+vision, which are far more di¤cult to
+mechanize, are not necessary. Because
+the value of the function at each step is
+calculated based on its predecessor, a
+correct ﬁnal result imparts a high degree of conﬁdence that all previous values are also correct.
+For economy of design, Babbage’s difference engines use the decimal number
+system rather than the binary system
+common to modern electronic computers. Each digit in a multidigit number is
+represented by a toothed gear wheel,
+or ﬁgure wheel, engraved with decimal
+numerals. The value of each digit is represented by the angular rotation of the
+associated ﬁgure wheel. The engine’s
+control mechanism ensures that only
+whole-number values, represented by
+discrete positions of the ﬁgure wheels,
+are valid. Babbage boasted that his machines would produce the correct result
+or would jam but that they would never
+deceive.
+Babbage’s most ambitious venture to
+construct a full-scale calculating device
+
+was devoted to the ill-fated Di›erence
+Engine No. 1. His e›orts foundered in
+1833 after a decade of design, development and component manufacture,
+not to mention vast expense. The project collapsed after a dispute between
+Babbage and his chief engineer, Joseph
+Clement, over payment for relocating
+the machining works. Outwardly at
+least, technology did not feature in the
+disagreement. The question that has remained tantalizingly unresolved is
+whether the circumstances surrounding
+the collapse of the project concealed
+the technical or logical impossibility of
+Babbage’s schemes.
+
+D
+
+i›erence Engine No. 1 consists
+of a basic adding element, repeated many times over in an
+arrangement that embodies the method of di›erences. The size and complexity of the engine are monumental:
+the design calls for roughly 25,000 parts;
+the assembled machine would measure
+eight feet high, seven feet long and three
+
+DIFFERENCE ENGINE NO. 2 was constructed in public view at
+the Science Museum in London. Here the two engineers who
+built it, Barrie Holloway (left ) and Reg Crick (right ), perform
+
+Copyright 1993 Scientific American, Inc.
+
+feet deep; and it would weigh several
+tons. The project, which was funded by
+the British government, was also enormously expensive. When Clement’s last
+bill was paid in 1834, the cost totaled
+£17,470. For comparison, the steam locomotive John Bull , built in 1831, cost
+all of £784.
+Clement completed about 12,000 of
+the 25,000 parts required for Di›erence Engine No. 1, most of which were
+later melted down as scrap. The British
+government ﬁnally withdrew from the
+project in 1842, partly on the advice of
+George Biddell Airy, Astronomer Royal, who pronounced Babbage’s engine
+“worthless.” The failure to complete the
+di›erence engine was the central trauma in Babbage’s scientiﬁc life; it is a topic he returns to repeatedly in his writings as though unable to reconcile himself to the dismal outcome.
+The years of work on Di›erence Engine No. 1 did produce one noteworthy,
+tangible result. In 1832 Clement assembled a small section of the engine, con-
+
+some essential adjustments. Babbage also designed a printing mechanism for the di›erence engine, but because of limited time and money, the printer has not yet been built.
+
+SCIENTIFIC AMERICAN February 1993
+
+87
+
+sisting of about 2,000 parts, as a demonstration piece. This ﬁnished part of the
+unﬁnished engine is one of the ﬁnest examples of precision engineering of the
+time and works impeccably to this day.
+The demonstration piece is the ﬁrst
+known automatic calculator. Unlike the
+desktop calculators of the time, the engine, once set up, did not rely on informed human intervention. Thus, an
+operator could achieve accurate results
+without any understanding of the logical or mechanical principles involved.
+The opportunity to speculate about machine intelligence was not lost on Babbage and his contemporaries. Harry Wilmot Buxton, a younger colleague with
+whom Babbage entrusted many of his
+papers, wrote that “the wondrous pulp
+and ﬁbre of the brain had been substituted by brass and iron; he [ Babbage]
+had taught wheelwork to think.”
+
+Despite its impressive capabilities, the
+di›erence engine could perform only
+one ﬁxed task. Babbage’s reputation
+as a computer pioneer largely rests on
+another, more sophisticated device—
+the Analytical Engine, conceived by
+1834. He intended the Analytical Engine as a general-purpose programmable computing machine, whose features
+are startlingly similar to those of modern electronic computers. It had a basic
+repertoire of operations (addition, subtraction, multiplication and division)
+that it could execute in any sequence.
+The internal architecture of the machine
+featured a separate “store” and “mill,”
+equivalent to the memory and processor in a modern computer. The separation of store and mill has been a dominant design feature of electronic computers since the mid-1940s.
+The Analytical Engine could be pro-
+
+grammed by using punched cards, a
+technique previously used in the Jacquard loom to control patterns of woven
+thread. The Analytical Engine could take
+alternative courses of action depending
+on the result of a calculation, enabling
+it to perform complex functions. Babbage intended the machine to be able
+to handle up to 50-digit input numbers
+and 100-digit results; the output could
+be printed, punched or plotted.
+Although historians customarily refer to the Analytical Engine as if it were
+a physical thing, it is actually a series
+of unbuilt designs that Babbage reﬁned
+at intervals from 1834 until his death
+in 1871. Demoralized by the fate of
+Di›erence Engine No. 1, he made no serious attempt to construct a full-scale
+Analytical Engine. A small experimental part of the mill that was still incomplete at the time of his death, along with
+
+How Babbage’s Di›erence Engines Work
+
+S
+
+hown below is one of Babbage’s 20 main drawings of
+Difference Engine No. 2, which he drafted in 1847. The
+machine is operated by means of the handle on the right.
+Turning the handle rotates a vertical stack of 14 pairs of
+cams that determine the action and timing of the calculating cycle. Numbers are stored and operated on in eight vertical columns, each of which contains 31 engraved figure
+wheels. The least significant digit of a number is stored at
+the bottom of the column, the most significant digit at the
+top. The initial values for a calculation are entered by unlocking the figure wheels and rotating each one by hand to
+the appropriate decimal value. Below the figure-wheel columns are a set of racks and levers that, when activated by
+links from the cams, lift, lower and turn the vertical axes,
+
+88
+
+SCIENTIFIC AMERICAN February 1993
+
+thereby carrying out the addition of differences. Difference
+Engine No. 2 does not add numbers in sequence from right
+to left, as one might expect. Instead values from odd-numbered columns are added to even-numbered columns during the first half-cycle; even-numbered columns are then
+added to odd-numbered columns during the second halfcycle. This technique significantly reduces the time required
+for a calculation. A similar approach, known as pipelining,
+is used in modern electronic computers. The printing
+assembly, located at the left, is directly coupled to the last
+column of figure wheels, which bear the final result of the
+calculation. Each turn of the handle produces one 30-digit
+value in the table of differences and automatically prepares
+the machine to generate the next number.
+
+Copyright 1993 Scientific American, Inc.
+
+another fragment later built by Babbage’s son, Henry Prevost Babbage, are
+the only signiﬁcant remains of his grand
+designs.
+Work on the Analytical Engine forced
+Babbage to think about how to develop
+mechanisms capable of automatic multiplication and division, all regulated by
+a complex control system. The solutions
+to those problems inspired him to design a simpler and more elegant di›erence engine, Di›erence Engine No. 2. Although the machine calculates to a precision of 31 ﬁgures, 10 digits more than
+Babbage envisaged for Di›erence Engine No. 1, it contains only one third as
+many parts. Babbage drew up detailed
+plans for the second machine between
+1847 and 1849 and o›ered them to the
+government in 1852 but received no
+encouragement. So things stood for
+nearly a century and a half.
+During several visits to London beginning in 1979, Allan G. Bromley of the
+University of Sydney in Australia examined Babbage’s drawings and notebooks
+in the Science Museum Library and became convinced that Di›erence Engine
+No. 2 could be built and would work. I
+had independently read of Babbage’s
+hapless fate and become deeply puzzled as to why no one had tried to resolve the issue of Babbage’s failures by
+actually building his engine.
+
+I
+
+n 1985, shortly after my appointment as curator of computing, Bromley appeared at the Science Museum carrying a two-page proposal to do
+just that. He suggested that the museum attempt to complete the machine
+by 1991, the bicentenary of Babbage’s
+birth. Bromley’s proposal marked the
+start of a six-year project that became
+something of a personal crusade for
+me. The saga of our e›ort to construct
+the di›erence engine is one worthy
+of Babbage himself. We embarked on a
+complex engineering project that took
+us into unknown technical territory and
+confronted us with mechanical conundrums, funding crises and the intrigues
+inherent in any major venture.
+Di›erence Engine No. 2 was clearly
+the engine of choice for the project. The
+associated set of drawings is intact,
+whereas those for Di›erence Engine No.
+1 show regrettable gaps. Difference Engine No. 2 is also a more economic design. Cost and time constraints argued
+in favor of ignoring the printer and concentrating on the rest of the engine. The
+printer is composed of about 4,000
+parts and would be a sizable engineering project in its own right.
+The documentation for Di›erence
+Engine No. 2 consists of 20 main design drawings and several tracings. As
+
+Copyright 1993 Scientific American, Inc.
+
+WORKING PART of Di›erence Engine No. 1, assembled by Joseph Clement in 1832,
+is the ﬁrst known automatic calculator. Its ﬂawless operation strongly supports
+Babbage’s conviction that building a full-sized engine was a practical prospect.
+
+we pored over those drawings, my colleagues and I discovered several ﬂaws
+in the plans, in addition to those identiﬁed by Bromley. One major assembly
+appears to be redundant. Other mechanisms are missing from the design. For
+example, the initial values needed to begin a calculation are entered by unlocking the columns and manually rotating
+each of the freed ﬁgure wheels to the
+appropriate positions. Babbage omitted
+a means of locking the columns after
+they were set, so the setting-up procedure was self-corrupting.
+The most serious design lapse concerned the carriage mechanism. This
+crucial component ensures that if, in the
+course of an addition, the value on a
+ﬁgure wheel exceeds 10, then the next
+higher ﬁgure wheel (indicating numbers
+10 times larger) advances one digit.
+The most extreme test of the carriage
+mechanism occurs when a 1 is added
+to a row of 9’s. Babbage solved the car-
+
+ry problem in an exquisitely innovative
+manner. During the ﬁrst part of the calculating cycle, the engine performs a
+31-digit addition without carrying the
+10’s, but every ﬁgure wheel that exceeds 10 sets a spring-loaded warning
+device. In the second part of the cycle,
+each armed warning device allows a rotating arm to advance the next higher
+ﬁgure wheel by one position.
+Unfortunately, the conﬁguration of
+the carry mechanism shown in Babbage’s design drawings is unworkable.
+The direction of rotation of the ﬁgure
+wheels is incorrect, and the warningand-carry mechanism could not function as drawn. The source of these shortcomings stimulated considerable speculation. We considered the possibility
+that errors were introduced deliberately as security against industrial espionage. More likely, some ﬂaws were design oversights, and others were inevitable drafting and layout errors.
+
+SCIENTIFIC AMERICAN February 1993
+
+89
+
+None of the design problems we found
+in Di›erence Engine No. 2 compromised
+its overall logic or operational principles,
+and we managed to devise solutions for
+all. Unnecessary mechanisms were omitted. The missing locking assemblies for
+the ﬁgure wheels were devised and,
+where necessary, their motions derived
+from those of neighboring pieces. Bromley solved the carry-mechanism problem
+by mirror-reversing the incorrectly drawn
+parts and altering their orientation. The
+introduction of a four-to-one reduction
+gear in the drive allayed skepticism about
+whether the massive Di›erence Engine
+No. 2 could be driven by hand. This
+change made the drive handle four times
+easier to turn but caused the engine to
+run four times slower.
+Implementing the solutions raised a
+signiﬁcant philosophical dilemma. Could
+we make these alterations without compromising the historical authenticity of
+the result and, with it, the mission of
+
+proving that Babbage’s engines were logically and practically sound? We solved
+this problem by adhering to Babbage’s
+own design practices and strictly conﬁning ourselves to techniques or devices available to Babbage. We also
+planned the revisions to Babbage’s design so that every mechanism we added
+could be easily removed.
+
+I
+
+n 1989 we built a small trial assembly at the Science Museum to verify
+the logic of the basic adding element and to conﬁrm that the carry
+mechanism operated correctly. The assembly adds a two-digit number to another two-digit number and takes account of any carry from units to tens
+and from tens to hundreds. The ﬁnely
+ﬁnished device went a long way toward
+convincing sponsors and colleagues that
+our project involved an engineering aesthetic as well as an intriguing historical
+thesis. The trial piece later proved an
+
+Mathematical Principles of the Di›erence Engines
+
+B
+
+abbage’s difference engines are so called because they use the method of
+finite differences to find the value of certain mathematical expressions.
+The method is used below to produce the table of cubes (y = x 3 ). The first difference is found by subtracting successive pairs of cubes. The same procedure
+is applied to pairs of first differences to derive second differences. When the
+process is repeated for the second differences, one finds that the third difference is constant and equal to six. This information makes it possible to generate the rest of the table of cubes by reversing the differencing procedure. For
+example, adding six to the second difference (18) gives the new second difference (24); adding this to the first difference (37) yields the new first difference
+(61). Finally, adding this to the last cubed number (64) gives the next number
+in the sequence, 125 or 53. The procedure can be repeated indefinitely to generate as many terms as desired using only repeated additions.
+The method of differences can be applied to any of the mathematical functions known as polynomials, which have the generic form y = an x n +
+an – 1 x n – 1 + . . . + a1 x + a0 . The n th difference of an n th-order polynomial
+will always be a constant that can form the basis for the method of differences. Polynomials are used to represent many relations in physics and engineering. They can also be used to approximate other functions, such as logarithms and trigonometric functions. In Babbage’s difference engines, each column of figure wheels represents the position of one multidigit number in the
+table. Difference Engine No. 2 can tabulate 7th-order polynomials to 31 figures of accuracy, an impressive accomplishment even by modern standards.
+X
+
+X3
+
+1
+
+1
+
+2
+
+8
+
+3
+
+27
+
+4
+
+64
+
+5
+90
+
+125
+
+FIRST
+DIFFERENCE
+
+7
+19
+37
+61
+
+SCIENTIFIC AMERICAN February 1993
+
+SECOND
+DIFFERENCE
+
+THIRD
+DIFFERENCE
+
+12
+18
+24
+
+6
+6
+METHOD
+OF
+DIFFERENCES
+
+invaluable aid for visualizing the machine’s operation and for testing the ﬁrst
+sample parts.
+To build Di›erence Engine No. 2 and
+to estimate the cost of manufacturing
+it, we needed full-dimension drawings of
+its parts. Late in 1989 we contracted a
+specialist engineering company to produce a set of drawings using Babbage’s
+original set as the authoritative source.
+Missing information—detailed dimensions, choice of materials, tolerances,
+methods of manufacture and a great
+deal of ﬁne detail—had to be supplied.
+Dimensions for the individual parts
+were obtained by measuring and scaling the original plans. The engineering
+company produced 50 new drawings
+that fully speciﬁed each of the engine’s
+4,000 parts. Surviving mechanical assemblies show that Babbage constructed his parts from bronze, cast iron and
+steel. Bromley and Michael Wright of
+the Science Museum o›ered advice regarding which material to use for each
+part. Our colleagues at the Imperial
+College of Science and Technology analyzed the composition of the components of Di›erence Engine No. 1 to guide
+us in selecting an appropriate modern
+bronze.
+No attempt was made to use period
+machinery in the manufacture of parts.
+The engine’s 4,000 components embody
+only about 1,000 di›erent part designs,
+so there is a high degree of repetition.
+We unashamedly relied on modern manufacturing techniques to produce the
+many identical parts. We also welded
+parts that Babbage would have forged.
+But we scrupulously ensured that Babbage could have produced components
+of the same precision, though possibly
+by other means.
+Specifying the precision with which
+parts should be made proved less problematic than we ﬁrst feared. Bromley
+and Wright had measured parts from
+Di›erence Engine No. 1 and found that
+Clement achieved repeatability of 1.5
+to 2.0 thousandths of an inch, belying
+the popular belief that mid-19th century mechanical engineering lacked the
+precision necessary for building Babbage’s devices. We adopted a modern
+engineering standard, conﬁdent that it
+was within the limits of what 19th-century craftsmen could achieve. The process of producing the 50 modern mechanical drawings took about six months
+and was substantially complete by January 1990.
+We were determined to secure a ﬁxedprice contract for manufacture and assembly so as not to repeat Babbage’s
+sorry tale of open-ended expense. After some hard negotiation, the Science
+Museum and the specialist company
+
+Copyright 1993 Scientific American, Inc.
+
+ENGINEERING CHALLENGES were solved in the course of building Di›erence Engine No. 2. Engineers at the Science Museum
+constructed a part of the calculating mechanism (left ) in 1989
+
+agreed to a price and to a set of provisions to cushion against unforeseen
+technical di¤culties. The Science Museum committed to underwrite the costs
+against pledges from a group of ﬁve
+sponsoring computer companies: ICL,
+Hewlett Packard, Rank Xerox, Siemens
+Nixdorf and Unisys.
+Then, in June 1990, just as the ﬁnal
+contract was about to be signed, the
+company involved went bankrupt after
+35 years in business. Reg Crick and Barrie Holloway, the two engineers on the
+Babbage project, were ﬁred on Thursday, June 7. Unless orders were placed
+with contractors by close of business
+the following day, we would incur cost
+penalties and have to embark on another round of ﬁnancial negotiation,
+which would have jeopardized our goal
+of completing the project in time for the
+Babbage bicentenary. O¤cials at the
+Science Museum interviewed Crick and
+Holloway on the morning of June 8; by
+lunchtime they were museum employees. We spent the day frantically writing out part orders for subcontractors
+and drafting contract terms. At 5:30
+P. M., I sprinted to the post o¤ce to
+mail the drawings and orders to the
+component manufacturers. We made
+the deadline by minutes.
+Di›erence Engine No. 2 was built in
+public view in the Science Museum. Fitting and assembly commenced in November and was completed in May 1991.
+The engine became the centerpiece in
+the exhibition Making the Difference:
+Charles Babbage and the Birth of the
+Computer, which opened on June 27,
+1991. Even then, the project kept us on
+tenterhooks. The three-ton Difference
+Engine No. 2 had not yet performed a
+full calculation, and it kept jamming
+unaccountably. We developed debugging
+
+Copyright 1993 Scientific American, Inc.
+
+to verify the design of the engine’s basic adding element. They
+also built 210 intricate bronze levers (right , shown atop a design drawing) for the carriage mechanism.
+
+techniques to track the source of the
+jams and continued to work on the machine during the exhibition. On November 29, 1991, less than a month before
+Babbage’s 200th birthday, the machine
+completed its ﬁrst full-scale successful
+calculation. It produced the ﬁrst 100
+values in the table of powers of seven
+and has functioned without error ever
+since. The engine ended up costing just
+under £300,000 ($500,000).
+
+O
+
+ur project illuminated several
+aspects of Babbage’s skills as a
+designer and engineer. Historians of technology have debated whether the high standards of precision that
+Babbage demanded were necessary or
+were the product of misguided perfectionism. Some researchers have pointed out that cruder engines had been
+built to good e›ect. Georg and Edvard
+Scheutz, a Swedish father-and-son team
+who were inspired by an account of
+Babbage’s work, built three di›erence
+engines, mostly of their own design. The
+ﬁrst of these, completed in 1843, had a
+wood frame and was made using simple hand tools and a primitive lathe.
+Despite its comparatively rough construction, the Scheutzes’ machine performed successfully before the Swedish Royal Academy.
+Babbage’s di›erence engines were
+larger and more sophisticated than
+those attempted by the Scheutzes, however. Our experiences constructing Difference Engine No. 2 underscored the
+importance of exacting standards. We
+had expected that repeat parts made
+using computer-controlled machines
+would be su¤ciently identical to be interchangeable. This proved not to be the
+case. Fine tweaking of components to
+tolerances of no more than a few thou-
+
+sandths of an inch proved necessary,
+especially for the proper operation of
+the carry mechanism. Babbage’s insistence on high precision was evidently
+based on sound engineering judgment.
+Constructing Di›erence Engine No. 2
+revealed subtleties and ingenuity in Babbage’s design not immediately evident
+in the drawings. The project also gave
+us tremendous respect for Babbage’s
+ability to visualize the operation of complex mechanisms without the aid of
+physical models. We hope to extend our
+explorations of Babbage’s elegant designs; to do so, we are currently trying
+to attract sponsorship to build the printer. In the meantime, we marvel at the
+physical realization of plans that Babbage drew up nearly 150 years ago. Difference Engine No. 2 stands as a splendid piece of engineering sculpture, a
+monument to the rigorous logic of its
+inventor.
+
+FURTHER READING
+CHARLES BABBAGE: PIONEER OF THE COMPUTER. Anthony Hyman. Princeton University Press, 1982.
+DIFFERENCE AND ANALYTICAL ENGINES.
+Allan G. Bromley in Computing before
+Computers. Edited by William Aspray.
+Iowa State University Press, 1990.
+GLORY AND FAILURE: THE
+DIFFERENCE
+..
+ENGINES OF JOHANN MULLER, CHARLES
+BABBAGE AND GEORG AND EDVARD
+SCHEUTZ. Michael Lindgren. MIT Press,
+1990.
+CHARLES BABBAGE AND HIS CALCULATING ENGINES. Doron Swade. Science Museum, London, 1991.
+A MODERN DIFFERENCE ENGINE: SOFTWARE SIMULATORS FOR CHARLES BABBAGE’S DIFFERENCE ENGINE NO. 2. James
+Donnelly. Armstrong Publishing Company, 1992.
+
+SCIENTIFIC AMERICAN February 1993
+
+91
+
+

@@ -229,7 +229,9 @@ class TestLessonAndExerciseFlow:
             "title": "Introduction to Programming",
             "module_id": 1,
             "content": "Learn the basics...",
-            "code_examples": [{"language": "python", "code": "print('Hello')"}],
+            "code_examples": [
+                {"language": "python", "code": "print('Hello')"}
+            ],
         }
 
         assert lesson_data["id"] == 1
@@ -243,7 +245,9 @@ class TestLessonAndExerciseFlow:
             "title": "Write Hello World",
             "language": "python",
             "template": "# Write your code here\nprint(...)",
-            "test_cases": [{"input": "", "expected": "Hello, World!"}],
+            "test_cases": [
+                {"input": "", "expected": "Hello, World!"}
+            ],
         }
 
         submission = {
@@ -302,8 +306,8 @@ class TestCodeValidationPipeline:
             "language": "python",
             "test_cases": [
                 {"input": "5", "expected": "120"},  # 5!
-                {"input": "3", "expected": "6"},  # 3!
-                {"input": "0", "expected": "1"},  # 0!
+                {"input": "3", "expected": "6"},    # 3!
+                {"input": "0", "expected": "1"},    # 0!
             ],
         }
 
@@ -327,14 +331,12 @@ print(factorial(n))
                 execution_time=0.1,
                 memory_used=512,
             )
-            test_results.append(
-                {
-                    "test_input": test["input"],
-                    "expected": test["expected"],
-                    "actual": result.stdout.strip(),
-                    "passed": result.stdout.strip() == test["expected"],
-                }
-            )
+            test_results.append({
+                "test_input": test["input"],
+                "expected": test["expected"],
+                "actual": result.stdout.strip(),
+                "passed": result.stdout.strip() == test["expected"],
+            })
 
         # Verify all tests pass
         assert all(t["passed"] for t in test_results)
@@ -488,22 +490,18 @@ class TestErrorRecoveryAndRetry:
         attempts = []
 
         # First attempt: network error
-        attempts.append(
-            {
-                "attempt": 1,
-                "status": "network_error",
-                "should_retry": True,
-            }
-        )
+        attempts.append({
+            "attempt": 1,
+            "status": "network_error",
+            "should_retry": True,
+        })
 
         # Second attempt: success
-        attempts.append(
-            {
-                "attempt": 2,
-                "status": "success",
-                "should_retry": False,
-            }
-        )
+        attempts.append({
+            "attempt": 2,
+            "status": "success",
+            "should_retry": False,
+        })
 
         transient_errors = {"network_error", "timeout", "service_unavailable"}
 
@@ -521,13 +519,11 @@ class TestErrorRecoveryAndRetry:
         attempts = []
 
         # Syntax error: permanent, no retry
-        attempts.append(
-            {
-                "attempt": 1,
-                "status": "syntax_error",
-                "should_retry": False,
-            }
-        )
+        attempts.append({
+            "attempt": 1,
+            "status": "syntax_error",
+            "should_retry": False,
+        })
 
         permanent_errors = {"syntax_error", "type_error", "undefined_reference"}
 
@@ -592,10 +588,8 @@ class TestDataConsistency:
 @pytest.fixture
 def benchmark(request):
     """Simple benchmark fixture for workflow performance."""
-
     def wrapper(func, *args, **kwargs):
         import time
-
         start = time.perf_counter()
         for _ in range(5):  # Run 5 times
             func(*args, **kwargs)
@@ -603,5 +597,4 @@ def benchmark(request):
         elapsed = (end - start) / 5  # Average time
         print(f"\n{request.node.name}: {elapsed*1000:.2f}ms")
         return elapsed
-
     return wrapper

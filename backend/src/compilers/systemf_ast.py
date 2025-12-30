@@ -32,7 +32,6 @@ class Type(ABC):
 @dataclass
 class TypeVar(Type):
     """Type variable (a, b, t, u, etc.)"""
-
     name: str
 
     def __repr__(self) -> str:
@@ -42,7 +41,6 @@ class TypeVar(Type):
 @dataclass
 class BaseType(Type):
     """Base type (Nat, Int, Bool, String)"""
-
     name: str
 
     def __repr__(self) -> str:
@@ -52,7 +50,6 @@ class BaseType(Type):
 @dataclass
 class FunctionType(Type):
     """Function type (a -> b)"""
-
     arg_type: Type
     return_type: Type
 
@@ -63,7 +60,6 @@ class FunctionType(Type):
 @dataclass
 class UniversalType(Type):
     """Universal type (forall a. T)"""
-
     type_var: str
     body: Type
 
@@ -82,7 +78,6 @@ class Expr(ABC):
 @dataclass
 class Var(Expr):
     """Variable reference"""
-
     name: str
 
     def __repr__(self) -> str:
@@ -92,7 +87,6 @@ class Var(Expr):
 @dataclass
 class Literal(Expr):
     """Literal value (number, string)"""
-
     value: object
 
     def __repr__(self) -> str:
@@ -102,7 +96,6 @@ class Literal(Expr):
 @dataclass
 class Lambda(Expr):
     """Lambda abstraction (\\x : T => expr)"""
-
     param_name: str
     param_type: Type
     body: Expr
@@ -114,7 +107,6 @@ class Lambda(Expr):
 @dataclass
 class TypeAbstraction(Expr):
     """Type abstraction (/\\a => expr)"""
-
     type_var: str
     body: Expr
 
@@ -125,7 +117,6 @@ class TypeAbstraction(Expr):
 @dataclass
 class Application(Expr):
     """Function application (f x)"""
-
     func: Expr
     arg: Expr
 
@@ -136,7 +127,6 @@ class Application(Expr):
 @dataclass
 class TypeApplication(Expr):
     """Type application (expr [T])"""
-
     expr: Expr
     type_arg: Type
 
@@ -147,7 +137,6 @@ class TypeApplication(Expr):
 @dataclass
 class IfExpr(Expr):
     """If expression (if cond then e1 else e2)"""
-
     condition: Expr
     then_expr: Expr
     else_expr: Expr
@@ -159,7 +148,6 @@ class IfExpr(Expr):
 @dataclass
 class LetExpr(Expr):
     """Let expression (let x : T = e1 in e2)"""
-
     var_name: str
     var_type: Type
     value_expr: Expr
@@ -172,7 +160,6 @@ class LetExpr(Expr):
 @dataclass
 class FixExpr(Expr):
     """Fixed point combinator (fix f)"""
-
     func: Expr
 
     def __repr__(self) -> str:
@@ -182,7 +169,6 @@ class FixExpr(Expr):
 @dataclass
 class Annotation(Expr):
     """Type annotation ((e : T))"""
-
     expr: Expr
     type_annotation: Type
 

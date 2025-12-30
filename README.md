@@ -2,13 +2,10 @@
 
 A comprehensive educational platform teaching the complete 12,500-year history of computation, logic, and programming paradigms - from prehistoric tally marks to modern dependent type theory.
 
-**Status**: Phase 1 ✓ COMPLETE | Phase 2 → 85% (3 of 7 language services) | Phase 3 → DESIGNED  
-**Codebase**: ~28,000 lines total | Phase 1: 7,070 lines | Phase 2+: 10,270 lines | Phase 3: 10,660 lines  
-**Tests**: 500+ tests | 100% pass rate | >90% code coverage  
-**Last Updated**: 2025-11-02  
-**Organization**: Multi-repository GitHub Project
-
-> **Note**: This project is organized as a GitHub Project with multiple specialized repositories. See [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md) for the complete multi-repo architecture.
+**Status**: Phase 1 ✓ COMPLETE | Phase 2 → 85% (3 of 7 language services) | Phase 3 → DESIGNED
+**Codebase**: ~28,000 lines total | Phase 1: 7,070 lines | Phase 2+: 10,270 lines | Phase 3: 10,660 lines
+**Tests**: 500+ tests | 100% pass rate | >90% code coverage
+**Last Updated**: 2025-11-19
 
 ## Strategic Vision
 
@@ -45,27 +42,11 @@ Developers who know C, Python, Assembly, Java, Haskell, IDRIS2, and LISP but lac
 - **Documentation**: XeLaTeX with pgfplots and TikZ
 - **Security**: 5-layer isolation (Docker, gVisor, seccomp-bpf, cgroups, read-only FS)
 
-## Multi-Repository Organization
-
-Ancient Compute is organized as a GitHub Project with specialized repositories:
-
-1. **[ancient-compute](https://github.com/Oichkatzelesfrettschen/ancient-compute)** (this repo) - Core orchestration and documentation
-2. **[ancient-compute-frontend](https://github.com/Oichkatzelesfrettschen/ancient-compute-frontend)** - SvelteKit interactive UI
-3. **[ancient-compute-backend](https://github.com/Oichkatzelesfrettschen/ancient-compute-backend)** - FastAPI REST/WebSocket service
-4. **[ancient-compute-babbage-engine](https://github.com/Oichkatzelesfrettschen/ancient-compute-babbage-engine)** - Babbage Analytical Engine emulator
-5. **[ancient-compute-language-services](https://github.com/Oichkatzelesfrettschen/ancient-compute-language-services)** - Docker language containers
-6. **[ancient-compute-curriculum](https://github.com/Oichkatzelesfrettschen/ancient-compute-curriculum)** - Educational content
-7. **[ancient-compute-docs](https://github.com/Oichkatzelesfrettschen/ancient-compute-docs)** - LaTeX academic documentation
-
-**For Contributors**: See [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md) and [CONTRIBUTING.md](./CONTRIBUTING.md) for multi-repo workflows.
-
-**For Migration**: See [REPOSITORY_SPLIT_GUIDE.md](./REPOSITORY_SPLIT_GUIDE.md) for step-by-step extraction instructions.
-
 ## Supported Languages
 
 - C (GCC/Clang)
 - Python (CPython with RestrictedPython)
-- Assembly (x86-64 emulator)
+- Babbage Assembly (emulator)
 - Java (OpenJDK)
 - Haskell (GHC)
 - IDRIS2 (dependent types)
@@ -140,23 +121,15 @@ make build               # Build all
 
 ## Infrastructure: MINIX in QEMU (Docker)
 
-We integrate an external, working MINIX-in-Docker implementation (minix-analysis/docker) and add orchestration, metrics collection, and APIs in this repo.
+For detailed information on MINIX integration, metrics, and usage, refer to:
+- **[docs/minix/MINIX_ROADMAP.md](docs/minix/MINIX_ROADMAP.md)** - Comprehensive roadmap, usage, and references.
+- `make minix-install` - Launch interactive MINIX installer (VNC).
+- `make minix-metrics` - Run MINIX metrics orchestrator (requires ISO path).
 
-- Orchestrator: `scripts/minix_metrics.sh`
-- Artifacts: `metrics/minix/<arch>/{boot_time.json,resource_timeseries.csv,boot.log,qemu-debug.log}`
-- API (dev): `GET /api/v1/infra/minix/metrics?arch=i386`, `.../runs`, `.../run/{runId}`
-- Frontend: `/infra/minix` route shows latest metrics and recent runs
-
-Quick start:
 ```bash
-./scripts/minix_metrics.sh --iso /home/eirikr/Playground/minix-analysis/docker/minix_R3.4.0rc6-d5e4fc0.iso --iterations 3 --label local
+# Example: Run MINIX metrics with a local ISO
+make minix-metrics ISO=/home/eirikr/Playground/minix-analysis/docker/minix_R3.4.0rc6-d5e4fc0.iso --iterations 3 --label local
 ```
-
-CI workflow: `.github/workflows/minix-metrics.yml` (requires self-hosted runner with `/dev/kvm`).
-
-make build-backend       # Backend only
-make build-frontend      # Frontend only
-make build-docker        # Docker images
 
 # Docker operations
 make docker-up           # Start services
@@ -204,57 +177,28 @@ pnpm dev
 
 ```
 ancient_compute/
-├── README.md                           # This file - main entry point
-├── AGENTS.md                           # AI agent coordination system
-├── backend/                            # FastAPI backend (active codebase)
-│   ├── src/
-│   │   ├── emulator/                   # Babbage Analytical Engine emulator
-│   │   ├── compilers/                  # Language compilers
-│   │   └── services/                   # Execution services
-│   └── tests/
-├── frontend/                           # SvelteKit frontend (active codebase)
-│   ├── src/
-│   └── tests/
-├── services/                           # Language execution containers
-│   ├── lisp/                           # LISP service
-│   └── (c, python, haskell, etc.)
-├── BABBAGE_ANALYTICAL_ENGINE/          # Complete Babbage documentation
-│   ├── specifications/                 # Technical specifications
-│   ├── documentation/                  # Manufacturing, operations guides
-│   ├── blueprints/                     # Engineering diagrams
-│   ├── code/                           # Reference implementations
-│   └── reference/                      # Historical archives
-├── IMPLEMENTATION_PHASES/              # Phase-by-phase development
-│   ├── PHASE_2/                        # Multi-language support
-│   ├── PHASE_3/                        # Emulator & tools
-│   └── PHASE_4/                        # Advanced features
-├── ARCHITECTURE_AND_DESIGN/            # Architecture documentation
-│   ├── ARCHITECTURE.md
-│   ├── LANGUAGE_SERVICES_ARCHITECTURE.md
-│   ├── MASTER_ROADMAP.md
-│   └── MULTI_AGENT_SYNTHESIS.md
-├── DEVELOPMENT_GUIDES/                 # Developer documentation
-│   ├── API_DOCUMENTATION.md
-│   ├── BUILD.md
-│   ├── TROUBLESHOOTING_GUIDE.md
-│   └── LANGUAGE_SERVICE_SPECIFICATION.md
-├── INFRASTRUCTURE_AND_DEPLOYMENT/      # Deployment & operations
-│   ├── DEPLOYMENT_GUIDE.md
-│   └── PRODUCTION_READINESS_REVIEW.md
-├── HISTORICAL_RECORDS/                 # Development history archive
-│   ├── sessions/                       # Session summaries
-│   └── weekly/                         # Weekly progress reports
-├── CURRICULUM_AND_CONTENT/             # Educational content
-│   └── TYPE_THEORY_CURRICULUM.md
-├── DOCUMENTATION_AND_ORGANIZATION/     # Project management docs
-│   ├── PROJECT_STATUS.md
-│   ├── TODO_TRACKER.md
-│   └── TECHNICAL_DEBT.md
-├── docs/                               # Academic papers (LaTeX)
-│   ├── whitepaper-arxiv/
-│   └── PEDAGOGICAL_*.tex
-├── scripts/                            # Build and deployment scripts
-└── config/                             # Configuration files
+├── backend/           # FastAPI backend application (Python)
+├── frontend/          # SvelteKit frontend application (TypeScript)
+├── services/          # Language execution microservices (Dockerized)
+│   ├── c/             # C language service
+│   ├── python/        # Python language service
+│   ├── haskell/       # Haskell language service
+│   ├── idris/         # IDRIS2 language service
+│   ├── lisp/          # LISP language service
+│   ├── assembly/      # Babbage Assembly language service
+│   ├── java/          # Java language service
+│   └── systemf/       # System F language service
+├── docs/              # Comprehensive project documentation
+│   ├── general/       # General project overview, guidelines, agent docs, reports
+│   ├── babbage_engine/# Documentation specific to Babbage Analytical Engine
+│   ├── requirements/  # Detailed requirements for different modules
+│   ├── specifications/# Technical specifications (e.g., language service architecture)
+│   └── archive/       # Historical/superseded documents and migration reports
+├── content/           # Educational curriculum content (modules, synthesis)
+├── scripts/           # Utility scripts for development, build, and deployment
+├── config/            # Configuration files for various environments
+├── tools/             # Development tools (e.g., todo_report.py)
+└── shared/            # Shared utilities and libraries (e.g., common data models)
 ```
 
 ## Educational Modules
@@ -295,54 +239,45 @@ All code execution occurs in multi-layer sandboxed environments:
 
 ## Documentation
 
-See the following for comprehensive information:
+All comprehensive project documentation is located in the `docs/` directory.
 
-### Core Documentation
+### Overview
 - **[README.md](./README.md)** - This file: Project overview and quick start
-- **[AGENTS.md](./AGENTS.md)** - Multi-agent AI coordination system (5 specialized agents)
-- **[CLAUDE.md](./CLAUDE.md)** - Development guide for Claude Code AI assistants
-- **[GEMINI.md](./GEMINI.md)** - Development guide for Gemini AI assistants
+- **[docs/general/MASTER_ROADMAP.md](docs/general/MASTER_ROADMAP.md)** - Comprehensive synthesis of all phases, consolidates 50+ planning documents
+- **[docs/general/TODO_TRACKER.md](docs/general/TODO_TRACKER.md)** - Active task tracking, priorities, execution plan
+- **[docs/general/REPOSITORY_GUIDELINES.md](docs/general/REPOSITORY_GUIDELINES.md)** - General guidelines for contributing and development workflow.
 
-### Architecture & Design
-- **[ARCHITECTURE_AND_DESIGN/ARCHITECTURE.md](./ARCHITECTURE_AND_DESIGN/ARCHITECTURE.md)** - System architecture overview
-- **[ARCHITECTURE_AND_DESIGN/MASTER_ROADMAP.md](./ARCHITECTURE_AND_DESIGN/MASTER_ROADMAP.md)** - Comprehensive roadmap (50+ planning docs consolidated)
-- **[ARCHITECTURE_AND_DESIGN/LANGUAGE_SERVICES_ARCHITECTURE.md](./ARCHITECTURE_AND_DESIGN/LANGUAGE_SERVICES_ARCHITECTURE.md)** - Multi-language execution architecture
-- **[ARCHITECTURE_AND_DESIGN/MULTI_AGENT_SYNTHESIS.md](./ARCHITECTURE_AND_DESIGN/MULTI_AGENT_SYNTHESIS.md)** - Multi-agent integration analysis
+### AI Agents
+- **[docs/general/AGENTS.md](docs/general/AGENTS.md)** - Multi-agent coordination system (5 specialized AI agents)
+- **[docs/general/CLAUDE.md](docs/general/CLAUDE.md)** - Development guide for Claude Code AI assistants
+- **[docs/general/GEMINI.md](docs/general/GEMINI.md)** - Development guide for Gemini Code AI assistants
+- **[docs/general/MULTI_AGENT_SYNTHESIS.md](docs/general/MULTI_AGENT_SYNTHESIS.md)** - Synthesis of all agent outputs, integration analysis
 
-### Development Guides
-- **[DEVELOPMENT_GUIDES/API_DOCUMENTATION.md](./DEVELOPMENT_GUIDES/API_DOCUMENTATION.md)** - Complete REST/WebSocket API reference
-- **[DEVELOPMENT_GUIDES/BUILD.md](./DEVELOPMENT_GUIDES/BUILD.md)** - Build system documentation
-- **[DEVELOPMENT_GUIDES/TROUBLESHOOTING_GUIDE.md](./DEVELOPMENT_GUIDES/TROUBLESHOOTING_GUIDE.md)** - Common issues and solutions
-- **[DEVELOPMENT_GUIDES/LANGUAGE_SERVICE_SPECIFICATION.md](./DEVELOPMENT_GUIDES/LANGUAGE_SERVICE_SPECIFICATION.md)** - Language service specification
+### Technical Specifications
+- **[docs/specifications/LANGUAGE_SERVICE_ARCHITECTURE.md](docs/specifications/LANGUAGE_SERVICE_ARCHITECTURE.md)** - Polyglot-Systems-Architect: Multi-language execution architecture
 
-### Infrastructure & Deployment
-- **[INFRASTRUCTURE_AND_DEPLOYMENT/DEPLOYMENT_GUIDE.md](./INFRASTRUCTURE_AND_DEPLOYMENT/DEPLOYMENT_GUIDE.md)** - Production deployment guide
-- **[INFRASTRUCTURE_AND_DEPLOYMENT/PRODUCTION_READINESS_REVIEW.md](./INFRASTRUCTURE_AND_DEPLOYMENT/PRODUCTION_READINESS_REVIEW.md)** - Production readiness review
+### Requirements
+- **[docs/requirements/OVERVIEW.md](docs/requirements/OVERVIEW.md)** - Project-wide system and infrastructure requirements overview.
+- **[docs/requirements/BACKEND.md](docs/requirements/BACKEND.md)** - Backend Python, FastAPI, and compiler details.
+- **[docs/requirements/FRONTEND.md](docs/requirements/FRONTEND.md)** - Frontend SvelteKit, TypeScript, and visualization details.
+- **[docs/requirements/SERVICES.md](docs/requirements/SERVICES.md)** - Docker containers and language service architecture details.
+- **[docs/requirements/DOCS_TOOLING.md](docs/requirements/DOCS_TOOLING.md)** - LaTeX documentation and TikZ diagram requirements.
 
-### Implementation Phases
-- **[IMPLEMENTATION_PHASES/README.md](./IMPLEMENTATION_PHASES/README.md)** - Phase-by-phase implementation guide
-- **[IMPLEMENTATION_PHASES/PHASE_2/](./IMPLEMENTATION_PHASES/PHASE_2/)** - Multi-language support (85% complete)
-- **[IMPLEMENTATION_PHASES/PHASE_3/](./IMPLEMENTATION_PHASES/PHASE_3/)** - Emulator & tools (designed)
-- **[IMPLEMENTATION_PHASES/PHASE_4/](./IMPLEMENTATION_PHASES/PHASE_4/)** - Advanced features (in progress)
+### Operational Guides
+- **[docs/general/API_DOCUMENTATION.md](docs/general/API_DOCUMENTATION.md)** - Complete REST/WebSocket API reference with examples
+- **[docs/general/DEPLOYMENT_GUIDE.md](docs/general/DEPLOYMENT_GUIDE.md)** - Production deployment (Docker, Kubernetes, monitoring, security)
+- **[docs/general/TROUBLESHOOTING_GUIDE.md](docs/general/TROUBLESHOOTING_GUIDE.md)** - Common issues, diagnostics, and solutions
+- **[docs/general/WORKFLOW_TROUBLESHOOTING.md](docs/general/WORKFLOW_TROUBLESHOOTING.md)** - Specific workflow troubleshooting.
 
-### Babbage Analytical Engine
-- **[BABBAGE_ANALYTICAL_ENGINE/README.md](./BABBAGE_ANALYTICAL_ENGINE/README.md)** - Complete engineering documentation hub
-- **[BABBAGE_ANALYTICAL_ENGINE/INDEX.md](./BABBAGE_ANALYTICAL_ENGINE/INDEX.md)** - Master navigation for all Babbage resources
-- **[BABBAGE_ANALYTICAL_ENGINE/specifications/](./BABBAGE_ANALYTICAL_ENGINE/specifications/)** - Technical specifications
-- **[BABBAGE_ANALYTICAL_ENGINE/documentation/](./BABBAGE_ANALYTICAL_ENGINE/documentation/)** - Manufacturing and operations guides
-
-### Educational Content
-- **[CURRICULUM_AND_CONTENT/TYPE_THEORY_CURRICULUM.md](./CURRICULUM_AND_CONTENT/TYPE_THEORY_CURRICULUM.md)** - Type systems across 12,500 years
-
-### Project Management
-- **[DOCUMENTATION_AND_ORGANIZATION/PROJECT_STATUS.md](./DOCUMENTATION_AND_ORGANIZATION/PROJECT_STATUS.md)** - Current project status
-- **[DOCUMENTATION_AND_ORGANIZATION/TODO_TRACKER.md](./DOCUMENTATION_AND_ORGANIZATION/TODO_TRACKER.md)** - Task tracking and priorities
-- **[DOCUMENTATION_AND_ORGANIZATION/TECHNICAL_DEBT.md](./DOCUMENTATION_AND_ORGANIZATION/TECHNICAL_DEBT.md)** - Known issues and improvements
-
-### Historical Records
-- **[HISTORICAL_RECORDS/README.md](./HISTORICAL_RECORDS/README.md)** - Development history archive
-- **[HISTORICAL_RECORDS/sessions/](./HISTORICAL_RECORDS/sessions/)** - Session summaries
-- **[HISTORICAL_RECORDS/weekly/](./HISTORICAL_RECORDS/weekly/)** - Weekly progress reports
+### Babbage Analytical Engine (Capstone)
+- **[docs/babbage_engine/BABBAGE_README.md](docs/babbage_engine/BABBAGE_README.md)** - Complete engineering documentation hub for the Babbage Engine.
+- **[docs/babbage_engine/BABBAGE_MASTER_REFERENCE.md](docs/babbage_engine/BABBAGE_MASTER_REFERENCE.md)** - Master reference for the Babbage Engine.
+- **[docs/babbage_engine/BABBAGE_ASSEMBLER_SPECIFICATION.md](docs/babbage_engine/BABBAGE_ASSEMBLER_SPECIFICATION.md)** - Specification for the Babbage Assembler.
+- **[docs/babbage_engine/BABBAGE_CODE_GENERATOR_SPECIFICATION.md](docs/babbage_engine/BABBAGE_CODE_GENERATOR_SPECIFICATION.md)** - Specification for the Babbage Code Generator.
+- **[docs/babbage_engine/BABBAGE_IR_SPECIFICATION.md](docs/babbage_engine/BABBAGE_IR_SPECIFICATION.md)** - Specification for the Babbage Intermediate Representation.
+- **[docs/babbage_engine/BABBAGE_CRITICAL_REVIEW.md](docs/babbage_engine/BABBAGE_CRITICAL_REVIEW.md)** - Critical review of the Babbage Engine.
+- **[docs/babbage_engine/BABBAGE_ISA_EMULATOR_ARCHITECTURE.md](docs/babbage_engine/BABBAGE_ISA_EMULATOR_ARCHITECTURE.md)** - Architecture for the Babbage ISA Emulator.
+- **[docs/babbage_engine/BABBAGE_PROJECT_SUMMARY.md](docs/babbage_engine/BABBAGE_PROJECT_SUMMARY.md)** - Project summary for the Babbage Engine.
 
 ## Project Progress
 

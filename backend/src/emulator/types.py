@@ -79,9 +79,7 @@ class StereotyperSnapshot:
 
     x_position: int  # 0–7 (digit positions)
     y_position: int  # 0–49 (line positions)
-    mold_image: Dict[Tuple[int, int], int] = field(
-        default_factory=dict
-    )  # (x,y) → raised (1) or flat (0)
+    mold_image: Dict[Tuple[int, int], int] = field(default_factory=dict)  # (x,y) → raised (1) or flat (0)
     completed_molds: List[Dict] = field(default_factory=list)
 
 
@@ -104,41 +102,37 @@ class TimingSpec:
     """Timing specification (from SMG Technical Description)"""
 
     # Phase timing (0–360° per cycle)
-    phase_map: Dict[Tuple[int, int], str] = field(
-        default_factory=lambda: {
-            (0, 30): "column_latch",
-            (30, 60): "addition_begin",
-            (60, 90): "carry_evaluation_1",
-            (90, 120): "carry_execution",
-            (120, 150): "carry_evaluation_2",
-            (150, 180): "settle_phase",
-            (180, 210): "print_setup",
-            (210, 240): "inking",
-            (240, 270): "print_strike",
-            (270, 300): "platen_advance",
-            (300, 330): "stereo_advance",
-            (330, 360): "cycle_reset",
-        }
-    )
+    phase_map: Dict[Tuple[int, int], str] = field(default_factory=lambda: {
+        (0, 30): "column_latch",
+        (30, 60): "addition_begin",
+        (60, 90): "carry_evaluation_1",
+        (90, 120): "carry_execution",
+        (120, 150): "carry_evaluation_2",
+        (150, 180): "settle_phase",
+        (180, 210): "print_setup",
+        (210, 240): "inking",
+        (240, 270): "print_strike",
+        (270, 300): "platen_advance",
+        (300, 330): "stereo_advance",
+        (330, 360): "cycle_reset"
+    })
 
     # Events that fire at specific angles
-    event_angles: Dict[int, str] = field(
-        default_factory=lambda: {
-            0: "cycle_start / column_latch_open",
-            30: "difference_addition_begins",
-            60: "anticipating_carriage_evaluates_position_0",
-            90: "column_advance / figure_wheel_shift",
-            120: "anticipating_carriage_evaluates_position_1",
-            150: "carry_execution_completes",
-            180: "print_setup_begins / type_setter_positioning",
-            210: "inking_roller_engages",
-            240: "print_hammer_strikes",
-            270: "platen_advances",
-            300: "stereotype_frame_advances_x_axis",
-            330: "stereotype_mold_extraction",
-            360: "cycle_reset / ready_for_next_rotation",
-        }
-    )
+    event_angles: Dict[int, str] = field(default_factory=lambda: {
+        0: "cycle_start / column_latch_open",
+        30: "difference_addition_begins",
+        60: "anticipating_carriage_evaluates_position_0",
+        90: "column_advance / figure_wheel_shift",
+        120: "anticipating_carriage_evaluates_position_1",
+        150: "carry_execution_completes",
+        180: "print_setup_begins / type_setter_positioning",
+        210: "inking_roller_engages",
+        240: "print_hammer_strikes",
+        270: "platen_advances",
+        300: "stereotype_frame_advances_x_axis",
+        330: "stereotype_mold_extraction",
+        360: "cycle_reset / ready_for_next_rotation"
+    })
 
     # Carry propagation timing (from SMG appendix)
     carry_look_ahead_depth: int = 2  # Check 2 positions ahead

@@ -353,13 +353,10 @@ class TestContentTypeValidation:
     def test_test_cases_must_be_valid_json(self):
         """Test that test cases are valid JSON."""
         import json
-
-        valid_test_cases = json.dumps(
-            [
-                {"input": "5", "expected": "120"},
-                {"input": "3", "expected": "6"},
-            ]
-        )
+        valid_test_cases = json.dumps([
+            {"input": "5", "expected": "120"},
+            {"input": "3", "expected": "6"},
+        ])
         parsed = json.loads(valid_test_cases)
         assert isinstance(parsed, list)
         assert len(parsed) == 2

@@ -94,20 +94,19 @@ class BoolType(LISPType):
 @dataclass
 class ListType(LISPType):
     """List type (homogeneous elements)"""
-
     element_type: LISPType
 
     def __repr__(self) -> str:
         return f"List[{self.element_type}]"
 
     def __eq__(self, other: object) -> bool:
-        return isinstance(other, ListType) and self.element_type == other.element_type
+        return (isinstance(other, ListType) and
+                self.element_type == other.element_type)
 
 
 @dataclass
 class FunctionType(LISPType):
     """Function type"""
-
     arg_types: List[LISPType]
     return_type: LISPType
 
@@ -116,11 +115,9 @@ class FunctionType(LISPType):
         return f"({args_str}) → {self.return_type}"
 
     def __eq__(self, other: object) -> bool:
-        return (
-            isinstance(other, FunctionType)
-            and self.arg_types == other.arg_types
-            and self.return_type == other.return_type
-        )
+        return (isinstance(other, FunctionType) and
+                self.arg_types == other.arg_types and
+                self.return_type == other.return_type)
 
 
 @dataclass
@@ -166,7 +163,7 @@ class LISPTypeSystem:
         """Infer result type of an operation"""
 
         # Arithmetic operations
-        if op in ("+", "-", "*", "/", "%"):
+        if op in ('+', '-', '*', '/', '%'):
             # If any operand is float, result is float
             if any(isinstance(t, FloatType) for t in arg_types):
                 return self.FLOAT
@@ -175,37 +172,38 @@ class LISPTypeSystem:
             return self.ANY
 
         # Comparison operations
-        if op in ("=", "/=", "<", "<=", ">", ">="):
+        if op in ('=', '/=', '<', '<=', '>', '>='):
             return self.BOOL
 
         # Logic operations
-        if op in ("and", "or", "not"):
+        if op in ('and', 'or', 'not'):
             return self.BOOL
 
         # Math functions
-        if op in ("abs", "sqrt", "floor", "ceil", "round"):
+        if op in ('abs', 'sqrt', 'floor', 'ceil', 'round'):
             if arg_types and isinstance(arg_types[0], FloatType):
                 return self.FLOAT
             return self.INT
 
         # List operations
-        if op == "length":
+        if op == 'length':
             return self.INT
-        if op == "append":
+        if op == 'append':
             if arg_types:
                 return arg_types[0]  # Same type as first arg
             return self.ANY
-        if op == "list":
+        if op == 'list':
             if arg_types:
                 return ListType(arg_types[0])
             return ListType(self.ANY)
 
         # Type predicates
-        if op in ("numberp", "stringp", "symbolp", "listp", "null", "atom", "atom", "numberp"):
+        if op in ('numberp', 'stringp', 'symbolp', 'listp', 'null',
+                 'atom', 'atom', 'numberp'):
             return self.BOOL
 
         # I/O
-        if op == "print":
+        if op == 'print':
             return self.VOID
 
         # Default to Any

@@ -339,7 +339,10 @@ async def get_full_timeline(db: Session = Depends(get_db)):
             "totalEras": len(eras),
             "totalModules": sum(len(era.modules) for era in eras),
             "totalLessons": sum(
-                len(lesson) for era in eras for module in era.modules for lesson in [module.lessons]
+                len(lesson)
+                for era in eras
+                for module in era.modules
+                for lesson in [module.lessons]
             ),
             "totalExercises": sum(
                 len(exercise)

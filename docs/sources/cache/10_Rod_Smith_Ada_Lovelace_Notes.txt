@@ -1,0 +1,121 @@
+Ada Lovelace's Notes and The Ladies Diary
+Ada Lovelace's "Notes" on her translation of Menebrea's paper on Babbage's Analytical Engine were published in
+Taylor's Scientific Memoirs, which was more of a serious scientific publication. The Ladies Diary was a popular
+publication, which she may or may not have read. Baum cites:
+• Perl, Teri. The Ladies Diary or Woman's Almanac, 1704-1841, Historica Mathematica 6 (1979): 36-53
+• Wallis, Ruth and Peter. Female Philomaths, Historica Mathematica 7 , (1980), 57-64.
+"There were indeed women in mid-century England who signed their names to mathematical articles in popular journals,
+and there were influential periodicals, such as the Edinburgh Review, that lent intellectual women psychological
+support.... Although the Ladies Diary ... , the most popular of the mathematical periodicals, encouraged women to join
+wit with beauty, it attracted serious amateurs of both sexes... [it] was a respectable place to pose mathematical problems
+and sustain debate... since there were few science periodicals in England until the 1830s, technical articles often appeared
+in general periodicals like the Ladies Diary. It may have been something similar that originally sparked Mrs.
+Somerville's interest in mathematics. At a tea party one afternoon, she recalled years later, young Mary Fairfax had been
+given a ladies' fashion magazine that contained a puzzle, the answer to which was given in strange symbols. These
+symbols turned out to be algebra. And that magazine became her introduction to the world of Euclidean geometry and
+number."
+Baum, p. 35
+Submitted by Linda Talisman
+
+A Selection and Adaptation From Ada's Notes found in ``Ada, The Enchantress of Numbers,'' by
+Betty Alexandra Toole Ed.D. (Strawberry Press, Mill Valley, CA)
+Pages 240-261
+Notes annotated in collaboration with Colonel Rick Gross, USAF. ``Ada, The Enchantress of Numbers'' can be purchased
+from Strawberry Press P.O. Box 452 Sausalito, CA 94966 for $29.95.
+All quotations and page numbers refer to the original Memoir which was printed in Scientific Memoirs, Selections from
+The Transactions of Foreign Academies and Learned Societies and from Foreign Journals, edited by Richard Taylor,
+F.S.A.,Vol III London: 1843, Article XXIX. Sketch of the Analytical Engine invented by Charles Babbage Esq. By L. F.
+Menabrea, of Turin, Officer of the Military Engineers. [From the Bibliothque Universelle de Gnve, No. 82 October
+1842].
+Submitted by Betty Alexandra Toole Ed.D.
+Introduction
+What captured my attention about Ada Byron, Lady Lovelace, in 1976 when I was getting my doctorate at the University
+of California at Berkeley, was how strange it was that the daughter of the famous poet Lord Byron was connected with
+the birth of the computer revolution. What expanded my sense of strangeness was when I was at Oxford working with
+Ada's letters from 1984-1987, I would take a break at Blackwell's Bookstore and be overwhelmed by the tens of books
+on the shelves about "Ada" the programming language. In 1991 I wrote an article for "Ada's Letters" entitled " Ada
+Byron, Lady Lovelace, Analyst and Metaphysician" and had the good fortune to have Colonel Gross review the article. It
+was Ada's mind-set, her creative critical skills that not only laid the groundwork for her ability to write the first computer
+program but correctly predict the future of computing. It does take imagination, a leap of faith, to go from the structure of
+language, lines of code, to creative thinking, context and creativity, skills that Ada exhibited and I try to promote and had
+the expert help of Colonel Gross. As Ada programmers you might see other relationships between Ada's mind-set and the
+nature and execution of Ada, the programming language.
+The first step is to see how Ada went about her task and what follows is a few pages from my book ``Ada, The
+Enchantress of Numbers.''
+To start with, Ada added a footnote to her translation of Menabrea's article. She emphasized the difference between
+
+Pascal's machine, which can be compared to a calculator, and Babbage's Analytical Engine, which can be compared to a
+modern day computer. Ada translated what Menabrea wrote: RFor instance, the much-admired machine of Pascal is now
+simply an object of curiosity, which, whilst it displays the powerful intellect of its inventor, is yet of little utility in itself.
+Its power extended no further than the execution of the first four operations . . .S Ada augments Menabrea's statement
+and clearly defines the boundaries of Babbage's Analytical Engine.
+Ada emphasized the fundamentally different capability of the Analytical Engine, that is, to be able to store a program (a
+sequence of operations or instructions) as well as data (informational values themselves). At this point, she began to
+recognize and to amplify the increased responsibility this new capability placed upon the machine's user, to specify the
+stored program both precisely and in complete accordance with the user's interest. Her recognition of this increased
+responsibility is a remarkable insight, in that the magnitude of this specification task (a task we refer to today as software
+development) is only now being appreciated.
+It is accordingly most fitting, and most honouring to her insight, that the programming language Ada, developed in the
+early 1980's by the U.S. Department of Defense, provides the most precise facilities for this software development
+(specification) task of any general-purpose software language for large-scale problems existing today. In the following
+passage, Ada explained the difficulty of the software development task, that is, the difficulty of communicating to the
+machine what it is we expect it to do. But note that in so doing, she also, in effect, extolled the power of mathematical
+language when it is precise. Thus, a software language capable of great precision in specification (like the Ada language)
+also provides great power.
+Ada exhibited the principle that power comes from disciplined creativity.
+From Note A, p. 693:
+
+The confusion, the difficulties, the contradictions which, in consequence of want of accurate distinctions in this
+particular, have up to even a recent period encumbered mathematics . . . It may be desirable to explain, that by the word
+operation, we mean any process which alters the mutual relation of two or more things, be this relation of what kind it
+may. This is the most general definition, and would include all subjects in the universe . . . They will also be aware that
+one main reason why the separate nature of the science of operations has been little felt, and in general little dwelt on, is
+the shifting meaning of many of the symbols used in mathematical notation. First, the symbols of operation are
+frequently also the symbols of the results of operations . . . Secondly, figures, the symbols of numerical magnitude, are
+frequently also the symbols of operations, as when they are the indices of powers [e.g., 2 and 32] . . . [In] the Analytical
+Engine . . . whenever numbers meaning operations and not quantities (such as indices of powers), are inscribed on any
+column or set of columns, those columns immediately act in a wholly separate and independent manner . . .
+One of Ada's most famous quotes is from Note A, p. 694:
+
+Again, it [the Analytical Engine] might act upon other things besides number, were objects found whose mutual
+fundamental relations could be expressed by those of the abstract science of operations, and which should be also
+susceptible of adaptations to the action of the operating notation and mechanism of the engine . . . Supposing, for
+instance, that the fundamental relations of pitched sounds in the science of harmony and of musical composition were
+susceptible of such expression and adaptations, the engine might compose elaborate and scientific pieces of music of any
+degree of complexity or extent.
+Once Ada had made the distinction between numbers and the operations to be performed, it was not difficult for her to
+project further how the Analytical Engine would then be capable of giving two types of results; numerical and symbolic,
+(eg algebraic). In effect, an Analytical Engine could generate new programs as well as numbers. As a result the
+Analytical Engine opened up a vast new territory for the analysis of information. Here again, the Ada software language
+contains somewhat unique facilities corresponding in a sense to Ada's insight. One such Ada facility is the generic
+subprogram, a template for future software generation. Having defined a generic subprogram for data of one type, the
+Ada software developer can create new copies automatically tailored to data of other types.
+Another often quoted selection from Note A, p. 696
+
+The distinctive characteristic of the Analytical Engine, and that which has rendered it possible to endow mechanism with
+such extensive faculties as bid fair to make this engine the executive right-hand of abstract algebra, is the introduction
+into it of the principle which Jacquard devised for regulating, by means of punched cards, the most complicated patterns
+in the fabrication of brocaded stuffs. It is in this that the distinction between the two engines lies. Nothing of the sort
+exists in the Difference Engine. We may say most aptly that the Analytical Engine weaves algebraical patterns just as the
+
+Jacquard-loom weaves flowers and leaves.
+In addition to Ada's prescient comments linking the Analytical Engine to its potential use for sound and graphics she
+provided what might be justly called "the first computer program", a plan for the Analytical Engine to calculate Bernoulli
+numbers, a very complicated chore. This table is also found in this chapter.
+However, of all the material in the translation, the following Note has probably engendered the most controversy today in
+light of its denial of the possibility of creating original knowledge through so-called ``Artificial Intelligence.''
+From Note G, p. 722
+
+It is desirable to guard against the possibility of exaggerated ideas that might arise as to the powers of the Analytical
+Engine. In considering any new subject, there is frequently a tendency, first, to overrate what we find to be already
+interesting or remarkable; and, secondly, by a sort of natural reaction, to undervalue the true state of the case, when we
+do discover that our notions have surpassed those that were really tenable. The Analytical Engine has no pretensions
+whatever to originate any thing. It can do whatever we know how to order it to perform. It can follow analysis; but it has
+no power of anticipating any analytical relations or truths. Its province is to assist us in making available what we are
+already acquainted with. This it is calculated to effect primarily and chiefly of course, through its executive faculties; but
+it is likely to exert an indirect and reciprocal influence on science itself in another manner. For, in so distributing and
+combining the truths and the formula of analysis, that they may become most easily and rapidly amenable to the
+mechanical combinations of the engine, the relations and the nature of many subjects in that science are necessarily
+thrown into new lights, and more profoundly investigated.
+
+

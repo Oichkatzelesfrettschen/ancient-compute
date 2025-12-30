@@ -1,0 +1,516 @@
+Ada and the First Computer
+The collaboration between Ada, countess of Lovelace, and
+computer pioneer Charles Babbage resulted in a landmark publication
+that described how to program the world’s first computer
+by Eugene Eric Kim and Betty Alexandra Toole
+
+P
+
+eople called Augusta Ada King’s father “mad and bad” for his wild ways, but he
+was better known as Lord Byron, the poet. Ada inherited her famous father’s
+way with words and his zest for life. She was a beautiful, flirtatious woman who
+hobnobbed with England’s elite and who died at the youthful age of 36, the same age at
+which her father died. And like Byron, Ada is best known for something she wrote.
+In 1843 she published an influential set of notes that described Charles Babbage’s Analytical Engine, the first automatic, general-purpose computing machine ever designed.
+Although the Analytical Engine was never built—largely because Babbage could not
+raise the funds for its construction—Ada’s notes included a program for using it to compute a series of figures called Bernoulli numbers [see box on page 78].
+Ada’s notes established her importance in computer science, but her fascinating life
+and lineage—and her role as a female pioneer in a field in which women have always
+been notoriously underrepresented—have lately turned her into an icon. In addition to
+numerous biographies, she has inspired plays and novels written by the likes of such luminaries as Tom Stoppard and Arthur C. Clarke. Conceiving Ada, a movie loosely
+based on her life, was released by Fox Lorber in February. And whereas many women
+have helped to advance computer science, only Ada has had a computer language
+named after her; it is used largely for military and aerospace applications.
+Not surprisingly, Ada’s contributions to computer science have been both embellished
+and diminished, and her true legacy has elicited controversy among historians in the
+field. Many people, for instance, incorrectly claim that Ada was the first computer programmer. (Babbage, not Ada, wrote the first programs for his Analytical Engine, although most were never published.) Others unfairly challenge Ada’s authorship of the
+program included in the notes and even of the notes themselves.
+As with most things, the truth lies somewhere in the middle. Babbage characterized
+Ada’s contributions best when he referred to her as his “interpretress.” He did discuss
+the notes with Ada and reviewed early drafts, but there can be no question that she herself was the author. And whereas Babbage’s groundbreaking work formed the basis of
+Ada’s notes and her thinking, her lucid writing revealed unique insight into the
+significance and the many possibilities of the Analytical Engine.
+A Young Mathematician
+
+A
+
+ugusta Ada Byron was born on December 10, 1815, in London; she was the daughter
+of Lord Byron and his wife of 11 months, mathematician Annabella Milbanke. By
+the time Ada was born, Annabella already had reservations about her marriage to Byron. Rumors, most likely started by Annabella’s cousin, Caroline Lamb, were circulating that Byron had had an affair with his half-sister, giving Annabella the excuse to separate from him. Byron left England in April 1816, never to see his daughter again.
+Lady Byron raised Ada to be a mathematician and a scientist and discouraged her literary leanings, in part to distance her from her father. Ada received an excellent education:
+she was tutored in mathematics by Mary Somerville, a prominent scientist best known for
+
+76
+
+Scientific American
+
+May 1999
+
+Copyright 1999 Scientific American, Inc.
+
+Scientific American
+
+Copyright 1999 Scientific American, Inc.
+
+PORTRAIT COURTESY OF THE BRITISH MUSEUM; STAMP: © THE POST OFFICE—A BRITISH STATUTORY CORPORATION, REPRODUCED BY KIND
+PERMISSION OF THE BRITISH POST OFFICE, ALL RIGHTS RESERVED; BACKGROUND COURTESY OF SCIENCE MUSEUM LIBRARY, LONDON
+
+ADA LOVELACE sat
+for this portrait by A. E.
+Chalôn around 1838, several
+years after she first met Charles
+Babbage, the designer of the world’s
+first computer. The inset shows a stamp released in 1991 by the British postal service
+to commemorate the 200th anniversary of
+Babbage’s birth. The background depicts programming ideas sketched by Babbage. Ada
+later extended his proposals.
+
+May 1999
+
+77
+
+her translations of the works of French
+mathematician and physicist PierreSimon Laplace, and by logician and
+mathematician Augustus De Morgan.
+Ada’s mathematical education was
+unusual at the time, even for someone
+of noble lineage. While mathematics
+flourished in continental Europe in the
+first half of the 19th century, British
+mathematics was floundering. Mathematicians De Morgan, George Peacock
+and their college friend Charles Babbage were helping to rejuvenate British
+mathematics during Ada’s youth, but
+the state of mathematical education for
+
+young people—and especially young
+women—remained poor. Nevertheless,
+under De Morgan’s tutelage, Ada became well schooled in the principles of
+algebra, logic and calculus.
+On June 5, 1833, 17-year-old Ada attended a party where she met Babbage,
+a 41-year-old widower who was as well
+known for his political activism and his
+outrageous ideas as for his work in mathematics and economics. A few weeks
+after the meeting, Babbage showed Ada
+his partially completed Difference Engine, an early calculating machine [see
+“Redeeming Charles Babbage’s Mechan-
+
+Bernoulli Numbers
+
+T
+
+he Bernoulli numbers are found in the polynomial expansion of some
+trigonometric functions that were once employed for constructing navigational tables, among other uses. They are defined as the constant Bn in the polynomial expansion of the expression:
+x =
+
+ex– 1
+
+∑ B xn !
+n
+
+ical Computer,” by Doron D. Swade;
+Scientific American, February 1993].
+She was captivated. For the next several
+years, she followed the development of
+the Difference Engine closely, reading
+the few published articles on the engine
+and discussing it with Babbage.
+Babbage devised the Difference Engine as a machine that would generate
+mathematical tables, automating the
+“mechanical” steps of calculation. Although it was efficient, it was limited
+computationally. It could perform only
+addition and subtraction and solve a series of polynomial equations (such as 0
+= a + bx + cx 2 + dx 3 . . . ).
+Babbage, however, had already started thinking about bigger and better
+things. As their friendship deepened, he
+began outlining to Ada a new machine
+he was designing, one that would be significantly more advanced than the Difference Engine. He called it the Analytical Engine and spent the remaining 38
+years of his life refining the plans for it.
+
+n
+
+n≥0
+
+Working with Babbage
+
+For her program, Ada simplified this expression to:
+0= –
+
+1 (2x –1)
+2x
+(2x) (2x –1) (2x –2)
++B
++ B2
++
+2 (2x +1) 1 2!
+4!
+B3
+… + Bn
+
+(2x) (2x–1) (2x –2) (2x –3) (2x –4)
++
+6!
+
+(2x) (2x –1) … (2x –2n +2)
+(2n)!
+
+To calculate Bn from this expression, start by letting x = 1. Notice that the fraction
+next to B1 becomes 1 and that the fractions next to B2, B3 and so on all equal 0, because each numerator contains the factor (2x –2), which is 0 when x = 1. This leaves:
+0=(–
+
+1×1
+)+ B1
+2 3
+
+So B1 = 1⁄6. Now, if you let x = 2, the fraction next to B2 becomes 1, because both
+the numerator and the denominator are equal to 4! (4 × 3 × 2 × 1), and the fractions next to B3, B4 and so on all equal 0, because each numerator contains the
+factor (2x –4), which is 0 when x = 2. The substituted expression is:
+0 = (– 1 × 3 ) + (B1 × 2) + B2
+2 5
+You already know the value of B1 from the previous substitution, so you can easily see that B2 = –1⁄30. The first five Bernoulli numbers are 1⁄6, –1⁄30, 1⁄42, –1⁄30 and 5⁄66.
+For various reasons, the indices Ada used in her program were all odd numbers:
+B1, B3, B5 and so on, as opposed to B1, B2, B3 and so on. Computing each Bernoulli
+number one at a time constituted the outer loop of the program, to use modern
+computer programming parlance. To compute the fractional value next to each
+Bernoulli number, Ada used a second loop. She started by dividing the first factor
+of the numerator by the first factor of the denominator and storing that value. She
+then divided the second factor of the numerator by the second factor of the denominator and multiplied that value by the previously stored value. These steps
+were repeated until the value of the fraction was completely calculated, at which
+—E.E.K. and B.A.T.
+point it was multiplied by the appropriate Bernoulli number.
+78
+
+Scientific American
+
+May 1999
+
+A
+
+ccording to Babbage’s designs, the
+Analytical Engine would have none
+of the restrictions of the Difference Engine. Devised to solve general computational problems, it would possess an
+architecture remarkably similar to that
+of today’s modern computers, consisting of a “store” (memory), a “mill”
+(central processing unit, or CPU) and a
+punched-card reader (input device).
+Babbage intended to rely on punched
+cards for programming data input (an
+idea borrowed from the Jacquard loom,
+which wove patterns automatically by
+using such cards). The engine’s output
+would take the form of a printed page
+or punched cards. The Analytical Engine would perform addition, subtraction, multiplication and division. It
+would be able to execute or repeat a set
+of instructions based on certain conditions (“if x, then y”), a central concept
+in modern computer science known as
+conditional branching.
+In 1840 Babbage made his first and
+only public presentation on the Analytical Engine to a group of mathematicians and engineers in Turin, Italy.
+Among those attending was a young
+mathematician named Luigi Federico
+Menabrea (Italy’s future prime minister), who took notes at the meeting and,
+with some additional notes from Babbage, published a paper in French entitled “Sketch of the Analytical Engine.”
+Ada and the First Computer
+
+Copyright 1999 Scientific American, Inc.
+
+Ada’s Scheme for Computing the Bernoulli Numbers
+
+A
+
+The first six operations calculate ( 1⁄2) × (2n–1) / (2n + 1) and
+store the value in V13 . Operation 7 subtracts 1 from n and assigns
+it to V10 because the first iteration is complete. Operations 8, 9
+and 10 calculate 2n/2 and multiply it by B1, which was calculated
+earlier and stored in V21; they store the value in V12. Operation 11
+takes V12 and adds it to V13 , and operation 12 subtracts 2 from n
+and stores that value in V10, because the second iteration is complete. Operations 13 through 21 calculate the next value and
+multiply it by B5.
+One flaw in Ada’s program is that she does not use a variable
+to keep track of each iteration while calculating the fractional
+values, as she does with V10 when she computes the product of
+the fractions by the previous Bernoulli numbers. Also, note a bug
+in Ada’s program in Operation 21, where the third factor of the
+—E.E.K. and B.A.T.
+denominator should be 4, not 3.
+
+REPRINTED FROM SCIENTIFIC MEMOIRS. EDITED BY RICHARD TAYLOR, VOL. III, 1843
+
+da’s program for computing B7, the fourth Bernoulli number, is shown. The first six columns demonstrate the various operations that would be performed by the Analytical Engine, and the remaining columns represent the values of each of
+the variables. Each row represents a single operation.
+When the program begins, there are six variables in use: V1, V2,
+V3, V21, V22 and V23 [see shaded boxes]. (The superscripts in the
+chart indicate the number of times the variable has been used.)
+The values of these variables are 1, 2, n (which in this case is 4, because Ada is calculating B7, the fourth Bernoulli number), B1, B3
+and B5. V10 is used to store the number of iterations left to perform. At the first iteration, V10 is equal to n –1, at the second iteration, V10 is equal to n –2, and so on. When V10 equals 1, the loop
+stops, and the program is finished computing the Bernoulli
+number.
+
+Menabrea focused his attention primarily on the mathematical underpinnings of both the Difference and Analytical Engines rather than on their underlying mechanical operations. Menabrea
+outlined the purpose of the various components of the Analytical Engine and
+recognized that it would be able to
+compute any algebraic formula properly expressed (or programmed) on the
+punched cards. “The cards,” Menabrea
+
+wrote, “are merely a translation of algebraical formulae, or, to express it better,
+another form of analytical notation.”
+Ada—who had since married William
+King, the earl of Lovelace, and become
+the countess of Lovelace—read Menabrea’s paper and began translating it
+into English. Babbage had remained
+a good friend of Ada’s, and on hearing
+of her work in early 1843, he encouraged her to annotate the translation.
+
+Ada and the First Computer
+
+With that suggestion began a major
+collaboration that resulted in Ada’s
+publishing the first paper to discuss the
+programming of a computer at great
+length; it was to be the only such paper
+in existence for the next century. She included seven notes in all (A through G),
+which combined are more than twice as
+long as Menabrea’s original article. An
+important theme was the significance of
+the Analytical Engine’s ability to be proScientific American
+
+Copyright 1999 Scientific American, Inc.
+
+May 1999
+
+79
+
+80
+
+Scientific American
+
+fied in her publication.
+Ada ends her notes
+with her program for
+computing Bernoulli
+numbers. Swiss mathematician Jakob Bernoulli wrote about his
+numbers in a classic
+book about probability, Ars conjectandi (The
+Art of Conjecture), first
+published in 1713.
+Ada’s program for deriving Bernoulli numbers demonstrated the
+Analytical Engine’s conditional branching capability and used two
+loops. It was far more
+ambitious and com- BABBAGE’S ANALYTICAL ENGINE was never complex than any program pleted, but a portion (above) consisting of part of the mill
+Babbage had written (CPU) and the printing devices was assembled shortly before his death in 1871. The engine would have been profor the Engine.
+All that historians grammed using punched cards, an idea borrowed from the
+know regarding Ada’s Jacquard loom for weaving patterned cloth (right).
+work comes from correspondence between Ada and Bab- her notes a preface complaining about
+bage, Babbage’s notebooks and autobi- the British government’s lack of supography, and Ada’s notes themselves, port for his Analytical Engine. Ada was
+which were published in Richard Tay- furious and sent him an angry letter.
+lor’s Scientific Memoirs. Of the letters They eventually resolved their differbetween Ada and Babbage that have ences, and Babbage’s preface was pubsurvived, most were written by Ada. lished separately and anonymously.
+In a letter to Babbage dated July 1843,
+Sadly, Ada’s own notebook is lost; it
+could have answered many questions Ada wrote, “I want to put in something
+about Bernoulli’s Numbers, in one of
+about her path of understanding.
+my Notes, as an example of how an implicit function may be worked out by
+Babbage and the Notes
+the engine, without having been worked
+da compiled her notes between Feb- out by human head & hands first. Give
+ruary and September 1843 and dis- me the necessary data & formulae.”
+cussed her progress often with Babbage (Ada had studied Bernoulli numbers
+during this period, both through letters with De Morgan two years before but
+and face-to-face. Although she relied on apparently needed to refresh her memoBabbage to explain the inner workings ry of the formula for generating them.)
+of his machine and to confirm the accuFrom this letter, two things are clear.
+racy of her descriptions, Ada often as- First, including a program that computtonished Babbage with her insights. On ed Bernoulli numbers was Ada’s idea.
+reading a draft of Note A, for example, Second, Babbage at the very least proBabbage responded, “I am very reluc- vided the formulas for calculating
+tant to return your admirable & philo- Bernoulli numbers, a fact he confirmed
+sophic Note A. Pray do not alter it. . . . 21 years later in his autobiography, PasAll this was impossible for you to know sages from the Life of a Philosopher.
+by intuition and the more I read your
+We cannot know for certain the exnotes the more surprised I am at them tent to which Babbage helped Ada on
+and regret not having earlier explored the Bernoulli numbers program. She
+so rich a vein of the noblest metal.”
+was certainly capable of writing the
+Ada sought Babbage’s opinions and program herself given the proper forwas open to suggestions regarding con- mula; this is clear from her depth of untent; she resisted any changes to her derstanding regarding the process of
+prose, however. In August 1843, a programming and from her improvemonth before the final proofs went to ments on Babbage’s programming nothe printer, Babbage tried to insert into tation. Additionally, letters between
+SCIENCE MUSEUM LIBRARY, LONDON
+
+grammed using the Jacquard punched
+cards. “The distinctive characteristic of
+the Analytical Engine,” wrote Ada,
+“. . . is the introduction into it of the
+principle which Jacquard devised for
+regulating, by means of punched cards,
+the most complicated patterns in the
+fabrication of brocaded stuffs. . . . We
+say most aptly that the Analytical Engine weaves algebraical patterns just as
+the Jacquard-loom weaves flowers and
+leaves.” Cards were a particularly clever
+solution for weaving cloth—or for performing calculations—because they allowed any desired pattern—or equation—to be generated automatically.
+Ada went on to elaborate greatly on
+Menabrea’s descriptions and to examine the gritty details of programming
+the Analytical Engine. For example, she
+emphasized the computational importance of the engine’s ability to branch to
+different instructions based on certain
+conditions, and she drew the distinction
+between what was theoretically possible to compute and what was, in reality, impractical. Ada also wrote about
+the benefits of the Analytical Engine’s
+ability to reuse code. In addition, in describing the symbolic processing powers of the engine, she wrote of its potential to compose music: “Supposing, for
+instance, that the fundamental relations
+of pitched sounds in the science of harmony and of musical composition were
+susceptible of such expression and
+adaptations, the engine might compose
+elaborate and scientific pieces of music
+of any degree of complexity or extent.”
+Finally, Ada debunked the notion that
+the engine was “thinking” in the ways
+that humans think. “The Analytical Engine has no pretensions whatever to
+originate anything,” she asserted. “It
+can do whatever we know how to order it to perform.” Over a century later
+Alan M. Turing made her sentiment famous in a landmark lecture on artificial
+intelligence, dubbing it “Lady Lovelace’s
+Objection.”
+The remainder of Ada’s notes were
+devoted to the mechanics of programming the Analytical Engine, including a
+description of the punched-card mechanism and of the notation for writing
+programs. If, as Menabrea had stated
+in his article and Ada had reaffirmed,
+the punched cards merely expressed an
+algebraic formula, then there had to be
+a rigorous notation for expressing the
+formula on the punched cards. Babbage had adopted a tabular format for
+expressing programs, which Ada modi-
+
+A
+
+May 1999
+
+Ada and the First Computer
+
+Copyright 1999 Scientific American, Inc.
+
+CORBIS-BETTMANN
+
+ematician who was not capable of
+writing the Bernoulli numbers
+program herself, an idea that has
+since been expressed by others.
+Stein’s conclusion is based primarily on two pieces of evidence.
+First, she points out a mathematical error in Ada’s translation of
+Menabrea, in which she translated
+a French typo into an impossible
+mathematical statement. Menabrea’s original paper read “le cos.
+de n = ∞,” when it should have
+read “le cas de n = ∞.” The proper translation would have been
+“in the case of n = ∞,” but Ada
+translated the statement literally
+to “when the cos n = ∞,” a mathematical impossibility.
+Second, Stein quotes letters between Ada and her tutors that
+show that Ada had difficulty with
+functional substitution (proving
+an equation by substituting a
+function with its identity). Stein
+writes, “The evidence of the tenuousness with which she grasped the
+subject of mathematics would be difficult to credit about one who succeeded
+in gaining a contemporary and posthumous reputation as a mathematical talent, if there were not so much of it.”
+Ada indeed mistakenly translated
+one of Menabrea’s statements, but it
+cannot be fairly attributed to mathematical incompetence. It was not the
+only mistake in her article; Ada even
+miswrote her initials on her final note
+as “A.L.L.” instead of “A.A.L.” Her 65
+pages of translation and annotations
+were peer-reviewed by Babbage and
+others, who also overlooked the errors.
+Stein’s charge that Ada did not understand functional substitution is
+more serious, because it is a vital concept for computer programmers. It is
+crucial to remember, however, that algebra was cutting-edge mathematics in
+England at the time and that Ada was
+learning via correspondence. Recognizing that her tutors were helping her for
+free, Ada was more likely to write to
+them about matters she did not understand than about concepts she had already grasped. The level of mathematical sophistication in her late letters
+shows that despite the fact that Ada
+may have had trouble with functional
+substitution before she began working
+on her notes, she most likely understood it when she began writing them.
+Ada’s health, which was poor on and
+off throughout her life, declined further
+
+Babbage and Ada at the time seem to
+indicate that Babbage’s contributions
+were limited to the mathematical formula and that Ada created the program
+herself. While she was working on the
+program, Ada wrote to Babbage, “I
+have worked incessantly, & most successfully, all day. You will admire the
+Table & Diagram extremely. They have
+been made out with extreme care, & all
+the indices most minutely & scrupulously attended to.”
+The importance of Ada’s choosing to
+write this program cannot be overstated. Babbage had written several small
+programs for the Analytical Engine in
+his notebook in 1836 and 1837, but
+none of them approached the complexity of the Bernoulli numbers program.
+Because of her earlier tutelage, Ada was
+at least familiar with the numbers’
+properties. It is possible that Ada recognized that a Bernoulli numbers program would nicely demonstrate some
+of the Analytical Engine’s key features,
+such as conditional branching. Also,
+because Menabrea had alluded to the
+Bernoulli numbers in his article, Ada’s
+program tied in nicely with her translation of Menabrea.
+Finally, any discussion of Ada’s work
+would not be complete without mentioning Dorothy Stein of the University
+of London, perhaps Ada’s most outspoken critic, who wrote Ada: A Life and a
+Legacy in 1985. One of Stein’s assertions
+was that Ada was an incompetent mathAda and the First Computer
+
+after 1843, limiting her ability to practice mathematics. She died on November 27, 1852, probably of uterine cancer. At her request, she was buried next
+to her father. Her work remained relatively obscure until 1953, when Bertram V. Bowden compiled Faster than
+Thought, a history of computers that
+mentioned Ada’s work and called her a
+“prophet.”
+Many modern computer pioneers
+eventually became aware of Babbage’s
+work and of Ada’s paper, but all of
+them made their conceptual breakthroughs independently. Howard Aiken,
+the Harvard University professor who
+designed and built the Mark I in 1944,
+liked to consider himself a direct successor of Babbage. He was not familiar
+with Ada’s work, however, and failed
+to realize the importance of conditional
+branching.
+What we now know about designing
+and programming computers may not
+be directly traceable to Babbage and
+Ada, but they can claim precedence for
+many of these concepts. And Ada in
+particular has become a figure whose
+life and work still stir the imagination
+of many computer scientists today.
+S
+
+The Authors
+EUGENE ERIC KIM and BETTY ALEXANDRA TOOLE both became interested in
+Ada Lovelace while working on their undergraduate and graduate theses, respectively.
+Kim is technical editor at Dr. Dobb’s Journal
+in San Mateo, Calif. He is the author of CGI
+Developer’s Guide and of an upcoming
+book on the history of free software. He
+holds a bachelor’s degree in history and science from Harvard University. Toole received both her B.A. and Ed.D. from the
+University of California, Berkeley, where she
+specialized in history of science and the integration of technology into education. She is
+the author of Ada, the Enchantress of Numbers: A Selection from the Letters of Lord
+Byron’s Daughter and Her Description of
+the First Computer and of the abridged, paperback version, Ada, the Enchantress of
+Numbers: Prophet of the Computer Age.
+Toole is a consultant and an adjunct professor of computer science at Dominican College in San Rafael, Calif.
+
+Further Reading
+The Mathematical Work of Charles
+Babbage. J. M. Dubbey. Cambridge University Press, 1978.
+Charles Babbage: Pioneer of the Computer. Anthony Hyman. Princeton University Press, 1982.
+
+Scientific American
+
+Copyright 1999 Scientific American, Inc.
+
+May 1999
+
+81
+
+

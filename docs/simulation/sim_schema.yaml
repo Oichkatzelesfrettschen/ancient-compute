@@ -1,0 +1,69 @@
+meta:
+  version: 0.1
+  description: Babbage engine physics/timing simulation schema
+materials:
+- name: brass
+  density_kg_m3: 8500
+  friction_coeff: 0.15
+- name: steel
+  density_kg_m3: 7850
+  friction_coeff: 0.12
+mechanisms:
+  drive:
+    type: steam_piston
+    valve_gear: stephenson
+    stroke_m: 0.2
+    rpm: 20
+    pressure_bar: 6
+  gear_train:
+    stages:
+    - ratio: 3.0
+    - ratio: 2.0
+    total_efficiency: 0.85
+  card_feed:
+    feed_rate_cards_per_min: 10
+    jam_rate_per_1k: 1
+  bearings:
+    type: plain
+    oil: mineral_19th_c
+    loss_per_rev_j: 0.01
+registers:
+  digits: 40
+  base: 10
+  wheels_per_digit: 1
+opcodes:
+  NOP:
+    cycles: 1
+  ADD:
+    cycles: 8
+  SUB:
+    cycles: 8
+  MULT:
+    cycles: 400
+  DIV:
+    cycles: 750
+  SQRT:
+    cycles: 250
+  LOAD:
+    cycles: 15
+  STOR:
+    cycles: 15
+  JMP:
+    cycles: 4
+validation:
+  timing_source: sm-de2-techdesc
+  notes: Align cycles to Engine.clock_time units
+tolerances:
+  gear_module_mm: 2.5
+  backlash_mm: 0.15
+  shaft_clearance_mm: 0.05
+  bearing_clearance_mm: 0.1
+lubrication:
+  oil_type: mineral_19th_c
+  viscosity_cSt_40C: 68.0
+  schedule_hours: TBD
+valve_gear_params:
+  lap_mm: 3.0
+  lead_mm: 1.0
+  cutoff_pct: 60.0
+  notes: Stephenson link parameters to map stroke and rpm to port events

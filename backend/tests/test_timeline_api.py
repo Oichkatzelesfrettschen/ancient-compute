@@ -13,19 +13,15 @@ Tests cover:
 import importlib
 import pytest
 
-
 def _db_available() -> bool:
     try:
-        importlib.import_module("src.database")
-        importlib.import_module("src.models")
+        importlib.import_module('src.database')
+        importlib.import_module('src.models')
         return True
     except Exception:
         return False
 
-
-pytestmark = pytest.mark.skipif(
-    not _db_available(), reason="database/models unavailable in this environment"
-)
+pytestmark = pytest.mark.skipif(not _db_available(), reason="database/models unavailable in this environment")
 
 
 class TestEraModel:
@@ -34,7 +30,6 @@ class TestEraModel:
     def test_era_creation(self, test_db):
         """Test creating an Era record."""
         from src.database import SessionLocal
-
         db = SessionLocal()
 
         era = Era(
@@ -64,7 +59,6 @@ class TestEraModel:
     def test_era_module_relationship(self, test_db):
         """Test Era to Module one-to-many relationship."""
         from src.database import SessionLocal
-
         db = SessionLocal()
 
         era = Era(
@@ -108,7 +102,6 @@ class TestExerciseModel:
     def test_exercise_creation(self, test_db):
         """Test creating an Exercise record."""
         from src.database import SessionLocal
-
         db = SessionLocal()
 
         era = Era(
@@ -170,7 +163,6 @@ class TestExerciseModel:
     def test_exercise_progress_tracking(self, test_db):
         """Test ExerciseProgress model for tracking user attempts."""
         from src.database import SessionLocal
-
         db = SessionLocal()
 
         user = User(
@@ -245,7 +237,6 @@ class TestExerciseModel:
     def test_exercise_submission_tracking(self, test_db):
         """Test ExerciseSubmission for recording individual code submissions."""
         from src.database import SessionLocal
-
         db = SessionLocal()
 
         user = User(
@@ -331,7 +322,6 @@ class TestTimelineEndpoints:
     def setup_method(self):
         """Setup test data before each test."""
         from src.database import SessionLocal
-
         self.db = SessionLocal()
 
         # Create test eras
@@ -380,7 +370,6 @@ class TestTimelineEndpoints:
     def test_get_era_detail_endpoint(self, client):
         """Test GET /timeline/eras/{era_id} endpoint."""
         from src.database import SessionLocal
-
         db = SessionLocal()
         era = db.query(Era).first()
 
@@ -405,7 +394,6 @@ class TestTimelineEndpoints:
     def test_get_module_detail_endpoint(self, client):
         """Test GET /timeline/modules/{module_id} endpoint."""
         from src.database import SessionLocal
-
         db = SessionLocal()
         module = db.query(Module).first()
 
@@ -467,7 +455,6 @@ class TestTimelineEndpoints:
     def test_era_camel_case_response(self, client):
         """Test that API responses use camelCase field names."""
         from src.database import SessionLocal
-
         db = SessionLocal()
         era = db.query(Era).first()
 
@@ -489,7 +476,6 @@ class TestTimelineHierarchy:
     def test_era_module_hierarchy(self, test_db):
         """Test that eras contain properly nested modules."""
         from src.database import SessionLocal
-
         db = SessionLocal()
 
         era = Era(
@@ -542,7 +528,6 @@ class TestTimelineHierarchy:
     def test_module_exercise_cascade_delete(self, test_db):
         """Test that deleting a module cascades to exercises."""
         from src.database import SessionLocal
-
         db = SessionLocal()
 
         era = Era(

@@ -11,7 +11,6 @@ import redis
 from .api.router import api_router
 from .config import settings
 from .rate_limiting import RateLimitMiddleware, RateLimiter
-
 # Note: Avoid importing database/SQLAlchemy at module import time to keep
 # app importable in limited environments. Lazily import within handlers.
 
@@ -41,7 +40,7 @@ app = FastAPI(
 if not settings.DEBUG:
     app.add_middleware(
         TrustedHostMiddleware,
-        allowed_hosts=["ancient-compute.com", "*.ancient-compute.com", "localhost"],
+        allowed_hosts=["ancient-compute.com", "*.ancient-compute.com", "localhost"]
     )
 
 # Configure CORS (from both)
@@ -52,7 +51,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 # Add security headers middleware (from copilot)
 @app.middleware("http")
@@ -66,10 +64,8 @@ async def add_security_headers(request: Request, call_next):
         response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
     return response
 
-
 # Add rate limiting middleware (from copilot)
 app.add_middleware(RateLimitMiddleware, limiter=RateLimiter())
-
 
 # Middleware to count requests (from master)
 @app.middleware("http")
@@ -78,7 +74,6 @@ async def count_requests(request: Request, call_next):
     REQUEST_COUNT.inc()
     response = await call_next(request)
     return response
-
 
 # Include API router
 app.include_router(api_router, prefix="/api/v1")
@@ -129,10 +124,8 @@ async def readiness_check():
             details["database"] = f"failed: {db_error}"
         if not redis_ok:
             details["redis"] = f"failed: {redis_error}"
-
-        raise HTTPException(
-            status_code=503, detail={"status": "Service Unavailable", "checks": details}
-        )
+            
+        raise HTTPException(status_code=503, detail={"status": "Service Unavailable", "checks": details})
 
 
 @app.get("/metrics")
@@ -164,7 +157,7 @@ async def startup_event():
     logger.info("Ancient Compute Backend starting...")
     logger.info(f"Environment: {settings.ENVIRONMENT}")
     logger.info(f"Debug mode: {settings.DEBUG}")
-    UPTIME.set(0)  # Initialize uptime gauge
+    UPTIME.set(0) # Initialize uptime gauge
 
 
 # Shutdown event (from copilot)

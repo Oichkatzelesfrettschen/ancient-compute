@@ -1,0 +1,6188 @@
+Charles Babbage’s Difference Engine No. 2
+User Manual
+
+Doron D Swade
+London
+March 2020
+
+Charles Babbage’s Difference Engine No. 2
+Science Museum
+London
+
+© Board of Trustees of the Science Museum
+
+Contents
+
+Contents
+Scope and Purpose
+
+5
+
+1.
+
+Introduction
+
+6
+
+2.
+2.1
+2.2
+2.3
+
+Overview
+Control Unit
+Calculating Section
+Output Apparatus
+
+7
+8
+10
+12
+
+3.
+3.1
+3.2
+3.3
+3.4
+
+Operating the Engine
+Turning the crank
+Edging towards a timing point
+Tips and Cautions
+Jams
+
+15
+15
+17
+18
+19
+
+4.
+4.1
+4.2
+4.3
+4.4
+4.5
+
+Setting up a Calculation
+Initial values
+Checking results
+Entering initial values
+Automatic cycle counting
+Variations
+
+20
+20
+22
+23
+31
+33
+
+5.
+5.1
+5.2
+5.3
+5.4
+
+Operating the Output Apparatus
+Overview
+Printing
+Stereotyping
+Uncoupling the drive
+
+36
+36
+37
+47
+64
+
+6.
+6.1
+6.2
+6.3
+6.4
+
+Maintenance and Repair
+Replacing parts on an axis
+Lubrication
+Cleaning
+Special Tools
+
+70
+70
+80
+99
+101
+
+7.
+7.1
+7.2
+7.3
+
+Trouble Shooting
+Damage and parts failure
+Clearing jams
+Diagnostic tests
+
+106
+106
+108
+117
+
+Contents
+
+8.
+8.1
+8.2
+8.3
+8.4
+8.5
+
+Moving the Engine
+Overview
+Bracing the Engine
+Securing loose parts
+Jacking up and moving
+Additional precautions
+
+127
+127
+129
+133
+135
+136
+
+9.
+
+Specification
+
+139
+
+10. Appendices
+10.1 Timing Diagram
+10.2 Setting-up Check List
+10.3 State of Engine Table
+10.4 Stereotyping Layout Options
+
+140
+141
+143
+145
+
+11.
+
+Acknowledgements
+
+146
+
+12.
+
+Picture Credits
+
+147
+
+Scope and Purpose
+
+Scope and Purpose
+This Manual describes practical procedures for the operation and maintenance of Charles
+Babbage’s Difference Engine No. 2.
+It is intended as a free-standing document to enable a user to set up a demonstration
+calculation, operate, and maintain the Engine.
+It is also intended as a training aid for prospective demonstrators and maintenance personnel.
+Technical explanations of how the mechanisms work have been kept to a minimum and offered
+only where they affect operational procedures. Emphasis is on practical action and guidance
+rather than on design rationale or history.
+Common faults are identified and remedial action described. It is not possible to foresee all the
+ways in which the machine may stray from true in time given that these are experimental
+machines. However a range of detailed diagnostic checks is provided as well as a remedial guide
+for the most common faults.
+There is a companion document Charles Babbage’s Difference Engine No. 2: Technical
+Description (2020) that is intended as an aid to understanding of the kind necessary for faultfinding, diagnosis and repair of faults not covered here. It features a detailed analysis of the
+original design, explanation of the working of the Engine’s mechanisms, and implementation
+details.
+The deeper an understanding of the Engine an operator has the better, but the Technical
+Description is not a prerequisite for using this Manual as a guide to operating and routinely
+servicing the Engine, and pre-empting damage.
+By following the procedures described in this Manual, setting up calculations, operating and
+maintaining the Engine can safely be undertaken by those without mechanical or engineering
+expertise. But the repair procedures described here should not be undertaken by anyone not
+knowledgeable or confident about mechanisms and machines, or by anyone not already familiar
+with the Engine.
+The contents of this User Manual apply equally to the first Engine completed at the Science
+Museum in 2002, and to the second Engine constructed for shipment to the USA, completed in
+2008.
+
+5
+
+1 Introduction
+
+1. Introduction
+
+Charles Babbage’s drawings for Difference Engine No. 2 date from 1847 to 1849. Babbage made
+no attempt to construct the Engine and the machine remained unbuilt for some 140 years.
+A team at the Science Museum, London, constructed a full working Engine completed in 2002.
+The calculating section was completed in 1991 for the bicentenary of Babbage’s birth. The
+output apparatus for printing and stereotyping results, which is an integral part of the machine
+and is described in the original designs, was completed in March 2002.
+A second Engine was built for Nathan Myhrvold, a private collector, who also funded the
+construction of the output apparatus for the London Engine. This was completed in London in
+2008 and transported to the United States to the Computer History Museum, California in that
+year.
+While there are minor differences in the two machines, they were made to be identical, and at
+the time of writing the procedures described here apply equally to both machines.
+Babbage left no written explanation of his design or his thinking, nor did he leave any
+operational instructions. His journals, called ‘Scribbling Books’, have intermittent relevant
+entries made during the design, and he left a short note on the procedure for setting up a
+calculation. But these records are few, fragmentary and unsystematic.
+The operating and maintenance procedures described in this User Manual draw on a detailed
+analysis of the original design drawings, the construction of two Engines, and the operation and
+maintenance of the Engine over many years.
+Both Engines have been used for countless live demonstrations and the calculating section is
+well tested. Certain configurations of the printing and stereotyping apparatus have been
+exercised, and experimental stereotyping using plaster of Paris has been successfully carried
+out. However, at the time of writing, all permutations of the formatting options have not been
+comprehensively exercised.
+
+6
+
+2 Overview
+
+2. Overview
+Difference Engine No. 2 automatically calculates and tabulates a class of mathematical functions
+(polynomials). It prints results in inked hardcopy and impresses them in trays of soft material for the
+production of printing plates in a process called stereotyping. The Engine is shown in Fig. 2.1 in one
+of Babbage’s drawings that is most illustrative of its overall form.
+
+Fig. 2.1: Difference Engine No. 2, Elevation c. 1848 (A163) .
+
+The whole machine measures eleven feet long and seven feet high with the depth varying between
+eighteen inches and four feet as shown in plan (Fig. 2.2). The built Engine weighs five tonnes and
+consists of a total of 8,000 parts.
+
+Fig. 2.2: Difference Engine No. 2, Plan, c. 1848. (A164).
+
+7
+
+2 Overview
+
+The Engine is operated by turning the crank, shown on the right, by hand. Each full cycle of the
+Engine produces the next result in the table.
+The Engine has three main sections:
+1. Control Unit
+2. Calculating Section
+3. Output Apparatus
+Results
+Column
+
+st
+
+1 Difference
+Column
+
+Stereotyping
+Printing
+Apparatus
+Apparatus
+Output
+Apparatus
+
+th
+
+4 Difference
+Column
+
+Calculating
+Section
+
+th
+
+7 Difference
+Column
+
+Control
+Unit
+
+Fig. 2.3: Difference Engine No. 2, Main Elevation showing three main subsections (A163).
+
+2.1 Control Unit
+The Control Unit consists of the main crank and the cam stack. The Engine is operated by
+turning the crank by hand. The crank drives a set of twenty-eight cams (two pairs of fourteen)
+arranged in a vertical stack shown immediately alongside. The rotating cams drive and
+synchronise the lifting, turning and sliding motions required by the calculating mechanism. Each
+complete cycle of the Engine produces the next result in the tabulation sequence.
+8
+
+2 Overview
+
+The crank handle also drives the printer and stereotype apparatus through a long shaft running
+the length of the underside of the machine and driven by a large bevel gear on the underside of
+the cam stack.
+A chapter disc on the main drive shows where the Engine is in the timing sequence of each
+calculating cycle. The position of the Engine in the timing cycle is indicated by a pointer and can
+be read from the chapter disc at any time (Fig. 2.4).
+
+Pointer
+
+Fig. 2.4
+Chapter disc
+and pointer
+indicating
+position in
+the timing
+cycle.
+
+Chapter disc
+
+Cam stack
+
+Crank handle
+
+Babbage divided the calculating cycle into fifty units so each of Babbage’s units corresponds to
+7.2º in a 360º cycle. The disc is engraved with graduations and numbers at five-unit intervals (0,
+5, 15 etc) with each five-unit interval corresponding to 36º. Key events in the cycle are engraved
+with labels: ‘FULL CYCLE’ (zero), ‘SET ODD’ (20 units), ‘HALF CYCLE’ (25), and ‘SET EVEN’ (45).
+The chapter disc is used to set the machine at the start of the cycle (zero on the chapter disc)
+and to advance to particular points in the cycle when setting up initial values. It is also used for
+debugging – indicating the position in the timing cycle of a jam, for example.
+The output apparatus has its own local control unit in which a vertical set of cams controls the
+internal operations and timing for printing and stereotyping.
+9
+
+2 Overview
+
+2.2 Calculating Section
+The Calculating Section consists of two parts: the upper section consist of eight columns of
+figure wheels.
+The lower section consists of the drive links, levers, and racks that produce the lifting and
+turning motions for the vertical axes. The mechanisms are driven by the rotation of the cams in
+the cam stack. The calculating section and control unit together consist of 4,000 parts.
+Number values are represented by
+
+Fig. 2.5
+
+figure wheels engraved with the
+numbers ‘0’ through ‘9’. Each wheel
+
+Figure
+wheel.
+One of
+248.
+
+has four decades of decimal digits
+engraved on the barrel i.e. ‘0’ through
+‘9’ repeated four times (Fig. 2.5).
+Warning nibs (4)
+
+Barrel
+
+Drive nibs (4)
+
+Figure wheels are arranged in vertical stacks or columns. Each figure wheel column, also called a
+figure wheel axis, has thirty-one figure wheels, one for each of the thirty-one digits.
+Digit values can be read by eye directly from the figure wheels. Immediately above each wheel
+is an engraved cursor which faces front and acts as a pointer (Fig.2.6). The cursors are used to
+read the number values when setting up the initial values at the start of a calculation, verifying
+correct arithmetical operation, and fault-finding.
+In each column the least significant
+digit is at the bottom, the most
+significant digit at the top i.e. units
+are represented by the lowermost
+
+Figure
+wheel
+column
+
+figure wheel, tens the next wheel up
+and so on. The right-most column
+th
+
+holds the value of the 7 difference,
+
+Readout
+Cursors
+
+the 6th difference is on the column
+alongside to the left and so on. The
+result appears on the left-most
+column, the results column (Fig. 2.3,
+p. 8).
+
+Fig. 2.6: Cursors showing figure wheel
+values.
+10
+
+2 Overview
+
+The 7th, 5th, 3rd, and 1st difference columns are the odd difference columns. The 6th, 4th, and
+2nd difference columns are the even difference columns.
+For each calculating cycle the Engine adds the value on the 7th difference column to the value
+on the 6th difference column, the 6th to the 5th and so on with information moving from right to
+left. The result of these additions, the tabular value, appears on the last column on the left, the
+results column.
+The initial values of the calculation are entered by hand using a fixed sequence of steps. Initial
+values are entered on the figure wheels from a table calculated specifically for the function
+being tabulated. After setting initial values each subsequent cycle of the Engine produces each
+next value in the table of the function being tabulated.
+The number of cycles the Engine has completed can be read from an index counter set up on a
+few of the figure wheels. Three or four figure wheels are usually used for this giving a three- or
+four-digit count. Each cycle of the Engine increments the count by one. If the calculation is set
+up to start 𝑥 = 0 then the index counter shows the value of 𝑥 for each tabular result that
+
+follows.
+
+If the index counter is set up at the top of the results column then it will be printed out as the
+leading digits of each result. If the start value of the index is set at the starting value of 𝑥 then
+the value of 𝑥 (the argument in the table) will be printed and stereotyped as leading digits in
+line with the value of the function for that value of 𝑥.
+
+The tabular value on the results column is automatically transferred to the output apparatus on
+the left for printing and stereotyping.
+Only 30 of the 31 digits of the result are transferred to the printer so digit 31 (the highest value
+digit) will not be printed or stereotyped.
+The machine can calculate and tabulate any polynomial up to the 7th order using repeated
+addition according to the method of finite differences.
+For polynomials of order less than seven the higher order difference columns are set to zero
+and play no part. The Engine, once run in, produces a 31-digit result every eight seconds when
+run at the recommended normal speed.
+
+11
+
+2 Overview
+
+2.3 Output Apparatus
+
+The output apparatus is an integral part of the machine and is part of the original design. The
+whole apparatus consists of 4000 parts and is bolted to the main frame of the calculating
+section (Fig. 2.7).
+Fig. 2.7: Output apparatus for stereotyping and printing.
+
+Inking
+System
+
+Paper
+Roll
+Travelling
+Platform
+
+Falling
+Weight
+Rewind
+Handle
+
+Falling
+Weight
+
+Auxiliary
+Crank
+
+Pattern
+Wheels
+
+End of Page
+Trip Cradle
+
+The apparatus automatically typesets results, prints an inked copy of each result on a paper roll,
+and produces stereotype moulds by impressing the results into soft material in trays (Figs. 2.8,
+2.9).
+The output apparatus consists of two sections (Fig. 2.3). The printing apparatus contains the
+inking apparatus, the paper roll, and printwheels.
+
+12
+
+2 Overview
+
+The section below is the stereotyping apparatus. Punch wheels are lowered once each cycle to
+impress each new result into soft material in the trays below. The trays are fixed to travelling
+platforms that automatically reposition the trays under the punch wheels for each new result.
+
+Fig. 2.8: Inked hardcopy (experimental).
+
+Fig. 2.9: Stereotype moulds in Plaster of Paris.
+
+There are two trays, one larger than the other and two sets of punch wheels with different font
+sizes. The platforms are driven by falling weights.
+The format of the stereotyped results can be programmed. The line height, number of lines,
+margin widths, and number of columns of results can be preset using pattern wheels. Blank
+lines can be left between groups of lines for ease of reading.
+The stereotyping apparatus can impress results across the page (column-to-column) or down
+the page (line-to-line). In the case of column-to-column format, line wrap at the end of the line
+is automatic. Similarly, in the case of line-to-line format, fly back to the top of page at the end of
+a column of results is automatic (see Figs. 5.19, 5.20, p. 48).
+The output apparatus is directly coupled to the calculating section and each new thirty-digit
+tabular value is transferred automatically from the results column, via a system of racks, pinions
+and spindles, to the output apparatus for printing and stereotyping.
+The output apparatus prints and stereotypes thirty of the thirty-one digits of the result (Figs.
+2.8, 2.9). The highest value digit occupying the topmost figure wheel in the result column is not
+transferred and therefore not printed or stereotyped.
+The whole output mechanism is driven from a main drive shaft running along the underside of
+the Engine from the control unit. There is a separate set of cams local to the output apparatus
+that drives the internal motions of parts and orchestrates the timing of operations.
+13
+
+2 Overview
+
+A feedback mechanism from the output apparatus to the calculating section automatically halts
+the Engine at the end of a stereotyped page to prevent overrun. The communication between
+the end-of-page stop trip and the crank is through a cat-gut cable routed via pulleys.
+The end-of-page halting ensures that the first new result on the fresh tray is the next result in
+the sequence and that no results are lost in the changeover.
+The travelling platforms automatically position the trays under the punch wheels to receive
+each new result. The travelling platforms are driven by two sets of falling weights. One set (on
+the right in Fig. 2.7) drives the line-to-line movement. The set on the left drives the column-tocolumn movement.
+When stereotyping down the page (line-to-line) the line-to-line falling weight is automatically
+rewound and a new column can be started without interruption. At the end of a full page the
+column-to-column falling weight is rewound by hand using the rewind handle (Fig 2.7). When
+stereotyping across the page the column-to-column falling weight is rewound automatically and
+at end of page the line-to-line falling weight is rewound by hand.
+
+14
+
+3 Operating the Engine
+
+3.
+
+Operating the Engine
+The Engine is operated by turning the crank handle. In normal operation the Engine is cycled
+repeatedly through a sequence of full cycles.
+For entering initial values before a calculation, repair, adjustment and fault-finding, the Engine
+is typically advanced from stand-still through only part of a cycle, or incrementally.
+NEVER FORCE THE HANDLE IF IT FAILS TO TURN WITH GENTLE FIRM PRESSURE
+
+3.1 Turning the Handle – Recommended Technique
+The first principle of operating the Engine is never to force the crank if there is an obstacle to
+turning, or unexpected resistance.
+The watchword of correct cranking is to turn firmly and
+Chapter
+disc
+
+evenly.
+
+4:1 Reduction
+gear
+
+The resistance to turning is not constant during the cycle.
+There are sharp shock-loads at various points in the cycle.
+These occur at 0, 10, 25 and 35 units as indicated on the
+chapter disc in clear view of the operator (Fig. 3.1). Once the
+Engine is run-in the resistance to turning the handle between
+these points in the cycle is low.
+The tendency is to turn faster when the load is light and
+slower when the shock loads are felt or to turn faster in
+anticipation of one of the periodic shock loads. This tendency
+should be resisted. Firm even pressure and uniform rate of
+
+Fig. 3.1: Main crank.
+
+turning through the sudden load points is the surest way to
+operating the Engine safely and effectively.
+Cranking too fast or too slowly are the most common causes of jams.
+It takes a little practice to get a feel for what to expect.
+
+15
+
+3 Operating the Engine
+
+RECOMMENDED CRANKING SPEED = FOUR TURNS IN EIGHT SECONDS
+ONE TURN IN 2 SECONDS
+
+Four turns take the Engine through one complete calculating cycle. These figures apply when
+the handle is installed as shown in Fig. 3.1 i.e. with the 4:1 reduction gear fitted which is
+standard. A steady rate of 2 seconds per turn is the recommended rate.
+
+A new operator should not be permitted to turn the crank without instruction or
+awareness of the recommended technique.
+
+The recommended stance is shown in Fig. 3.2.
+Brace legs and body comfortably preferably
+with one foot in front.
+Grip the handle with both hands. Keep arms
+firm but not rigid, and flexed at the elbows.
+The handle turns clockwise to drive the Engine
+as viewed in the illustration above. There is no
+danger in turning it the wrong way: it is fitted
+with a ratchet and freewheels if turned anticlockwise.
+It is recommended to start with the handle at
+around 6 o’clock, its lowest point.
+The reason for this is that more of the shock
+
+Fig. 3.2: Recommended stance.
+
+loads occur when the handle is on the down stroke i.e. being drawn towards the operator and
+this motion is easier to control than pushing the handle away at chest height.
+To return the handle to 6-o’clock turn it anti-clockwise as seen in Fig. 3.2. The crank will freewheel on the ratchet and you will hear a clicking sound (made by the ratchet pawl).
+
+16
+
+3 Operating the Engine
+
+The direction of rotation is clockwise to drive the Engine. Draw the handle towards you and
+continue turning clockwise with a firm and steady action.
+Keep an even steady speed throughout. Use back, legs and arms in a coordinated rocking
+motion for evenness and to lessen tiring.
+Halt the Engine at zero (FULL CYCLE) when completing a normal run. This is recommended but
+not essential. Avoid halting just before or at the shock loads. These occur at 0, 10, 25, and 35
+units.
+
+3.2 Edging towards a Timing Point
+There are several situations in which it is necessary to advance the Engine from standstill to a
+particular point in the timing cycle. Returning the Engine to zero after maintenance or repair,
+advancing the Engine to particular points during setting up initial values, for fault finding or
+adjustment and repair, are examples.
+Without the momentum and rhythm of full turns it is difficult to halt the Engine at an exact
+timing point. Even with full turning under way it is easy to slightly over- or under-run the
+intended stopping point. There is a recommended technique for advancing the Engine to a
+particular timing point.
+Recommended Technique for Advancing to a Timing Point
+1. Take up the recommended stance.
+2. If the handle is not at 6-o’clock, return it to 6-o’clock by turning anti-clockwise. The handle
+free-wheels on the ratchet and you will hear the ratchet clicking. Stop the handle at 6o’clock.
+3. Push the handle very slowly anti-clockwise (away from you) past at least one ratchet click.
+4. Draw the handle gently towards you so that the handle is back at 6-o’clock. This advances
+the cycle a small controllable amount. Do not under any circumstances force the handle
+against a jam or unexpected resistance.
+5. Repeat this operation to advance the cycle by increments until the required timing point is
+reached as indicated on the chapter disk.
+
+17
+
+3 Operating the Engine
+
+The rationale for this incremental method is to make small movements that can be well
+controlled. Drawing the crank towards you at about waist height using small movements
+allows good physical control.
+
+3.3 Tips and Cautions
+Never force the handle.
+Do not turn faster when the load is lighter. Especially do not speed up in anticipation of the
+shock loads with a view to building up speed to drive through them. This is bad practice and
+will jam the mechanism.
+There is an additional resistance between 26 and 35 units when values from the results
+column are transferred to the output apparatus. The amount of resistance is data dependent
+i.e. depends on how many numbers there are in the result. The larger the value of the result
+the more figure wheels with non-zero participate in the transfer and the stiffness felt at the
+crank is proportionately higher.
+Shock loads should be anticipated by firmer action at constant speed.
+Turn at an even rate of four turns in eight seconds. This is the single most important guiding
+principle next to never forcing the handle against a jam or unexpected resistance.
+Turning too slowly through caution or inexperience tends to jam the mechanism. Turning too
+fast can be relied on to cause jams.
+Turning too fast tends to cause a jam that is usually easy to clear (see Section 7, Trouble
+Shooting). Turning too slowly can cause a jam that is more difficult to clear.
+The Engine can be halted without risk at points in the cycle other than zero. But do not halt
+just before, or at, any of 10, 25, or 35 units in the timing cycle. These are the points in the cycle
+when there are shock loads caused by the locks being driven in.
+If the Engine is halted just before or at these timing points, it will be difficult to drive the
+handle evenly from cold start when turning is resumed. The transition through these points
+
+18
+
+3 Operating the Engine
+
+will be too slow and probably uneven without a built up turning rhythm and momentum, and
+non-trivial jams in these circumstances are commonplace.
+For this reason it is recommended that the last full cycle is completed in its entirety and the
+Engine is halted at zero (FULL CYCLE).
+
+3.4 Jams
+The Engine is designed to jam if the integrity of the calculation is compromised.
+Turning the handle to avoid jams is an acquired technique and it is important to turn the crank
+through these sudden load-points at an even rate.
+Turning the crank against unexpected resistance runs the risk of breakages, distortion, or
+derangement of settings. Always err on the side of caution. Never force the handle, or turn it
+against unexpected resistance.
+STOP AND INVESTIGATE
+
+By and large the Engine is robust. But there is a set of delicate and relatively brittle parts (carry
+levers) in the mechanism for carrying tens that is not strong enough to jam the Engine if they
+foul. Insensitive cranking can fracture these levers. Continuing to turn can strip a complete set.
+Damage of this kind is not trivial to fix. Replacing a carry lever requires expensive spares, at
+least two people, and knowledge of the procedure which takes 1-2 days to complete.
+To avoid breakages and damage there is no substitute for correct, sensitive and alert cranking
+by the operator and a fast reaction to stop cranking if anything untoward is suspected.
+Common jams, procedures for clearing them, as well as diagnostic tests for malfunctions are
+provided in Section 7, Trouble Shooting.
+
+19
+
+4 Setting up a Calculation
+
+4.
+
+Setting Up a Calculation
+4.1 Initial Values
+At the start of a calculation the initial values are set by hand on the figure wheels. The setting
+up process follows a detailed and exact procedure.
+The initial values are set from a pre-calculated table for the particular calculation being
+performed.
+The polynomial used here for demonstration purposes is:
+𝑦(𝑥) = 8𝑥 7 + 2𝑥 6 + 9𝑥 5 + 5𝑥 4 + 𝑥 3 + 7𝑥 2 + 4𝑥 + 41.
+
+There is no special significance to this function except that it is a full seventh-order polynomial
+and so uses all eight figure wheel axes i.e. the full capacity of the machine. It has only positive
+coefficients so that for positive values of 𝑥 all results are positive and all powers of 𝑥 are
+
+present so it is a general form.
+
+The Engine is capable of repeated addition only. Negative values are represented in the Engine
+using tens complements. The use of complements allows a number to be subtracted from
+another using addition of positive numbers only.
+In the demonstration example positive coefficients and positive values of 𝑥 have been used to
+
+avoid the need for subtraction and the use of complements. This is for simplicity of
+demonstration only.
+
+There is also an historical reason for using positive values. Complements tend to involve lots of
+‘9’s and this creates larger loads on the mechanism. The function shown above is the first
+function tabulated on the Engine and has been used for demonstrations since. The first tests
+on the Engine were confined to positive values as a staging point in bringing the Engine to full
+working, and the practice has stuck.
+The Engine is designed to tabulate any polynomial up to the seventh order with positive or
+negative coefficients. If the highest order is less than seven the higher order difference
+columns are not used i.e. not all the figure wheel columns will be active.
+A table of initial values needs to be prepared for each different function. A new table of initial
+values is also needed if the function is unchanged but with a different starting value of 𝑥. The
+20
+
+4 Setting up a Calculation
+
+general procedure for preparing these tables is described in a companion volume Difference
+Engine No. 2: Technical Description (2013).
+
+Table of Initial Values
+The initial values for the chosen function are shown in the table below. Column D7 shows the
+value of the 7th difference and is set up on the right-most column. D6 is the 6th difference value
+and is set up on11the next column to the left and so on. The first tabular value is shown in
+column T. This is the value of the equation for 𝑥 = 0 and is the first result (= 41).
+𝑦(𝑥) = 8𝑥 7 + 2𝑥 6 + 9𝑥 5 + 5𝑥 4 + 𝑥 3 + 7𝑥 2 + 4𝑥 + 41
+T
+
+D1
+
+D2
+
+D3
+
+D4
+
+D5
+
+D6
+
+1
+1
+
+D7
+4
+
+5
+
+1
+
+0
+
+4
+
+3
+
+2
+
+4
+
+3
+
+4
+
+3
+
+2
+
+6
+
+6
+
+4
+
+4
+
+2
+
+1
+
+6
+
+8
+
+4
+
+0
+
+0
+
+0
+
+0
+
+T
+
+D1
+
+D2
+
+D3
+
+D4
+
+D5
+
+D6
+
+D7
+
+4
+0
+3
+2
+0
+
+Fig. 4.1: Initial Values
+
+21
+
+4 Setting up a Calculation
+
+Numbers are set up with the least significant digit (units) at the bottom of the column, tens on
+the next wheel up, hundreds the next and so on. The 7th difference is the number 40,320
+(forty-thousand, three-hundred and twenty). The initial values are set up on the digit wheels
+using a fixed sequence of steps described in Section 4.3, Entering Initial Values, p. 23.
+
+4.2 Checking Results
+The following table (Fig. 4.2) gives some results for the equation used for demonstration. Once
+initial values are set, and the Engine is operational, the table below can be used for checking
+results.
+
+𝒚(𝒙) = 𝟖𝒙 𝟕 + 𝟐𝒙 𝟔 + 𝟗𝒙 𝟓 + 𝟓𝒙 𝟒 +
+𝒙
+
+𝒙 𝟑 + 𝟕𝒙 𝟐 + 𝟒𝒙 + 𝟒 𝟏
+
+Tabular Value (T)
+
+0
+
+41
+
+1
+
+77
+
+2
+
+1605
+
+3
+
+21689
+
+4
+
+149993
+
+5
+
+687861
+
+6
+
+2409797
+
+7
+
+6987665
+
+8
+
+17617929
+
+9
+
+39892253
+
+10
+
+82951781
+
+15
+
+1396748801
+
+20
+
+10397610921
+
+30
+
+176640783461
+
+40
+
+1319846475401
+
+50
+
+6284093892741
+
+60
+
+22495255441481
+
+70
+
+66133984727621
+
+80
+
+168326144557161
+
+90
+
+383753874936101
+
+100
+
+802090501070441
+
+Fig. 4.2: Result Verification.
+22
+
+4 Setting up a Calculation
+
+For checking purposes the value of 𝑥 is read from the index counter that is set up as part of
+
+setting initial values. The result or tabular value is read from the figure wheels in the results
+column, units at the bottom, tens next above and so on. The digit value on each figure wheel is
+read at the cursor above each figure wheel (see Fig. 2.6, p. 10).
+In the demonstration example, the start value of 𝑥 is zero. If the index counter is set to zero
+
+then the counter will register the number of cycles the Engine has run and this represents at
+the same time the value of 𝑥.
+
+If a non-zero start value of 𝑥 is required then the counter can be set either to zero or the non-
+
+zero start value. If set to zero the counter registers the number of cycles. If set to the non-zero
+at the start with the appropriate increment, the counter registers the value of 𝑥 for each result
+
+produced and this will be printed and stereotyped on the same line as the corresponding
+result.
+
+In the setting up tables provided for the demonstration example, the start value of 𝑥 is zero.
+
+The index counter registers the number of cycles the Engine has run and this corresponds to
+the value of 𝑥.
+
+4.3 Entering Initial Values
+The setting up procedure consists of an exact sequence of operations that allow the initial
+values to be set on the figure wheels by hand.
+For demonstration purposes the Engine does not have to be reset each time it is run. The
+tabulation can simply continue from where it was last stopped.
+There are a total of 248 figure wheels. Starting with low values of 𝑥 reduces the number of
+
+figure wheels that require setting. In the case of the example used here only twenty seven of
+the 248 wheels need to be set.
+
+There are several mechanisms designed to prevent the values on the figure wheels being
+corrupted whether the machine is in use or at rest. These security devices are an essential part
+of the original design and are intended to protect the integrity of the calculation.
+The security devices are mainly wedge-shaped locks that are inserted between the teeth of
+gear wheels at various times in the timing cycle. The locks immobilise the wheels to prevent
+derangement during periods that the wheels are inactive. The locks also provide error
+23
+
+4 Setting up a Calculation
+
+detection and a measure of self correction. If a figure wheel is in an indeterminate position the
+lock cannot enter between the teeth and the Engine jams.
+Jamming is a warning that the calculation has been compromised.
+With the Engine in a fully functional state (i.e. free of jams) the figure wheel s cannot be
+turned freely by hand without disabling the security locks.
+The setting up procedure is an exact sequence of operations that disables the locks and allows
+the figure wheels to be turned so that the initial values can be set and then held without
+alteration until tabulation starts.
+The odd difference columns are set first at one point in the cycle. The even difference columns
+and the results column are set at a later point in the cycle.
+
+Single-Cycle Setup Procedure
+The following is the step-wise procedure for setting up initial values using the single-cycle
+setting up sequence.
+The procedure is exact and should not be deviated from.
+
+WARNING
+DO NOT DEVIATE IN FROM THE SETTING UP SEQUENCE DESCRIBED
+It is important not to deviate from the fixed sequence described. Resist temptation to take
+short cuts by omitting any of the steps. The sequence for engaging and disengaging the
+manual setting locks is critical. If a setting lock is left engaged the figure wheels are
+immobilised and the steel carry arms will snap the bronze carry levers during the carry cycle.
+It is possible to strip an entire carry column in this way. Practically all damage and breakages
+suffered over twenty years resulted from deviating from the strict stepwise sequence of
+operations described. Confidence comes with experience and with it the temptation to omit
+what appear to be unnecessary steps. Don’t.
+
+24
+
+4 Setting up a Calculation
+
+A short-form checklist with single-line instructions is provided in Appendix 10.2, p. 141.
+The checklist is intended for use by the operator to tick each completed operation.
+
+. . . . . . . Procedure - Setting Initial Values
+
+25
+
+4 Setting up a Calculation
+
+Procedure - Setting Initial Values
+1.
+
+Cycle the engine to the zero point i.e. till the pointer
+shows zero (FULL CYCLE) on the chapter disc (Fig.
+4.3).
+
+2.
+
+Locate the release lever (Fig. 4.4).
+
+Fig: 4.4: Location of levers.
+
+3.
+
+Fig. 4.3: Chapter disc at zero.
+
+Lifting levers
+
+Release lever
+
+Lift the release lever till the spring catch enters the second V-groove. The arm of the camfollower lifts clear of the drive slot in the sector bar (Figs. 4.5, 4.6).
+
+Fig. 4.5
+Release lever in
+normal position.
+
+Release
+lever
+
+Fig. 4.6
+Release lever
+raised.
+
+Sector bar
+engaged
+
+26
+
+Release
+lever
+
+Sector bar
+disengaged
+
+4 Setting up a Calculation
+
+4.
+
+Raise one of the two lifting levers (it doesn’t matter which). The rotation in both cases is
+clockwise as seen facing the Engine. The movement is small – only a few degrees. It
+sometimes helps to push down on the lever first before lifting.
+
+5.
+
+Bayonet lock
+
+Lock the handle in the raised position by
+pulling the bayonet plunger fully out i.e.
+towards the operator (Fig. 4.7). The
+locking plunger must be slid out fully.
+Lifting the levers to the end of their travel
+can be a struggle. It is important that
+they are fully lifted and locked.
+
+6.
+
+Repeat Steps 4 and 5 for the remaining
+
+Fig. 4.7: Lifting lever locked raised.
+
+lifting lever.
+7.
+
+Advance the engine to the 10–unit point as shown on the chapter disc.
+
+8.
+
+Engage the manual odd setting lock on the 7th difference
+column (the one nearest the crank). This is done by
+loosening the two knurled fixing screws and sliding the
+locks into engagement so that the blades enter between
+teeth of the figure wheels (Fig. 4.8). Loosen both fixing
+screws first and slide the lock forward to engage the
+figure wheel teeth. Ensure that lock is fully inserted.
+
+Knurled
+fixing
+screws
+
+Keep firm pressure on the lock while retightening the
+fixing screws. Check by pulling on the lock that it is fully
+secured.
+9.
+
+Repeat step 8 for the remaining three odd difference
+columns (5th, 3rd, and 1st). The order is not critical but it
+is advisable to follow each next difference in turn.
+
+Manual
+lock
+
+10. Check that all four odd manual setting locks are
+
+engaged.
+11. Check that all four even locks are NOT engaged.
+
+27
+
+Fig. 4.8: Engaging
+and disengaging
+manual locks.
+
+4 Setting up a Calculation
+
+12. Advance the Engine to the 20–unit point (SET ODD).
+13. Disengage the manual locks on the 7th difference column by unscrewing the knurled
+screws and withdrawing the lock.
+14. If automatic cycle counting is required, go to Section 4.4, Automatic Cycle Counting, p. 31
+and Section 4.5, Variations, p. 43 before proceeding further. If cycle counting is not
+required proceed with the next step.
+15. Enter the 7th difference value. This is done by rotating each figure wheel by hand to the
+
+initial value in the pre-calculated table. The wheels move freely. It does not matter which
+direction the wheels are turned. Set the units value on the lowermost figure wheel that is
+being used for the calculation. In a typical setup the units value is set on the physically
+lowermost wheel on the column. However, the units wheel can be chosen higher up the
+column if, for example, the lowermost wheels are being ‘rested’ and a different part of
+the column is used so as distribute wear (see Section 4.4 and 4.5 for details). Once the
+units wheel is set, work upwards through tens, hundreds and so on. The figure wheel
+value is indicated by a cursor arrow engraved on the figure wheel supports immediately
+above each figure wheel (Fig. 2.6, p. 10).
+16. Re-engage the manual lock on this column. Ensure that the lock is fully inserted and held
+fully engaged while the fixing screws are tightened. Check the values after the fixing
+screws have been retightened.
+17. Repeat steps 13 and 15 for each of the remaining three odd difference columns making
+sure that the units wheel on each column is on the same horizontal line.
+18. Advance the Engine to the 35-unit point.
+19. Engage the four manual even setting locks by loosening the knurled fixing screws on one
+of the even difference column locks and inserting the lock. Retighten the fixing screw.
+Repeat the procedure for each of the three even difference columns as well as the results
+column (the left-most column – the furthest from the crank). The locks should now be set
+for the four evens columns (6th, 4th, 2nd difference columns) and the results column. The
+order in which the locks are engaged is not material.
+20. Disengage the four manual odd setting locks and secure in disengaged position.
+
+28
+
+4 Setting up a Calculation
+
+21. Check that all four even setting locks are engaged and secured.
+22. Check that all odd setting locks are disengaged.
+
+23. Advance the Engine to the 45–unit point (SET EVEN) on the chapter disc pointer.
+24. Disengage the manual setting lock on the 6th difference column. Retighten the fixing
+screws.
+25. Enter the 6th difference value from the initial value table making sure that the units wheel
+on this column is on the same horizontal line as on the odd difference columns.
+26. Re-engage the manual lock on the 6th difference column. Retighten the fixing screws.
+27. Repeat steps 24 to 26 for the other two even difference columns.
+28. Repeat steps 24 to 26 for the results column.
+29. Advance the Engine to 0 (FULL CYCLE)
+30. Check that the lowest carry lever on the result column is still unwarned. View this from
+the rear of the Engine (Fig. 4.9). If it is warned, manually move the carry lever to the
+unwarned detent.
+
+Fig. 4.9
+Lowest carry
+lever in
+unwarned
+position.
+
+Steel indent lever
+in first notch.
+
+31. Retract the locking plungers to release the two lifting levers.
+
+29
+
+4 Setting up a Calculation
+
+32. Lower the release lever to re-engage the sectors bar. If the follower arms do not drop into
+the sector bar slots, jiggle the lifting levers and lower the release lever at the same time.
+33. Lower the two lifting levers in any order to re-engage the sectors. Ensure that the locking
+plungers are fully retracted and held in this position by the bayonet lever at 3 o’clock (Fig.
+4.7, p. 27).
+34. Disengage the four manual locks on the even columns. Secure the locks in the disengaged
+position making sure that the knurled fixing screws are tight.
+35. Check that all eight manual locks are fully disengaged and securely fixed by tightening the
+knurled fixing screws.
+BE SURE TO DO THIS CHECK CAREFULLY
+
+36. If necessary, rewind the
+stereotype trays to the
+start of page. This is done
+by turning the wooden
+rewind handle on the
+pattern wheel disc (Fig.
+4.10).
+Turning the right hand
+pattern wheel disc
+
+Fig. 4.10: Rewind handle
+
+anticlockwise rewinds the
+trays to the top of page. This is the usual configuration. In the illustration the rewind
+handle is shown on the left hand pattern wheel. It is easily swapped over by unscrewing
+the knurled fixing screw in the centre and re-fixing the handle on the right hand side. Do
+not attempt to rewind the trays by hand (i.e. without using the rewind handle) unless the
+operation of the restraining pawls is fully understood. There is the danger of runaway and
+risk of injury to an operator not familiar with the mechanism.
+
+DO NOT REWIND THE PATTERN WHEEL DISC BY DISABLING THE PAWLS
+WITHOUT UNDERSTANDING THE OPERATION OF THE CATCH AND RUNAWAY
+PAWLS. SEE SECTION 5.3, STEREOTYPING, p. 47.
+
+30
+
+4 Setting up a Calculation
+
+The initial values are now set and the Engine is ready to tabulate. The first result will be the
+value set on the result column when setting up the initial values.
+
+4.4 Automatic Cycle Counting (Step 14)
+It is useful when tabulating to know how many cycles the Engine has executed, and the Engine
+can be set up to automatically count cycles.
+A number of digits (typically four) in one of the columns (typically the results column) can be
+reserved to function as a cycle counter.
+The procedure described below sets up a cycle counter starting at zero and incrementing by ‘1’
+each cycle of the Engine. This is the typical set up for demonstration.
+With this set up a ‘1’ in the 1st difference column is added to the units digit of the counter for
+each complete calculating cycle. As the Engine is run, the total number of cycles accumulates
+incrementally in the four-digit counter.
+It may also be desirable for some tabulations to set the counter at a non-zero start value of 𝑥
+
+and to set the 1st difference increment at ‘1’ or a number larger than ‘1’.
+
+The counter will again give the value of 𝑥 (the ‘argument’) for each value of the result on the
+
+result column, and automatically increment by the value set on the 1st difference column to
+generate the argument.
+
+If the counter is set up on the results column the value on the counter will be printed and
+stereotyped on the same line as the corresponding result. The counter value will not be
+printed if the counter is set up on any column other than the result column.
+The procedure below sets up a four-digit cycle counter on the uppermost four wheels of the
+results column. The counter will start at zero and increment by ‘1’ for each complete
+calculating cycle.
+
+31
+
+4 Setting up a Calculation
+
+Setting-up Procedure for Four-digit Cycle Counter (10,000 cycles)
+At Step 14:
+1. Set up the initial values for the 7th difference by completing Step 15 and 16.
+2. Repeat Steps 13, 15 and 16 for each of the 5th and 3rd difference columns making sure that
+the units wheel in each case is on the same horizontal line as in Step 1.
+3. Repeat Steps 13 and 15 to set the initial value on the 1st difference column with the units
+wheel on the same horizontal line as all the other columns but also set the fourth figure
+wheel from the top ‘1’.
+4. Complete Step 16 i.e. re-engage the manual lock and tighten fixing screws.
+5. Disable the carry from the result
+to the counter by disabling the
+fourth carry lever from the top of
+the results column. This isolates
+the counter from the tabulation
+results by stopping any carry
+propagating and so prevents the
+result digits overflowing into the
+counter. To disable the carry lever
+loosen the three fixing screws on
+the reset stops pillar (Fig. 4.11)
+and raise the rack to the limit
+allowed by the slotted holes. By
+hand, rotate the carry lever back
+so that the pawl rests in the fourth
+indent (the one furthest away
+from the unwarned position).
+Lower the reset stops column and
+retighten the fixing screws. The
+carry lever is now trapped behind
+the reset stop and is out of action.
+
+Fig. 4.11: Reset stops.
+Reset stops
+rack
+32
+
+Fixing screw in
+slotted hole (3)
+
+4 Setting up a Calculation
+
+For typical demonstrations disabling the carry is not necessary as the number of cycles
+between resetting initial values is usually too few to allow the result accumulating in the
+result column to overflow.
+6. Return to step 18 in the setting-up procedure.
+
+4.5 Variations
+Moving the counter to the bottom of the column
+The counter can be positioned at the bottom of the columns instead of at the top. Setting the
+counter at the bottom makes it easier to read and helps spread wear.
+In this case the initial values for the main calculation are set up starting at the fifth figure
+wheel up from the lowermost wheel on all eight columns.
+1.
+
+At Step 14, when setting up odd differences on the 7thdifference column, set the four
+lowermost figure wheels to zero, and set the initial value starting at the fifth figure wheel
+from the bottom i.e. set units on the fifth wheel from the bottom, the tens value on the
+next wheel up (sixth from the bottom) and so on.
+
+2.
+
+At Step 17, for 5th and 3rd difference columns, set the four lowermost figure wheels to
+zero, and set initial values starting at the fifth wheel from the bottom i.e. set units on
+wheel five, tens on wheel six, and so on.
+
+3.
+
+For the 1st difference column, set the first (physically lowermost) to ‘1’ and wheels two,
+three, and four to zero
+
+4.
+
+Set the initial value of the 1st difference column starting at the fifth wheel from the
+bottom i.e. units on wheel five, tens on wheel six and so on.
+
+7.
+
+At Steps 24 through 27 (setting up even differences) set the lowest four wheels of the
+even difference columns to zero and set up the initial values starting at wheel five from
+the bottom.
+
+8.
+
+Set the lowermost four wheels of the results column to zero.
+
+9.
+
+Return to Step 28 to set up the results column entering the first tabular value starting
+with the units value at wheel five from the bottom. Re-engage the results column manual
+lock and tighten the fixing screws.
+
+10. Disable the fourth carry lever up on the results column by advancing the lever to the
+fourth (last) detent. This is done from the rear of the Engine. See Step 5, p. 32 for the
+procedure.
+33
+
+4 Setting up a Calculation
+
+11. Return to Step 29 and complete the setting up procedure.
+
+Placed at the bottom, the cycle count will appear in the printed or stereotyped record as a
+four-digit number trailing the least significant digit of the result. In this case all digits of the
+counter will be printed and stereotyped.
+If the top digits are reserved for the counter, the cycle count appears as the lead four digits of
+the printed or stereotyped result. In this case the last (highest digit) of the counter will not be
+printed or stereotyped as only 30 of the 31 digits of the result are transferred to the output
+apparatus.
+In the interests of spreading wear, it is recommended that the position of the counter is
+swapped from time to time.
+
+Using the Counter as the Argument
+An additional elegance is to enter the start value of the independent variable (the tabulation
+argument) in the section of the tabular column reserved for the cycle counter and enter the
+value of the increment in the first difference column. The value of the variable will be
+incremented each calculation cycle. The counter will directly record the value of the variable
+and the printout will automatically have the argument and the result on the same line.
+
+Advanced Variations
+The procedures described above apply to a single polynomial tabulation with a cycle counter
+set up on the results column either on the top or bottom four digits.
+Initial values can be set up anywhere on the columns i.e. the calculation does not need to
+occupy the lowest figure wheels, or the highest but can occupy a selected range of wheels in
+horizontal bands across the columns.
+Further, more than one calculation can proceed at the same time i.e. more than one
+polynomial can be tabulated at once – this by splitting the columns horizontally and setting up
+one calculation on say the upper section, another below, and so on.
+To prevent one calculation overrunning and corrupting the one above, the carriage from the
+most-significant digit of the lower calculation should be disabled by advancing the
+34
+
+4 Setting up a Calculation
+
+corresponding carry lever to the ‘Disabled’ position i.e. the fourth (last) indent on the carry
+lever as described in Step 5, p. 32.
+The position of the decimal place is not set anywhere on the Engine. The machine operates in
+integer mode and the decimal point can be taken as a notional horizontal line across the figure
+wheel columns wherever appropriate.
+
+35
+
+5 Operating the Output Apparatus
+
+5.
+
+Operating the Output Apparatus
+
+5.1 Overview
+The output apparatus automatically:
+1. Prints results in inked hard copy
+2. Stereotypes results in soft material held in trays.
+The printing apparatus typesets and prints inked hardcopy on a print roll and at the same time
+impresses the results into soft material held in stereotyping trays. (For a general introduction
+see Section 2.3, Output Apparatus, p. 12).
+The output apparatus is at the left hand end of the Engine viewed from the front i.e. with the
+main crank handle on the right of the viewer (Fig. 2.3, p. 8).
+
+Inking
+system
+Column
+pattern
+wheels
+
+Paper
+roll
+Travelling
+platform
+
+Column
+falling
+weight
+
+Line
+pattern
+wheels
+
+Rewind
+handle
+
+Line
+falling
+weight
+Rewind
+clutch
+
+Chapter
+disc
+
+End of page
+trip cradle
+
+Auxiliary
+crank
+Fig. 5.1: Output apparatus for printing and stereotyping.
+
+36
+
+5 Operating the Output Apparatus
+
+There is no buffering or storage of results. Each result is printed and stereotyped during the
+calculating cycle that generates it.
+
+5.2 Printing
+The inked hard copy is for checking purposes. The main outputs are the stereotype moulds
+produced in the trays. These are intended for making printing plates for the production of
+printed mathematical tables using conventional printing presses.
+The lower thirty-digits of the thirty-one digit result are automatically transferred from the last
+column of the calculating section to the printer and at the same time to punch wheels for
+stereotyping.
+The format of the inked hardcopy from the printer is not programmable. It prints one result
+per line with fixed line height and font size. The thirty printed digits for each result fill the
+width of the print roll and the format is fixed unalterably (see Section 2, Fig. 2.8, p. 13).
+
+. . . . . Inking
+
+37
+
+5 Operating the Output Apparatus
+
+Inking
+The inking mechanism is located immediately above the paper roll system (Fig. 5.2). The
+mechanism consists of an ink bath and a system of rollers that supply ink to the inking roller.
+Once each cycle the inking roller sweeps in a downward arc down into contact with the type
+wheels to deposit ink on the type face (Fig. 5.2). While in contact with the type wheels the
+inking bar has a small wiping motion.
+
+Ink
+bath
+Inkpot
+roller
+Spreader
+roller
+Transfer
+roller
+
+Arc of
+travel
+
+Inking
+roller
+Type
+wheels
+Paper
+rollerbar
+
+Fig. 5.2: Inking and paper systems.
+
+Paper system
+
+To ensure an even distribution of ink the inking mechanism has a spreader roller that oscillates
+laterally a small distance each cycle, and two spreader plates. The spreader plates have
+precision straight edges that ensure an even spread of ink and prevent ink accumulating on the
+rollers.
+38
+
+5 Operating the Output Apparatus
+
+The inking roller retracts rapidly once it has inked the type wheels. Immediately it is out of the
+way the paper roller-bar and paper feed barrel sweep in a long arc to press the roller bar
+against the type wheels and take an inked impression on the paper roll.
+The ink bath is protected from dust and debris
+by a flip-up brass lid. Flipping this up exposes
+the ink bath formed by the scraper plate,
+inkpot roller, and side cheeks of the inking
+assembly (Fig. 5.3).
+Water-based non-toxic black printing ink is
+recommended.
+Fig. 5.3: Inking
+system.
+
+Ink Viscosity
+
+Flip-up ink
+bath cover
+
+Counterbalance
+weight
+
+The ink is viscous to begin with. Dilution by trial
+and error is necessary to establish the right
+balance of wetting and flow characteristics.
+If the ink is too thick it clogs the type wheels.
+The rollers tend to stick together and there is a
+risk of the inking roller being pulled out of the
+mounting slots (a brass retaining wire seeks to
+prevent this). If the ink is too dilute, there is a
+tendency to runs and smudges.
+
+Fig. 5.4: Inking roller
+mounting.
+
+Inking
+roller
+Retaining
+Mounting
+wire
+slot
+
+Cleaning
+The recommended ink is water-based and will corrode the mechanism if left in contact.
+
+WATER BASED INK SHOULD NOT BE LEFT IN THE INK BATH OR ON THE ROLLERS. THE
+INKING MECHANISM SHOULD BE DISMANTLED AND EACH PART WASHED AND DRIED
+AFTER EACH USE.
+
+39
+
+5 Operating the Output Apparatus
+
+Immediately after use the ink bath assembly including all rollers should be dismantled and
+each part that has come into contact with ink washed thoroughly.
+Clean the print wheel type face with warm water and dry with a paper towel. When most of
+the ink has been removed use warm water and cotton buds to clean the type face especially
+the relieved centres of the ‘0’s. Re-dry with a paper towel. Be careful not to slop water that
+might penetrate between the print wheels or dribble down onto the horizontal racks below.
+Dismantling and reassembly takes about two hours.
+
+Priming the Inking System
+The inking system should be primed to check viscosity and ensure even distribution of ink
+before a calculation is run.
+There are three priming methods. The easiest is listed first and the list is in order of increasing
+difficulty.
+1.
+
+Use the ink priming knob.
+
+2.
+
+Run the Engine for several cycles from the main crank.
+
+3.
+
+Uncouple the output apparatus from the Engine and run separately using the auxiliary
+crank.
+
+The easiest way to prime the inking
+system is to turn the priming knob (Fig.
+5.5). This exercises all the rollers and
+encourages even ink distribution. The
+ratchet pawl does not need to be lifted:
+it is sprung and will lift to clear the
+ratchet teeth as the knob is turned.
+Using the priming knob does not disturb
+the calculation and does not require
+uncoupling the output apparatus from
+
+Fig. 5.5 Inking.
+
+the Engine.
+
+40
+
+Priming knob
+
+Ink bath
+
+5 Operating the Output Apparatus
+
+The inking supply can also be primed by running the Engine for several cycles by cranking the
+main handle. In this case the calculation may need to be reset when tabulation is resumed.
+Finally, the inking system can also be primed by uncoupling the output apparatus from the
+Engine and running the output apparatus separately using the auxiliary crank (Fig. 5.6).
+The uncoupling clutch is located in line with the main drive shaft running the length of the
+Engine on the underside between the cam stack to the output apparatus (Fig. 5.6).
+
+Fig. 5.6
+
+Uncoupling clutch
+
+Auxiliary crank
+
+The clutch is coupled and uncoupled by operating a set of levers in a fixed sequence by hand.
+When the drive is uncoupled the output apparatus can be driven independently of the
+calculating section by using the auxiliary crank located at the printing end of the Engine. For
+the procedure to uncouple the output apparatus from the main drive see Section 5.4,
+Uncoupling the Drive, p. 64.
+The clutch uncouples the drive only: the results column remains coupled to the output
+apparatus and 30-digit data transfer from the calculating section to the output apparatus
+continues. There is no facility for uncoupling the results column from the output apparatus.
+The clutch can only be engaged and disengaged at fixed points in the cycle. So if ink runs out or
+the inking system needs priming during a run of calculations advancing the cycle to the fixed
+point at which the clutch can be uncoupled may produce some spoiled printouts and the
+calculation may need resetting before resuming tabulation.
+
+41
+
+5 Operating the Output Apparatus
+
+Replacing the Print Roll
+Inked copy is printed on paper from a paper roll as a checking record. The paper supply for the
+production of inked hardcopy is controlled by the paper feed mechanism (Fig. 5.7).
+
+Fig 5.7: Paper feed.
+
+Inking
+roller-bar
+
+Feed
+barrel
+
+Winding
+handle
+
+Take-up
+spool
+
+The paper automatically advances the height of one line each Engine cycle to take a new
+impression on each newly-presented line of paper. The feed barrel holds the paper stock.
+The end of the paper is trapped on the feed drum and cannot run free when the paper runs out.
+Paper stock should therefore be renewed before it runs out to prevent the paper pulling the
+feed drum assembly and disrupting operation.
+The paper path is shown in Fig. 5.8. Paper is threaded from the feed barrel under and around
+the printing roller-bar above, and onto the take-up spool on the left of the drawing. The rollerbar has a fixed flat rubber bar that presses against the typeface of the printing wheels.
+The roller-bar and feed barrel swing through a large arc each cycle to press the paper against
+the inked typeface of the print wheels. Part of the trajectory is shown anticlockwise in Fig. 5.8
+(dotted line at top right of picture).
+
+42
+
+5 Operating the Output Apparatus
+
+Fig. 5.8: Paper feed.
+
+Take-up spool
+
+Paper
+path
+
+Feed
+barrel
+
+Roller-bar
+
+Paper stock should be renewed before it fully runs out. The main operations to renew the paper
+are: trapping one end of the paper stock on the feed barrel, freeing the feed barrel to turn so
+that the paper can be loaded onto it, threading it through the paper path and fixing the far end
+to the take-up spool.
+
+Procedure
+1. Rotate the feed barrel by turning the handle
+until the tenon strip that traps the paper
+end is exposed with the two fixing screws
+accessible (Fig. 5.9).
+2. Loosen the two screws using an Allen key.
+3. Fold over about a half-inch of paper making
+a sharp fold (Fig. 5.10).
+
+43
+
+Fig. 5.9: Paper mechanism.
+
+Tenon strip
+(fixing screws
+obscured)
+
+5 Operating the Output Apparatus
+
+Fig. 5.10
+
+4. Place the paper roll in the detachable
+magazine (or any container to stop it rolling
+away) and feed the folded paper end under
+the print roller-bar (Fig. 5. 11).
+5. Insert the folded paper end under the
+tenon strip and half tighten the screws with
+the Allen key (Fig. 5.12).
+6. Align the paper by wrapping it a short
+length over the feed drum and tighten the
+two Allen screws. This traps the paper end
+(Fig. 5.13).
+
+Fig. 5.11
+
+Fig. 5.12
+
+44
+
+5 Operating the Output Apparatus
+7. To free the feed barrel to turn pull the
+cam lever (on the left of the take-up
+spool) forward to disengage the backstop
+pawl. This is the upper pawl on the
+ratchet gear on the take-up spool axis
+(Fig. 5.14).
+8. Pull back the feed pawl – the lower pawl
+operating on the ratchet gear.
+9. Wind the paper from the roll of paper
+stock onto the feed barrel by turning the
+
+Fig. 5.13
+
+handle on the right aligning the paper as
+it wraps and maintaining light even
+pressure. Wind on about 32 turns. (Fig.
+5.15). This is sufficient for about 500
+results.
+10. Rotate the take-up spool to expose the
+tenon strip and fixing screws. Partly
+loosen the two fixing screws.
+11. Re-engage the two pawls: push back cam
+to engage the backstop pawl, and engage
+
+Fig. 5.14
+
+the feed pawl by pushing it back into
+engagement.
+12. Free up a length of paper, wrap it round
+the roller-bar. Pull it to the take-up spool
+and lay it over the tenon strip. Mark the
+length of paper at the near side of the
+tenon strip (Fig. 5.16).
+13. Fold on the mark and cut at the fold.
+14. Fold back about a half inch of paper
+15. Rotate the take-up spool towards you to
+bias it against the internal clock spring.
+
+Fig. 5.15
+
+Rotate till it stops. Holding the spool in
+the biased position insert the folded
+paper end under the tenon. Adjust the
+amount folded back in Step 14 so that
+the paper has no slack with the take up
+spool fully biased against the clock spring.
+16. Secure the tenon strip by tightening the
+two fixing screws with an Allen key.
+
+Fig. 5.16
+
+45
+
+Backstop pawl
+release cam
+
+Feed pawl
+
+5 Operating the Output Apparatus
+17. Paper loading complete (Fig. 5.17).
+
+Fig. 5.17
+
+Adjusting the Paper Roller-bar
+The paper roller bar has a stiff flat rubbery
+bearing strip which presses the paper flat
+against the type wheels to take the
+impression. The angle of the bar may need
+adjustment to ensure that the bearing strip
+presses flat in the plane of the face of the
+type wheels to ensure an even impression.
+The angle of the roller-bar can be adjusted
+
+Fig. 5.18: Roller-bar adjusting spanners.
+
+using two special flat spanners (Fig. 5.18). For
+details see of fine adjustment see Section 6.4, Special Tools, p. 101.
+
+46
+
+5 Operating the Output Apparatus
+
+5.3 Stereotyping
+The stereotyping apparatus is programmable and several layout options are available.
+Different layouts are chosen by selecting one of several pattern wheels which control the
+format of stereotyped results.
+A set of pattern wheels with fixed but different formatting combinations are preloaded or
+‘factory fitted’. One set of pattern wheels controls line-to-line format. A second set of pattern
+wheels controls column-to-column format (Fig. 5.1, p. 36).
+The pattern wheels are readily accessible from the front of the output apparatus and different
+pattern wheels can be loaded for other layouts.
+Line formatting features that can be varied are line height, number of lines in a column, and
+leaving blank lines between groups of lines – this for ease of reading.
+Column formatting features that can be varied include the number of columns on a page,
+margin width between columns, and page borders.
+The formatting features are not independently variable but come in fixed combinations
+determined by the pattern wheels. New combinations will require new pattern wheels.
+The two stereotyping trays are mounted on travelling platforms and are automatically
+positioned under the punch wheels in the stereotyping apparatus and move each cycle to
+receive each new result.
+The movement of the trays is driven by falling weights. The pitch and distribution of teeth on
+the pattern wheels controls the platform motion.
+A pair of pawls acts as an escapement (Figs 5.21, 5.22, p. 49). Each cycle the pawls release the
+pattern wheel to advance one tooth only, driven by the falling weights.
+Stereotyping can proceed down the page (line-to-line) with automatic fly back to the top of a
+new column, or across the page (column-to-column) and automatically line wrap at the end of
+a line (Figs 5.19, 5.20, p. 48). This option is set separately on an oscillating bar.
+
+47
+
+5 Operating the Output Apparatus
+
+For line-to-line motion (down the page) the trays move from right to left as viewed facing the
+pattern wheels i.e. looking a the Engine end on from the output apparatus end. For column-tocolumn motion the travelling platform moves towards the viewer as seen facing the pattern
+wheels.
+
+Fig. 5.19: Line-line format
+with automatic column flyback (simulation).
+
+Fig. 5.20: Column-column
+format with automatic line
+wrap (simulation).
+
+If the trays are not at the start position at the beginning of a calculation run they are rewound
+by hand using a rewind handle (Fig. 5.1, p. 36). This repositions the trays at the start of page
+and rewinds the weights to their raised position.
+For line-to-line formatting the trays and falling weights are rewound automatically and the
+column-to-column travelling platform is rewound by hand. If only one column is used then no
+manual rewind of the column motion is necessary.
+For column-to-column formatting, the column travelling platform and falling weights are
+rewound automatically and the line trays are rewound by hand.
+Results are stereotyped in two fonts simultaneously in separate trays. The smaller font has the
+line height automatically reduced.
+
+48
+
+5 Operating the Output Apparatus
+
+Setting Formatting Options
+
+Line catch pawl
+fixing screw
+
+Formatting options are set by
+selecting particular pattern
+wheels from the sets already
+mounted.
+
+Line catch pawl
+Pattern wheels
+
+A pattern wheel is selected by
+sliding two pawls (a catch pawl
+and a runaway pawl) to engage
+
+Runaway
+pawl
+
+with a chosen pattern wheel.
+
+Runaway pawl
+fixing screw
+
+Fig. 5.21: Line pattern wheel pawls.
+
+The lower pawls in each cluster
+
+Blank pattern
+wheel
+
+Column catch pawl
+Fixing screw
+
+are runaway pawls. The upper
+pawl is the line catch pawl in
+the case of the line pattern
+wheels, and the column catch
+in the case of the column
+
+Column catch pawl
+Column pattern
+wheels
+
+pattern wheels.
+Runaway pawl
+Runaway pawl
+fixing screw
+
+Fig. 5.22: Column pattern wheel pawls.
+
+49
+
+5 Operating the Output Apparatus
+
+DO NOT CHANGE PAWL SELECTION WITHOUT FIRST READING THE
+PROCEDURE BELOW
+
+This procedure should only be undertaken with care and with an understanding of the danger of
+uncontrolled runaway when the pawls are disabled.
+
+Explanation: Risk of Runaway
+The trays, travelling platform, and falling weights are heavy.
+Two pawls in an escapement arrangement ensure that the pattern wheels advance only one
+tooth at a time during each calculating cycle. This ensures that the weights are lowered and
+that the platform advances in a controlled way one fixed increment at a time.
+With both pawls disengaged the pattern wheel assembly can turn freely driven by the falling
+weights.
+This can be dangerous.
+Without the restraining action of the pawls there is danger of uncontrolled runaway. The
+weights fall freely driving the travelling platforms. The trays accelerate, impact the end stops,
+and the weights crash down on the wooden plinth. There is also the danger that the small and
+large trays, which have separate line-to-line drives, collide and damage the drive train.
+Runaway by the column weights is less dangerous: column-to-column runaway is cushioned by
+a dashpot. But there is still the risk of damage to the plinth by the falling weights.
+Care should be taken to avoid any form of runaway
+In the procedure described one pawl at a time is disengaged so that the remaining pawl
+restrains the pattern wheel.
+An additional precaution against runaway is provided by the operator restraining the pattern
+wheel by hand as the pawl is released. This provides protection against inadvertently
+disengaging both pawls at the same time.
+
+50
+
+5 Operating the Output Apparatus
+
+The rewind handle should be used to restrain the pattern wheels during the procedure. With
+experience the pattern wheels can be restrained or the platform rewound by gripping the
+pattern wheel without using the rewind handle. But this should not be attempted until the
+procedures and the dangers are well understood.
+Preventing runaway by hand is not difficult if the load is always kept under control and the
+movements are expected. The danger is that both pawls are released inadvertently or without
+full expectation of the result. Once runaway starts the platform gains momentum and it is
+difficult and dangerous to arrest by hand.
+Care should be exercised to follow the procedure described exactly and to understand the
+implications of disengaging each of the pawls.
+
+Formatting Options: Pattern Wheel Selection
+The line pattern wheels are the right hand cluster (Fig. 5.1, p. 36). The column pattern wheels
+are the left hand cluster. Each cluster has four pattern wheels.
+Each pattern wheel is stamped on the edge with a unique identifying letter. The line pattern
+wheels are A, B, C, and D. The column pattern wheels are E, F, G and H.
+Only one line pattern wheel and one column pattern wheel is active at any time.
+Each line pattern wheel provides a fixed combination of top and bottom margins, number of
+lines per page and additional gaps between fixed groups of results. Pattern wheels A, B and C
+provide 30, 50 and 60 lines per page respectively and tooth spacing is such that wider gaps are
+left every five lines. Wheel D (the outermost one) is blank and can be machined for a new
+combination of top and bottom margins, number of lines, line spacing, and additional gaps at
+given intervals.
+The column pattern wheels control left and right margins, number of columns, and margins
+between columns. The apparatus can stereotype in one, two or three columns.
+The full set of line pattern wheel combinations, and the layouts that result are shown in
+Appendix 10.4, Stereotyping Layout Options, p. 145.
+
+51
+
+5 Operating the Output Apparatus
+
+Changing Line Format
+Line-to-line formats are selected by moving the two pawls to operate on one of four pattern
+wheels in the right hand cluster of pattern wheels (Fig. 5.1, p. 36).
+Procedure
+1.
+
+Fix the wooden rewind handle to the line pattern wheel mounting disc. This is simply
+done – fixing is with a central screw with knurled knob.
+
+2.
+
+Turn the output apparatus using the main crank to zero units (FULL CYCLE) on the main
+chapter disc (this corresponds to LOCKED PRINTER on the auxiliary chapter disc). This
+disengages the runaway pawl.
+
+3.
+
+Unscrew the runaway pawl fixing screw only sufficiently to slide on the flat (Fig. 5.21, p.
+49).
+
+4.
+
+Slide the pawl to the new pattern wheel. If sliding the pawl is obstructed by a tooth on the
+new wheel then slightly back off the pattern wheels using the wooden handle and release
+when the pawl is in the new position. The pawl can be given extra clearance by pushing
+the lower pawl lever clockwise against the spring.
+
+5.
+
+Retighten the fixing screw making sure that it bears square on the flat.
+
+6.
+
+Advance to 43 units to engage the runaway pawl. If the pawl engagement is obstructed by
+a tooth, back off the pattern wheels using the wooden handle until the pawl engages.
+WARNING: DO NOT OMIT STEP 6
+The lower pawl must be engaged to prevent the weights plunging downwards
+uncontrolled (runaway) when the line catch is released in Step 7.
+
+7.
+
+With the runaway pawl engaged, disengage the line catch by pushing the line catch lever
+anti-clockwise against the spring.
+
+8.
+
+Partially unscrew the line catch fixing screw only sufficiently to slide on the flat.
+
+9.
+
+Slide the line catch pawl to the new pattern wheel. If sliding the pawl is obstructed by a
+tooth then slightly back off the pattern wheels using the wooden handle and release
+when the pawl is in the new position.
+
+10. Retighten the fixing screw making sure that it bears square on the flat.
+11. Release the line catch lever to engage the pawl.
+
+52
+
+5 Operating the Output Apparatus
+
+Note
+With experience the procedure can be carried out without the wooden handle and without
+Step 6. Instead of disengaging the runaway pawl by advancing the cycle (Step 2), the pawl can
+be disengaged by manually operating the runaway pawl lever which is behind the oscillating
+bar (Figs 5.24, 5.25). It does not matter too much where in the cycle the pattern wheel
+selection is changed provided both pawls are engaged at the start of the procedure.
+Disengaging the runaway pawl by hand leaves only one hand to unscrew and slide the pawl,
+and you are a hand short if the pattern wheels need to be backed off to allow the pawl to slide
+behind a tooth on the new pattern wheel. Some deftness is needed.
+The pattern wheels can be backed off without the wooden handle
+by gripping the spokes (Fig. 5.23). The weights are heavy and this
+should only be attempted with experience and an understanding of
+the stepwise procedure.
+When first following the procedure extra safety can be provided by
+
+Fig. 5.23
+
+keeping a hand on the wooden handle and backing it off against
+the load of the drop weights so the load is taken by hand even with the pawls engaged.
+Preventing runaway in this way offers direct reassurance of control and does not rely on one
+or another of the pawls on its own.
+
+Changing Column Format
+The same procedure can be used to change the column pattern wheels. In step 2 set the
+chapter disc to zero units (LOCK PRINTER) and to 43 units for step 6 as for changing line
+format.
+It does not matter whether line-to-line format changes are made before or after column-tocolumn changes in situations when both are being altered.
+
+53
+
+5 Operating the Output Apparatus
+
+Advancing to End-of-Page: Skipping Printing Cycles
+It is often desirable or necessary to advance the trays to the end of page without having to
+crank through a full complement of lines. This procedure is especially useful when testing or
+exercising the end-of-column or end-of-page fly-back. It is also useful for maintenance,
+lubrication, commissioning or debugging the stereotype apparatus.
+The following procedure describes how to advance the travelling platform by skipping printing
+cycles.
+Both pawls are disengaged to disable the escapement action, and the platform, driven by the
+falling weights, is allowed to move against the controlled manual restraint of the operator.
+
+DO NOT UNDERTAKE THIS PROCEDURE WITHOUT UNDERSTANDING HOW THE PAWLS
+PREVENT UNCONTROLLED RUNAWAY
+
+Procedure
+1.
+
+Grip the pattern wheel disc with left hand as shown in Fig. 5.24 with thumb on the upper
+rim and fingers hooked around one of the spokes.
+
+2.
+
+Prepare to take the load of the pattern wheels which are trying to turn clockwise driven
+by the falling weights. Brace your hand and arm to hold the wheel against turning.
+
+3.
+
+With the right hand, prise the two pawl levers apart (Fig. 5.24). This disengages both the
+pawls and allows the pattern wheels to turn freely driven by the falling weights. (The
+runaway pawl release lever is tucked behind the lower horizontal oscillating bar)
+
+Line catch pawl
+lever
+
+Line runaway
+pawl lever
+
+Fig. 5.24: Manual Pawl Release.
+54
+
+5 Operating the Output Apparatus
+
+4.
+
+With the left hand controlling the pattern wheel allow it to turn clockwise. This advances
+the trays to the left i.e. towards the bottom of the page.
+
+5.
+
+When the wheel has gone as far as can be guided in a controlled way with the left hand,
+release one or both of the pawls levers and make sure the pawl engages to halt the
+wheel.
+
+6.
+
+With the wheel secured by one or both of the pawls, reposition the left hand to allow
+more travel.
+
+7.
+
+Repeat the procedure until a few teeth before the end-of-column. The end-of-column
+position is indicated on the rim of the line pattern-wheel where the teeth stop and the
+rim is smooth.
+
+8.
+
+Release both pawls levers if not yet released and ensure they engage before releasing the
+pattern wheel.
+
+The procedure is more easily carried out with the wooden rewind handle fitted but can be
+carried out as described without the inconvenience of swapping the rewind handle over.
+The same procedure can be used to position the travelling platform anywhere in a column in
+line-to-line mode on the page, halting the platform where needed and finishing the procedure
+at Step 6.
+Similarly, the same procedure can be used to position and halt the travelling platform across
+the page i.e. position the travelling platform on any column.
+In column mode the recommended hand position for releasing the two pawls is shown in Fig.
+5.25.
+
+Column runaway
+pawl lever
+Column catch
+pawl lever
+
+Fig. 5.25: Manual pawl release (Column).
+
+55
+
+5 Operating the Output Apparatus
+
+In column mode it is recommended that the wooden rewind handle is used. The space
+between teeth on the column pattern wheels is much greater than on the line pattern wheels
+and there is the danger of runaway between the teeth if the pattern wheel is restrained by
+gripping the wheel without the rewind handle.
+
+Resetting after End of Page
+The end-of-page condition triggers automatic rewind when the top oscillating bar operates the
+rewind clutch lever (Fig. 5.29, p. 58).
+At the same time a trip weight drops to lower a cradle (Fig. 5.26) which pivots down under the
+weight to operate the trip lever. The trip lever pulls the catgut line which runs via pulleys to
+the top of the cam stack and disengages the main crank drive by operating a scoop clutch (Fig.
+5.27).
+The drop weight falls at 43 units in the cycle, the scoop clutch disengages the main drive at 49
+units and the main crank handle runs free.
+
+Fig. 5.26: End-of-page trip.
+
+Trip
+Drop
+Trip
+weight cradle lever
+
+56
+
+Counterweight
+
+Gut trip
+cord
+
+5 Operating the Output Apparatus
+
+To resume tabulation after
+end-of-page tripping the drop
+weight and the cradle lever
+needs to be reset, and the
+
+Cam stack
+bevel gear
+Main Drive
+
+scoop clutch needs to be reengaged.
+
+Clutch
+Scoop lever
+Gut cord from
+trip cradle
+Fig. 5.27: End-of-page drive disengagement.
+
+Procedure - End-of-Page Reset
+1.
+
+Locate the end-of-page reset lever – between
+the two pattern wheel sets (Fig. 5.28).
+
+2.
+
+During normal operation the reset lever is in
+the 2 o’clock position. After end-of-page has
+been triggered and the weight has dropped,
+the reset lever is in the three o’clock position
+resting against the end stop pin. Rotate the
+reset lever from three o’clock to about one
+Fig. 5.28: Drop weight reset lever.
+
+o’clock. This raises the drop weight.
+3.
+
+Release the lever slowly lowering it clockwise
+until it rests at about two o’clock.
+
+4.
+
+Raise the cradle trip lever (Fig. 5.26) by hand and locate the drop weight in the trough.
+
+5.
+
+Reset the scoop clutch on top of the cam stack to re-engage the main crank drive (Fig. 5.27).
+
+57
+
+5 Operating the Output Apparatus
+
+Converting Format from Line-to-Line to Column-to-Column
+Converting from line-to-line to column-to-column and vice versa involves flipping over the
+upper of the two oscillating bars, altering the position of an actuator pin, changing over the
+rewind drive and, if necessary, adjusting the amount of rewind.
+
+Fig. 5.29: Oscillating bars.
+
+Keeper pin
+
+Lower oscillating bar
+
+Rewind clutch lever
+
+Line activating pin
+Upper oscillating bar
+
+Before the conversion is carried out both line and column falling weights need to be lowered
+till there is no tension in the suspension cables (Fig. 5.1, p. 36). Lowering each weight involves
+disabling both the pawls. Unless managed carefully and safely this procedure runs the risk of
+damage and injury from uncontrolled runaway.
+For explanation of runaway see Section 5.3 (Explanation: Risk of Runaway), p. 50.
+
+DO NOT UNDERTAKE THIS PROCEDURE WITHOUT UNDERSTANDING HOW THE
+PAWLS PREVENT UNCONTROLLED RUNAWAY
+
+Procedure
+1.
+
+Place a protective sheet or pad on the plinth under the falling weight.
+
+2.
+
+Lower the line falling weight following the procedure detailed in Section 5.3, Advancing to
+End-of-Page: Skipping Printing Cycles, p. 54. Control the lowering of the weight as
+described until the weight rests on the plinth and there is no tension in the cable.
+
+3.
+
+Repeat Steps 1 and 2 for the column falling weight.
+
+4.
+
+Unscrew upper pawl activating pin at the line-to-line end of upper oscillating bar (Fig.
+5.30).
+DO NOT OMMIT STEPS 1, 2 AND 3. THE PROCEDURE THAT FOLLOWS CAN BE
+HAZARDOUS IF THE WEIGHTS ARE NOT FULLY LOWERED
+
+58
+
+5 Operating the Output Apparatus
+
+5.
+6.
+7.
+8.
+9.
+
+Remove the keeper pin to free the upper oscillating bar (Fig. 5.29).
+Invert the upper oscillating bar (flip it over keeping the ‘arrow’ facing left).
+Replace the keeper pin.
+Add thickening sleeve to the column pawl activating pin (Fig. 5.31).
+Transfer the pin to the column end of upper oscillating bar by screwing it in to the threaded
+hole (Fig. 5.31).
+
+Fig. 5.30: Line activating pin.
+
+Fig. 5.31: Column activating pin.
+
+10. Release the latch on the changeover shaft (Fig.
+5.32).
+11. Push in the freed shaft to engage the idler wheel.
+If teeth foul, back off the column-column pattern
+wheel assembly with the wooden handle to align
+teeth with gaps.
+12. Re-engage latch to fix shaft in new position.
+Fig: 5.32: Changeover latch.
+
+Adjusting Rewind
+The amount the travelling platform rewinds automatically at the end of page is set by the
+angular position of a pair of dogs on the rewind clutch (Figs 5.33, 5.34).
+
+59
+
+5 Operating the Output Apparatus
+
+The position of the dogs on the rewind gear may need altering to ensure that the amount of
+rewind is correct – enough to raise the column weights for the format configuration chosen
+but not too much as an overrun causes an uncontrolled fall back when the rewind clutch
+releases.
+The location of the rewind clutch is shown in Fig. 5.33. The pair of dogs and drive gear is shown
+in Fig. 5.34 before installation. The adjustment is made without removing the drive gear and
+dogs.
+
+Fig. 5.33: Rewind clutch.
+
+Fig. 5.34: Clutch dogs and
+drive gear.
+Fixing holes
+(18-off)
+
+Dogs
+
+Studs
+(ring screws)
+
+The angular position of the dogs is determined by two studs or ‘ring screws’ that fix it to the
+drive gear hub in one of nine positions. The position of the dogs to provide the correct amount
+of rewind is found by trial and error by unscrewing the studs to free the dog-plate, rotating the
+
+60
+
+5 Operating the Output Apparatus
+
+dogs to the new position, and then refixing with the ring screws. The studs fix through the back
+of the hub into two of eighteen fixing holes.
+
+Adjusting Dashpot Damping
+In normal operation the travelling platform can traverse nearly six inches in moving from one
+column to the next and substantially more in the event of runaway. The transverse column
+motion is cushioned by a dashpot that acts as a speed governor to reduce linear speed and
+also to relieve the impact on the pawls and, in the event of runaway, on the frame.
+The dashpot is located underneath the
+travelling platform (Figs 5.35, 5.36).
+The dashpot is an oil-filled cylinder that
+damps motion by forcing oil through a series
+of internal holes.
+The damping is one-directional i.e. the return
+stroke is not damped.
+Fig. 5.35: Location of dashpot.
+
+Dashpot
+
+The amount of damping depends on the
+viscosity of the oil, an internal adjustment
+using spacing washers, and the number of
+falling weights in the set driving the column-tocolumn motion of the travelling platform.
+If the platform builds up too much speed in
+
+Fig. 5.36 Dashpot viewed from underside.
+
+traversing from one column to the next the
+following three actions should be taken. They are listed in order of increasing difficulty. Go on to
+the next action only if the prior one is not effective.
+
+To Reduce Platform Speed
+1. 5educe the number of weights in the set of column-column falling weights.
+2. 7op up the oil level in the dashpot cylinder.
+3. $djust internal packing washers to alter oil flow.
+
+61
+
+5 Operating the Output Apparatus
+
+1. Falling Weights
+The simplest effective way of adjusting the travel speed of the platform is to change the
+number of tiers on the set of falling weights. There must be enough weight to overcome
+initial friction and drive the platform smoothly once under way. If the platform is travelling too
+fast then reducing the number or weights is usually sufficient to achieve this.
+
+2. Topping up Oil Level
+From time to time in may be necessary to top up the level of oil in the dashpot cylinder to
+replace loss through leakage. The dashpot needs to be removed to do this. The oil needs to
+be thin enough to flow and thick enough to provide damping action. For oil specification see
+Section 6.2 and Section 9, Specification.
+
+Procedure
+1. Remove the large mounting nut
+on the Engine-side of the
+dashpot and slide the dashpot
+out of the slide-fixing on the
+plunger side (nearest the
+operator) (Fig. 5.37).
+2. Invert the dashpot so that the
+plunger is below and the
+cylinder above.
+3. Push the plunger upwards fully
+into the cylinder.
+4. Release the plunger and allow
+
+Fig. 5.37: Dashpot.
+
+to fall pulling on it gently.
+
+Dashpot
+cylinder
+
+Plunger
+
+Slide
+fixing
+
+5. The first part of the downward travel is relatively free. At the point at which resistance
+increases check that the plunger is extended 3¼ inches.
+6. Add or remove oil through the filling hole to achieve this.
+
+62
+
+5 Operating the Output Apparatus
+
+3. Internal Adjustment
+As a last resort alter the position of internal packing washers to alter the oil aperture.
+The dashpot needs to be fully dismantled to do this.
+The size of the annular aperture is adjusted by exchanging packing washers from RQHside of the
+conical plunger to the far end of the return spring.
+
+63
+
+5 Operating the Output Apparatus
+
+5.4 Uncoupling the Drive
+Overview
+There are circumstances in which it may be desirable to run the calculating section
+independently of the output apparatus and vice versa.
+Priming the inking system, fault-diagnosis, adjustment and repair, are situations in which the
+output apparatus may need to be cycled without disturbing the calculating section. Resetting
+initial values in the middle of a page also requires the calculating section to be run without
+advancing printing and stereotyping.
+A clutch uncouples the main drive to the
+output apparatus and allows the two
+sections of the Engine to be run
+independently (Fig. 5.38).
+The uncoupling clutch is located in line
+with the main drive shaft running the
+length of the Engine on the underside
+from the cam stack to the output
+apparatus (Fig. 5.6, p. 41).
+The clutch is engaged and disengaged by
+operating two hand levers in a strict
+sequence at specific points in the cycle.
+Interlocks in the clutch mechanism
+prevent the output apparatus and the
+Fig. 5.38: Uncoupling clutch. View from rear.
+Output apparatus is on the right.
+
+calculating section being run
+independently at the same time. Freeing
+
+one to operate locks the other: when the output apparatus is being run, the calculating section
+is locked at 35 units on the main chapter disc; when the calculating section is being run
+uncoupled from the output apparatus, the output apparatus is locked at zero.
+The clutch interlock mechanism ensures that re-coupling the two sections for normal use can
+only occur at fixed points in the cycle and when the two sections are correctly phased.
+When uncoupled from the calculating apparatus the output apparatus is driven using the
+auxiliary crank (Fig. 5.1, p. 36). This is located at the opposite end of the Engine to the main
+
+64
+
+5 Operating the Output Apparatus
+
+crank. The auxiliary crank allows the printer and stereotyping apparatus to be operated at
+normal speed, in slow motion or incrementally, with the operator close to the apparatus. Having
+a crank local to the apparatus facilitates adjustment, fault finding and repair.
+The Engine should not be driven from the auxiliary crank when the two sections of the Engine
+are coupled together as they are in normal operation.
+The clutch cannot be used as a general debugging aid to isolate the two sections of the Engine
+at an arbitrary point in the timing cycle. Since the two sections of the Engine can be uncoupled only
+at two specific points, in the event of a jam the clutch cannot be used to isolate the two sections from
+each other for fault-finding unless the fault happens to occur at 0 or 35 units.
+In the event, for example, that the printer jams, this should be cleared so that the Engine can be
+cycled to one of the uncoupling points. The clutch should be released using the procedures
+below and the fault can be further investigated running the printer independently of the
+calculating section.
+
+Engaging and Disengaging the Clutch
+The clutch is operated using two levers, the
+
+Clutch lever
+
+clutch lever which engages and disengages
+
+Locking lever
+
+the clutch, and the locking lever which
+immobilises one or another of the two lengths
+of shaft. The clutch lever is accessed from the
+front of the Engine; the locking lever from the
+rear (Figs. 5.39, 5.40).
+
+Note – Use an Assistant
+The clutch can couple or uncouple only at
+exact points in the cycle (0 and 35). The clutch
+and locking levers cannot be operated unless
+the alignment is exact i.e. under- or overrunning these stop points prevents
+
+Fig. 5.39: Clutch lever
+(view from front of
+Engine).
+
+disengaging or re-engaging the clutch.
+It is difficult to cycle the Engine and stop at an
+exact point using only the chapter wheels as
+
+65
+
+Fig. 5.40: Locking
+lever (view from rear
+of Engine).
+
+5 Operating the Output Apparatus
+
+guides. Also, if the clutch is under load as, for example, when attempting to stop at 35 to
+disengage, it can be hard to operate the clutch lever to slide out the dogs.
+The coupling and uncoupling procedures are easier to carry out with two operators, one at the
+clutch, the other one of the crank handles. The operator at the crank should stop slightly short
+of the required stopping point and then nudge on using the technique described in Section 3.2,
+Edging Towards a Timing Point, p. 17.
+While the operator at the crank edges towards the target timing point, the operator at the
+clutch jiggles either the locking or clutch lever into or out of engagement as the incremental
+rotation of the shaft progresses.
+This edging technique using two operators is recommended for all procedures to engage or
+disengage the uncoupling clutch.
+
+To run the Output Apparatus independently (calculating section locked):
+Starting State:
+
+Output apparatus coupled to calculating section.
+
+Lever Positions:
+
+Locking lever (rear) faces left as seen from rear of Engine.
+Clutch lever faces right as seen from front of Engine.
+
+Procedure
+1.
+
+Turn the main Engine crank to indicate 35 units on the main chapter disc.
+
+2.
+
+From the front of the Engine free the clutch lever by unscrewing and retracting the knurled
+thumbscrew.
+
+3.
+
+Turn the front lever anticlockwise to disengage the clutch (it now faces left).
+
+4.
+
+Replace the thumbscrew to secure the lever.
+
+5.
+
+Leave the rear lever unchanged i.e. facing left as seen from rear.
+
+The main Engine is now locked at 35 units and the output apparatus can be operated
+independently from the auxiliary crank.
+
+66
+
+5 Operating the Output Apparatus
+
+To Re-couple after running Output Apparatus independently
+
+Starting State:
+
+Engine locked at 35 units. Output apparatus free to run. Clutch disengaged.
+
+Lever Positions:
+
+Locking lever (rear) facing left as seen from rear of Engine.
+Clutch lever (front) facing left as seen from front of Engine.
+
+Procedure
+1.
+
+Turn the output apparatus to 35 units on the printer chapter disc.
+
+2.
+
+Unscrew and retract the thumbscrew from the clutch lever (front) to free the clutch lever.
+
+3.
+
+Turn the clutch lever (front) clockwise (so that it faces right as seen from the front of the
+Engine).
+
+4.
+
+Replace the thumbscrew to secure the clutch lever.
+
+The calculating and output apparatus are now coupled together for normal operation.
+
+To run the Engine independently (Output Apparatus locked)
+Starting State:
+
+Engine and output apparatus coupled.
+
+Lever Positions:
+
+Locking lever (rear) faces left as seen from rear of Engine.
+Clutch lever (front) faces right as seen from front of Engine.
+
+Procedure
+1. Turn the main Engine crank to zero (FULL CYCLE) on the main chapter disc.
+2. Unscrew and retract the knurled thumbscrew to free the locking lever (rear).
+3. Turn the locking lever clockwise to lock the output apparatus.
+4. Replace the thumbscrew to secure the locking lever.
+5. Free the clutch lever (front) by unscrewing and retracting the knurled thumbscrew.
+6. Turn the front lever anticlockwise to disengage the clutch (it now faces left).
+7. Replace the thumbscrew to secure the lever.
+The calculating section is now free to run and the output apparatus is locked at zero.
+
+67
+
+5 Operating the Output Apparatus
+
+To Re-couple the Output Apparatus after Running the Engine Independently
+Starting State:
+
+Output Apparatus locked at 0. Engine free to operate. Clutch disengaged.
+
+Lever Positions:
+
+Locking lever (rear) right.
+Clutch lever (front) left.
+
+Procedure
+1.
+
+Turn the main Engine crank to 35 units on the main chapter disk.
+
+2.
+
+Free the locking lever by unscrewing and retracting the knurled thumbscrew.
+
+3.
+
+Turn the locking lever (rear) anti-clockwise.
+
+4.
+
+Replace the thumbscrew to secure the locking lever.
+
+5.
+
+Rotate the auxiliary crank to read 35 units on the printer chapter disc.
+
+6.
+
+Free the clutch lever by unscrewing and retracting the knurled thumbscrew.
+
+7.
+
+Turn the clutch lever clockwise to engage the clutch.
+
+8.
+
+Replace the thumbscrew to secure the clutch lever.
+
+The calculating section and output apparatus are now coupled with both at 35 units.
+
+Summary
+The following table summarises the lever positions, cycle points, and functional status of the
+Engine and output apparatus when run separately and together.
+In the table ‘right’ and ‘left’ are as seen facing the clutch lever and locking lever as though
+operating them. So moving the locking lever (rear of Engine) anti-clockwise moves it from facing
+right to facing left.
+
+. . . . . . Status Table
+
+68
+
+5 Operating the Output Apparatus
+
+STATUS TABLE
+
+Units
+
+Clutch
+Lever
+
+(Front)
+
+Locking
+Lever
+
+Unit Locked
+
+Run Printer Only
+
+35
+
+Left
+
+Left
+
+Engine
+
+Run Engine Only
+
+0
+
+Left
+
+Right
+
+Printer
+
+Run Both
+
+35
+
+Right
+
+Left
+
+Neither
+
+Run None
+(Both Locked)
+
+0
+
+Right
+
+Right
+
+Both
+
+Function
+
+Cycle
+
+(Rear)
+
+THE ENGINE SHOULD NOT BE DRIVEN FROM THE AUXILIARY CRANK WHEN THE
+TWO SECTIONS OF THE ENGINE ARE COUPLED TOGETHER
+
+69
+
+6 Maintenance and Repair
+
+6.
+
+Maintenance and Repair
+6.1 Replacing Parts on an Axis
+The parts most commonly damaged are the smaller repeated parts in the calculating section.
+Particularly vulnerable are the bronze carry levers.
+Figure wheels, sector wheels, carry levers, and carry arms can be replaced without removing
+their axes from the frame.
+Removing the top bearing plates gives access from above and the parts can be removed one at
+a time by lifting them out in turn through the top frame (Fig. 6.1).
+For convenience it may be preferable to remove the axis entirely to work on a bench. The
+procedures below apply to replacement in situ or on a bench.
+The procedures for replacing figure wheels, sector wheels, carry levers and carry arms is
+essentially the same. Variations are indicated below.
+Whether replacing parts with the axis in place or with the axis removed from the machine the
+first step is to remove the top bearing plate.
+This should not be undertaken by anyone without mechanical or engineering experience.
+To remove an axis requires two people.
+
+Fig. 6.1: Plan View of Engine showing top bearing plates and axes.
+
+70
+
+6 Maintenance and Repair
+
+The following tools and equipment are needed:
+1.
+
+Ladders narrow enough to fit on the plinth.
+
+2.
+
+Set of parallel-blade screwdrivers.
+
+3.
+
+Allen keys.
+
+4.
+
+Small pin punches and hammer.
+
+5.
+
+Spring Tensioning Jig
+
+To Remove a Top Bearing Plate
+1. Erect a ladder to provide access
+from above. Mark the position
+of the top collar with marking
+ink or by lightly scoring the
+shaft. Alternatively, measure
+and record the position of the
+collar from the top of the shaft.
+Repeat this for each of the axes
+in the top plate being removed.
+(All except the carry arm axes
+have springs). This is to ensure
+that the collar can be returned
+to the same position when the
+axis is refitted so that the
+counterbalancing spring will be
+correctly tensioned when
+
+Fig. 6.2: Top plates.
+
+reassembled.
+
+Cup
+
+Counterbalancing
+spring
+
+Collar
+Slide blocks
+
+2. Chock up from below each of
+the sector wheel axis, figure
+wheel axis, and carry lever axis
+i.e. place blocks between the
+bottom-most collar of each of
+the three axes and the bearing
+bars on the underside of the
+lower framing piece.
+Alternatively chock up the axes
+using as support the lower
+
+Fig. 6.3: Bell cranks.
+
+71
+
+Bearing bar
+
+Bell cranks
+
+6 Maintenance and Repair
+
+bearing plates that straddles the two middle framing pieces. The sector, figure wheel and
+carry lever axes are lifted and lowered by bell cranks (Fig. 6.3) (see Fig. 6.6, pg. 73 for
+identification of axes). When the counterbalancing springs are released from compression
+and removed, the full weight of the columns bears down on the bronze bell cranks below.
+The blocks support the load and prevent the bell crank arms from being overstressed. The
+sector axis bell crank is the longest and is the most vulnerable. Special care should be
+taken to ensure that this axis is securely supported.
+3. Remove the collar at the top of the axis by removing the grub screws or pins with an Allen
+key or pin punch. This releases the spring and cup. Keep the spring, collar, cup and pins for
+each axis as a set and label them so that they can be refitted to the same axis they were
+removed from. The position of the top collar on the shaft is specific for each spring so it is
+important that each spring is returned to the axis from which it was removed.
+4. The top bearing plates are not doweled to the frame and returning them to their original
+position is critical. Carefully measure and record the position of the top bearing plate being
+removed referenced to the fixed top plate(s) adjacent to it and to other surrounding fixed
+points so that the positions front-to-back and side-to-side can be replicated when
+reassembled.
+5. Unscrew and remove the large screws
+that fix the top bearing plate to the
+frame.
+6. Unscrew and remove the medium
+screws that fix the figure wheel supports,
+and the smaller mounting screws for the
+steel figure-wheel lock slide-block. The
+bronze slide blocks can remain fixed to
+the bearing plate (Fig. 6.2). If a slide
+
+Fig 6.3b: Bearing plate and parts.
+
+block overlaps the bearing plate from an
+
+adjacent plate remove this block too. Loosen the fixing screws for the sector zero stop
+pillar. The position of the sector stops is critical and should not be disturbed. Check that it is
+securely fixed by the screws in the lower bearing plate. If it is not secure, clamp the pillar to
+the frame using a metal bar to secure it so that when the top plate is replaced the sector
+stop pillar is exactly in its original position.
+7. Lift out and remove the bearing plate.
+
+72
+
+6 Maintenance and Repair
+
+To Replace a Part on an Axis
+To remove figure wheels, sector wheels, and carry arms.
+1. Remove the taper pin securing the collar at the top of the axis. If the axis is on the bench,
+remove the collar from the end of the shaft closest to the damaged part.
+2. To remove figure wheels from a shaft still in the Engine disengage the lock by removing the
+shoulder screw and washer that couple the lock to the drive link at the bottom of the lock
+blade (Fig. 7.6 inset, p. 112).
+3. Raise the lock to disengage it from the figure wheels and place blocks below hold it in the
+retracted position.
+4. To remove figure wheels from a shaft still in the Engine first remove the three figure wheel
+support pillars. For complete removal unscrew the mounting screws in the bottom bearing
+plates. For a possibly easier alternative see Step 18, p. 77.
+5. Slide off parts in turn until the one requiring attention is removed.
+6. Record order in which parts are removed so when reassembling, parts are returned to their
+original positions.
+
+To Replace Carry Levers
+1. Unpin the top collar of the detent axis and remove
+the collar (Fig. 6.4). It is better to unpin the collar
+before the top plate is unscrewed so that the
+
+Fig. 6.4
+Detent axis
+top collar.
+
+warning axis which supports the detent axis is itself
+more securely supported when tapping the pin
+punch.
+2. Remove in order: the carry lever, detent lever, spring
+housing, and detent support arm (Figs 6.5, 6.6). Take
+care that the spring does not fall out. Keep the parts
+for each assembly in a set and record the original
+order on the shaft.
+3. Repeat the procedure and remove as many carry mechanisms as necessary to reach the
+damaged part.
+4. Fit a new carry lever to the detent support arm spigot. If necessary emery-paper the spigot
+and/or the internal bore of the carry lever so that the lever rotates smoothly and freely but
+without play.
+5. Liberally oil all parts when reassembled especially the carry lever bore which is difficult to
+access once refitted.
+
+73
+
+6 Maintenance and Repair
+
+Detent
+lever
+
+Carry
+lever
+
+Spring
+housing
+
+Carry
+lever
+horns
+
+Detent
+support
+arm
+Fig. 6.5: Carriage Mechanism (position of horns is indicative).
+
+6. Replace the removed parts in exactly reverse order to restore the original order on the
+shaft.
+7. Reassemble by reversing the procedures for removal.
+8. Before resuming normal operation each carry lever must be checked for correct warning
+action. For checking procedure see Section 7.3, Diagnostic Tests, p. 117.
+
+Removing an Axis
+It may be necessary from time to time to remove an axis i.e. a figure wheel, sector wheel,
+warning or carry axis.
+A complete assembled axis is very heavy. This is especially true of the figure wheel axes and
+sector wheel axes. Extreme care must be taken not to damage surrounding components when
+lifting or lowering these. Lowering an axis into position must be carefully controlled.
+If parts on an axis need to be replaced it may be more convenient to work with the axis on a
+bench removed from the Engine, but it is not strictly necessary to remove an axis to replace
+the parts on it: figure wheels, sector wheels, carry arms and carry warning mechanisms can be
+removed and replaced with the top bearing plate removed and access through the top frame.
+Similarly, for access to components below the lower bearing plate an axis can be partially lifted
+without removing it entirely.
+The procedures below describe the steps required to remove an axis entirely where this is
+preferred for convenient access to parts, or necessary in the rare circumstance of an axis
+needing to be repaired or replaced.
+
+74
+
+6 Maintenance and Repair
+
+Fig. 6.6: Axis layout.
+
+Figure
+wheel
+supports
+
+Carry
+lever
+axis
+Even figure
+wheel axis
+
+Figure
+wheel
+zero
+stops
+
+Sector
+zero
+stops
+
+Figure
+Wheel
+locks
+Odd sector
+axis
+
+Odd
+figure
+wheel axis
+Reset
+stops
+
+Carry arm
+axis
+
+Removing an axis should not be undertaken by anyone without mechanical or engineering
+experience.
+The procedure requires two people.
+A COMPLETE ASSEMBED AXIS IS VERY HEAVY. LIFTING AND LOWERING
+MUST BE CAREFULLY CONTROLLED TO AVOID INJURY OR DAMAGE
+
+The following tools and equipment will be needed:
+1.
+
+Ladders narrow enough to fit on the plinth.
+
+2.
+
+Set of parallel-blade screwdrivers (see Section 6.4, Special Tools, p. 101)
+
+3.
+
+Allen keys.
+
+4.
+
+Small pin punches and hammer.
+
+75
+
+6 Maintenance and Repair
+
+5.
+
+Spring tensioning jig.
+
+Headroom Clearance
+Removing an axis entirely through the top frame, requires headroom clearance above the
+Engine of the whole shaft length the longest of which is just less than 70 inches. Some of the
+axes can be removed without the full shaft length as headroom clearance. In these cases the
+axis can be partially lifted out and the lower end slid out between the two horizontal framing
+pieces supporting the upper and lower bearing plates.
+The clearance between the two horizontal framing pieces is 32 inches.
+The basic procedure for removing any of the four axes is the same and applies equally to the
+figure wheel, sector wheel, carry, and warning axes.
+To remove any of the vertical axes, or replace parts on it without removing it, the top bearing
+plate needs to be removed.
+
+To Remove an Axis
+1.
+
+To remove an even axis, set the Engine to 0 (FULL CYCLE).
+To remove an odd axis, set the Engine to 25 (HALF CYCLE) units.
+Even axes are: 6th, 4th, 2nd difference figure wheel columns, the results figure wheel
+column, and the associated sector, carry and warning axes where present (Fig. 2.3, p. 8,
+and Fig. 6.6, p. 75).
+Odd axes are: the 7th, 5th, 3rd, and 1st difference figure wheel columns and the associated
+sector, carry and warning axes where present.
+
+2.
+
+Remove the top bearing plate (see p. 71 above).
+
+To Remove a Carry Arm Axis
+3.
+
+Release the bevel gear at the base of the axis by unscrewing or unpinning.
+
+4.
+
+Have an assistant hold the bevel gear and key which will be released when the axis is
+lifted clear. Lift the axis clear, through the lower bearing plate.
+
+76
+
+6 Maintenance and Repair
+
+To Remove a Carry Lever Axis
+5.
+
+First remove the associated carry arm axis using the procedure above.
+
+6.
+
+Remove the carry reset stops by unscrewing the pair of fixing screws in the top and
+bottom bearing plates (Fig. 6.6, p. 75).
+
+7.
+
+Set all the carry levers to the disabled (inoperative/disconnected) position i.e. on the
+fourth detent.
+
+8.
+
+Release the bobbin at the bottom end of the axis by unpinning or removing the grub
+screws. The bobbin is in the fork of the bell crank in the drive section below level of the
+bottom bearing plates.
+
+9.
+
+Mark the quadrant pinion and the rack to record where they mesh so that they can be
+remeshed in the same position on reassembly.
+
+10. Mark the top figure wheel to record the position of the carry lever horn.
+11. Lift the axis clear of the lower bearing plate and out of the frame. Have an assistant hold
+down the quadrant pinion as the axis lifts out. The pinion slides off the key as the axis is
+raised.
+
+To Remove a Figure Wheel Axis
+12. Remove the carry arm axis as described above.
+13. Remove the carry lever axis as described above.
+14. Remove the sector zero stop pillar by unscrewing and removing the two fixing screws in
+the lower bearing plate.
+15. Rotate all the sectors 180⁰.
+16. Disconnect the figure wheel lock by removing the shoulder screw and washer that couple
+the lock to the drive link at the bottom of the lock blade (Fig. 7.6 inset, p. 112).
+17. Remove the lock by lifting it clear through the top frame.
+18. On the lower bearing plate unscrew and remove one of the two fixing screws securing
+each of the three figure wheel support pillars. Slightly loosen the remaining screw on each
+of the three pillars and twist the support until the figure wheel supports are clear of the
+figure wheels and the figure wheels are released.
+19. Mark the quadrant pinion and the rack to record where they mesh so that it can be
+replaced in the same position on reassembly.
+20. Release the bobbin and drive pinion by removing the taper pins.
+21. Lift the axis clear.
+
+77
+
+6 Maintenance and Repair
+
+To Remove a Sector Axis
+To remove a sector wheel axis does not require the prior removal of the carry, warning or
+figure wheel axis.
+1. Remove the top bearing plate (see p. 71 above).
+2. Mark or scribe the outline of the sector zero stop directly onto the lower bearing plate so
+that the stop can be exactly positioned when refitted (Fig. 6.6, p. 75).
+3. Remove the sector zero stop by unscrewing and removing the fixing two screws in the
+bottom bearing plate.
+4. Release the lower bobbin from the bell crank by unpinning or unscrewing.
+5. Mark the quadrant pinion and the rack to record where they mesh so that it can be
+replaced in the same position on reassembly.
+6. Release the circular motion pinion from the shaft by unpinning or unscrewing the pinion
+boss from the shaft.
+7. Lift the axis out.
+
+Refitting an Axis
+To refit an axis reverse the procedures for removal.
+1. Ensure that the geared quadrants or pinions are in their original meshing positions with
+their respective racks when the shafts are refitted.
+2. To refit a carry lever axis lower it
+from above in line with the final
+position. Thread the carry lever
+horns through the correct figure
+wheel teeth using the reference
+marks made before removal (Fig.
+6.7).
+3. Before lowering the axis through
+the bottom plate clean the bore
+and the shaft to avoid scoring by
+debris and lubricate well to ease
+insertion.
+
+Fig. 6.7: Position of horns.
+Reference
+marks
+
+4. Before tightening the fixing screws
+for the top bearing plate check the
+
+78
+
+Carry lever
+horn
+
+Figure
+wheel
+
+6 Maintenance and Repair
+
+pitch position by comparison with neighbouring plates and front-to-back reference points
+from which registration measurements were taken before removal.
+5. When replacing the top collar use
+the spring tensioning jig (Fig. 6.8) to
+re-tension the spring to its original
+setting. Set and lock the central
+threaded rod to the original depth of
+the collar marked earlier on the
+shaft. Press the jig down to depress
+the spring until the threaded rod acts
+as an end stop. Hold the jig down
+while fixing the collar with a pin
+in or Allen screws. Two people may
+
+Fig. 6.8: Spring tensioning jig.
+
+be required – one to keep the jig
+depressed on the spring, the other to tighten the fixing screws on the collar. Remove the jig.
+The springs must be returned to the same shafts from which they were removed. The
+position of the collar determines the correct tension of that particular spring so each spring
+must remain matched to its original shaft and the collar restored to its original position.
+
+79
+
+6 Maintenance and Repair
+
+6.2 Lubrication
+The general principle is to lubricate all moving parts.
+EXCEPTIONS
+
+The following are run DRY:
+1.
+
+Figure wheel gear teeth
+
+2.
+
+Sector wheel gear teeth
+
+3.
+
+Carry assemblies (part)
+
+The following are lubricated with graphite powder:
+1.
+
+Vertical printer racks
+
+2.
+
+Print and punch wheels
+
+3.
+
+Horizontal racks in stereotype apparatus
+
+Figure wheel shafts, and all vertical axes are lubricated with oil. But figure wheel and sector
+wheel teeth are run dry – this to avoid accumulation of dust and debris that might become
+abrasive and/or obstruct correct operation.
+The small moving parts of carry mechanisms and rotating parts on the vertical axes (warning
+lever axis, figure and sector wheel axes) are all oiled. However, the ends of the carry arms and
+carry levers (the lozenges that intersect during carriage) are run dry (Figs. 6.5, 6.6).
+The vertical printing-racks, print and punch wheels, and horizontal racks in the output
+apparatus are not lubricated with oil as the surface tension of oils causes adhesion and
+stiffness in the movement of adjacent parts. These parts are lubricated with graphite powder.
+
+Vertical Axes – Drip Tray
+The figure wheels, sector wheels and carry levers have a central vertical shaft. Figure wheels,
+sector wheels and the lever assemblies rotate on these shafts, and the bearing surfaces, which
+are not directly accessible, need to be oiled.
+
+80
+
+6 Maintenance and Repair
+
+The vertical axes are oiled from above. The oil drains down the shaft to lubricate the wheel
+bearings and any excess drains down into a shallow drip tray that runs the length of underside
+of the Engine. Oil the vertical axes liberally so that there is sufficient oil to drain all the way
+down.
+The drip tray should be emptied from time to time.
+
+Frequency
+The frequency of lubrication service depends on usage. An Engine run daily will need to be
+lubricated every 4 weeks. This typically corresponds to between 500 to 600 cycles.
+For occasional use the full lubrication schedule can be carried out less frequently. Operators
+should anyway monitor the machine and lubricate specific parts more frequently as needed
+outside scheduled servicing.
+A critical bearing is the thrust bearing for the main cam stack shaft. This is located in the lower
+bearing plate and takes the main load of the cam stack. This bearing is not directly accessible
+but is oiled through an oiling hole in the top bevel gear. Oil drains down from the oiling hole to
+the thrust bearing via a hidden channel in the shaft. This bearing should be oiled whenever any
+oiling is done i.e. frequently and liberally.
+
+Lubricants
+Grease is used on gear wheels in all power drive trains as well as on the bearing surfaces of
+cams and sliding cam followers.
+Three different grades of oil are used: thin spindle oil is used to lubricate shafts, spindles
+journal bearings, links and pivots. A thicker oil is used for lubricating slide ways, V-slides, and
+the larger sliding racks and rack housings as spindle oil would run off and not be retained. The
+stereotype table dashpot oil has a separate specification (see table p. 82).
+Some bearings have oiling holes others not. Where there are no oiling holes the shaft should
+be oiled on both sides i.e. where it enters and leaves the framing piece.
+Dry lubricant in the form of graphite powder is used for the printer wheels, punch wheels,
+vertical and horizontal racks of the output apparatus. This is to avoid adhesion through surface
+tension and accumulation of dust and debris if liquid lubricants were used.
+
+81
+
+6 Maintenance and Repair
+
+Food-grade oil can be used to avoid the odour of conventional oils. If, for example the Engine
+is displayed in a domestic environment without a display case, oil odour might be a
+consideration.
+
+Oils
+
+Products
+
+Shafts, links, spindles,
+bearings
+
+Light spindle oil
+‘Hydroslide HG220’ by D. A Stuart Oils Ltd
+‘Foodlube Hi-Power 22’ by Rocol
+‘Varmulti 220’ by Varol Lubricants
+
+Slideways , rack-housings
+
+‘Crown Multilube 68’ by D.A. Stuart Oils Ltd
+‘Crown Multilube 150’ by D. A. Stuart Oils
+Ltd
+
+Grease
+
+‘Foodlube Universal Grease’ by Rocol
+Castrol LM
+
+Application
+Plastic pipettes are recommended for dispensing oil (Fig. 6.8). These
+offer more control than do oil cans especially when dispensing small
+quantities. Reaching parts that are partially obstructed is also easier
+with a long, slim, and flexible plastic spout.
+Graphite powder is applied using a ‘puffer’ and small paint brush. A
+feeler gauge, tapered in thickness towards the end, inserted between
+
+Fig. 6.8b
+
+adjacent abutting racks, print and punch wheels, helps to open gaps
+for better penetration of graphite powder.
+Grease is easily applied by hand from a tub rather than using a grease gun.
+Lubrication is messy and Latex or Nitrile gloves are recommended.
+A full lubrication schedule takes up to two hours.
+
+82
+
+6 Maintenance and Repair
+
+Lubrication Schedule
+The number of oiling and greasing points is large – well into the hundreds.
+The following lubrication schedule identifies most but not all lubrication and greasing points as
+not all parts requiring lubrication are easily accessible for illustration. Parts not specifically
+identified but similar in function to those illustrated should be lubricated as well.
+The illustrations have a long view to identify the location of the lubrication point where this is
+not obvious, a detailed close-up of the application point(s), and specific advisory comments
+where relevant.
+
+83
+
+6 Maintenance and Repair
+
+Lubrication Schedule
+Calculation
+
+Vertical Axes
+Oil from top of
+Engine.
+All vertical axes
+-
+
+Carry axes
+Warning axes
+Figure wheel
+axes
+Sector axes.
+
+Vertical Locks
+and Zero Stops
+Oil from top of
+Engine.
+Zero stops on
+all figure wheel
+axes.
+Vertical locks
+on all figure
+wheel axes.
+
+Oil liberally – oil
+drains down.
+Oil bottom of
+vertical axes at
+bearing plate
+entry.
+
+FigureWheel Zero
+Stops Slider
+Blocks
+8 slider
+bocks on
+lower
+bearing
+plates.
+
+Collapsing
+Link
+Mechanism
+
+Vertical Locks
+for Figure
+Wheel Axes
+
+(Located
+th
+under 7
+difference
+column).
+Oil slider and
+all link pivots.
+
+Oil where
+locks enter
+lower bearing
+plate.
+8 Oiling points.
+
+84
+
+6 Maintenance and Repair
+
+Carry Lever
+Warning
+Pawl Pivots
+
+Horizontal Spindle
+Rack Sliders
+Oil rack sliders.
+
+210 Pawls
+on 7 Axes.
+
+30 racks in all – 15
+accessible from rear,
+15 from front.
+
+Access from
+rear of
+Engine.
+
+Helps if racks are
+displaced to expose
+slides i.e. non-zeros
+on results column.
+
+Vertical-Lock Lever
+Pivots
+
+Oil spindles where
+they enter bearing
+blocks.
+
+Upper and Lower
+2 Oiling holes.
+
+30 Oiling points.
+
+Also oil bronze
+lever forks.
+3 lever fork pivots
+(2 on lower lever).
+6 Oiling points.
+
+Lower Pivot
+
+Scoop
+Clutch
+Lever
+Cable
+Pulleys
+
+Scoop Clutch
+Lever Bias
+Weight Pulley
+
+Oil.
+
+85
+
+6 Maintenance and Repair
+
+Output Apparatus
+Printing
+Spindle Bearings
+
+Inking
+Roller
+Drive Link
+Shaft
+
+Oil spindle bearings on
+the outside of bronze
+strips so that any oil
+spillage drops onto the
+framing pieces. The
+framing protects the
+print wheels below.
+These should not have
+any oil – they are
+lubricated with graphite
+power.
+
+Inking
+Roller Drive
+Shaft
+
+If unsure, cover the
+printwheels.
+Oil both sets of bearing
+strips i.e. front and rear:
+
+Oiling hole
+
+30 Spindle bearings
+60 Oiling points.
+
+Paper Roll Drum
+Shaft Bearing
+
+4 Oiling points –
+front and back at
+both ends of
+shaft.
+
+Inking
+Roller Link
+Pivot
+Inking
+Roller Cam
+Follower
+
+1 Oiling
+point.
+
+1 Oiling
+point.
+Oiling hole.
+
+86
+
+6 Maintenance and Repair
+
+Ink Rollers
+Oil the shaft bearings of 4
+rollers in the inking system:
+- inkpot roller
+- spreader roller
+- transfer roller
+- inking roller.
+Take care to avoid oil dripping
+onto the rubber rollers.
+
+Print Wheels
+Deposit graphite powder using a blower (‘Puffer’ bulb).
+Spread with fine brush.
+Light dusting on print heads (lower illustration).
+Heavier on lock teeth on upper side of print wheels (top
+illustration).
+Wheels do not need to rotate when applying. Can use
+tapered feeler gauge inserted between wheels to create
+gaps and aid penetration.
+Recommended to run a few cycles after application.
+Paper Roll Drum
+Drive Link Shaft
+1 Oiling point.
+Oiling hole
+Also oil all other
+link pivots in the
+drive train.
+
+Printing Wheel
+Lock Cam
+Follower Shaft
+Oil both ends
+where shaft
+enters the frame.
+
+87
+
+6 Maintenance and Repair
+
+Stereotyping
+
+Upper Pawl Shaft
+2 Oiling points –
+front and back .
+Repeat for column
+pawls over on left.
+
+Falling
+Weight
+Pulleys
+1 Oiling
+point.
+
+2 Oiling Points –
+front and back.
+
+Lower Pawl
+Shaft
+
+Vertical
+Rack Lock
+Pivots
+
+2 Oiling points
+- front and back.
+Repeat for
+column pawl
+over on left.
+
+Pattern Wheel Shafts
+2 Oiling points – front and
+back.
+Repeat on column pattern
+wheel shaft over on the left.
+2 Oiling points – front and
+back.
+
+Dovetail Slides for Stereotyping Wheel Punches
+4 Oiling points:
+Oil angles as shown as well as the straight run.
+2 slides (front and back) for large punch wheels.
+2 slides (front and back) for small wheel punches.
+(View shown is dovetail for small punch wheels)
+Also oil dovetail slides for punch wheel locks (crab
+locks) – 4 oiling points (not shown), and crab lock
+bearings – 8 oiling points.
+
+88
+
+Punch Wheel
+Dovetail Slider
+Cam Follower
+Shaft
+Oil both ends
+where it leaves
+and enters the
+frame.
+
+6 Maintenance and Repair
+
+Horizontal Racks for
+Punch Wheels
+
+Auxiliary
+Crank Handle
+Shaft
+
+Deposit graphite powder
+using a blower (‘puffer’
+bulb).
+
+Remove oil
+screw.
+
+Spread with fine brush.
+
+Oil – I oiling
+point.
+
+2 Application Areas:
+- Racks and teeth
+immediately under print
+wheels (start on top).
+- Narrow end of racks at
+opposite end.
+
+Replace oil
+screw.
+
+Stereotype Punch
+Wheels Large (top) and
+Small (inset)
+
+Sliding Clutch
+(Rewind)
+
+Use graphite powder.
+
+Push back the fork
+to slide back the
+bobbin.
+This exposes the
+shaft.
+
+Oil the shaft and
+fork.
+
+Can be powdered
+without removal but
+access difficult.
+Use tapered
+feeler gauge to
+prise gaps to aid
+penetration.
+
+Lubricate in situ and
+thoroughly when
+removed for cleaning.
+
+End-of-page
+Drop Weight
+Trip-Lever
+2 Oiling
+Points.
+Both ends of
+lever shaft
+where it
+enters frame
+on each side.
+
+Rewind Clutch
+Pawls
+Oil 2 pivots for
+each pawl.
+○
+
+Two pawls 180
+apart.
+
+Changeover
+shaft
+2 Oiling
+Points – front
+and back.
+
+89
+
+6 Maintenance and Repair
+
+Travelling Platform V-groove
+Slides – Column-Column.
+2 Sliders – front and rear of
+Engine.
+Oil both faces of V.
+Oil all exposed runs.
+Travelling Platform V-groove Slides
+– Line-Line
+2 Sliders – front and rear of Output
+Apparatus.
+Oil both faces of V.
+Column-Column Pinion Drive Shaft.
+Shaft runs full depth from front to back of
+Engine.
+Figure shows front rack and pinion.
+Identical arrangement at rear.
+Oil shaft wherever it enters or leaves
+frame.
+
+Travelling Platform
+V-groove Slides –
+Line-Line
+Oil through oiling
+holes around
+frame. 3 each side.
+6 total.
+Travelling Platform
+V-groove Slides –
+Column-Column
+
+Key way
+slide
+
+Oil through oiling
+holes around frame
+at front and rear of
+Engine.
+3 oiling points each
+side. 6 total.
+
+90
+
+6 Maintenance and Repair
+
+Cam
+Follower
+Bearing
+
+Large Drive
+Gear
+Bearings
+for Output
+Apparatus
+
+Trip Levers
+Oil each end of
+both trip lever
+shafts and the
+two trip lever
+clusters.
+
+Lower Oscillating
+Bar Drive Lever Cam
+Follower Shaft
+Oil both ends
+where it enters and
+leaves frame.
+4 Oiling points.
+
+Column-toColumn
+Bevel Gear
+Drive
+Oil bearings
+at each end
+of shaft.
+
+Rocker Lever Pivots
+Line rocker lever
+pivot (shown being
+oiled)
+Also oil column
+rocker lever pivot
+shown mirrored
+left.
+
+91
+
+6 Maintenance and Repair
+
+Auxiliary Crank
+Drive Gear and
+Pinion
+
+Column-column
+Travelling
+Platform Drive
+Pinion
+Grease:
+
+Grease both.
+
+2 Pinions.
+front and rear.
+
+Lower
+Oscillating Bar
+Drive Lever
+Cams
+
+Output
+Apparatus
+Cams
+
+Grease
+2 cams.
+
+Grease.
+Also camshaft drive
+gear on left of
+cams.
+
+ColumColumn
+Travelling
+Platform
+Bevel Drive
+Gear
+Grease.
+
+Grease Large
+and Small
+Output
+Apparatus
+Drive Wheels.
+Access from
+rear of Engine .
+
+Crab
+Lock
+Pivot
+Points
+
+Access from
+front of Engine.
+
+Travelling
+Platform Rack
+and Pinion
+Drive
+Grease.
+Viewed from
+underside.
+
+92
+
+4 Oiling
+Points.
+
+6 Maintenance and Repair
+
+Drive
+Horizontal Bar
+Slider
+Supports
+Oil 3 sets of
+sliders along
+length of bars.
+Grease sliders
+where they
+enter the
+
+frame.
+Cam Stack Bevel Gears and 4:1
+Crank Reduction Gear
+Top to bottom:
+- drive gear (4:1)
+- Fam Stack upper bevel gears
+- drive gear pinion (4:1)
+- Fam stack lower bevel gear.
+Grease.
+
+Circular Motion
+Rack Sliders
+Access from
+front.
+8 racks in 2 rows
+of 4.
+Odd axis shown.
+Evens above
+(obscured).
+Getting oil in
+can be difficult.
+
+93
+
+6 Maintenance and Repair
+
+Cams and Cam Followers
+Oil all roller followers.
+Do not grease cams with
+roller followers (circular
+motion cams – upper set).
+Grease all cams with slider
+followers (vertical motion
+cams – lower set).
+16 Vertical Motion Cams
+with slider followers. 28
+cams total.
+Be sure not to miss cam
+followers concealed under
+the overhang of the cam
+above.
+
+Drive Link
+Pivots
+
+Warning Axis Rack
+and Pinion
+
+Camfollower
+shaft
+bearings.
+
+Concealed in
+Illustration behind
+lower framing piece.
+
+Oil all
+linkages
+between
+followers
+and
+horizontal
+sliding bars.
+
+Oil 7 racks and
+pinions.
+Access from rear.
+
+Bell Crank
+Bearings
+Oil all oil holes
+in each boss.
+Also oil bell
+crank shafts
+where they
+enter and
+leave lower
+frame front
+and rear.
+
+94
+
+6 Maintenance and Repair
+
+Carry Mechanism
+Intermittent Circular
+Motion
+Grease:
+twin toothed drive (2
+teeth)
+phasing gear teeth.
+
+register wheel and
+detent
+register pinion
+single impact-tooth (at
+rear of pinion).
+Oil:
+sprung lever register roller
+bearing.
+
+Main Drive Bearings
+Oil (oiling holes):
+Main Crank Drive Shaft:
+Two bearings
+behind main drive gear
+behind chapter disc phasing
+gear.
+
+Output apparatus drive shaft (at
+base of cam stack).
+Oiling hole.
+
+95
+
+6 Maintenance and Repair
+
+Cam Shaft Thrust Bearing
+Remove oiling hole screw in upper bevel
+gear at top of cam stack.
+Oil liberally. Wait for oil to drain down
+hidden oil channel to annular cup bearing
+at lower bearing plate and add more oil.
+
+Bell Crank Drive
+Link Pivots
+Oil all link
+pivots on both
+horizontal bars.
+
+Carry Arm Circular Motion Drive
+Grease:
+7 sets of bevel gears.
+Access from rear of Engine.
+
+Carry Arm Circular Motion Drive Shaft Bearings
+Oiling holes
+Oil bearing blocks at both ends of shaft – cam stack end
+and output apparatus end.
+
+96
+
+6 Maintenance and Repair
+
+Control Levers
+Oil:
+lifting levers
+
+H
+
+Oil:
+bar slots
+release lever pivot
+
+Uncoupling Clutch Control
+Levers
+Oil:
+locking Lever (rear)
+clutch Lever (front)
+
+Results Drive Train Test and Lubrication (Graphite Test)
+Results are transferred from the results column to the printing and stereotyping apparatus via
+a transmission train consisting of sectors, racks, spindles, vertical racks, printing wheels,
+horizontal racks and punch wheels.
+Stiffness in any of the thirty separate digits produces a back-load on the last sector axis which
+can cause timing anomalies. The train cannot normally be broken to isolate sections for faultfinding.
+The following procedure allows each of the thirty digit trains to be exercised and investigated
+separately. The procedure will allow identification of stiff trains and indicate which parts of
+the train need specific lubrication.
+1.
+
+Follow the procedure for entering initial values (Section 4.3, p. 23) setting the results
+column to all ‘9’s and all the rest of the figure wheels on the remaining columns to zero.
+
+2.
+
+Advance to 26 units on the chapter disc by turning the main crank. This frees each of the
+wheels on the last sector column.
+
+3.
+
+Rotate each of the last sector wheels in turn and check for stiffness (See Note below).
+
+4.
+
+Apply additional graphite to the print wheels, vertical racks, stereotype horizontal racks
+and punch wheels in all the drive trains that are stiff.
+
+97
+
+6 Maintenance and Repair
+
+Note
+The sector wheel gear teeth might have sharp edges and gripping by hand can cause minor
+injury. If the sector wheels are turned by hand gloves or other finger protection should be
+used.
+An alternative to turning sector wheels by hand is to exercise each drive train by turning the
+horizontal spindles. There are several special tools available to do this. See 6.4, Special Tools,
+p. 101.
+
+98
+
+6 Maintenance and Repair
+
+6.3 Cleaning
+Intricate oiled parts are difficult to clean and routine stripping for cleaning purposes is not
+generally practical – this is a substantial task and runs the risk of altering fine settings. Intricate
+parts should be removed for cleaning as required.
+The accumulation of dust should be prevented as far as possible.
+The Engines should be covered and sealed when transported outside a building or in dusty
+environments where building or site work is being carried out.
+The London Engine has a lockable wheeled pull-apart glass display case that can be completely
+or partially removed in two halves.
+With the case open and the two halves wheeled away the Engine stands as an island exhibit
+with unobstructed access all round.
+With the case correctly closed the two halves butt together and create an effective seal against
+dust and debris.
+The London Engine is kept covered by default to prevent tampering and to protect against dust
+and debris, and opened out only for demonstration, maintenance and repair.
+The US Engine does not have a glass display case and is left open in normal circumstances but
+covered and sealed during periods of site work.
+Steel parts should be cleaned by wiping with a soft cloth and protected with a light film of
+lubricating oil being careful not to oil the moving parts intentionally run dry (see Section 6.2,
+Lubrication, p. 80).
+Greased parts (gears, racks and pinions, cams and cam followers) should have old,
+contaminated, caked, or accumulated grease cleaned off from time to time before regreasing.
+The V-slides on the travelling platforms of the output apparatus tends to accumulate wear
+products which reduce the ease of movement. When this becomes noticeable, remove the
+bronze trays and the sliding platforms and clean the slides before re-oiling.
+If bright bronze or steel parts discolour or corrode, clean with a soft cloth and a fine liquid metal
+polishing compound. Apply a light film of oil taking care not to oil moving parts that are
+intentionally run dry.
+
+99
+
+6 Maintenance and Repair
+
+The vertical axes (figure wheel, sector wheel, carry lever) are oiled from above and oil drains
+down into the drip tray below. Oil tends to spread onto the figure and sector wheels which
+should be run dry. Wipe with soft lint-free cloth from time to time.
+
+100
+
+6 Maintenance and Repair
+
+6.4 Special Tools
+Parallel face screwdrivers
+Extensive use is made of slotted machine
+screws. Conventional taper-blade drivers
+tend to damage the slots and are not easily
+obtainable with the large blade width
+required to span the full length of the slot.
+The set of drivers shown have parallel faced
+blades the largest of which fits the largest
+machine screw head.
+There is a hex section in the shaft
+immediately behind the blade to take a
+spanner for full tightening.
+
+Fig. 6.9: Screwdrivers.
+Hex section to take
+spanner
+
+Spring tensioning jig
+The spring tensioning jig is used to compress
+the counterbalancing springs at the top end of
+the vertical axes (see Fig. 6.2, p. 71). Each
+spring is sandwiched between a top collar on
+the shaft and a cup on the upper bearing
+plate. The force exerted by the spring is
+proportional to the amount of compression
+and therefore the position of the collar below
+the top of the shaft. Each spring needs to be
+set individually. The distance from the collar
+to the top of the shaft is set by adjusting the
+Fig. 6.10: Spring Tensioning Jig.
+threaded rod and locking it with the knurled
+nut. The jig is sleeved over the shaft and pressed down on the top collar until stopped by the threaded
+rod. While the collar is held down it is pinned or grub-screwed to fix it in position.
+
+101
+
+6 Maintenance and Repair
+Warning claw adjuster
+The warning claw adjuster is used to tweak
+the warning claw to ensure that the amount
+that the carry lever is nudged by one of the
+nibs on the barrel of the figure wheel is
+correct to ensure that the carry lever is
+advanced to the second indent i.e. from
+unwarned to warned (See Figs 6.5, p. 74 and
+Fig. 6.6, p. 75).
+
+Fig. 6.11: Warning claw adjuster.
+
+The claw can be tweaked to close or open the
+gap between it and the figure wheel. The tool
+is wrapped from behind the mechanism to
+reach the claw. See Section 7, Trouble
+Shooting, p. 119. The adjustment is carried
+out from behind the engine.
+Fig. 6.12 shows the position of the tool for an
+even carry lever axis. Alternate axes are
+handed so the tool position for an odd axis is
+a mirror image of the configuration in Fig.
+6.12.
+
+Fig. 6.12: Warning claw adjustment.
+
+Printer Roller-bar spanners
+Paper is pressed against the printer wheels to
+take an inked impression of the results. A stiff
+flat rubbery bearing strip secured in the paper
+roller-bar presses the paper against the type
+face (Fig. 6.13). The flat on this strip must be in
+the same plane as the plane of the type face
+for an even impression. The angle of the flat is
+adjusted by rotational adjustment of the roller
+bar in its mounting. The two flat spanners are
+used to adjust the angle of the roller bar.
+
+Fig 6.13: Paper roller bar.
+
+One spanner (lower spanner in Fig. 6.14) fits
+onto a flat on the roller bar and is used for fine
+adjustment of the angle. The other fits on onto
+the square nut securing the roller bar. This is
+used to ease off the securing nut during
+adjustment and to tighten the nut after the
+correct angle has been set.
+
+Fig. 6.14: Roller-bar adjusting spanners.
+
+102
+
+6 Maintenance and Repair
+
+Paper Roll Magazine
+The paper roll magazine can be used when
+restocking the paper supply on the feed barrel
+(Section 5, Replacing the Print Roll, p. 44).
+It is used to hold the paper roll while it is
+being wound onto the feed barrel. The
+magazine hooks over the roller-bar and the
+side cheeks fit into slots at each end of the
+roller-bar. It is used only when the paper
+stock is being replenished. It drops into
+locating slots and is removed by lifting off.
+There is no other fixing.
+Fig. 6.15: Removable paper roll magazine.
+
+Output Drive-train Tools
+The three tools shown (Figs. 6.17, 6.18, 6.19)
+are used to investigate and exercise the thirty
+drive trains connecting the figure wheels on
+the results column to the corresponding print
+and punch wheels in the output apparatus.
+The tools allow the individual transmission
+trains to be investigated one at a time to
+identify obstructions and to assess stiffness.
+The elements of the drive trains for each of
+the thirty digits include sectors, racks,
+spindles, vertical racks, printing wheels,
+horizontal racks and punch wheels. The trains
+can be exercised by turning the sector wheels
+by hand (Section 6.2, p. 97). The tools in Figs.
+6.17, 6.18, and 6.19 offer an alternative to
+hand-turning the final sectors.
+Each of the tools clamps onto a spindle (Fig.
+6.16). Rotating a spindle using one of the
+tools exercises all the elements in that train.
+
+Fig. 6.16: Output Spindles.
+
+103
+
+30 spindles in 2
+runs of 15
+
+6 Maintenance and Repair
+
+Brass Grip
+The manual spindle grip is shown in Fig. 6.17.
+The brass grip is opened out to be placed on
+the spindle and closed to clamp. It provides a
+fast and effective means of exercising the
+trains. It is easy reposition after each
+rotational movement and the brass jaws
+protect the steel spindles from getting
+scored.
+Fig. 6.17
+
+Split Boss
+The split boss (Fig. 6.18) clamps onto the spindle using Allen
+screws. It can be operated by hand using a handle that screws
+into the threaded hole shown at the top. It is fiddly to reposition
+and less convenient to use than the brass grip for hand turning.
+The spilt boss was used to drive stiff trains when ‘running in’
+after the original assembly: a drive gear, driven by an electric
+motor, meshed with the teeth on the boss and drove the train in
+a continuously reversing cycle. The stiffness in the trains was
+eventually alleviated by increasing the clearance between the
+printer vertical racks and reducing the bearing surface between
+adjacent racks. Its inclusion here is partly historical but also as a
+contingency against.
+
+Fig. 6.18
+
+Stiffness Gauge
+Like the split boss tool the split head of this
+tool (Fig. 6.19) clamps onto the spindle using
+Allen screws. It can be used to rotate the
+spindle by hand but that is not its main
+purpose and it is less convenient to use than
+the brass grip. The main purpose of this tool is
+Fig. 6.19
+to measure the stiffness in the train. Once
+clamped to the spindle a weight is hung from
+one or another of the grooves and increased until the spindle turns. Any measures taken to relieve
+stiffness can be registered by the by the same weight being able to turn the spindle when hung from
+a groove-position closer to the head. In addition to these comparative measurements, the gauge can
+be used for absolute measurements of torque by taking the product of the weight and the length of
+the lever arm .
+
+104
+
+6 Maintenance and Repair
+
+Gear-wheel Adjuster
+The wheel adjuster is used to pull a sector or figure wheel round and
+position it. It is used when the wheel should be free to turn but is stiff
+or subject to some resistance, but not jammed. Using the adjuster is
+preferable to using a screwdriver: it is less likely to damage the wheel
+and the delicacy of the hook prevents too much force being used. It
+also protects fingers from sharp edges on the gear teeth.
+Fig. 6.20
+
+105
+
+7 Trouble Shooting
+
+7.
+
+Trouble Shooting
+
+This section provides diagnostic tests to aid fault-finding, and provides solutions to the most
+common faults.
+7.1 Engine Jams, Damage and Parts Failure
+The single most disruptive feature operating the Engine is the Engine locking up and the crank
+seizing.
+Jamming can be an indication that the integrity of the calculation has been compromised and
+is most often not the catastrophe it first appears to be.
+Locking mechanisms are designed to jam the Engine in the event that a figure wheel, print
+wheel, or parts of the transmission train occupy an indeterminate position. Not all jams are
+caused by these security mechanisms.
+Jamming as a form of error detection is a distinctive feature of the design. While jams are
+rarely catastrophic all jams have the potential to damage mechanisms.
+Causes of jams should be sought, understood and remedied before returning the Engine to
+normal operation.
+The Engine is adjusted when first assembled. Adjusted parts are then pinned in their correct
+fixed positions. After this, parts failure in normal operation is rare, and most but not all jams
+do not cause damage.
+The parts most vulnerable to damage are the bronze carry levers at the rear of the Engine.
+These 210 levers are too delicate to jam: they distort, partially fracture or simply snap.
+Feedback to the operator through ‘feel’ is critical to halting the Engine in time to avoid damage
+or breakage. Insensitive or forceful cranking can easily strip an entire column of carry levers.
+It is a non-trivial task to replace broken carry levers (see Section 6, Maintenance and Repair)
+and such breakages should be avoided.
+Under no circumstances should the crank be driven against unusual or unexpected resistance,
+whether the Engine is jammed or not.
+
+106
+
+7 Trouble Shooting
+
+Breakages and damage most commonly result from operator error when setting up the initial
+values or from the Engine being tampered with while unattended.
+For security both the main
+
+Fixing
+screw
+
+crank handle and the
+
+Main crank
+
+auxiliary crank handle should
+be removed if the Engine is
+left unattended especially in
+a public space. The handles
+are easily dismounted by
+removing a single large fixing
+screw and pulling and/or
+twisting the handle off the
+boss. The two handles and
+their mountings are identical.
+The risk of unauthorised
+tampering while the Engine is
+left unattended should not be
+
+Stub with
+handle
+removed
+
+Auxiliary
+crank
+
+underestimated. The Engine
+Parallel blade
+screwdriver
+
+can be turned using the stub
+only (i.e. with the crank
+handle removed) though only
+with difficulty past unit 10
+
+Fig 7.1: Crank Handles.
+
+when the locks come in.
+There is also the risk of the carry levers being tampered with and moved from the unwarned
+(first detent) to warned or carried position while the Engine is parked at 0.
+It is recommended that before operating the Engine after it has been left unattended at 0
+(FULL CYCLE) that all even carry levers are checked visually to ensure that they are all in the
+unwarned position (first detent). The even carry levers are those associated with the 2nd, 4th,
+6th difference axes and the results axis (see Fig. 2.3, p. 8, for axis identification).
+Operator error can result from carelessness, inadvertent or deliberate deviation from the
+specified procedure for setting initial values (not withdrawing or not securing manual locks for
+example).
+
+107
+
+7 Trouble Shooting
+
+The setting up procedures have been carefully tested over many hundreds of calculating
+sessions. No attempt should be made to ‘improve’ on them by omitting any of the steps even if
+they appear at face value to be ‘unnecessary’.
+A thumbnail checklist is provided in Appendix 10.2, p. 141 as a setting-up aid so that each step
+can be checked off as it is performed and no steps omitted.
+Damage from a jam may not be immediately evident. Overstressed parts may be weakened by
+overextension or partial fracture, and fail later. Distorted parts may still operate but later their
+action can become marginal leading to intermittent faults or final failure.
+Once a jam is cleared neighbouring parts should be examined for damage.
+
+7.2 Clearing Jams
+The most common cause of a jam is cranking too fast or cranking too slowly. Jams typically
+caused by over-cranking are different from those caused by under-cranking.
+The commonest jams are phasing gear jams (cranking too fast), lock jams (too slowly) and
+sector wheel jams (too slow).
+Cranking unevenly – going fast during part of the cycle when the load is light, and slowly when
+there is resistance – can produce jams of either kind.
+The correct speed at which to operate the Engine is at an even rate of 8 seconds per result.
+This corresponds to one turn of the crank in 2 seconds (with the 4:1 reduction gear fitted)
+given there are four turns of the crank for one calculating cycle (see Fig. 3.1, p. 15 for location
+of 4:1 reduction gear).
+The following are the commonest kinds of jam.
+
+Phasing Gear Jams (Cranking Too Fast)
+A jam at 10 or 35 units is an indication that the jam may be a phasing gear jam with a jam at 35
+units more common.
+
+108
+
+7 Trouble Shooting
+
+This jam is caused by fouling of
+
+Fig. 7.2: Phasing.
+
+the mechanism that controls the
+intermittent circular motions of
+
+Chapter disc
+
+the carry arms.
+Phasing gear
+
+This is the commonest jam in
+normal operation and is the first
+
+Roller indent
+
+source of a jam to check for.
+
+Register pinion
+Impact tooth
+
+If the Engine is driven too fast the
+register pinion driving the
+intermittent circular motion tends
+to overrun. At the start of the
+next intermittent motion cycle
+the phasing gear does not mesh
+
+Roller
+
+with the pinion and the impact
+teeth jam.
+
+The overruns occur when passing through 0 or 25 though the jams occur ten units later at 10
+and 35 units respectively.
+Phasing gear jams are easily cleared but checks should be made for damage (Step 5, below).
+The phasing gear is the large gear to which the chapter disc is fixed. The register pinion is at 4o’clock to the phasing gear as seen facing the chapter disc (Fig. 7.2).
+
+To Clear a Phasing Gear Jam
+
+Fig. 7.3: Unjamming the Phasing Gear.
+
+109
+
+7 Trouble Shooting
+
+1. Insert a large screwdriver at a downward angle into the register pinion teeth (Fig. 7.3).
+2. Place the shaft of the screwdriver against the cam stack frame, press gently downwards to
+lever the pinion in an anticlockwise direction as seen from an operator facing the chapter
+disc. There is little load on the pinion and gentle pressure is all that is needed. Usually no
+more than one downward movement is necessary. Remove the screwdriver.
+3. Gently test the crank handle for movement using the technique for incremental motion
+described on page (See Section 3.2, p. 17). Under no circumstances crank the Engine if
+there is resistance.
+4. If the jam is cleared the Engine will cycle, the phasing gear will automatically remesh at the
+start of the next intermittent motion cycle without loss of information or disruption to the
+calculation.
+5. Stop the Engine at the next zero (FULL CYCLE) and check that the roller on the sprung roller
+arm is properly seated in the indent in the register pinion disc (Fig. 7.2). If it is not properly
+seated then advance the pinion using the screwdriver until the roller is correctly seated.
+6. Check for bent or damaged carry levers on all carry arm axes (Figs 7.4, 7.5) especially the
+first (lowest) lever and lever 16 half way up the axis. It is the long limb with the lozenge on
+the end that is the likeliest victim of breakage.
+
+Fig. 7.4: Carry Lever.
+
+Fig. 7.5: Carry Mechanism.
+
+7. If the jam is not cleared, proceed to the next most likely cause.
+
+Note
+When the register pinion is correctly phased the sprung roller that presses against the register
+pinion seats neatly in the indent when the Engine is at zero (FULL CYCLE) (Fig. 7.2, inset). If it
+does not, there is a phasing issue that should be investigated.
+
+110
+
+7 Trouble Shooting
+
+Throwing the register pinion out of sync is the limiting factor determining the maximum speed
+with which the Engine can safely be run.
+The ease with which the register pinion gets out of mesh partly depends on the strength of the
+spring biasing the roller arm. The weaker the spring the lower the speed at which the pinion
+will be thrown out of sync. Renewing the spring with a full strength replacement will reduce
+the frequency of phasing gear jams.
+If the spring biasing the roller arm is replaced or strengthened the Engine should not be run
+any faster than the recommended 2 seconds for each turn of the crank (with the standard 4:1
+reduction gear fitted).
+
+Lock Jams (Cranking Too Slowly)
+A jam at 35 units is an indication that the jam may be a jammed figure wheel lock.
+Lock jams are most commonly caused by cranking too slowly or cranking erratically or
+hesitantly through the points in the cycle at which the locks are inserted.
+The action of the locks produce a short shock load on the crank handle and without experience
+the tendency is for the operator to slow down or check the cranking movement. This reduces
+the momentum of the figure wheel rotation and they may not rotate fully to receive the locks.
+Lock jams are caused by obstructions to the locks entering between the figure wheel teeth.
+Each column of figure wheels has a vertical lock that runs the full length of the axis (Fig. 6.6, p.
+75). The lock has a wedge-shaped edge that is inserted between the teeth of the figure wheels
+four times each cycle (at 0, 10, 25, 35 timing units). It is the action of the locks that creates the
+characteristic rhythmic slapping sound of the Engine in operation.
+In normal use the locks enter freely between the figure wheel teeth. The wedge-shaped
+leading edge of the lock corrects small derangements and realigns the wheels (self-correction)
+as it enters.
+If a figure wheel is deranged by more than 2.25⁰ its value is indeterminate between two digits.
+The lock will be obstructed by the edge of the gear tooth, fail to insert between the teeth, and
+the Engine will jam.
+
+111
+
+7 Trouble Shooting
+
+Shoulder screw
+
+Fig. 7.6: Lock Drive Links
+
+To Clear a Lock Jam
+1.
+
+Identify which lock is jammed: hold one of the drive links at the bottom of the lock and
+jiggle it upwards and downwards to test for vertical play. If the lock is free then there
+should be some small movement. If the lock is jammed it will feel solidly immobile (Fig.
+7.6).
+
+2.
+
+Repeat this test for each of the eight locks.
+
+3.
+
+If all are free, proceed to the next most likely cause.
+
+4.
+
+If a lock is found to be jammed, back off the cam stack by gripping the cams and tugging
+the stack clockwise as seen looking down on the stack. The stack can only be moved a
+very small amount and moving it even slightly requires some effort. Sometimes this is all
+that is necessary to free the lock. This is dirty work. Gloves and protective clothing are
+recommended.
+
+5.
+
+Check the lock for vertical play as in Step 1.
+
+6.
+
+If the lock is free check that each of the thirty-one figure wheels in that column are
+correctly aligned under the cursor that marks the readout point immediately above each
+wheel (Fig. 2.6, p. 10). Align any deranged wheel by manually turning in the direction that
+increases its digit value. Do not over rotate but only advance the wheel incrementally to
+the next digit in the direction of increasing value.
+
+7.
+
+Repeat Step 6 for any other jammed locks identified in Step 2.
+
+8.
+
+If a lock remains jammed it can be freed by uncoupling it from its drive link. Free the lock
+by removing the shoulder screw and washer that couple the lock to the drive link at the
+bottom of the lock blade (Fig. 7.6, inset).
+
+9.
+
+Repeat Step 6.
+
+10. Lower the lock by hand and check that it now engages by entering between the figure
+wheel teeth.
+112
+
+7 Trouble Shooting
+
+11. Push the lock upwards by hand and let it drop under its own weight. This helps realign any
+deranged figure wheels.
+12. Re-fix the shoulder screw and washer.
+13. Repeat Steps 8 through 11 to free any remaining jammed locks.
+14. When all locks are free, gently test the crank using the recommended action for
+incremental advance (see Section 3.2, p. 17).
+
+Sector Wheel Jams (Too Slow)
+A jam at 0 or 25 units is an indication of a possible sector wheel jam.
+Caused by the sector wheel teeth fouling the figure wheel teeth when the sectors lower to
+engage the figure wheels at the start of an addition cycle.
+This jam occurs if either the sector or figure wheels are under rotated when the sectors lower.
+The descending sector wheel will rest on top of the figure wheel out of engagement and the
+Engine will jam.
+To Clear a Sector Wheel Jam
+1. Locate which sector column is jammed: pull down by hand on each sector column from the
+top and feel for some give. If free there will be some small movement. If jammed it will be
+immovably solid (Fig. 6.6, p. 75 to identify axes).
+2. Locate the jammed sector wheel(s) in the jammed column: rotate by hand each sector
+wheel in the column. The unjammed sectors have a small amount of rotational play. The
+jammed sector, resting on the figure wheel below, will be immovably solid.
+3. From below gently ease the
+sector column upwards
+using a lever bar to relieve
+the load on the two jammed
+parts and free the jammed
+sector by rotating it while
+levering gently (Fig. 7.7).
+4. Release the sector column
+by lowering using the lever
+bar and pull down on the
+column to check for some
+
+Fig. 7.7: Testing a Sector Axis for Jam.
+
+give.
+
+113
+
+7 Trouble Shooting
+
+5. If still jammed, locate another jammed sector wheel in the same column and repeat Steps 2
+through 4.
+6. If free, repeat Steps 1 through 4 for the remaining seven columns.
+
+Sector Zero Stop Jam
+A jam at 0 or 25 units is an indicator of a zero stop jam.
+Caused by a sector wheel or wheels under rotating and fouling the zero stop when the sector
+wheels are being lifted to their fully raised position.
+Once the Engine is run in and initial adjustments made, this fault is relatively rare.
+To Clear a Sector Zero Stop Jam
+1. Locate the jammed sector wheel: try to
+rotate by hand each sector wheel in turn on
+each of the columns. Unjammed sector
+wheels have a small amount of rotational
+play. Jammed sectors are immovably solid.
+2. If a jammed sector wheel is located, pull
+down on the sector column and at the same
+time try to rotate the sector wheel clear of
+the fouling zero stop.
+3. Repeat Step 2 for any other jammed sector
+wheel on the same column.
+4. Repeat Step 2 and 3 for the remaining
+columns.
+5. If the jam cannot be cleared in this way,
+remove the zero stop for the jammed
+column. The zero stops are in the form of a
+comb-pillar (Fig. 7.8). Exactly mark the
+footprint of the zero stop pillar on the top
+and bottom bearing plates before loosening
+
+Fig. 7.8
+Figure
+wheels
+
+Sector wheel
+zero stop
+
+the fixing screws. Unscrew and remove the
+two fixing screws in each of the top and bottom bearing plates.
+
+114
+
+Sector
+wheels
+
+7 Trouble Shooting
+
+Warning: the position of the zero stop pillar is critical. It must be exactly returned to its original
+position. The fixing screws are in clearance holes so cannot be relied on to register the pillar
+exactly.
+6. Rotate the jammed sector wheel(s) so that when the pillar is refixed in its original position
+the sector wheel and zero stop do not foul.
+
+Inking Roller-bar Jam
+Caused by the inking roller failing to retract in time to clear the paper roller-bar travelling in
+the opposite direction towards the printer type-face to take an inked impression (Fig. 5.2, p.
+38).
+The timing clearances are tight and the inking roller can get trapped.
+Occurrences are rare in normal operation but have been known to occur if the shafts and drive
+linkages for the paper feed barrel and inking roller are not well lubricated. The small drag from
+insufficient lubrication is sometimes sufficient to create at a lag in the timing in the retraction
+of the inking roller.
+
+To Clear an Inking Roller-bar Jam
+1. The visible indicator of this jam is the paper feed barrel stuck in the raised position with the
+chapter disc at just past 35 units.
+2. Confirm this jam by peering from below at the printing wheels. It is dark in there so a torch
+will help. If the inking roller is behind (on the printer wheel side) the roller-bar then this jam
+needs to be cleared.
+3. To free the roller-bar remove the link the pivot in the link in the drive train for the printing
+
+Remove this pivot
+Fig. 7.9: Printing Stroke Drive Link.
+
+115
+
+7 Trouble Shooting
+
+stroke: remove the retaining pin on the Engine side and slide out the pivot (Fig. 7.9). This
+frees the paper feed drum and roller-bar to drop back out of the path of the inking roller.
+4. Advance the main crank a few degrees to return the inking roller to the inking bath
+assembly.
+5. Reconnect the drive link by replacing the pivot and pin.
+6. Lubricate the drive link assembly especially the bearings on the shaft that swings the inking
+roller on its downward and upwards sweep, and the shaft for the paper feed barrel.
+
+Stereotyping Punch-wheel Jam
+A jam at 35 units is an indicator of a stereotype punch-wheel jam.
+Caused by under- or over-rotation of one or more punch wheels.
+The crab lock is prevented from engaging fully and jams the punch wheel(s) in the displaced
+position. In normal operation the punch wheels come out of mesh with the horizontal racks
+during the downward stroke and remesh on the return stroke. A jammed crab lock prevents
+remeshing on return.
+This jam is more common with, but not limited to, the small punch wheels and occurs typically
+when the crab lock tries to engage before the punch wheel has fully rotated.
+
+To Clear a Punch-wheel Jam
+Remove the jammed punch wheel set and investigate the timing delay paying particular
+attention to poor lubrication and friction drag.
+
+116
+
+7 Trouble Shooting
+
+7.3 Diagnostic Tests
+There are a number of diagnostic checks that can be carried out to verify correct operation of
+the addition and carriage mechanisms.
+The checks separately test:
+1. Carry warning.
+2. Carry lever locking.
+3. Carry lever reset.
+4. Carriage of tens.
+Checking Warning Action
+If any carry levers are removed from the axis or new ones installed, or the axis removed from
+the Engine the warning action of each of the carry levers on that axis should be checked.
+The test also serves to check a suspect warning action when the machine has been in service.
+Two people are required to perform this check.
+
+Preliminary Procedure
+To check carry warning operation the figure wheels must be able to be turned without
+restriction. To allow unrestricted rotation the odd and even sectors wheels need to be fully
+disengaged (raised) and the figure wheel locks withdrawn.
+The preliminary procedure (below) unlocks the figure wheels and raises the odd and even
+sector wheels out of engagement. For illustrated version of Steps 1 through 5 below see the
+Section 4.3, Entering Initial Values, p. 23).
+1.
+
+Cycle the engine to the zero point (FULL CYCLE) on the chapter disc.
+
+2.
+
+Locate the release lever. Lift the release lever till the spring catch enters the second
+detent. The arm of the cam-follower lifts clear of the drive slot in the sector bar. The
+movement to raise the lever is small – only a few degrees. If there is resistance, grip and
+jiggle first one, then the other of the two lifting levers to free the follower arms from the
+sector bar slots.
+
+3.
+
+Lift one of the two lifting levers (it doesn’t matter which). The rotation in both cases is
+clockwise as seen facing the Engine. The movement is small – only a few degrees.
+
+117
+
+7 Trouble Shooting
+
+4.
+
+Lock the handle in the raised position by pulling the locking plunger fully out and securing
+the bayonet lock. The locking plungers must be slid fully home i.e. towards the operator.
+Lifting the levers to the end of their travel can be a struggle. It is important that they are
+fully lifted and locked. It sometimes helps to push down on the lever first before lifting.
+
+5.
+
+Repeat steps 3 and 4 for the remaining lifting lever. Odd and even sectors are now
+disengaged.
+
+6.
+
+Advance the Engine to a 2-unit point if the column being checked is even, or to the
+27-unit point if the column is odd. In this position the figure wheel locks are
+disengaged and the warning axis is in the correct position to warn.
+
+To Check Warning Action
+7.
+
+Set the carry lever of the digit position being checked
+to the Unwarned position i.e. to the first detent (Fig.
+7.10).
+
+8.
+
+The operator at the front of the Engine rotates one
+figure wheel in the positive direction i.e. in the
+direction to increase the digit value. Each time the
+
+Odd
+
+wheel passes ‘9’ through to ‘0’ the operator at the
+rear confirms that the carry lever advances to the
+next (second) detent i.e. from the Unwarned to
+Warned position. (The ‘positive direction’ is one way
+in the case of even columns and the opposite in the
+case of odd).
+9.
+
+Rotate each figure wheel through four decades i.e.
+through four transitions from ‘9’ to ‘0’ to check that
+each of four outer nibs on the figure wheel warns
+
+Even
+Fig. 7.10: Carry levers
+Unwarned.
+
+correctly. Each time the mechanism is warned, the operator at the rear restores the
+carry lever to the unwarned position (first detent) before the next transition from ‘9’
+to ‘0’.
+10. Check each time there is a warning that the sprung pawl is correctly seated in the
+second detent.
+11. If the pawl ends up on the shoulder of the detent limb either after or before the
+second detent then the warning claw needs to be adjusted for over- or under-shoot.
+This adjustment is done at zero (FULL CYCLE) so for the meantime note which figure
+wheels do not warn correctly.
+12. Repeat Steps 8 through 12 for each of the figure wheels on the column noting each
+position that does not warn correctly.
+13. Restore all carry levers to the Unwarned position (first detent).
+
+118
+
+7 Trouble Shooting
+
+14. Check any other digit positions on any other columns following Steps 7 through 13
+noting any position that does not warn correctly.
+15. Advance the Engine to zero (FULL CYCLE).
+16. Lower the release lever. If the follower arms do not drop into the sector bar slots, jiggle
+the lifting levers and lower the release lever at the same time (See Section 4.3, Entering
+Initial Values).
+17. Retract the locking plungers to release the two lifting levers. Lower the two levers in any
+order to re-engage the sectors. Ensure that the locking plungers are fully retracted and
+held in this position by the bayonet fixing (Fig. 4.7, p. 27).
+18. With the Engine at zero the warning
+claws can be adjusted using the
+special adjusting tool (See Section
+6.4, Special Tools, Figs 6.11, 6.12, p.
+102). The tool is wrapped behind
+the mechanism to reach the claw
+(Fig. 7.11). Position the adjusting
+tool so that the end of the claw fits
+in the slot at the end of the tool
+(Fig. 6.12). Hold the long limb of the
+carry lever in one hand to counter
+the bending force (left hand in Fig.
+
+Fig. 7.11: Warning Claw Adjustment.
+
+7.11) and using the adjusting tool
+bend the claw away from the figure wheel barrel in the event of overshoot, and closer to
+the barrel in the event of undershoot. The claw is brittle and the adjustments are very
+small. (The tool faces one way for Odd levers and the opposite way for Even levers). It
+does not matter whether or not the steel pawl is in any of the indents (Warned,
+Unwarned, or Carried). Use any position that is convenient.
+19. Retest each adjusted position to confirm correct carry action following the procedure
+described above. Re-adjust if necessary. The final adjustment is found by trial and error.
+
+To Check Carry Lever Locking Action
+This procedure checks the action of the horns on the carry lever to lock the figure wheels when
+the warning axis is lowered during the calculation cycle.
+The procedure requires two people.
+
+119
+
+7 Trouble Shooting
+
+Procedure
+1. Check that all carry levers are in the
+Unwarned position (first detent).
+2. Cycle the Engine as slowly as possible
+without jamming while the second
+operator positioned at the rear of the
+Engine examines the locking horns on
+the carry lever as it lowers onto a
+figure wheel tooth to immobilise it.
+The lowering action occurs at 11 units
+if the column is even and 36 units if
+
+Fig: 7.12 Odd and Even
+Carry Levers.
+
+odd (Fig. 7.12).
+
+Locking horns
+
+3. While the axis lowers check that the
+locking horns on the carry lever mesh smoothly and do not derange the figure wheels.
+If any figure wheel motion is detected check the warning action described in the
+previous section.
+4. Recycle the Engine as many times as necessary to check all digit positions.
+
+To Check Carry Lever Reset
+Each cycle the carry levers are returned to the unwarned position. The carry mechanism
+rotates and the carry levers bear against a set of reset stops that restore the carry lever
+to the first detent i.e. the unwarned position. The action to restore carry levers to the
+unwarned position finishes at 20 units for odd differences and 45 units for even
+differences (Fig. 6.6, p. 75 for layout).
+This check can be carried out whatever numbers there are on the figure wheels at the
+start i.e. the Engine does not need to be first zeroised.
+
+Procedure
+1.
+
+For even columns crank to slightly past 25 units (HALF CYCLE)
+
+2.
+
+By hand set all the carry levers on the even column being checked to the ‘carried’
+position i.e. the third detent.
+
+3.
+
+Check each digit position to confirm that carry levers do not foul the stops and that
+there is a small clearance between the lever and the stop.
+
+4.
+
+Crank the Engine to zero (FULL CYCLE).
+
+120
+
+7 Trouble Shooting
+
+5.
+
+Check that all the carry levers are in the unwarned position i.e. first detent.
+
+6.
+
+If a run of levers not returned fully to the first detent then the reset stops may need
+to be adjusted. If all levers are not reset then the whole reset rack needs adjusting
+with the direction of adjustment depending on whether the lever over- or underruns the first detent. There is very little adjustment using clearance margins for the
+fixing screws of the stop rack support pillar but this should be tried in the first
+instance. Undershooting the detents can often be corrected by packing out the reset
+rack with shims mounted between the rack and the support pillar. There are three
+fixing screws (Fig. 4.11, p. 32) that secure the rack to the support pillar. If these are
+slackened off shims can be inserted to stand the reset rack off from the pillar.
+Depending on where in the column the levers are not resetting the top or bottom of
+the reset rack can be shimmed to stand off more or less.
+
+7.
+
+Repeat Steps 1 through 6 for each of the even difference columns and the results
+column. (All evens columns can be checked in one operation by setting all carry
+levers on the four evens columns to the ‘carried’ position (third detent)’ in Step 2).
+
+8.
+
+For odd difference columns start with the Engine slightly past zero (FULL CYCLE).
+
+9.
+
+Repeat Steps 2 and 3 for the column being checked.
+
+10. Crank the Engine to 25 units (HALF CYCLE).
+11. Repeat Steps 5 and 6 the column being checked.
+12. Repeat Steps 8 through 11 for each of the odd difference columns. (All odd
+columns can be checked in one operation by setting all carry levers on the four odd
+columns to the ‘carried’ position (third detent)’ in Step 2).
+13. Return the Engine to zero (FULL CYCLE).
+
+To Check Carry Action
+1.
+
+Zeroise the Engine using the Setting Initial Values procedure (Section 4.3, Entering
+Setting Initial Values, p. 23) by setting all initial values to zero i.e. set all figure
+wheels (odd and even axes) to ‘0’.
+
+2.
+
+Cycle the Engine to just past zero (FULL CYCLE).
+
+3.
+
+By hand set all the carry levers on even columns to the warned position (second
+detent) i.e. the three even difference columns and results column.
+
+4.
+
+Run one cycle and return to Zero (FULL CYCLE).
+
+5.
+
+Check that the top 30 even column figure wheels have value ‘1’ and the bottom
+wheel has ‘0’.
+
+6.
+
+Check that all even carry levers are reset to the unwarned position i.e. first detent.
+
+7.
+
+If any of the figure wheels has not carried correctly, use the diagnostic checks given
+above.
+
+8.
+
+Cycle the Engine to just past 25 units.
+
+121
+
+7 Trouble Shooting
+
+9.
+
+By hand set all the carry levers on the four odd difference columns to the warned
+position (second detent).
+
+10. Cycle the Engine to 25 units (HALF CYCLE).
+11. Check that the top 30 odd figure wheels are at ‘1’ and the lowermost figure is ‘0’.
+12. Check that all odd carry levers are reset to the unwarned position i.e. first detent.
+13. If any of the figure wheels has not carried correctly, use the diagnostic checks given
+above.
+14. Return the Engine to Zero (FULL CYCLE).
+
+System Checks
+The combined operations of warning, locking, carriage, and reset can be exercised and
+checked using the following two system checks.
+The first test exercises addition and the carriage of tens, the second check tests the handling
+of secondary carries i.e. carries that result from carries during addition (also known as ‘ripple’
+carry or ‘domino’ carry).
+Columns are checked one at a time and the procedure needs to be repeated for each of seven
+columns.
+
+Addition and Carry System Check
+The following procedure tests the carriage of tens in a single full column. The test adds
+all 9’s on one axis to 111. . . . . .19 on the next lower difference axis immediately
+alongside. This generates a tens carry in each digit position.
+The procedure described tests an even difference column, in this case, the 6th difference
+column.
+To test the whole machine the test will need to be performed seven times, once for each
+of the active columns. The test takes the figure wheels a full rotation i.e. all four warning
+nibs are exercised in each digit position.
+
+122
+
+7 Trouble Shooting
+
+Procedure
+1.
+
+Follow the procedure for setting initial values (Section 4.3, p. 23) but at Step 11 (SET
+ODD) enter all 9’s in the 7th difference column, and set the 5th, 3rd, and 1st difference
+columns to all zeroes.
+
+2.
+
+At Step 22 (SET EVEN) set the units digit (lowermost wheel) of the 6th difference
+column to ‘9’ and the remaining thirty wheels to ‘1’.
+
+3.
+
+Complete all thirty five steps of the Entering Initial Values procedure. The Engine is
+now at zero (FULL CYCLE).
+
+4.
+
+Cycle the Engine through four complete cycles.
+
+5.
+
+Check that the 6th difference column has a ‘5’ in the units position (lowermost figure
+wheel) and ‘1’s in all remaining thirty positions.
+
+6.
+
+If there is any deviation from this result repeat Steps 1, 2, and 3 above but at Step 4,
+take the Engine through only one cycle.
+
+7.
+
+Check that the units digit of the 6th difference column is ‘8’ and all other wheels
+register ‘1’s.
+
+8.
+
+If the results are correct complete one more cycle.
+
+9.
+
+Check that the units value of the 6th difference column is ‘7’ and that there are ‘1’s in
+all other positions.
+
+10. If the result is as required complete one more cycle.
+11. Check that the units value of the 6th difference column is ‘6’ and that there are ‘1’s in
+all other positions.
+12. If the results are correct complete one more cycle.
+13. Check that the units value of the 6th difference column ‘5’ and that there are ‘1’s in
+all other positions.
+14. If the results are correct then the test is successful.
+15. If there is any deviation from this result then the four separate diagnostic checks
+checks (Section 7.3, Diagnostic Tests, p. 117) should be carried out on the 6th
+difference column.
+The procedure described tests an even difference column, the 6th difference column. To
+test the remaining odd or even columns repeat the test setting the column being tested
+to all ‘1’s with a ‘9’ in the units place, and the previous (higher value difference column)
+to all ‘9’s.
+
+123
+
+7 Trouble Shooting
+
+Secondary-Carry Propagation Test
+The following test checks the propagation of carries that result from carries. The test adds
+999. . . . . .99 to 000. . . . .09 on the next lower difference axis immediately alongside.
+The test takes the figure wheels a full rotation i.e. all four warning nibs are exercised in
+each digit position.
+The procedure described tests an even difference column, in this case the 6th difference
+column. To test the whole machine the test will need to be performed seven times, once
+for each of the active columns.
+1.
+
+Follow the procedure for setting initial values (Section 4.3, p. 23) but at Step 11 (SET
+ODD) enter all 9’s in the 7th difference column, and set the 5th, 3rd, and 1st difference
+columns to all zeroes.
+
+2.
+
+At Step 22 (SET EVEN) set the units digit (lowermost wheel) of the 6th difference
+column to ‘9’ and the remaining thirty wheels to ‘0’.
+
+3.
+
+Complete all thirty five steps of the setting initial value procedure. The Engine is now
+at zero (FULL CYCLE).
+
+4.
+
+Take the Engine through one complete cycle.
+
+5.
+
+Check that the 6th difference column has an ‘8’ in the units position (lowermost
+figure wheel) and ‘0’s in all remaining thirty positions.
+
+6.
+
+If the result is correct complete one more full cycle.
+
+7.
+
+Check that the units value of the 6th difference column is ‘7’ and that there are ‘0’s in
+all other positions.
+
+8.
+
+If the result is as required complete one more full cycle.
+
+9.
+
+Check that the units value of the 6th difference column is ‘6’ and that there are ‘0’s in
+all other positions.
+
+10. If the result is correct complete one more full cycle.
+11. Check that the units value of the 6th difference column is ‘5’ and that there are ‘0’s in
+all other positions.
+12. If the result is correct then the test is successful.
+13. If there is any deviation from this result then carry out the four separate checks
+(Section 7.3, Diagnostic Tests, p. 117) to check the 6th difference column.
+
+The procedure described tests an even difference column. To test the remaining odd or
+even columns repeat the test setting the column being tested to all ‘0’s with a ‘9’ in the
+units digit, and the previous (higher value difference column) to all ‘9’s.
+
+124
+
+7 Trouble Shooting
+
+Use of State Table
+When diagnosing calculation errors it is useful to record the internal state of the Engine
+at a particular point in the investigation.
+A blank ‘State Table’ is provided in Appendix 10.3, p. 143 to record the position, settings
+or values of the figure wheels, sector wheels, result column, carry axis, manual and
+automatic locks for all columns and all digit positions.
+
+Replacing Parts
+Badly damaged or fractured parts will need to be replaced. The procedures for replacing
+parts on an axis are described in Section 6 (Maintenance and Repair, p. 70).
+
+Trouble Shooting the Output Apparatus
+The drive to the output apparatus can be uncoupled so that the printer and stereotyping
+apparatus and the calculating section can be run separately and independently.
+With the output apparatus uncoupled from the main drive the apparatus can be run using
+the auxiliary crank which provides a local drive close to the output apparatus. This makes
+fault-finding, adjustment and repair easier.
+The uncoupling clutch is in the main drive shaft that runs the length of the underside of
+the Engine (Fig. 5.6, p. 41). It is operated using two lever handles, the clutch lever (at the
+front of the Engine) and the locking lever (at the rear of the Engine) (Figs 5.38, 5.39, 5.40,
+pp. 64, 65).
+There is an interlock arrangement that locks the Engine if the output apparatus is being
+run and locks the output apparatus if the Engine is being run. The drive can be uncoupled
+and recoupled only at specific points in the timing cycle and the interlock mechanism
+ensures that the drive can only be recoupled when the Engine and the output apparatus
+are correctly phased.
+
+125
+
+7 Trouble Shooting
+
+Because the clutch can only be disengaged and re-engaged at two specific points in the
+timing cycle it cannot be used as a general debugging aid in the event of a jam unless the
+jam happens to occur at the two specific points in the cycle.
+The detailed procedures for uncoupling and coupling the drives is described in Section
+5.4, Uncoupling the Drive, p. 64.
+
+Results Transmission-Train Test
+Results are transferred from the results column to the printing and stereotyping
+apparatus via a train consisting of sectors, racks, spindles, vertical racks, printing wheels,
+horizontal racks and punch wheels. The train cannot normally be broken for fault finding.
+However, there is a test that allows each digit transmission path to be tested. For
+procedure, see Section 6.2, Maintenance and Repair, p. 97, also Section 6.4, Special Tools,
+p. 104.
+.
+
+126
+
+8 Moving the Engine
+
+8.
+
+Moving the Engine
+
+8.1 Overview
+There are two main scenarios in which the Engine might be moved:
+1.
+
+Moving to a new location in the same building
+
+2.
+
+Freighting by rail, road or air.
+
+The Engine weighs some 5 tonnes and the mechanisms are precisely adjusted.
+The procedures described are designed to protect the Engine during transit against
+derangement, distortion, or damage to ordinarily unsecured parts.
+The Engine is cross-braced against strain using tie rods and ordinarily unsecured parts,
+including hanging weights, are wrapped, boxed and strapped to the frame.
+Road, rail and air transport invariably involve sustained vibration and can involve temperature
+variations especially if air freighted.
+Freighting by road, rail or air requires measures in addition to those described for moving to a
+new location in the same building.
+These include measures to prevent loosening of fixings from vibration, damage resulting from
+shock movement, and corrosion.
+
+Moving to a new location in the same building
+Moving the Engine typically involves the following separate operations:
+1.
+
+Removing the wooden plinth.
+
+2.
+
+Bracing the frame using tie rods.
+
+3.
+
+Securing and protecting all normally unsecured parts.
+
+4.
+
+Jacking up the steel base.
+
+5.
+
+Inserting skates or rollers.
+
+6.
+
+Positioning spreader boards.
+
+7.
+
+Rolling the Engine to new location.
+
+127
+
+8 Moving the Engine
+
+8.
+
+Removing skates or rollers.
+
+9.
+
+Removing the bracing.
+
+10. Unstrapping and unpacking normally unsecured parts.
+11. Refitting removed parts.
+12. Levelling.
+13. Checking.
+The wooden plinth needs to be removed to expose the box-section steel base and give access
+to the fixings for the tie rods that brace the frame.
+There are two different wooden plinths. There are polished solid mahogany plinths for both US
+and UK Engines, and a provisional hard-wearing sheet-material plinth for the US Engine used
+for frequent demonstration over a long period. The fixing arrangements for the two plinths
+are not the same. There is stowage space inside the mahogany plinths for the tie rods and
+bracing fixings.
+
+. . . . . . 8.2 Bracing the Engine
+
+128
+
+8 Moving the Engine
+
+8.2 Bracing the Engine
+1. Remove the plinth
+US Engine. Remove the provisional plinth. The top sheet of the platform is in two halves.
+Remove both halves by unscrewing the fixing screws located under the overlapping lip.
+There are eight screws per half, sixteen in total (Figs 8.1, 8.2). Lift out the two end boards
+and remove all four kickboards (Figs 8.3, 8.4).
+
+Fig. 8.1
+
+Fig. 8.2
+
+Fig. 8.3
+
+Fig. 8.4
+
+UK and US Engine. Remove the polished mahogany plinth. The plinth is constructed in two
+halves i.e. it is split along its length and there are matching lift-out filling pieces at each of
+the short ends. The kickboards are integral with the top so do not attempt to remove any of
+the brass screws in the top sheet that forms the platform for standing on. First remove the
+two end section filling pieces by lifting them out (they are not fixed) (Fig. 8.5 left). Unscrew
+the eight brass woodscrew fixing screws at each end (Fig. 8.5 right). There is provision
+inside the plinth down the long sides for stowing the tie rods and bracing fixings.
+
+129
+
+8 Moving the Engine
+
+Fig. 8.5: Mahogany plinth.
+
+Fixing screws
+Lift-out end section
+
+Then remove the brass fixing screws down the long side of the kickboards (four each side). This
+frees the two long sections of the plinth. Do not attempt to dismantle the kickboards from the
+platform surface.
+2.
+
+Locate and identify the following fixings (Fig. 8.6)
+(a) 8-off tie rods (four each of two lengths) (not shown)
+(b) 6-off pivot blocks with pins
+(c) 4-off square-headed fixing screws to secure steadies to frame 2-off steadies
+(unequal lengths)
+(d) 24-off Allen screws for pivot blocks
+(e) 8-off Allen screws for fixing tie rods to steadies
+
+Steadies
+Fig. 8.6: Pivot
+blocks and fixing
+screws.
+
+130
+
+8 Moving the Engine
+
+Fig. 8.8: Short steady
+
+Fig. 8.7: Fixing holes.
+
+Fig. 8.9: Long steady.
+
+3.
+
+Fix the two top steadies to the top of the two end framing pieces using the four squareheaded fixing screws. The shorter framing piece fixes at the output apparatus end; the
+longer framing piece fixes at the main crank end (Figs 8.7, 8.8, 8.9).
+
+4.
+
+On the base locate the groups of four fixing
+holes for each of the six pivot blocks (Fig. 8.10).
+
+5.
+
+Starting with the pivot block close to the lower
+framing rail at the main crank fix one half of the
+pivot block to the base using two Allen screws
+and insert the pivot pin (Fig. 8.11).
+
+6.
+
+Loosely fix one end of a long tie rod to the
+steady using an Allen screw (Fig 8.12).
+
+Fig. 8.11
+
+Fig. 8.12
+
+131
+
+Fig. 8.10: Fixing holes.
+
+8 Moving the Engine
+
+Note – Orientation of Tie Rods
+The tie rods have a left-handed thread at one end and a right-handed thread at the other end.
+When the rods are braced to stabilise the frame they are in tension. The tie rods are tightened
+by turning them. Install the rods so that they have the same orientation. That way they will all
+tighten with the same direction of turning.
+7.
+
+Slide the other end of the tie rod onto the pivot block pin, fit the
+mating half of the pivot block and fix with two Allen screws (Fig. 8.13).
+Tighten all Allen screws.
+
+8.
+
+Locate the pivot block that is permanently fixed to the base and
+supporting the leg of the output apparatus (Figs. 8.14).
+
+9.
+
+Fix the end of a long tie rod to the threaded lug captive in the pivot
+
+Fig. 8.13
+
+block.
+10. Secure the other end to the stay at the crank end using the
+Allen screw.
+11. Repeat Steps 6 through 10 to fix the two remaining long
+stays working from the rear of the Engine.
+12. Tension the four tie rods by rotating. Work progressively
+around the Engine tensioning each rod in stages
+13. Fix half the pivot block and pin for the base of one of the
+short tie rods (Fig. 8.15).
+14. Loosely fix the upper end to the outside of the steady using
+the Allen screw (Fig. 8.16)
+15. Slide the lower end of the tie rod over the pivot pin and fix
+the mating half of the pivot block (Fig. 8.17a).
+16. Tighten the Allen screws where the tie rod is anchored on
+the stay.
+Fig. 8.17a
+
+Fig. 8.15
+
+Fig. 8.16
+
+132
+
+Fig. 14
+
+8 Moving the Engine
+
+17. Repeat Steps 13 through 16 for the
+remaining three short ties. Tension the four
+tie rods by rotating working progressively
+from one to the next.
+18. The Engine is now braced (Fig. 8.17b).
+
+8.3 Securing Loose Parts
+Falling weights and suspended counter-weights need
+to be secured in transport boxes.
+Procedures
+1.
+
+Wrap the four sets of vertical rack counterweights in soft material and stow in the transport
+boxes leaving the cords on the pulleys (Figs. 8.18,
+
+Fig. 8.17b
+
+8.19).
+2.
+
+Cushion the surfaces where the transport boxes bear on the Engine.
+
+3.
+
+Relieve the weight of the upper two clusters of weights with a sling over the top of the frame
+(Fig. 8.20). Relieve the weight of the lower two clusters by resting them on the support chocks.
+
+4.
+
+Truss and strap the boxes and chocks to the frame (Fig. 8.20).
+
+Fig. 8.18
+Fig. 8.19
+
+Fig. 8.20
+
+133
+
+8 Moving the Engine
+
+5.
+
+Unhitch the cords from the pulleys for the travelling platform falling weights. Wrap the
+weights and place them in the transport boxes. Leave the cords loose and strap the transport
+boxes to the frame cushioning the contact surfaces with foam padding (Fig. 8.21).
+
+Fig. 8.21: Foam packing for
+travelling platform falling weights
+transit boxes.
+
+6.
+
+Fig. 8.22: Scoop cam
+counter-balance
+weight transit box.
+
+Repeat Step 3 for the hanging weight that biases the scoop cam clutch at the main drive (Fig.
+8.22).
+
+7.
+
+Raise the end-of-page trip weight in the trip cradle under the stereotype
+apparatus. Wrap and strap the cradle and weight to the bar above (Fig.
+8.23).
+
+8.
+
+Remove the main crank handle by removing the single fixing screw Figs
+8.24, 8.25). Remove the auxiliary crank at the output apparatus in the
+same way (Fig 8.26).
+
+Fig. 8.23
+
+Fig. 8.24. Single
+fixing screw.
+
+Fig. 8.26. Auxiliary crank
+handle removed.
+
+Fig 8.25. Main crank.
+
+134
+
+8 Moving the Engine
+
+8.4 Jacking up and Moving
+Procedures
+1. Raise the base by screwing down the six jacking screws to lift the Engine clear of the floor.
+Turn each bolt in sequence only a couple of turns at a time to avoid stressing the base (Fig.
+8.27). Toe jacks can now be used to raise the base sufficiently to slide skates, rollers or
+rolling chassis jacks under the base (Fig 8.28, 8.29).
+Fig. 8.28: Toe jack.
+
+Fig. 8.29: Skate.
+
+Fig. 8.27: Jacking
+screws.
+
+2. Lay spreader boards
+along the route to
+distribute the load and
+protect the floor (Fig.
+8.30).
+3. In the new location jack
+up the base, chock up if
+necessary, remove the
+skates or rollers, place
+spreader plates under
+the six jacking screws
+and lower the Engine
+base.
+
+Fig. 8.30: Skates and chassis jacks.
+
+4. Level the base using
+the jacking screws taking care to turn each screw in turn a few turns at a time to avoid
+twist-stressing the base.
+5. Reverse the bracing and part-securing procedures described to restore the Engine to an
+operational state.
+6. If appropriate stow the tie rods and bracing fixings inside the plinth before reassembling.
+7. Check machine screws for tightness with special attention to top and bottom framing plates
+holding the vertical axes, and framing screw fixings.
+
+135
+
+8 Moving the Engine
+
+Note
+The UK Engine has four removable outriggers that fit at each corner of the steel base and which are
+fixed using the jacking screws. The outriggers reduce the head-height in transit so that the Engine
+can fit into the Science Museum’s goods lift where there is a critical headroom restriction. The
+outriggers can be used on the US Engine. The fixings are identical.
+
+Additional Preparation for Freighting by Road, Rail or Air
+The Engine weighs some 5 tonnes. While the frame and base are robust, many parts are delicate.
+Moving the Engine between sites
+is a specialised task. The Engine
+will need to be crated securely for
+physical protection and possibly
+wrapped for specific
+environmental control.
+A custom-made steel container
+was used for transatlantic
+
+Fig. 8.31: Custom container.
+
+Fig. 8.32: Partially dismantled.
+
+freighting by air (Figs 8.31, 8.32).
+
+8.5 Additional Precautions
+There are specific additional hazards when freighting by road, rail or air:
+1. Vibration – fixings shaking loose.
+2. Corrosion - especially from extreme temperature variation.
+3. Shocks, especially sudden downward motion.
+
+Vibration
+The risks of fixings shaking loose include disturbing precise adjustments, parts detaching and
+fouling the mechanism, loosening of framing pieces especially those not specifically braced by
+the tie rods.
+
+136
+
+8 Moving the Engine
+
+The risk of consequential damage from sustained vibration should not be underestimated.
+1. Check and tighten all fixing screws on the top and bottom plates of the vertical axes.
+2. Check and tighten all fixing screws securing the framing pieces.
+3. Remove the two bronze stereotype trays from the travelling platforms and remove the
+knurled fixing screws from the frames.
+Ideally a reversible thread-locking compound should be used to secure machine screws
+especially the fixing screws for the top and bottom bearing plates, carry reset stop pillars, and
+sector zero stop pillars.
+In addition consideration should be given to pinning or dowelling the top and bottom bearing
+plates.
+
+Corrosion
+The steel components are especially vulnerable to corrosion. Corrosion can be radically
+accelerated in extreme low temperatures and by severe temperature variations. Bronzes are
+more resistant but polished surfaces discolour to dull matt and sometimes mottle. The effects
+occur rapidly if the conditions are extreme.
+The environmental conditions in the hold of an aircraft without environmental control are
+extreme and damage from corrosion can occur with short exposure.
+Swaddling the Engine in plastic is not recommended: condensation gets trapped.
+Protective sprays are one solution. Deposits from protective sprays will need to be removed
+before operating the Engine. The mechanisms are intricate and access makes them difficult to
+clean.
+Ideally the Engine should be transported in a temperature and humidity controlled
+environment especially if freighted by air.
+If environmental control is not possible, specialist advice should be sought as to how best to
+protect the metals for the particular circumstances involved. Duration of the trip, humidity and
+temperature extremes will favour different protective treatments.
+
+137
+
+8 Moving the Engine
+
+Shock Movement
+The Engine is vulnerable to shock movement. Lifting by crane or winch risks jolts and sudden
+dropping motion.
+
+Disregard all reassurances by transport companies that the consignment will not be dropped.
+There is typically a long chain of different freight handlers in a major move and the likelihood
+of the chain of responsibility and care remaining unbroken is close to nil.
+Precautions to secure parts vulnerable to displacement should be made on the assumption
+that the Engine will be shocked in transit.
+The stereotype travelling platform requires special attention. It is heavy and rests on V-shaped
+sliders. It is secure if the Engine is moved on skates over a smooth floor or into goods lifts. If
+moving the Engine involves lifting by crane or winch or any method that entails risk of sudden
+movement then the stereotyping travelling platform should be secured.
+Sudden downward movement or jolting can levitate the platform from the V-sliders and
+damage the sliders and the drive gears when it crashes down. Sharp lateral movement can
+stress the drive train.
+
+Additional Precautions against Shock
+1. Securely strap the hanging-weight transit boxes to the frame.
+2. Securely strap the stereotype travelling platform to the frame to secure it against vertical
+displacement if dropped, and sliding in the event of sudden lateral motion.
+
+138
+
+9 Specification
+
+Charles Babbage’s Difference Engine No. 2
+Specification
+Size:
+
+Height:
+Length:
+Width:
+
+7 feet
+12 feet 7 inches
+4 feet 6 inches (Output Apparatus)
+
+Weight:
+
+Calc. section inc. base:
+Output apparatus:
+Total:
+
+2.6 tonnes (measured)
+2.5 tonnes (estimated)
+5.1 tonnes
+
+No. Parts:
+
+Calculating section:
+Output apparatus:
+Total:
+
+4,000
+4,000
+8,000
+
+Materials:
+
+Mechanisms:
+Plinth:
+Crank handle sleeves:
+
+Bronze (PB2), cast iron, steel
+Mahogany
+Lignum Vitae
+
+Lubricants:
+
+Oil:
+Shafts, links, spindles, bearings
+
+Light spindle oil:
+‘Hydroslide HG220’ by D. A Stuart Oils Ltd
+‘Foodlube Hi-Power 22’ by Rocol
+‘Varmulti 220’ by Varol Lubricants
+
+Slideways , rack-housings
+
+‘Crown Multilube 68’ by D.A. Stuart Oils
+‘Crown Multilube 150’ by D. A. Stuart Oils
+‘Foodlube Universal Grease’ by Rocol
+Castrol LM
+
+Grease:
+Drive gears
+Cams and sliding cam followers
+Graphite powder:
+Stereotype horizontal racks
+Printer vertical racks
+Print and punch wheels
+Ink:
+
+Non-toxic water-based printing ink
+
+Speed:
+
+8 seconds per machine cycle (seven 31-digit additions)
+
+Precision:
+
+Calculation:
+31 digits
+Printing & Stereotyping: 30 digits
+
+Logic:
+
+Decimal digital
+Positive Numbers:
+Negative Numbers:
+
+Capacity:
+
+Calculates and tabulates any 7 -order polynomial to 31 decimal places
+Prints inked copy results to 30 decimal places on paper print roll.
+Stereotypes results to thirty digits in two font sizes.
+
+Standard decimal
+Complements
+th
+
+139
+
+Timing Diagram
+
+140
+
+Appendix 10.1 Timing Diagram
+
+140
+
+Appendix 10.2 Setting up Check List
+
+10.2 Setting-up Check List
+The setting-up checklist on the next page is a short-form list of the sequence of steps in the
+procedure for entering initial values when setting up a calculation.
+The sequence is exact and should not be deviated from.
+The list is intended for use by an operator setting up a calculation as an aid to ensuring that no
+steps are omitted and as a record of the completion of the correct procedure.
+The list is a short-form version of the steps described in more detail in Section 4.3, Entering
+Initial Values, p. 23 where more explanation is provided. The numbering of the steps in the list
+corresponds to the numbered descriptions in Section 4.3.
+
+141
+
+Date:
+
+Setter:
+
+Checker:
+
+Rev. UM10
+
+Babbage Engine Calculation Setup Checklist
+This checklist should be completed each time the setup procedure is carried out on the Engine. All steps
+should be checked off by the checker as the step is performed. Do not change or omit steps under any
+circumstances. Doing so could result in physical damage to the Engine. Refer to Section 4, p. 26 for
+fuller description of each step.
+Step
+
+Check
+
+Description
+
+1
+
+Cycle the Engine to the zero (Full Cycle) point
+
+2,3
+
+Lift the release lever to disengage the sector drive (jiggle lifting levers if necessary)
+
+4
+
+Raise one of the lifting levers
+
+5
+
+Lock in raised position
+
+6
+
+Raise and lock the second lifting lever
+
+7
+
+Advance the Engine to the 10-unit point
+
+8,9
+
+Engage the four manual locks on the odd difference columns
+
+10,11
+
+Check all four odd setting locks are engaged and secured, all even locks NOT engaged
+
+12
+
+Advance the Engine to the 20-unit (Set Odd) point
+
+13
+
+Disengage the manual lock on the 7th difference column
+
+14
+
+Decide where the index counter will be set up
+
+15
+
+Enter the 7th difference value on the figure wheels
+
+16
+
+Re-engage the manual lock on 7 difference column
+
+17
+
+Repeat steps 13, 15, 16 for remaining three odd difference columns remembering the index
+
+18
+
+Advance the Engine to the 35-unit point
+
+19
+
+Engage the four manual even setting locks
+
+20
+
+Disengage the four manual odd setting locks and secure in the disengaged position
+
+21,22
+
+Check all four even setting locks are secured engaged, all odd locks NOT engaged
+
+23
+
+Advance the Engine to the 45-unit (Set Even) point
+
+24
+
+Disengage the manual lock on the 6th difference column
+
+25
+
+Enter the 6th difference value on the figure wheels
+
+26
+
+Re-engage the manual lock on 6 difference column
+
+27
+
+Repeat steps 24 to 26 for the other two even difference columns
+
+28
+29,30
+
+Repeat steps 20 to 22 for the results column. Ensure the lowest wheel is all the way to the
+h
+Advance the Engine to the zero point. Check that lowest result carry lever is still unwarned
+
+31
+
+Retract the locking plungers and lower the lifting levers
+
+32,33
+
+Lower the release lever to reengage the sector drive. Then lower the two lifting levers
+
+34
+
+Disengage the four manual locks on the even columns. Secure in disengaged position
+
+35
+
+CAREFULLY CHECK ALL EIGHT MANUAL LOCKS ARE FULLY DISENGAGED
+
+36
+
+If required, rewind the stereotype trays
+
+th
+
+th
+
+142
+
+Appendix 10.3 State of Engine Table
+
+10.3 State Record
+The State Record table is intended as a diagnostic aid.
+Its purpose is to provide a template in which to record and capture the state of the
+Engine at a particular point so that the progression of a fault or calculation error can be
+tracked, or to record a deviation from normal working and relevant diagnosis.
+It is designed for use by an operator or maintenance engineer encountering a fault,
+malfunction or calculation error.
+
+Key
+S(n)
+
+Sector axis (n).
+
+S0
+
+Sector column that transfers digit values from results column to the output
+apparatus
+
+R
+
+Result column
+
+C(n)
+
+Carry column (n). C0 is the result carry column
+
+D(n)
+
+Difference column (n)
+
+143
+
+"
+!
+
+Appendix 10.3 Babbage Engine State Record
+
+(
+)
+*
+
+144
+
+144
+&&
+
+#
+
+(
+)
+*
+
+$
+
+%&
+%&
+'
+&
+
+(
+)
+*
+
+145
+
+145
+
+Appendix 10.4 Stereotype Layout Options
+
+11 Acknowledgements
+
+11. Acknowledgements
+The material in this User Manual is indebted to several knowledgeable and generous people.
+To Sir Neil Cossons and Dame Margaret Weston, former Directors of the Science Museum, for
+taking a risk in backing the construction project.
+To Nathan Myhrvold who funded the construction of the output apparatus for the London
+Engine, and funded the construction of a complete second Engine, for his patience,
+encouragement, interest and support.
+To the late Reg Crick for the meticulous preparation of manufacturing drawings and the
+expertise, inventiveness and professionalism that informed the countless engineering design
+decisions on which the physical realisation of the Engine is based. For his limitless patience and
+methodical attention to detail. And for his generosity in sharing his knowledge so openly.
+To Richard Horton for taking the lead role in the construction of the whole of the second (USA)
+Engine and for assisting in the construction of the output apparatus for the London Engine. For
+the perfectionism and skill in all he does, his unfailing helpfulness, and his commitment to the
+project.
+To the late Barrie Holloway who with Reg Crick specified and built the calculating section of
+London Engine.
+To Chris Ward who with Richard Horton built the second machine. For his skill, wisdom and
+cheerfulness.
+To Tim Robinson for his avid interest in the Engine, for his remarkable efforts supporting,
+maintaining, repairing and exhibiting the second Engine, and for his generosity in sharing his
+expertise so selflessly.
+
+146
+
+12 Picture Credits
+
+12. Picture Credits
+The Science Museum holds exclusive rights to all illustrations, tables and diagrams with the
+following exceptions:
+Figs. 6.1, 8.1 through to 8.4, 8.6 through 8.32 inclusive, lists p. 142, 144 by kind permission of
+Tim Robinson.
+Cover (elevation of Difference Engine 2), Figs. 5.19, 5.20 p. 48 Doron Swade.
+
+147
+
+

@@ -9,59 +9,16 @@ from __future__ import annotations
 from typing import List, Optional
 from backend.src.compilers.java_lexer import Token, TokenType, JavaLexer
 from backend.src.compilers.java_ast import (
-    Type,
-    PrimitiveType,
-    ReferenceType,
-    ArrayType,
-    TypeParameter,
-    WildcardType,
-    Expr,
-    Literal,
-    Variable,
-    FieldAccess,
-    ArrayAccess,
-    MethodCall,
-    NewExpression,
-    ArrayCreation,
-    BinaryOp,
-    UnaryOp,
-    ConditionalExpr,
-    CastExpr,
-    InstanceofExpr,
-    LambdaExpr,
-    MethodReference,
-    Stmt,
-    ExprStmt,
-    BlockStmt,
-    VarDeclStmt,
-    IfStmt,
-    WhileStmt,
-    DoWhileStmt,
-    ForStmt,
-    EnhancedForStmt,
-    SwitchStmt,
-    SwitchCase,
-    BreakStmt,
-    ContinueStmt,
-    ReturnStmt,
-    ThrowStmt,
-    TryStmt,
-    CatchBlock,
-    SynchronizedStmt,
-    LabeledStmt,
-    Parameter,
-    MethodDecl,
-    FieldDecl,
-    ConstructorDecl,
-    ClassDecl,
-    InterfaceDecl,
-    EnumDecl,
-    EnumConstant,
-    AnnotationDecl,
-    AnnotationMember,
-    ImportDecl,
-    PackageDecl,
-    CompilationUnit,
+    Type, PrimitiveType, ReferenceType, ArrayType, TypeParameter, WildcardType,
+    Expr, Literal, Variable, FieldAccess, ArrayAccess, MethodCall, NewExpression,
+    ArrayCreation, BinaryOp, UnaryOp, ConditionalExpr, CastExpr, InstanceofExpr,
+    LambdaExpr, MethodReference,
+    Stmt, ExprStmt, BlockStmt, VarDeclStmt, IfStmt, WhileStmt, DoWhileStmt,
+    ForStmt, EnhancedForStmt, SwitchStmt, SwitchCase, BreakStmt, ContinueStmt,
+    ReturnStmt, ThrowStmt, TryStmt, CatchBlock, SynchronizedStmt, LabeledStmt,
+    Parameter, MethodDecl, FieldDecl, ConstructorDecl, ClassDecl, InterfaceDecl,
+    EnumDecl, EnumConstant, AnnotationDecl, AnnotationMember,
+    ImportDecl, PackageDecl, CompilationUnit
 )
 
 
@@ -71,7 +28,7 @@ class JavaParser:
     def __init__(self, tokens: List[Token]) -> None:
         self.tokens = tokens
         self.pos = 0
-        self.current_token = tokens[0] if tokens else Token(TokenType.EOF, "", 0, 0)
+        self.current_token = tokens[0] if tokens else Token(TokenType.EOF, '', 0, 0)
 
     def parse(self) -> CompilationUnit:
         """Parse entire Java source file"""
@@ -89,18 +46,9 @@ class JavaParser:
 
         # Parse type declarations (classes, interfaces, enums)
         while self.current_token.type != TokenType.EOF:
-            if self._match(
-                TokenType.PUBLIC,
-                TokenType.PRIVATE,
-                TokenType.PROTECTED,
-                TokenType.STATIC,
-                TokenType.FINAL,
-                TokenType.ABSTRACT,
-                TokenType.CLASS,
-                TokenType.INTERFACE,
-                TokenType.ENUM,
-                TokenType.AT,
-            ):
+            if self._match(TokenType.PUBLIC, TokenType.PRIVATE, TokenType.PROTECTED,
+                          TokenType.STATIC, TokenType.FINAL, TokenType.ABSTRACT,
+                          TokenType.CLASS, TokenType.INTERFACE, TokenType.ENUM, TokenType.AT):
                 type_decls.append(self._parse_type_decl())
             else:
                 self._advance()
@@ -116,17 +64,15 @@ class JavaParser:
         pos = self.pos + offset
         if pos < len(self.tokens):
             return self.tokens[pos]
-        return Token(TokenType.EOF, "", 0, 0)
+        return Token(TokenType.EOF, '', 0, 0)
 
     def _match(self, *token_types: TokenType) -> bool:
         return self.current_token.type in token_types
 
     def _expect(self, token_type: TokenType) -> Token:
         if self.current_token.type != token_type:
-            raise SyntaxError(
-                f"Expected {token_type}, got {self.current_token.type} "
-                f"at line {self.current_token.line}"
-            )
+            raise SyntaxError(f"Expected {token_type}, got {self.current_token.type} "
+                            f"at line {self.current_token.line}")
         token = self.current_token
         self._advance()
         return token
@@ -149,9 +95,7 @@ class JavaParser:
         self._expect(TokenType.IMPORT)
         is_static = self._consume(TokenType.STATIC)
         name = self._parse_name()
-        is_on_demand = (
-            self._consume(TokenType.STAR) if self.current_token.type == TokenType.DOT else False
-        )
+        is_on_demand = self._consume(TokenType.STAR) if self.current_token.type == TokenType.DOT else False
         self._expect(TokenType.SEMICOLON)
         return ImportDecl(name, is_static, is_on_demand)
 
@@ -300,19 +244,9 @@ class JavaParser:
                 exceptions = self._parse_throws()
                 if self._match(TokenType.LBRACE):
                     body = self._parse_block_stmt()
-                    return ConstructorDecl(
-                        name, parameters, body, type_parameters, modifiers, exceptions
-                    )
+                    return ConstructorDecl(name, parameters, body, type_parameters, modifiers, exceptions)
                 else:
-                    return MethodDecl(
-                        name,
-                        PrimitiveType("void"),
-                        parameters,
-                        None,
-                        type_parameters,
-                        modifiers,
-                        exceptions,
-                    )
+                    return MethodDecl(name, PrimitiveType("void"), parameters, None, type_parameters, modifiers, exceptions)
             else:
                 # Field
                 return self._parse_field_decl(modifiers)
@@ -325,7 +259,6 @@ class JavaParser:
             if self._match(TokenType.SEMICOLON):
                 # Field declaration (without initializer)
                 from backend.src.compilers.java_ast import FieldDecl
-
                 return FieldDecl(name, return_type, None, modifiers)
             else:
                 # Method declaration
@@ -339,9 +272,7 @@ class JavaParser:
                 else:
                     body = None
                     self._expect(TokenType.SEMICOLON)
-                return MethodDecl(
-                    name, return_type, parameters, body, type_parameters, modifiers, exceptions
-                )
+                return MethodDecl(name, return_type, parameters, body, type_parameters, modifiers, exceptions)
 
     def _parse_interface_member(self) -> object:
         """Parse interface member: method or field"""
@@ -383,20 +314,10 @@ class JavaParser:
         """Parse any statement"""
         if self._match(TokenType.LBRACE):
             return self._parse_block_stmt()
-        elif self._match(
-            TokenType.VAR,
-            TokenType.INT,
-            TokenType.LONG,
-            TokenType.FLOAT,
-            TokenType.DOUBLE,
-            TokenType.BOOLEAN_TYPE,
-            TokenType.BYTE,
-            TokenType.SHORT,
-            TokenType.CHAR_TYPE,
-            TokenType.STRING,
-            TokenType.IDENTIFIER,
-            TokenType.TYPE_NAME,
-        ):
+        elif self._match(TokenType.VAR, TokenType.INT, TokenType.LONG, TokenType.FLOAT,
+                         TokenType.DOUBLE, TokenType.BOOLEAN_TYPE, TokenType.BYTE,
+                         TokenType.SHORT, TokenType.CHAR_TYPE, TokenType.STRING,
+                         TokenType.IDENTIFIER, TokenType.TYPE_NAME):
             return self._parse_var_decl_stmt()
         elif self._match(TokenType.IF):
             return self._parse_if_stmt()
@@ -480,20 +401,10 @@ class JavaParser:
         self._expect(TokenType.LPAREN)
 
         # Check for enhanced for: for (Type var : expr)
-        if self._match(
-            TokenType.VAR,
-            TokenType.INT,
-            TokenType.LONG,
-            TokenType.FLOAT,
-            TokenType.DOUBLE,
-            TokenType.BOOLEAN_TYPE,
-            TokenType.BYTE,
-            TokenType.SHORT,
-            TokenType.CHAR_TYPE,
-            TokenType.STRING,
-            TokenType.IDENTIFIER,
-            TokenType.TYPE_NAME,
-        ):
+        if self._match(TokenType.VAR, TokenType.INT, TokenType.LONG, TokenType.FLOAT,
+                       TokenType.DOUBLE, TokenType.BOOLEAN_TYPE, TokenType.BYTE,
+                       TokenType.SHORT, TokenType.CHAR_TYPE, TokenType.STRING,
+                       TokenType.IDENTIFIER, TokenType.TYPE_NAME):
             checkpoint = self.pos
             var_type = self._parse_type()
             var_name = self._expect(TokenType.IDENTIFIER).value
@@ -511,18 +422,9 @@ class JavaParser:
 
         initializer = None
         if not self._match(TokenType.SEMICOLON):
-            if self._match(
-                TokenType.VAR,
-                TokenType.INT,
-                TokenType.LONG,
-                TokenType.FLOAT,
-                TokenType.DOUBLE,
-                TokenType.BOOLEAN_TYPE,
-                TokenType.BYTE,
-                TokenType.SHORT,
-                TokenType.CHAR_TYPE,
-                TokenType.STRING,
-            ):
+            if self._match(TokenType.VAR, TokenType.INT, TokenType.LONG, TokenType.FLOAT,
+                           TokenType.DOUBLE, TokenType.BOOLEAN_TYPE, TokenType.BYTE,
+                           TokenType.SHORT, TokenType.CHAR_TYPE, TokenType.STRING):
                 initializer = self._parse_var_decl_stmt()
                 # Remove the semicolon that was consumed
                 # Already consumed in var decl
@@ -687,13 +589,8 @@ class JavaParser:
 
     def _parse_relational(self) -> Expr:
         expr = self._parse_shift()
-        while self._match(
-            TokenType.LESS,
-            TokenType.GREATER,
-            TokenType.LESS_EQUAL,
-            TokenType.GREATER_EQUAL,
-            TokenType.INSTANCEOF,
-        ):
+        while self._match(TokenType.LESS, TokenType.GREATER, TokenType.LESS_EQUAL,
+                          TokenType.GREATER_EQUAL, TokenType.INSTANCEOF):
             if self._match(TokenType.INSTANCEOF):
                 self._advance()
                 type_ = self._parse_type()
@@ -787,7 +684,7 @@ class JavaParser:
             value = self.current_token.value
             self._advance()
             try:
-                if "." in value:
+                if '.' in value:
                     return Literal(float(value))
                 else:
                     return Literal(int(value))
@@ -803,7 +700,7 @@ class JavaParser:
             return Literal(value)
 
         elif self._match(TokenType.BOOLEAN):
-            value = self._expect(TokenType.BOOLEAN).value == "true"
+            value = self._expect(TokenType.BOOLEAN).value == 'true'
             return Literal(value)
 
         elif self._match(TokenType.NULL):
@@ -820,11 +717,11 @@ class JavaParser:
 
         elif self._match(TokenType.THIS):
             self._advance()
-            return Variable("this")
+            return Variable('this')
 
         elif self._match(TokenType.SUPER):
             self._advance()
-            return Variable("super")
+            return Variable('super')
 
         elif self._match(TokenType.NEW):
             return self._parse_new_expr()
@@ -834,34 +731,17 @@ class JavaParser:
             # Could be cast or grouped expression
             checkpoint = self.pos
             # Try to parse as cast
-            if self._match(
-                TokenType.INT,
-                TokenType.LONG,
-                TokenType.FLOAT,
-                TokenType.DOUBLE,
-                TokenType.BOOLEAN_TYPE,
-                TokenType.BYTE,
-                TokenType.SHORT,
-                TokenType.CHAR_TYPE,
-                TokenType.STRING,
-                TokenType.IDENTIFIER,
-                TokenType.TYPE_NAME,
-            ):
+            if self._match(TokenType.INT, TokenType.LONG, TokenType.FLOAT,
+                           TokenType.DOUBLE, TokenType.BOOLEAN_TYPE, TokenType.BYTE,
+                           TokenType.SHORT, TokenType.CHAR_TYPE, TokenType.STRING,
+                           TokenType.IDENTIFIER, TokenType.TYPE_NAME):
                 type_ = self._parse_type()
                 if self._match(TokenType.RPAREN):
                     self._advance()
                     # Check if this looks like a cast
-                    if self._match(
-                        TokenType.NUMBER,
-                        TokenType.IDENTIFIER,
-                        TokenType.LPAREN,
-                        TokenType.NEW,
-                        TokenType.THIS,
-                        TokenType.SUPER,
-                        TokenType.NOT,
-                        TokenType.MINUS,
-                        TokenType.PLUS,
-                    ):
+                    if self._match(TokenType.NUMBER, TokenType.IDENTIFIER, TokenType.LPAREN,
+                                   TokenType.NEW, TokenType.THIS, TokenType.SUPER,
+                                   TokenType.NOT, TokenType.MINUS, TokenType.PLUS):
                         expr = self._parse_unary()
                         return CastExpr(type_, expr)
             # Not a cast, parse as grouped expression
@@ -872,9 +752,8 @@ class JavaParser:
             return expr
 
         else:
-            raise SyntaxError(
-                f"Unexpected token: {self.current_token.type} " f"at line {self.current_token.line}"
-            )
+            raise SyntaxError(f"Unexpected token: {self.current_token.type} "
+                            f"at line {self.current_token.line}")
 
     def _parse_new_expr(self) -> NewExpression:
         self._expect(TokenType.NEW)
@@ -985,23 +864,14 @@ class JavaParser:
     def _parse_modifiers(self) -> List[str]:
         """Parse access modifiers and other modifiers"""
         modifiers = []
-        while self._match(
-            TokenType.PUBLIC,
-            TokenType.PRIVATE,
-            TokenType.PROTECTED,
-            TokenType.STATIC,
-            TokenType.FINAL,
-            TokenType.ABSTRACT,
-            TokenType.NATIVE,
-            TokenType.SYNCHRONIZED,
-            TokenType.VOLATILE,
-            TokenType.TRANSIENT,
-            TokenType.AT,
-        ):
+        while self._match(TokenType.PUBLIC, TokenType.PRIVATE, TokenType.PROTECTED,
+                          TokenType.STATIC, TokenType.FINAL, TokenType.ABSTRACT,
+                          TokenType.NATIVE, TokenType.SYNCHRONIZED, TokenType.VOLATILE,
+                          TokenType.TRANSIENT, TokenType.AT):
             if self._match(TokenType.AT):
                 self._advance()
                 # annotation
-                modifiers.append("@" + self._expect(TokenType.IDENTIFIER).value)
+                modifiers.append('@' + self._expect(TokenType.IDENTIFIER).value)
             else:
                 modifiers.append(self.current_token.value)
                 self._advance()
@@ -1043,5 +913,5 @@ class JavaParser:
         """Parse qualified name: package.Class"""
         name = self._expect(TokenType.IDENTIFIER).value
         while self._consume(TokenType.DOT):
-            name += "." + self._expect(TokenType.IDENTIFIER).value
+            name += '.' + self._expect(TokenType.IDENTIFIER).value
         return name

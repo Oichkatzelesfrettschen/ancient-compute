@@ -71,7 +71,7 @@ async def execute_code(request: ExecutionRequest, db: Session = Depends(get_db))
             language=request.language,
             execution_output=result.stdout,
             execution_error=result.stderr,
-            is_successful=(result.status.value == "success"),
+            is_successful=(result.status.value == "success")
         )
         db.add(submission)
         db.commit()
