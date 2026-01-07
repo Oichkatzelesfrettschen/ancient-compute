@@ -209,6 +209,122 @@ Suggested tests
 
 -------------------------------------------------------------------------------
 
+Anachronistic / Unconventional Computing Extensions (non-ancient, optional scope)
+- These are modern or speculative models found in ~/Documents/AGL_Library for future expansion.
+
+12) Cellular Automata (Game of Life)
+
+Core logic
+- Inputs: initial grid, rule set (B3/S23)
+- State: cell grid (alive/dead)
+- Operations: count_neighbors, apply_rule, step
+- Outputs: grid state after N steps
+
+Logic graph
+[Seed] -> (apply_rule) -> {grid} -> (step) -> {grid} -> [snapshot]
+
+Suggested tests
+- Blinker oscillates with period 2
+- Block remains stable
+
+-------------------------------------------------------------------------------
+
+13) DNA Computing (strand displacement)
+
+Core logic
+- Inputs: strand set, reaction rules, target output strand
+- State: strand pool with concentrations
+- Operations: hybridize, displace, ligate, cleave
+- Outputs: strand concentration profile or boolean output
+
+Logic graph
+[Strands + Rules] -> (react) -> {pool} -> (measure) -> [output]
+
+Suggested tests
+- AND gate strand set yields signal only when both inputs present
+
+-------------------------------------------------------------------------------
+
+14) Reaction-Diffusion Computing (chemical patterns)
+
+Core logic
+- Inputs: initial concentrations, reaction rates
+- State: spatial concentration field
+- Operations: diffuse, react, threshold
+- Outputs: pattern class or computed signal
+
+Logic graph
+[Initial field] -> (diffuse/react) -> {field} -> (threshold) -> [pattern]
+
+Suggested tests
+- Stable spot/stripe pattern emerges from reference parameters
+
+-------------------------------------------------------------------------------
+
+15) Slime Mold Computing (Physarum pathfinding)
+
+Core logic
+- Inputs: nutrient nodes, repellents, time steps
+- State: network graph with edge thickness
+- Operations: grow_toward, retract, reinforce
+- Outputs: optimized path network
+
+Logic graph
+[Nutrients] -> (grow) -> {network} -> (reinforce) -> {network} -> [path graph]
+
+Suggested tests
+- Two food nodes produce a shortest connecting path
+
+-------------------------------------------------------------------------------
+
+16) Reservoir Computing (neuromorphic/physical reservoirs)
+
+Core logic
+- Inputs: time series, readout weights
+- State: reservoir activations
+- Operations: drive_input, update_state, linear_readout
+- Outputs: predicted sequence or classification
+
+Logic graph
+[Input] -> (drive) -> {reservoir} -> (readout) -> [output]
+
+Suggested tests
+- Echo-state memory task matches reference accuracy
+
+-------------------------------------------------------------------------------
+
+17) Membrane Computing (P systems)
+
+Core logic
+- Inputs: object multiset, rewrite rules, membrane tree
+- State: membranes with local multisets
+- Operations: apply_rules, move_objects, dissolve
+- Outputs: halting configuration or object count
+
+Logic graph
+[Objects + Rules] -> (apply_rules) -> {membranes} -> (halt?) -> [output]
+
+Suggested tests
+- Simple multiset rewrite reaches expected halting state
+
+-------------------------------------------------------------------------------
+
+18) In-materio Computing (material substrate)
+
+Core logic
+- Inputs: stimuli patterns, measurement points
+- State: material state vector
+- Operations: stimulate, settle, read
+- Outputs: classification or analog value
+
+Logic graph
+[Stimulus] -> (stimulate) -> {material_state} -> (read) -> [output]
+
+Suggested tests
+- Consistent classification for fixed stimulus pattern
+
+-------------------------------------------------------------------------------
+
 Notes
 - These graphs define the logic core only. UI interactions and 3D/visual models are deferred.
 - Each emulator should expose deterministic step functions plus a batch runner for testing.

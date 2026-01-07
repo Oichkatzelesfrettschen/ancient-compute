@@ -95,6 +95,52 @@ Astrolabe
 
 -------------------------------------------------------------------------------
 
+Anachronistic / unconventional extensions (non-ancient, optional scope)
+
+Cellular automata (Game of Life)
+- Status: missing
+- Target: Tier 1
+- Assets: external PDFs in ~/Documents/AGL_Library
+- Notes: baseline CA step engine + fixtures
+
+DNA computing (strand displacement)
+- Status: missing
+- Target: Tier 1
+- Assets: external PDFs in ~/Documents/AGL_Library
+- Notes: model as reaction rules + concentration state
+
+Reaction-diffusion computing
+- Status: missing
+- Target: Tier 1 -> Tier 2
+- Assets: external PDFs in ~/Documents/AGL_Library
+- Notes: grid-based reaction/diffusion solver
+
+Slime mold computing (Physarum)
+- Status: missing
+- Target: Tier 1
+- Assets: external PDFs in ~/Documents/AGL_Library
+- Notes: graph growth + reinforcement model
+
+Reservoir computing (neuromorphic/physical)
+- Status: missing
+- Target: Tier 1
+- Assets: external PDFs in ~/Documents/AGL_Library
+- Notes: state update + readout layer
+
+Membrane computing (P systems)
+- Status: missing
+- Target: Tier 1
+- Assets: external PDFs in ~/Documents/AGL_Library
+- Notes: multiset rewrite + membrane tree
+
+In-materio computing
+- Status: missing
+- Target: Tier 0 -> Tier 1
+- Assets: external PDFs in ~/Documents/AGL_Library
+- Notes: stimulus/response abstraction only
+
+-------------------------------------------------------------------------------
+
 Immediate gaps
 - No emulator modules for non-Babbage mechanisms.
 - No shared emulator interface for logic-only models.
