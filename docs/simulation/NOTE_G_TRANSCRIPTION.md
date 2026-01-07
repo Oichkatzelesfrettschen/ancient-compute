@@ -34,7 +34,39 @@ Series definition (from Fourmilab HTML text)
 Table A.2 / diagram sources
 - Menabrea PDF page 55 contains Table A.2 (raster).
 - Robins PDF page 4 contains a high-contrast reprint (raster).
+- Fourmilab provides a higher-resolution diagram (menat6_1-5k.png, menat6_2k.png) and PostScript (menat6ps.zip).
 
 Open gaps
 - Table A.2 row-by-row transcription still missing.
 - T6 clip (Fourmilab_t6clip.png) is not OCRable; manual transcription needed.
+
+Working transcription: Table A.2 (rows 1-25)
+Source: docs/sources/cache/Fourmilab_menat6_2k.png
+Columns: Op#, Op, Variables acted upon, Variables receiving results, Statement of results
+
+1  | x | 1V2 x 1V3       | 1V4, 1V5, 1V6 | = 2n
+2  | - | 1V4 - 1V1       | 2V4          | = 2n - 1
+3  | + | 1V5 + 1V1       | 2V5          | = 2n + 1
+4  | ÷ | 2V5 ÷ 2V4       | 1V11         | = (2n - 1) / (2n + 1)
+5  | ÷ | 1V11 ÷ 1V2      | 2V11         | = (1/2) * ((2n - 1) / (2n + 1))
+6  | - | 0V13 - 2V11     | 1V13         | = -(1/2) * ((2n - 1) / (2n + 1)) = A0
+7  | - | 1V3 - 1V1       | 1V10         | = n - 1 (= 3)
+8  | + | 1V2 + 0V7       | 1V7          | = 2 + 0 = 2
+9  | ÷ | 1V6 ÷ 1V7       | 3V11         | = (2n / 2) = A1
+10 | x | 1V21 x 3V11     | 1V12         | = B1 * (2n/2) = B1 A1
+11 | + | 1V12 + 1V13     | 2V13         | = -(1/2)*((2n-1)/(2n+1)) + B1*(2n/2)
+12 | - | 1V10 - 1V1      | 2V10         | = n - 2 (= 2)
+13 | - | 1V6 - 1V1       | 2V6          | = 2n - 1
+14 | + | 1V1 + 1V7       | 2V7          | = 2 + 1 = 3
+15 | ÷ | 2V6 ÷ 2V7       | 1V8          | = (2n - 1) / 3
+16 | x | 1V8 x 3V11      | 4V11         | = (2n/2) * ((2n - 1)/3)
+17 | - | 2V6 - 1V1       | 3V6          | = 2n - 2
+18 | + | 1V1 + 2V7       | 3V7          | = 3 + 1 = 4
+19 | ÷ | 3V6 ÷ 3V7       | 1V9          | = (2n - 2) / 4
+20 | x | 1V9 x 4V11      | 5V11         | = (2n/2) * ((2n - 1)/3) * ((2n - 2)/4) = A3
+21 | x | 1V22 x 5V11     | 0V12         | = B3 * (2n/2) * ((2n - 1)/3) * ((2n - 2)/4) = B3 A3
+22 | + | 2V12 + 2V13     | 3V13         | = A0 + B1 A1 + B3 A3
+23 | - | 2V10 - 1V1      | 3V10         | = n - 3 (= 1)
+24 | + | 4V13 + 0V24     | 1V24         | = B7
+25 | + | 1V1 + 1V3       | 1V3          | = n + 1 = 4 + 1 = 5; by a Variable-card
+    |   |               |              | reset indices: 1V1=1V1, 1V3=1V3, 5V6=0V6, 5V7=0V7

@@ -1,4 +1,4 @@
-Last updated: 2026-01-07T16:55:49Z
+Last updated: 2026-01-07T18:37:05Z
 # SOURCES_INDEX
 
 Cached sources (auto-generated)
@@ -56,6 +56,9 @@ Cached sources (auto-generated)
 - Fourmilab_adaeq23.png (603 bytes)
 - Fourmilab_adaeq24.png (947 bytes)
 - Fourmilab_adaeq25.png (638 bytes)
+- Fourmilab_menat6_1-5k.png (116411 bytes)
+- Fourmilab_menat6_2k.png (155115 bytes)
+- Fourmilab_menat6ps.zip (22045 bytes)
 - Fourmilab_notege1.png (2539 bytes)
 - Fourmilab_notege1a.png (3002 bytes)
 - Fourmilab_notege2.png (4340 bytes)

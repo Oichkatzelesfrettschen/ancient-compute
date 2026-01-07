@@ -142,6 +142,9 @@ Babbage/Ada core (already covered)
   Access: https://www.fourmilab.ch/babbage/sketch.html. Status: local
   Local: docs/sources/cache/Fourmilab_Sketch_Analytical_Engine.html
   Local: docs/sources/cache/Fourmilab_notegt1.png, docs/sources/cache/Fourmilab_notegt2.png, docs/sources/cache/Fourmilab_t6clip.png (Note G cycle notation + table clip)
+- Reproduction target: Fourmilab high-resolution Note G diagram (Table A.2)
+  Access: https://www.fourmilab.ch/babbage/figures/menat6_1-5k.png and menat6_2k.png. Status: local
+  Local: docs/sources/cache/Fourmilab_menat6_1-5k.png, docs/sources/cache/Fourmilab_menat6_2k.png, docs/sources/cache/Fourmilab_menat6ps.zip
 - Gap: Note G Table A.2 still only available as raster (PDF); no machine-readable transcription. Status: missing
 
 -------------------------------------------------------------------------------
