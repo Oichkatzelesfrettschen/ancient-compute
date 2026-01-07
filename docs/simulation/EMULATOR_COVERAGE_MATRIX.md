@@ -22,45 +22,45 @@ Tally marks / tally sticks
 - Notes: logic graph in docs/simulation/LOGIC_GRAPHS.md
 
 Clay tokens / bullae
-- Status: missing
+- Status: implemented
 - Target: Tier 1
-- Assets: historical notes only
-- Notes: needs ledger + seal model
+- Assets: backend/src/emulator/clay_tokens.py, backend/tests/unit/test_clay_tokens.py
+- Notes: seal/audit logic modeled
 
 Counting rods / abacus
-- Status: missing
+- Status: implemented
 - Target: Tier 1 -> Tier 2
-- Assets: content schema references, no emulator
-- Notes: start with decimal carry/borrow model
+- Assets: backend/src/emulator/abacus.py, backend/tests/unit/test_abacus.py
+- Notes: decimal carry/borrow model
 
 Antikythera mechanism
-- Status: missing
+- Status: spec-only
 - Target: Tier 2
-- Assets: content schema mentions AntikytheraSimulator
+- Assets: docs/simulation/specs/antikythera_spec.md
 - Notes: gear ratios + dials, needs source data
 
 Quipu / khipu
-- Status: missing
+- Status: implemented
 - Target: Tier 1
-- Assets: history sources list only
-- Notes: knot encoding and ledger queries
+- Assets: backend/src/emulator/quipu.py, backend/tests/unit/test_quipu.py
+- Notes: simplified knot encoding/ledger
 
 Pascaline
-- Status: missing
+- Status: implemented
 - Target: Tier 2
-- Assets: sources list only
-- Notes: wheel/carry simulation
+- Assets: backend/src/emulator/pascaline.py, backend/tests/unit/test_pascaline.py
+- Notes: logic-only stub
 
 Leibniz stepped reckoner
-- Status: missing
+- Status: spec-only
 - Target: Tier 2
-- Assets: sources list only
+- Assets: docs/simulation/specs/leibniz_spec.md
 - Notes: stepped drum + carriage shift
 
 Jacquard loom (card control)
-- Status: missing
+- Status: spec-only
 - Target: Tier 1
-- Assets: card format references in Babbage emulator
+- Assets: docs/simulation/specs/jacquard_spec.md
 - Notes: use card deck -> pattern row output
 
 Babbage Analytical Engine (base)
@@ -73,7 +73,7 @@ Ada Lovelace Bernoulli deck
 - Status: implemented
 - Target: Tier 3
 - Assets: docs/simulation/NOTE_G_DECK.yaml, backend/src/emulator/note_g_deck.py
-- Notes: deck runner executes single pass; loop semantics still TODO
+- Notes: deck runner supports n-series, loop semantics partial
 
 Ada Lovelace extensions beyond Note G
 - Status: missing
@@ -88,15 +88,15 @@ Difference Engine No. 2 (DE2)
 - Notes: docs should reflect implementation state
 
 Slide rule
-- Status: missing
+- Status: implemented
 - Target: Tier 1
-- Assets: none
+- Assets: backend/src/emulator/slide_rule.py, backend/tests/unit/test_slide_rule.py
 - Notes: log scale approximation model
 
 Astrolabe
-- Status: missing
+- Status: spec-only
 - Target: Tier 1 -> Tier 2
-- Assets: none
+- Assets: docs/simulation/specs/astrolabe_spec.md
 - Notes: use simplified spherical model with reference tables
 
 -------------------------------------------------------------------------------
