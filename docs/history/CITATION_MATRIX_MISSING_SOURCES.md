@@ -76,8 +76,11 @@ Quipu / khipu
 - Primary target: Harvard Khipu Database Project (khipudatabase.com)
   Access: DNS failed from environment. Status: blocked
 - Primary target: Khipu Field Guide datafiles (Internet Archive)
-  Access: https://archive.org/details/KFGdatafiles. Status: online
-  Local: not cached (many xlsx files)
+  Access: https://archive.org/details/KFGdatafiles. Status: local (partial)
+  Local: docs/sources/cache/quipu/KFGdatafiles/KFGdatafiles_meta.xml
+  Local: docs/sources/cache/quipu/KFGdatafiles/KFGdatafiles_files.xml
+  Local: docs/sources/cache/quipu/KFGdatafiles/QU001.xlsx
+  Local: docs/sources/cache/quipu/KFGdatafiles/UR001.xlsx
 - Primary target: Harvard Dataverse quipu datasets
   Access: API reachable but search results not artifact-focused. Status: partial
 - Secondary: Urton (2003) Signs of the Inka Khipu
@@ -145,7 +148,8 @@ Babbage/Ada core (already covered)
 - Reproduction target: Fourmilab high-resolution Note G diagram (Table A.2)
   Access: https://www.fourmilab.ch/babbage/figures/menat6_1-5k.png and menat6_2k.png. Status: local
   Local: docs/sources/cache/Fourmilab_menat6_1-5k.png, docs/sources/cache/Fourmilab_menat6_2k.png, docs/sources/cache/Fourmilab_menat6ps.zip
-- Gap: Note G Table A.2 still only available as raster (PDF); no machine-readable transcription. Status: missing
+- Note G Table A.2 transcription extracted from high-res raster. Status: local
+  Local: docs/simulation/NOTE_G_TRANSCRIPTION.md
 
 -------------------------------------------------------------------------------
 

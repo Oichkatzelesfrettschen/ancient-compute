@@ -8,6 +8,34 @@ Conventions
 - Graph notation uses ASCII: [Input] -> (Op) -> {State} -> (Op) -> [Output]
 - Each graph is deterministic and testable with discrete steps, even for analog devices.
 
+Schema (canonical)
+- Node types: input, state, op, output
+- Edge: directed, labeled with data or control flow
+- Minimum fields:
+  - id: stable identifier (snake_case)
+  - type: input|state|op|output
+  - label: short human-readable name
+  - deps: list of upstream node ids
+  - notes: constraints or invariants (optional)
+
+Example (pseudo-YAML)
+graph:
+  - id: input_event
+    type: input
+    label: Event
+  - id: add_mark
+    type: op
+    label: add_mark
+    deps: [input_event]
+  - id: marks
+    type: state
+    label: marks
+    deps: [add_mark]
+  - id: tally_string
+    type: output
+    label: tally_string
+    deps: [marks]
+
 -------------------------------------------------------------------------------
 
 1) Tally Sticks / Tally Marks
@@ -171,6 +199,27 @@ Logic graph
 Suggested tests
 - Add/multiply program produces correct output
 - Ada Lovelace Bernoulli program (Note G) matches known values
+
+-------------------------------------------------------------------------------
+
+9a) Ada Lovelace Note G (Bernoulli numbers, Table A.2)
+
+Core logic
+- Inputs: n (target index), initial constants for V1..V7, card deck (Ops 1..25)
+- State: V1..V24 columns, A0/A1/A3 accumulators, B-series results
+- Operations: Op1-12 init, Op13-23 repeat loop, Op24 output, Op25 variable-card reset
+- Outputs: B1, B3, B5, ... B(2n-1)
+
+Logic graph (high level)
+[n + initial V] -> (Ops 1..12 init) -> {A0, A1, B1}
+{A0,A1,B1} -> (Ops 13..23 loop) -> {A3, B3, ...}
+{loop state} -> (Op24 output) -> [B(2n-1)]
+{state} -> (Op25 reset) -> {next iteration}
+
+Suggested tests
+- For n=1, output B1 = -1/2
+- For n=2, output B3 = 1/6 (note: see errata references)
+- Cross-check Op21/Op24 placement against docs/simulation/NOTE_G_TRANSCRIPTION.md
 
 -------------------------------------------------------------------------------
 

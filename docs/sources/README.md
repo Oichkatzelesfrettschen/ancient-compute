@@ -49,7 +49,7 @@ cache/17_Montana_Binary_Number_System_Development.pdf    (Computing history)
 
 ## What's Included
 
-### Local Cache (243 MB, 28 PDF + 16 TXT + 9 HTML + 2 JSON + 2 ZIP + 2 SH + 28 PNG)
+### Local Cache (243 MB, 28 PDF + 16 TXT + 9 HTML + 2 JSON + 2 ZIP + 2 SH + 28 PNG + 2 XML + 2 XLSX)
 
 **Science Museum Official Documentation** (54 MB)
 - Complete technical specifications of the reconstructed Difference Engine No. 2

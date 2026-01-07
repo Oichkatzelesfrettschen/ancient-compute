@@ -1,0 +1,5 @@
+mechanism,subsystem,part_id,part_name,material,qty,dimensions,tolerance,fabrication,supplier,unit_cost_gbp,notes
+Pascaline,Adder,PAS-001,Digit wheel,brass,8,TBD,TBD,cast,TBD,TBD,placeholder
+Leibniz Stepped Reckoner,Drum,LEI-001,Stepped drum,steel,1,TBD,TBD,milled,TBD,TBD,placeholder
+Jacquard Loom,Card Feed,JAC-001,Card chain,cardboard,1,TBD,TBD,cut,TBD,TBD,placeholder
+Antikythera Mechanism,Gear Train,ANT-001,Main gear,bronze,1,TBD,TBD,cast,TBD,TBD,placeholder

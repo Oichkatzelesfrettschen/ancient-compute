@@ -16,9 +16,9 @@ Legend
 Mechanism | Status | Target Tier | Current Assets | Notes
 
 Tally marks / tally sticks
-- Status: missing
+- Status: implemented
 - Target: Tier 1
-- Assets: content/module0 exercises, no emulator code
+- Assets: backend/src/emulator/tally_marks.py, backend/tests/unit/test_tally_marks.py
 - Notes: logic graph in docs/simulation/LOGIC_GRAPHS.md
 
 Clay tokens / bullae

@@ -1,0 +1,3 @@
+mechanism,subsystem,part_id,part_name,material,qty,dimensions,tolerance,fabrication,supplier,unit_cost_gbp,notes
+Babbage Analytical Engine,Mill,AE-MILL-001,Main gear,brass,1,TBD,TBD,milled,TBD,TBD,placeholder
+Babbage Analytical Engine,Store,AE-STORE-001,Column frame,steel,1,TBD,TBD,milled,TBD,TBD,placeholder

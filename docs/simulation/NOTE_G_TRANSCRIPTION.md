@@ -7,6 +7,8 @@ Sources (local cache)
 - docs/sources/cache/Fourmilab_notegt2.png
 - docs/sources/cache/Fourmilab_t6clip.png
 - docs/sources/cache/07_Robins_Ada_and_First_Computer.pdf
+Canonical deck spec
+- docs/simulation/NOTE_G_DECK.yaml
 
 Cycle notation (from Fourmilab notegt1/notegt2 images)
 
@@ -36,8 +38,12 @@ Table A.2 / diagram sources
 - Robins PDF page 4 contains a high-contrast reprint (raster).
 - Fourmilab provides a higher-resolution diagram (menat6_1-5k.png, menat6_2k.png) and PostScript (menat6ps.zip).
 
+Known errata (from Robins / secondary notes)
+- Operation 21 denominator should be 4, not 3 (Ada's program note).
+- Variable tracking: the deck does not carry an explicit iteration counter; V10 is reused.
+
 Open gaps
-- Table A.2 row-by-row transcription still missing.
+- Table A.2 transcription captured; next step is executable deck runner.
 - T6 clip (Fourmilab_t6clip.png) is not OCRable; manual transcription needed.
 
 Working transcription: Table A.2 (rows 1-25)
