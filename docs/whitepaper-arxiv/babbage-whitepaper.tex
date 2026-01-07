@@ -222,6 +222,22 @@ Asynchronous notifications via dedicated mechanical flip-flops or flag registers
 \section{Manufacturing Specifications and Bill of Materials}
 \label{sec:manufacturing}
 
+\subsection{Repository BOM Schema and Emulator Scope}
+
+This project now maintains a machine-readable bill of materials schema and
+per-mechanism seed CSVs to support reproducible estimates and cross-mechanism
+comparisons. The canonical schema is captured in
+\texttt{docs/simulation/BOM\_SCHEMA.md}, with seed entries in
+\texttt{docs/simulation/bom\_babbage.csv} and
+\texttt{docs/simulation/bom\_other.csv}. These files are intentionally sparse
+placeholders pending primary-source dimensions and tolerances.
+
+The emulator scope has been broadened beyond the Analytical Engine to include
+logic-only models for non-Babbage mechanisms (tally marks, clay tokens, abacus,
+quipu, Antikythera, Pascaline, Leibniz, Jacquard loom, slide rule, astrolabe).
+See \texttt{docs/simulation/EMULATOR\_COVERAGE\_MATRIX.md} for current
+implementation status and target fidelity.
+
 \subsection{Component Count}
 
 \begin{table}[h]

@@ -70,10 +70,16 @@ Babbage Analytical Engine (base)
 - Notes: op set includes historical + extensions; needs tier gating
 
 Ada Lovelace Bernoulli deck
-- Status: spec-only
+- Status: implemented
 - Target: Tier 3
-- Assets: Menabrea 1843 PDF + Fourmilab Note G images; no canonical deck fixture
-- Notes: create test deck and expected outputs
+- Assets: docs/simulation/NOTE_G_DECK.yaml, backend/src/emulator/note_g_deck.py
+- Notes: deck runner executes single pass; loop semantics still TODO
+
+Ada Lovelace extensions beyond Note G
+- Status: missing
+- Target: Tier 1 -> Tier 2
+- Assets: docs/simulation/ADA_EXTENSIONS.md
+- Notes: extract algorithm steps from Notes A-F/H/I where applicable
 
 Difference Engine No. 2 (DE2)
 - Status: implemented
@@ -142,9 +148,9 @@ In-materio computing
 -------------------------------------------------------------------------------
 
 Immediate gaps
-- No emulator modules for non-Babbage mechanisms.
-- No shared emulator interface for logic-only models.
-- No canonical fixtures for Ada Lovelace Note G program.
+- No emulator modules for most non-Babbage mechanisms.
+- Shared emulator interface defined; implementations pending.
+- Note G deck fixture exists; loop semantics pending.
 
 Recommended next step
 - Define a shared emulator interface (step(), run(), state(), reset())
