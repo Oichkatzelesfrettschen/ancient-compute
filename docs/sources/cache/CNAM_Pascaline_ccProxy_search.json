@@ -1,0 +1,2749 @@
+{
+  "records": {
+    "record": [
+      {
+        "metadata": {
+          "publisher": "CollectionConnection",
+          "recordnumber": "1",
+          "dcls": {}
+        },
+        "data": {
+          "record": {
+            "deeplink": "http://163.173.128.91/?queries=query=search=N°%20d'inventaire=[C-2008-0166-]&showtype=record",
+            "component": [
+              {
+                "componentid": "128087",
+                "componentname": "Reproduction de la machine arithmétique de Pascal dite la Pascaline",
+                "componentnumber": "C-2008-0166-C01-"
+              },
+              {
+                "componentid": "149823",
+                "componentname": "Reproduction de la machine arithmétique de Pascal dite la Pascaline : coffret",
+                "componentnumber": "C-2008-0166-C02-"
+              },
+              {
+                "componentid": "149824",
+                "componentname": "Reproduction de la machine arithmétique de Pascal dite la Pascaline : stylet",
+                "componentnumber": "C-2008-0166-C03-"
+              }
+            ],
+            "ObjDwords": "Calcul mécanique/Calcul informatique",
+            "inscribed": "Sur la face de la boîte de la machine un écusson ; Sur la partie supérieure de la machine arithmétique, inscriptions gravées dans le laiton : Dix de Mille [espace] Mille [espace] Centaines [espace] Dixaines [espace] Nombres ; Numérotation gravée sur les cinq cercles : 0 1 2 3 4 5 6 7 8 9 ; A l'intérieur de l'écrin, sur une tige en acier du mécanisme de la machine : CNAM [espace] N°7 [espace] 9 [2007] ; Sur la face interne du système de verrouillage et de charnières, sous la machine, écriture manuscrite : 13.",
+            "objectnumbersearch": "C-2008-0166-",
+            "sortname": [
+              "Charrier, Pierre",
+              "Marcel Industrie",
+              "Pascal, Blaise"
+            ],
+            "medium": "bois  Alliage ferreux  Textile  Laiton",
+            "markings": "L'ensemble se compose de la machine, d'un styler et d'un coffret en deux parties",
+            "datebegin": "2007",
+            "catalogueisodate": "2024-11-19",
+            "entereddate": "07/02/2008 14:19:38",
+            "cataloguer": "Pierre Poulain",
+            "thesthemesrelated": "Calcul mécanique/Calcul informatique",
+            "ThesTerm": [
+              {
+                "TermCN": "Calcul mécanique/Calcul informatique MAM.AAA.638.002",
+                "ThesTerm": "Calcul mécanique/Calcul informatique",
+                "TermPath": "Calcul mécanique/Calcul informatique < Thèmes < CNAM",
+                "CN": "MAM.AAA.638.002",
+                "TermPathPart": [
+                  {
+                    "TermCN": "CNAM MAM",
+                    "GuideTerm": "0",
+                    "CN": "MAM",
+                    "TermPathPart": "CNAM"
+                  },
+                  {
+                    "TermCN": "Thèmes MAM.AAA",
+                    "GuideTerm": "0",
+                    "CN": "MAM.AAA",
+                    "TermPathPart": "Thèmes"
+                  },
+                  {
+                    "TermCN": "Instrument scientifique MAM.AAA.638",
+                    "GuideTerm": "1",
+                    "CN": "MAM.AAA.638",
+                    "TermPathPart": "Instrument scientifique"
+                  },
+                  {
+                    "TermCN": "Calcul mécanique/Calcul informatique MAM.AAA.638.002",
+                    "GuideTerm": "0",
+                    "CN": "MAM.AAA.638.002",
+                    "TermPathPart": "Calcul mécanique/Calcul informatique"
+                  }
+                ],
+                "Type": "Thèmes"
+              },
+              {
+                "TermCN": "Démonstration MAM.018.000.000",
+                "ThesTerm": "Démonstration",
+                "TermPath": "Démonstration < Objet Cnam < Classification Département < CNAM",
+                "CN": "MAM.018.000.000",
+                "TermPathPart": [
+                  {
+                    "TermCN": "CNAM MAM",
+                    "GuideTerm": "0",
+                    "CN": "MAM",
+                    "TermPathPart": "CNAM"
+                  },
+                  {
+                    "TermCN": "Classification Département MAM.018",
+                    "GuideTerm": "0",
+                    "CN": "MAM.018",
+                    "TermPathPart": "Classification Département"
+                  },
+                  {
+                    "TermCN": "Objet Cnam MAM.018.000",
+                    "GuideTerm": "0",
+                    "CN": "MAM.018.000",
+                    "TermPathPart": "Objet Cnam"
+                  },
+                  {
+                    "TermCN": "Démonstration MAM.018.000.000",
+                    "GuideTerm": "0",
+                    "CN": "MAM.018.000.000",
+                    "TermPathPart": "Démonstration"
+                  }
+                ],
+                "Type": "xGestion des numéro d'inventaire"
+              },
+              {
+                "TermCN": "Objet grandeur réel MAM.017.002",
+                "ThesTerm": "Objet grandeur réel",
+                "TermPath": "Objet grandeur réel < Classification Générale- Domaine Nature < CNAM",
+                "CN": "MAM.017.002",
+                "TermPathPart": [
+                  {
+                    "TermCN": "CNAM MAM",
+                    "GuideTerm": "0",
+                    "CN": "MAM",
+                    "TermPathPart": "CNAM"
+                  },
+                  {
+                    "TermCN": "Classification Générale- Domaine Nature MAM.017",
+                    "GuideTerm": "0",
+                    "CN": "MAM.017",
+                    "TermPathPart": "Classification Générale- Domaine Nature"
+                  },
+                  {
+                    "TermCN": "Objet grandeur réel MAM.017.002",
+                    "GuideTerm": "0",
+                    "CN": "MAM.017.002",
+                    "TermPathPart": "Objet grandeur réel"
+                  }
+                ],
+                "Type": "xClassification Générale- Domaine Nature"
+              },
+              {
+                "TermCN": "Laiton MAM.AAB.059.029.000.001",
+                "ThesTerm": "Laiton",
+                "TermPath": "Laiton < Alliage cuivreux < Materiaux < CNAM",
+                "CN": "MAM.AAB.059.029.000.001",
+                "TermPathPart": [
+                  {
+                    "TermCN": "CNAM MAM",
+                    "GuideTerm": "0",
+                    "CN": "MAM",
+                    "TermPathPart": "CNAM"
+                  },
+                  {
+                    "TermCN": "Materiaux MAM.AAB",
+                    "GuideTerm": "0",
+                    "CN": "MAM.AAB",
+                    "TermPathPart": "Materiaux"
+                  },
+                  {
+                    "TermCN": "Matériau métallique MAM.AAB.059",
+                    "GuideTerm": "1",
+                    "CN": "MAM.AAB.059",
+                    "TermPathPart": "Matériau métallique"
+                  },
+                  {
+                    "TermCN": "Alliage MAM.AAB.059.029",
+                    "GuideTerm": "1",
+                    "CN": "MAM.AAB.059.029",
+                    "TermPathPart": "Alliage"
+                  },
+                  {
+                    "TermCN": "Alliage cuivreux MAM.AAB.059.029.000",
+                    "GuideTerm": "0",
+                    "CN": "MAM.AAB.059.029.000",
+                    "TermPathPart": "Alliage cuivreux"
+                  },
+                  {
+                    "TermCN": "Laiton MAM.AAB.059.029.000.001",
+                    "GuideTerm": "0",
+                    "CN": "MAM.AAB.059.029.000.001",
+                    "TermPathPart": "Laiton"
+                  }
+                ],
+                "Type": "Matériaux et techniques"
+              },
+              {
+                "TermCN": "Alliage ferreux MAM.AAB.059.029.001",
+                "ThesTerm": "Alliage ferreux",
+                "TermPath": "Alliage ferreux < Materiaux < CNAM",
+                "CN": "MAM.AAB.059.029.001",
+                "TermPathPart": [
+                  {
+                    "TermCN": "CNAM MAM",
+                    "GuideTerm": "0",
+                    "CN": "MAM",
+                    "TermPathPart": "CNAM"
+                  },
+                  {
+                    "TermCN": "Materiaux MAM.AAB",
+                    "GuideTerm": "0",
+                    "CN": "MAM.AAB",
+                    "TermPathPart": "Materiaux"
+                  },
+                  {
+                    "TermCN": "Matériau métallique MAM.AAB.059",
+                    "GuideTerm": "1",
+                    "CN": "MAM.AAB.059",
+                    "TermPathPart": "Matériau métallique"
+                  },
+                  {
+                    "TermCN": "Alliage MAM.AAB.059.029",
+                    "GuideTerm": "1",
+                    "CN": "MAM.AAB.059.029",
+                    "TermPathPart": "Alliage"
+                  },
+                  {
+                    "TermCN": "Alliage ferreux MAM.AAB.059.029.001",
+                    "GuideTerm": "0",
+                    "CN": "MAM.AAB.059.029.001",
+                    "TermPathPart": "Alliage ferreux"
+                  }
+                ],
+                "Type": "Matériaux et techniques"
+              }
+            ],
+            "imageurl": "http://163.173.128.91/cc/imageproxy.aspx?server=localhost&port=9952&filename=images/ccImages/p_demos-0166_inve2008_001.jpg",
+            "sorttitle": "REPRODUCTION DE LA MACHINE ARITHMÉTIQUE DE PASCAL DITE LA PASCALINE",
+            "condition": "3. Bon état (2008-02-07)",
+            "creator": [
+              {
+                "RoleTypeID": "1",
+                "LastName": "Charrier",
+                "creator": "Pierre Charrier",
+                "DisplayOrder": "1",
+                "ConstituentID": "14962",
+                "Role": "Auteur matériel",
+                "FirstName": "Pierre",
+                "AlphaSort": "Charrier, Pierre"
+              },
+              {
+                "RoleTypeID": "1",
+                "creator": "Marcel Industrie",
+                "DisplayOrder": "3",
+                "ConstituentID": "15500",
+                "Role": "Personne mentionnée",
+                "AlphaSort": "Marcel Industrie"
+              },
+              {
+                "RoleTypeID": "1",
+                "LastName": "Pascal",
+                "position": "Mathématicien, physicien, inventeur",
+                "creator": "Blaise Pascal",
+                "Biography": "Enfant précoce, il est éduqué par son père. Les premiers travaux de Pascal concernent les sciences naturelles et appliquées. Il contribue de manière importante à l’étude des fluides et clarifie les concepts de pression et de vide en étendant le travail de Torricelli. Il est l'auteur de textes importants sur la méthode scientifique. Mathématicien de premier ordre, il crée deux nouveaux champs de recherche majeurs :- À 16 ans, il publie un traité de géométrie projective ; À 19 ans, il invente la première machine à calculer, la développe, puis présente à ses contemporains sa pascaline achevée ; À 31 ans, il développe une méthode de résolution du « problème des partis » qui, donnant naissance au cours du XVIIIe siècle au calcul des probabilités, influencera fortement les théories économiques modernes et les sciences sociales. https://fr.wikipedia.org/wiki/Blaise_Pascal",
+                "DisplayOrder": "2",
+                "ConstituentID": "10194",
+                "displaydate": "1623 - 1662",
+                "Role": "Auteur intellectuel",
+                "FirstName": "Blaise ",
+                "AlphaSort": "Pascal, Blaise"
+              }
+            ],
+            "Obj_Dwords": [
+              {
+                "num": "1",
+                "Obj_Dwords": "reproduction"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "machine"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "arithmétique"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "pascal"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "dite"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "pascaline"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "bois"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "alliage"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "ferreux"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "textile"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "laiton"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "réplique"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "d'une"
+              },
+              {
+                "num": "7",
+                "Obj_Dwords": "machine"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "calculer"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "blaise"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "pascal"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "tat"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "fonctionnement"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "arithmétique"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "conservée"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "coffret"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "bois"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "muni"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "poignées"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "laiton"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "stylet"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "conserv"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "permet"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "manipulation"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "machine. une"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "ouverture"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "située"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "fond"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "d'en"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "voir"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "mécanisme. la"
+              },
+              {
+                "num": "4",
+                "Obj_Dwords": "partie"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "supérieure"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "dispose"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "d'un"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "totalisateur"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "constitu"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "cinq"
+              },
+              {
+                "num": "3",
+                "Obj_Dwords": "cylindres"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "représentant"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "dix"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "milles"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "centaines"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "dizaines"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "unit"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "portant"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "chacun"
+              },
+              {
+                "num": "3",
+                "Obj_Dwords": "chiffres"
+              },
+              {
+                "num": "4",
+                "Obj_Dwords": "ordre"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "croissant"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "cylindre"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "l'addition"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "multiplication"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "décroissant"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "inférieure"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "soustraction"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "division"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "cette"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "sélection"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "se"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "biais"
+              },
+              {
+                "num": "3",
+                "Obj_Dwords": "lamelle"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "mobile"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "position"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "basse"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "affiche"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "résultats"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "haute"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "ne"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "tournent"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "seul"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "sens. l'inscripteur"
+              },
+              {
+                "num": "3",
+                "Obj_Dwords": "situ"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "galement"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "tambours"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "reliés"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "aux"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "chiffrés"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "engrenages"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "l'inscripteur"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "manipule"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "bois. ainsi"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "lorsque"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "défilent"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "qu'un"
+              },
+              {
+                "num": "4",
+                "Obj_Dwords": "tambour"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "effectue"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "tour"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "complet"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "moment"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "passage"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "retenue"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "s'ajoute"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "automatiquement"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "gauche"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "passe"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "retire"
+              }
+            ],
+            "lastupdate": "07/01/2026 00:00:05",
+            "virtuel": "Non",
+            "carteltitle": "Reproduction de la machine arithmétique de Pascal dite la Pascaline",
+            "department": "Objet Cnam",
+            "sortnumber": "C       2008  166",
+            "thesmaterial": [
+              "Bois",
+              "Alliage ferreux",
+              "Textile",
+              "Laiton"
+            ],
+            "carteldated": "2007",
+            "titleorobjectname": "Reproduction de la machine arithmétique de Pascal dite la Pascaline",
+            "expose": "Non",
+            "image": {
+              "copyright": "© Musée des arts et métiers-Cnam / Photo Elodie Pignol",
+              "image": "p_demos-0166_inve2008_001.jpg",
+              "rank": "1",
+              "imagecopy": "\\\\163.173.62.35\\Media\\Photos de travail\\Inventaire\\p_demos-0166_inve2008_001.jpg",
+              "restrictions": "Droits réservés - Aucun usage autorisé"
+            },
+            "description": "Réplique d'une machine à calculer de Blaise Pascal, en état de fonctionnement. La machine arithmétique est conservée dans un coffret en bois, muni de deux poignées en laiton. Un stylet en bois, conservé dans le même coffret, permet la manipulation de la machine. Une ouverture située au fond la machine à calculer permet d'en voir le mécanisme. La partie supérieure de la machine dispose d'un totalisateur constitué de cinq cylindres (représentant les dix milles,  milles, centaines, dizaines et unité) portant chacun les chiffres de 1 à 9 en ordre croissant dans la partie supérieure du cylindre, pour l'addition et la multiplication, et en ordre décroissant dans la partie inférieure du cylindre, pour la soustraction et la division. Cette sélection se fait par le biais d'une lamelle mobile en laiton : si la lamelle est en position basse, la machine affiche les résultats de l'addition et de la multiplication, si la lamelle est en position haute, la machine affiche les résultats de la soustraction et de la division. Les cylindres ne tournent donc que dans un seul sens. L'inscripteur est situé dans la partie inférieure de la machine, il est également constitué de cinq tambours, reliés aux cylindres chiffrés du totalisateur par des engrenages. L'inscripteur se manipule avec le stylet en bois. Ainsi, lorsque les chiffres défilent en ordre croissant et qu'un tambour effectue un tour complet, au moment du passage de 9 à 0, une retenue s'ajoute automatiquement sur le tambour situé à sa gauche, et lorsque les chiffres défilent en ordre décroissant et qu'un tambour effectue un tour complet, au moment du passage de 0 à 9, une retenue passe sur le tambour situé à sa gauche qui retire automatiquement une unité.",
+            "relatedid": "128086",
+            "dimensiondate": "Dimensions de la machine: 10,6 × 28,3 × 14,3 cm, 3,6 kg.<br>Poids coffret et machine.: 4,63 kg. (2008-02-07)",
+            "conlinkedtoacquisitions": "Pierre Charrier",
+            "accessionmethod": "Achat",
+            "avecimage": "Uniquement avec images",
+            "location": [
+              {
+                "description": "Tiroir",
+                "location": "Réserves",
+                "site": "Réserves"
+              },
+              {
+                "description": "Tiroir",
+                "location": "Réserves",
+                "site": "Réserves"
+              },
+              {
+                "description": "Tiroir",
+                "location": "Réserves",
+                "site": "Réserves"
+              }
+            ],
+            "recordtypeshow": "Objects",
+            "conlinkedtoobjects": [
+              "Pierre Charrier",
+              "Marcel Industrie",
+              "Blaise Pascal"
+            ],
+            "cartellocdescr": [
+              "Non exposé actuellement",
+              "Non exposé actuellement",
+              "Non exposé actuellement"
+            ],
+            "titlesort": "Reproduction de la machine arithmétique de Pascal dite la Pascali",
+            "title": {
+              "titleshort": "Reproduction de la machine arithmétique de Pascal dite la Pascali",
+              "title": "Reproduction de la machine arithmétique de Pascal dite la Pascaline"
+            },
+            "displayname": [
+              "Pierre Charrier",
+              "Marcel Industrie",
+              "Blaise Pascal"
+            ],
+            "dated": "2007",
+            "dateend": "2007",
+            "thesthemes": "Calcul mécanique/Calcul informatique",
+            "ccobjectid": "128086",
+            "workpackage": [
+              {
+                "packageid": "957",
+                "workpackage": "AnciensDEMOS"
+              },
+              {
+                "packageid": "1026",
+                "workpackage": "ZA_Objets"
+              },
+              {
+                "packageid": "1028",
+                "workpackage": "ZA_nopics"
+              },
+              {
+                "packageid": "43338",
+                "workpackage": "CATALOGUE INSTRUMENTS CALCUL"
+              },
+              {
+                "packageid": "47188",
+                "workpackage": "ObjetsDemo"
+              },
+              {
+                "packageid": "94018",
+                "workpackage": "PbObjectStatus"
+              }
+            ],
+            "creatorname": [
+              {
+                "RoleTypeID": "1",
+                "DisplayOrder": "1",
+                "ConstituentID": "14962",
+                "Role": "Auteur matériel",
+                "creatorname": "Pierre Charrier",
+                "AlphaSort": "Charrier, Pierre"
+              },
+              {
+                "RoleTypeID": "1",
+                "DisplayOrder": "3",
+                "ConstituentID": "15500",
+                "Role": "Personne mentionnée",
+                "creatorname": "Marcel Industrie",
+                "AlphaSort": "Marcel Industrie"
+              },
+              {
+                "RoleTypeID": "1",
+                "DisplayOrder": "2",
+                "ConstituentID": "10194",
+                "DisplayDate": "1623 - 1662",
+                "Role": "Auteur intellectuel",
+                "creatorname": "Blaise Pascal",
+                "AlphaSort": "Pascal, Blaise"
+              }
+            ],
+            "relatedworks": "Dossier inventaire",
+            "cartelcreator": [
+              "Pierre Charrier",
+              "Blaise Pascal"
+            ],
+            "validationconservateur": "Non",
+            "classification": "Objet grandeur réelle",
+            "dimensions": "Dimensions de la machine: 10,6 × 28,3 × 14,3 cm, 3,6 kg. Poids coffret et machine.: 4,63 kg.",
+            "accountability": "1",
+            "recordtype": "objects",
+            "objectcount": "3",
+            "objectnumber": "C-2008-0166-",
+            "conservateur": "non renseignÃƒÂ©"
+          }
+        }
+      },
+      {
+        "metadata": {
+          "publisher": "CollectionConnection",
+          "recordnumber": "2",
+          "dcls": {}
+        },
+        "data": {
+          "record": {
+            "deeplink": "http://163.173.128.91/?queries=query=search=N°%20d'inventaire=[C-2008-0167-]&showtype=record",
+            "ObjDwords": "Calcul mécanique/Calcul informatique",
+            "inscribed": "Sur la face de la boîte de la machine un écusson ; Sur la partie supérieure de la machine arithmétique, inscriptions gravées dans le laiton : Dix de Mille [espace] Mille [espace] Centaines [espace] Dixaines [espace] Nombres ; Numérotation gravée sur les cinq cercles : 0 1 2 3 4 5 6 7 8 9 ; A l'intérieur de l'écrin, sur une tige en acier du mécanisme de la machine : CNAM [espace] N°.",
+            "objectnumbersearch": "C-2008-0167-",
+            "sortname": [
+              "Charrier, Pierre",
+              "Marcel Industrie",
+              "Pascal, Blaise"
+            ],
+            "medium": "Acier  bois  Fer  Laiton  Textile",
+            "datebegin": "2007",
+            "entereddate": "11/02/2008 16:32:16",
+            "thesthemesrelated": "Calcul mécanique/Calcul informatique",
+            "ThesTerm": [
+              {
+                "TermCN": "Fer MAM.AAB.059.021",
+                "ThesTerm": "Fer",
+                "TermPath": "Fer < Materiaux < CNAM",
+                "CN": "MAM.AAB.059.021",
+                "TermPathPart": [
+                  {
+                    "TermCN": "CNAM MAM",
+                    "GuideTerm": "0",
+                    "CN": "MAM",
+                    "TermPathPart": "CNAM"
+                  },
+                  {
+                    "TermCN": "Materiaux MAM.AAB",
+                    "GuideTerm": "0",
+                    "CN": "MAM.AAB",
+                    "TermPathPart": "Materiaux"
+                  },
+                  {
+                    "TermCN": "Matériau métallique MAM.AAB.059",
+                    "GuideTerm": "1",
+                    "CN": "MAM.AAB.059",
+                    "TermPathPart": "Matériau métallique"
+                  },
+                  {
+                    "TermCN": "Fer MAM.AAB.059.021",
+                    "GuideTerm": "0",
+                    "CN": "MAM.AAB.059.021",
+                    "TermPathPart": "Fer"
+                  }
+                ],
+                "Type": "Matériaux et techniques"
+              },
+              {
+                "TermCN": "Calcul mécanique/Calcul informatique MAM.AAA.638.002",
+                "ThesTerm": "Calcul mécanique/Calcul informatique",
+                "TermPath": "Calcul mécanique/Calcul informatique < Thèmes < CNAM",
+                "CN": "MAM.AAA.638.002",
+                "TermPathPart": [
+                  {
+                    "TermCN": "CNAM MAM",
+                    "GuideTerm": "0",
+                    "CN": "MAM",
+                    "TermPathPart": "CNAM"
+                  },
+                  {
+                    "TermCN": "Thèmes MAM.AAA",
+                    "GuideTerm": "0",
+                    "CN": "MAM.AAA",
+                    "TermPathPart": "Thèmes"
+                  },
+                  {
+                    "TermCN": "Instrument scientifique MAM.AAA.638",
+                    "GuideTerm": "1",
+                    "CN": "MAM.AAA.638",
+                    "TermPathPart": "Instrument scientifique"
+                  },
+                  {
+                    "TermCN": "Calcul mécanique/Calcul informatique MAM.AAA.638.002",
+                    "GuideTerm": "0",
+                    "CN": "MAM.AAA.638.002",
+                    "TermPathPart": "Calcul mécanique/Calcul informatique"
+                  }
+                ],
+                "Type": "Thèmes"
+              },
+              {
+                "TermCN": "Objet grandeur réel MAM.017.002",
+                "ThesTerm": "Objet grandeur réel",
+                "TermPath": "Objet grandeur réel < Classification Générale- Domaine Nature < CNAM",
+                "CN": "MAM.017.002",
+                "TermPathPart": [
+                  {
+                    "TermCN": "CNAM MAM",
+                    "GuideTerm": "0",
+                    "CN": "MAM",
+                    "TermPathPart": "CNAM"
+                  },
+                  {
+                    "TermCN": "Classification Générale- Domaine Nature MAM.017",
+                    "GuideTerm": "0",
+                    "CN": "MAM.017",
+                    "TermPathPart": "Classification Générale- Domaine Nature"
+                  },
+                  {
+                    "TermCN": "Objet grandeur réel MAM.017.002",
+                    "GuideTerm": "0",
+                    "CN": "MAM.017.002",
+                    "TermPathPart": "Objet grandeur réel"
+                  }
+                ],
+                "Type": "xClassification Générale- Domaine Nature"
+              },
+              {
+                "TermCN": "Démonstration MAM.018.000.000",
+                "ThesTerm": "Démonstration",
+                "TermPath": "Démonstration < Objet Cnam < Classification Département < CNAM",
+                "CN": "MAM.018.000.000",
+                "TermPathPart": [
+                  {
+                    "TermCN": "CNAM MAM",
+                    "GuideTerm": "0",
+                    "CN": "MAM",
+                    "TermPathPart": "CNAM"
+                  },
+                  {
+                    "TermCN": "Classification Département MAM.018",
+                    "GuideTerm": "0",
+                    "CN": "MAM.018",
+                    "TermPathPart": "Classification Département"
+                  },
+                  {
+                    "TermCN": "Objet Cnam MAM.018.000",
+                    "GuideTerm": "0",
+                    "CN": "MAM.018.000",
+                    "TermPathPart": "Objet Cnam"
+                  },
+                  {
+                    "TermCN": "Démonstration MAM.018.000.000",
+                    "GuideTerm": "0",
+                    "CN": "MAM.018.000.000",
+                    "TermPathPart": "Démonstration"
+                  }
+                ],
+                "Type": "xGestion des numéro d'inventaire"
+              },
+              {
+                "TermCN": "Laiton MAM.AAB.059.029.000.001",
+                "ThesTerm": "Laiton",
+                "TermPath": "Laiton < Alliage cuivreux < Materiaux < CNAM",
+                "CN": "MAM.AAB.059.029.000.001",
+                "TermPathPart": [
+                  {
+                    "TermCN": "CNAM MAM",
+                    "GuideTerm": "0",
+                    "CN": "MAM",
+                    "TermPathPart": "CNAM"
+                  },
+                  {
+                    "TermCN": "Materiaux MAM.AAB",
+                    "GuideTerm": "0",
+                    "CN": "MAM.AAB",
+                    "TermPathPart": "Materiaux"
+                  },
+                  {
+                    "TermCN": "Matériau métallique MAM.AAB.059",
+                    "GuideTerm": "1",
+                    "CN": "MAM.AAB.059",
+                    "TermPathPart": "Matériau métallique"
+                  },
+                  {
+                    "TermCN": "Alliage MAM.AAB.059.029",
+                    "GuideTerm": "1",
+                    "CN": "MAM.AAB.059.029",
+                    "TermPathPart": "Alliage"
+                  },
+                  {
+                    "TermCN": "Alliage cuivreux MAM.AAB.059.029.000",
+                    "GuideTerm": "0",
+                    "CN": "MAM.AAB.059.029.000",
+                    "TermPathPart": "Alliage cuivreux"
+                  },
+                  {
+                    "TermCN": "Laiton MAM.AAB.059.029.000.001",
+                    "GuideTerm": "0",
+                    "CN": "MAM.AAB.059.029.000.001",
+                    "TermPathPart": "Laiton"
+                  }
+                ],
+                "Type": "Matériaux et techniques"
+              },
+              {
+                "TermCN": "Acier MAM.AAB.059.029.001.000",
+                "ThesTerm": "Acier",
+                "TermPath": "Acier < Alliage ferreux < Materiaux < CNAM",
+                "CN": "MAM.AAB.059.029.001.000",
+                "TermPathPart": [
+                  {
+                    "TermCN": "CNAM MAM",
+                    "GuideTerm": "0",
+                    "CN": "MAM",
+                    "TermPathPart": "CNAM"
+                  },
+                  {
+                    "TermCN": "Materiaux MAM.AAB",
+                    "GuideTerm": "0",
+                    "CN": "MAM.AAB",
+                    "TermPathPart": "Materiaux"
+                  },
+                  {
+                    "TermCN": "Matériau métallique MAM.AAB.059",
+                    "GuideTerm": "1",
+                    "CN": "MAM.AAB.059",
+                    "TermPathPart": "Matériau métallique"
+                  },
+                  {
+                    "TermCN": "Alliage MAM.AAB.059.029",
+                    "GuideTerm": "1",
+                    "CN": "MAM.AAB.059.029",
+                    "TermPathPart": "Alliage"
+                  },
+                  {
+                    "TermCN": "Alliage ferreux MAM.AAB.059.029.001",
+                    "GuideTerm": "0",
+                    "CN": "MAM.AAB.059.029.001",
+                    "TermPathPart": "Alliage ferreux"
+                  },
+                  {
+                    "TermCN": "Acier MAM.AAB.059.029.001.000",
+                    "GuideTerm": "0",
+                    "CN": "MAM.AAB.059.029.001.000",
+                    "TermPathPart": "Acier"
+                  }
+                ],
+                "Type": "Matériaux et techniques"
+              }
+            ],
+            "imageurl": "http://163.173.128.91/cc/imageproxy.aspx?server=localhost&port=9952&filename=images/ccImages/p_demos-0167_inve2008_002.jpg",
+            "sorttitle": "REPRODUCTION DE LA MACHINE ARITHMÉTIQUE DE PASCAL DITE LA PASCALINE",
+            "condition": "3. Bon état (2008-02-11)",
+            "creator": [
+              {
+                "RoleTypeID": "1",
+                "LastName": "Charrier",
+                "creator": "Pierre Charrier",
+                "DisplayOrder": "1",
+                "ConstituentID": "14962",
+                "Role": "Auteur matériel",
+                "FirstName": "Pierre",
+                "AlphaSort": "Charrier, Pierre"
+              },
+              {
+                "RoleTypeID": "1",
+                "creator": "Marcel Industrie",
+                "DisplayOrder": "3",
+                "ConstituentID": "15500",
+                "Role": "Personne mentionnée",
+                "AlphaSort": "Marcel Industrie"
+              },
+              {
+                "RoleTypeID": "1",
+                "LastName": "Pascal",
+                "position": "Mathématicien, physicien, inventeur",
+                "creator": "Blaise Pascal",
+                "Biography": "Enfant précoce, il est éduqué par son père. Les premiers travaux de Pascal concernent les sciences naturelles et appliquées. Il contribue de manière importante à l’étude des fluides et clarifie les concepts de pression et de vide en étendant le travail de Torricelli. Il est l'auteur de textes importants sur la méthode scientifique. Mathématicien de premier ordre, il crée deux nouveaux champs de recherche majeurs :- À 16 ans, il publie un traité de géométrie projective ; À 19 ans, il invente la première machine à calculer, la développe, puis présente à ses contemporains sa pascaline achevée ; À 31 ans, il développe une méthode de résolution du « problème des partis » qui, donnant naissance au cours du XVIIIe siècle au calcul des probabilités, influencera fortement les théories économiques modernes et les sciences sociales. https://fr.wikipedia.org/wiki/Blaise_Pascal",
+                "DisplayOrder": "2",
+                "ConstituentID": "10194",
+                "displaydate": "1623 - 1662",
+                "Role": "Auteur intellectuel",
+                "FirstName": "Blaise ",
+                "AlphaSort": "Pascal, Blaise"
+              }
+            ],
+            "Obj_Dwords": [
+              {
+                "num": "1",
+                "Obj_Dwords": "reproduction"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "machine"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "arithmétique"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "pascal"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "dite"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "pascaline"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "acier"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "bois"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "fer"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "laiton"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "textile"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "réplique"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "d'une"
+              },
+              {
+                "num": "7",
+                "Obj_Dwords": "machine"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "calculer"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "blaise"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "pascal"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "tat"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "fonctionnement"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "arithmétique"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "conservée"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "coffret"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "bois"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "muni"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "poignées"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "laiton"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "stylet"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "conserv"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "permet"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "manipulation"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "machine. une"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "ouverture"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "située"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "fond"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "d'en"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "voir"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "mécanisme. la"
+              },
+              {
+                "num": "4",
+                "Obj_Dwords": "partie"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "supérieure"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "dispose"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "d'un"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "totalisateur"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "constitu"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "cinq"
+              },
+              {
+                "num": "3",
+                "Obj_Dwords": "cylindres"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "représentant"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "dix"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "milles"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "centaines"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "dizaines"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "unit"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "portant"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "chacun"
+              },
+              {
+                "num": "3",
+                "Obj_Dwords": "chiffres"
+              },
+              {
+                "num": "4",
+                "Obj_Dwords": "ordre"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "croissant"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "cylindre"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "l'addition"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "multiplication"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "décroissant"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "inférieure"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "soustraction"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "division"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "cette"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "sélection"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "se"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "biais"
+              },
+              {
+                "num": "3",
+                "Obj_Dwords": "lamelle"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "mobile"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "position"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "basse"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "affiche"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "résultats"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "haute"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "ne"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "tournent"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "seul"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "sens. l'inscripteur"
+              },
+              {
+                "num": "3",
+                "Obj_Dwords": "situ"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "galement"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "tambours"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "reliés"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "aux"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "chiffrés"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "engrenages"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "l'inscripteur"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "manipule"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "bois. ainsi"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "lorsque"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "défilent"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "qu'un"
+              },
+              {
+                "num": "4",
+                "Obj_Dwords": "tambour"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "effectue"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "tour"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "complet"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "moment"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "passage"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "retenue"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "s'ajoute"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "automatiquement"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "gauche"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "passe"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "retire"
+              }
+            ],
+            "lastupdate": "07/01/2026 00:00:05",
+            "virtuel": "Non",
+            "carteltitle": "Reproduction de la machine arithmétique de Pascal dite la Pascaline",
+            "department": "Objet Cnam",
+            "sortnumber": "C       2008  167",
+            "thesmaterial": [
+              "Acier",
+              "Bois",
+              "Fer",
+              "Laiton",
+              "Textile"
+            ],
+            "carteldated": "2007",
+            "titleorobjectname": "Reproduction de la machine arithmétique de Pascal dite la Pascaline",
+            "expose": "Non",
+            "image": {
+              "copyright": "© Musée des arts et métiers-Cnam / Photo Elodie Pignol",
+              "image": "p_demos-0167_inve2008_002.jpg",
+              "rank": "1",
+              "imagecopy": "\\\\163.173.62.35\\Media\\Photos de travail\\Inventaire\\p_demos-0167_inve2008_002.jpg",
+              "restrictions": "Droits réservés - Aucun usage autorisé"
+            },
+            "description": "Réplique d'une machine à calculer de Blaise Pascal, en état de fonctionnement. La machine arithmétique est conservée dans un coffret en bois, muni de deux poignées en laiton. Un stylet en bois, conservé dans le même coffret, permet la manipulation de la machine. Une ouverture située au fond la machine à calculer permet d'en voir le mécanisme. La partie supérieure de la machine dispose d'un totalisateur constitué de cinq cylindres (représentant les dix milles,  milles, centaines, dizaines et unité) portant chacun les chiffres de 1 à 9 en ordre croissant dans la partie supérieure du cylindre, pour l'addition et la multiplication, et en ordre décroissant dans la partie inférieure du cylindre, pour la soustraction et la division. Cette sélection se fait par le biais d'une lamelle mobile en laiton : si la lamelle est en position basse, la machine affiche les résultats de l'addition et de la multiplication, si la lamelle est en position haute, la machine affiche les résultats de la soustraction et de la division. Les cylindres ne tournent donc que dans un seul sens. L'inscripteur est situé dans la partie inférieure de la machine, il est également constitué de cinq tambours, reliés aux cylindres chiffrés du totalisateur par des engrenages. L'inscripteur se manipule avec le stylet en bois. Ainsi, lorsque les chiffres défilent en ordre croissant et qu'un tambour effectue un tour complet, au moment du passage de 9 à 0, une retenue s'ajoute automatiquement sur le tambour situé à sa gauche, et lorsque les chiffres défilent en ordre décroissant et qu'un tambour effectue un tour complet, au moment du passage de 0 à 9, une retenue passe sur le tambour situé à sa gauche qui retire automatiquement une unité.",
+            "relatedid": "128087",
+            "dimensiondate": "Dimensions de la machine: 9,5 x 28,5 x 14,5 cm, 3,5 kg<br>autre (Dimensions de l'écrin de la machine): 13,5 x 33,5 x 18,3 cm, 0,95 kg (5 5/16 x 13 3/16 x 7 3/16in., 2,09lb.)<br>autre (Dimensions du stylet): 12,5 x 0,6 cm (4 15/16in.) (2008-02-11)",
+            "conlinkedtoacquisitions": "Pierre Charrier",
+            "accessionmethod": "Achat",
+            "avecimage": "Uniquement avec images",
+            "location": {
+              "location": "Musée",
+              "site": "Musée"
+            },
+            "recordtypeshow": "Objects",
+            "conlinkedtoobjects": [
+              "Pierre Charrier",
+              "Marcel Industrie",
+              "Blaise Pascal"
+            ],
+            "cartellocdescr": "Non exposé actuellement",
+            "titlesort": "Reproduction de la machine arithmétique de Pascal dite la Pascali",
+            "title": {
+              "titleshort": "Reproduction de la machine arithmétique de Pascal dite la Pascali",
+              "title": "Reproduction de la machine arithmétique de Pascal dite la Pascaline"
+            },
+            "displayname": [
+              "Pierre Charrier",
+              "Marcel Industrie",
+              "Blaise Pascal"
+            ],
+            "dated": "2007",
+            "dateend": "2007",
+            "thesthemes": "Calcul mécanique/Calcul informatique",
+            "ccobjectid": "128087",
+            "workpackage": [
+              {
+                "packageid": "957",
+                "workpackage": "AnciensDEMOS"
+              },
+              {
+                "packageid": "41191",
+                "workpackage": "Modèles pédagogiques Musée - 2020-01-15"
+              },
+              {
+                "packageid": "43338",
+                "workpackage": "CATALOGUE INSTRUMENTS CALCUL"
+              },
+              {
+                "packageid": "47188",
+                "workpackage": "ObjetsDemo"
+              },
+              {
+                "packageid": "94018",
+                "workpackage": "PbObjectStatus"
+              }
+            ],
+            "creatorname": [
+              {
+                "RoleTypeID": "1",
+                "DisplayOrder": "1",
+                "ConstituentID": "14962",
+                "Role": "Auteur matériel",
+                "creatorname": "Pierre Charrier",
+                "AlphaSort": "Charrier, Pierre"
+              },
+              {
+                "RoleTypeID": "1",
+                "DisplayOrder": "3",
+                "ConstituentID": "15500",
+                "Role": "Personne mentionnée",
+                "creatorname": "Marcel Industrie",
+                "AlphaSort": "Marcel Industrie"
+              },
+              {
+                "RoleTypeID": "1",
+                "DisplayOrder": "2",
+                "ConstituentID": "10194",
+                "DisplayDate": "1623 - 1662",
+                "Role": "Auteur intellectuel",
+                "creatorname": "Blaise Pascal",
+                "AlphaSort": "Pascal, Blaise"
+              }
+            ],
+            "cartelcreator": [
+              "Pierre Charrier",
+              "Blaise Pascal"
+            ],
+            "validationconservateur": "Non",
+            "classification": "Objet grandeur réelle",
+            "dimensions": "Dimensions de la machine: 9,5 x 28,5 x 14,5 cm, 3,5 kg autre (Dimensions de l'écrin de la machine): 13,5 x 33,5 x 18,3 cm, 0,95 kg (5 5/16 x 13 3/16 x 7 3/16in., 2,09lb.) autre (Dimensions du stylet): 12,5 x 0,6 cm (4 15/16in.)",
+            "accountability": "1",
+            "recordtype": "objects",
+            "objectcount": "3",
+            "objectnumber": "C-2008-0167-",
+            "conservateur": "non renseignÃƒÂ©"
+          }
+        }
+      },
+      {
+        "metadata": {
+          "publisher": "CollectionConnection",
+          "recordnumber": "3",
+          "dcls": {}
+        },
+        "data": {
+          "record": {
+            "deeplink": "http://163.173.128.91/?queries=query=search=N°%20d'inventaire=[C-2008-0168-]&showtype=record",
+            "ObjDwords": "Calcul mécanique/Calcul informatique",
+            "inscribed": "Sur la face de la boîte de la machine un écusson ; Sur la partie supérieure de la machine arithmétique, inscriptions gravées dans le laiton : Dix de Mille [espace] Mille [espace] Centaines [espace] Dixaines [espace] Nombres ; Numérotation gravée sur les cinq cercles : 0 1 2 3 4 5 6 7 8 9 ; A l'intérieur de la boîte de la machine, inscription gravée sur une tige en acier du mécanisme de la machine : CNAM [espace] N°8 [espace] 2007.",
+            "objectnumbersearch": "C-2008-0168-",
+            "sortname": [
+              "Charrier, Pierre",
+              "Marcel Industrie",
+              "Pascal, Blaise"
+            ],
+            "medium": "Acier  bois  Fer  Laiton  Textile",
+            "datebegin": "2007",
+            "entereddate": "11/02/2008 16:52:07",
+            "thesthemesrelated": "Calcul mécanique/Calcul informatique",
+            "ThesTerm": [
+              {
+                "TermCN": "Calcul mécanique/Calcul informatique MAM.AAA.638.002",
+                "ThesTerm": "Calcul mécanique/Calcul informatique",
+                "TermPath": "Calcul mécanique/Calcul informatique < Thèmes < CNAM",
+                "CN": "MAM.AAA.638.002",
+                "TermPathPart": [
+                  {
+                    "TermCN": "CNAM MAM",
+                    "GuideTerm": "0",
+                    "CN": "MAM",
+                    "TermPathPart": "CNAM"
+                  },
+                  {
+                    "TermCN": "Thèmes MAM.AAA",
+                    "GuideTerm": "0",
+                    "CN": "MAM.AAA",
+                    "TermPathPart": "Thèmes"
+                  },
+                  {
+                    "TermCN": "Instrument scientifique MAM.AAA.638",
+                    "GuideTerm": "1",
+                    "CN": "MAM.AAA.638",
+                    "TermPathPart": "Instrument scientifique"
+                  },
+                  {
+                    "TermCN": "Calcul mécanique/Calcul informatique MAM.AAA.638.002",
+                    "GuideTerm": "0",
+                    "CN": "MAM.AAA.638.002",
+                    "TermPathPart": "Calcul mécanique/Calcul informatique"
+                  }
+                ],
+                "Type": "Thèmes"
+              },
+              {
+                "TermCN": "Objet grandeur réel MAM.017.002",
+                "ThesTerm": "Objet grandeur réel",
+                "TermPath": "Objet grandeur réel < Classification Générale- Domaine Nature < CNAM",
+                "CN": "MAM.017.002",
+                "TermPathPart": [
+                  {
+                    "TermCN": "CNAM MAM",
+                    "GuideTerm": "0",
+                    "CN": "MAM",
+                    "TermPathPart": "CNAM"
+                  },
+                  {
+                    "TermCN": "Classification Générale- Domaine Nature MAM.017",
+                    "GuideTerm": "0",
+                    "CN": "MAM.017",
+                    "TermPathPart": "Classification Générale- Domaine Nature"
+                  },
+                  {
+                    "TermCN": "Objet grandeur réel MAM.017.002",
+                    "GuideTerm": "0",
+                    "CN": "MAM.017.002",
+                    "TermPathPart": "Objet grandeur réel"
+                  }
+                ],
+                "Type": "xClassification Générale- Domaine Nature"
+              },
+              {
+                "TermCN": "Laiton MAM.AAB.059.029.000.001",
+                "ThesTerm": "Laiton",
+                "TermPath": "Laiton < Alliage cuivreux < Materiaux < CNAM",
+                "CN": "MAM.AAB.059.029.000.001",
+                "TermPathPart": [
+                  {
+                    "TermCN": "CNAM MAM",
+                    "GuideTerm": "0",
+                    "CN": "MAM",
+                    "TermPathPart": "CNAM"
+                  },
+                  {
+                    "TermCN": "Materiaux MAM.AAB",
+                    "GuideTerm": "0",
+                    "CN": "MAM.AAB",
+                    "TermPathPart": "Materiaux"
+                  },
+                  {
+                    "TermCN": "Matériau métallique MAM.AAB.059",
+                    "GuideTerm": "1",
+                    "CN": "MAM.AAB.059",
+                    "TermPathPart": "Matériau métallique"
+                  },
+                  {
+                    "TermCN": "Alliage MAM.AAB.059.029",
+                    "GuideTerm": "1",
+                    "CN": "MAM.AAB.059.029",
+                    "TermPathPart": "Alliage"
+                  },
+                  {
+                    "TermCN": "Alliage cuivreux MAM.AAB.059.029.000",
+                    "GuideTerm": "0",
+                    "CN": "MAM.AAB.059.029.000",
+                    "TermPathPart": "Alliage cuivreux"
+                  },
+                  {
+                    "TermCN": "Laiton MAM.AAB.059.029.000.001",
+                    "GuideTerm": "0",
+                    "CN": "MAM.AAB.059.029.000.001",
+                    "TermPathPart": "Laiton"
+                  }
+                ],
+                "Type": "Matériaux et techniques"
+              },
+              {
+                "TermCN": "Fer MAM.AAB.059.021",
+                "ThesTerm": "Fer",
+                "TermPath": "Fer < Materiaux < CNAM",
+                "CN": "MAM.AAB.059.021",
+                "TermPathPart": [
+                  {
+                    "TermCN": "CNAM MAM",
+                    "GuideTerm": "0",
+                    "CN": "MAM",
+                    "TermPathPart": "CNAM"
+                  },
+                  {
+                    "TermCN": "Materiaux MAM.AAB",
+                    "GuideTerm": "0",
+                    "CN": "MAM.AAB",
+                    "TermPathPart": "Materiaux"
+                  },
+                  {
+                    "TermCN": "Matériau métallique MAM.AAB.059",
+                    "GuideTerm": "1",
+                    "CN": "MAM.AAB.059",
+                    "TermPathPart": "Matériau métallique"
+                  },
+                  {
+                    "TermCN": "Fer MAM.AAB.059.021",
+                    "GuideTerm": "0",
+                    "CN": "MAM.AAB.059.021",
+                    "TermPathPart": "Fer"
+                  }
+                ],
+                "Type": "Matériaux et techniques"
+              },
+              {
+                "TermCN": "Acier MAM.AAB.059.029.001.000",
+                "ThesTerm": "Acier",
+                "TermPath": "Acier < Alliage ferreux < Materiaux < CNAM",
+                "CN": "MAM.AAB.059.029.001.000",
+                "TermPathPart": [
+                  {
+                    "TermCN": "CNAM MAM",
+                    "GuideTerm": "0",
+                    "CN": "MAM",
+                    "TermPathPart": "CNAM"
+                  },
+                  {
+                    "TermCN": "Materiaux MAM.AAB",
+                    "GuideTerm": "0",
+                    "CN": "MAM.AAB",
+                    "TermPathPart": "Materiaux"
+                  },
+                  {
+                    "TermCN": "Matériau métallique MAM.AAB.059",
+                    "GuideTerm": "1",
+                    "CN": "MAM.AAB.059",
+                    "TermPathPart": "Matériau métallique"
+                  },
+                  {
+                    "TermCN": "Alliage MAM.AAB.059.029",
+                    "GuideTerm": "1",
+                    "CN": "MAM.AAB.059.029",
+                    "TermPathPart": "Alliage"
+                  },
+                  {
+                    "TermCN": "Alliage ferreux MAM.AAB.059.029.001",
+                    "GuideTerm": "0",
+                    "CN": "MAM.AAB.059.029.001",
+                    "TermPathPart": "Alliage ferreux"
+                  },
+                  {
+                    "TermCN": "Acier MAM.AAB.059.029.001.000",
+                    "GuideTerm": "0",
+                    "CN": "MAM.AAB.059.029.001.000",
+                    "TermPathPart": "Acier"
+                  }
+                ],
+                "Type": "Matériaux et techniques"
+              },
+              {
+                "TermCN": "Démonstration MAM.018.000.000",
+                "ThesTerm": "Démonstration",
+                "TermPath": "Démonstration < Objet Cnam < Classification Département < CNAM",
+                "CN": "MAM.018.000.000",
+                "TermPathPart": [
+                  {
+                    "TermCN": "CNAM MAM",
+                    "GuideTerm": "0",
+                    "CN": "MAM",
+                    "TermPathPart": "CNAM"
+                  },
+                  {
+                    "TermCN": "Classification Département MAM.018",
+                    "GuideTerm": "0",
+                    "CN": "MAM.018",
+                    "TermPathPart": "Classification Département"
+                  },
+                  {
+                    "TermCN": "Objet Cnam MAM.018.000",
+                    "GuideTerm": "0",
+                    "CN": "MAM.018.000",
+                    "TermPathPart": "Objet Cnam"
+                  },
+                  {
+                    "TermCN": "Démonstration MAM.018.000.000",
+                    "GuideTerm": "0",
+                    "CN": "MAM.018.000.000",
+                    "TermPathPart": "Démonstration"
+                  }
+                ],
+                "Type": "xGestion des numéro d'inventaire"
+              }
+            ],
+            "imageurl": "http://163.173.128.91/cc/imageproxy.aspx?server=localhost&port=9952&filename=images/ccImages/p_demos-0168_inve2008_001.jpg",
+            "sorttitle": "REPRODUCTION DE LA MACHINE ARITHMÉTIQUE DE PASCAL DITE LA PASCALINE",
+            "condition": "3. Bon état (2008-02-11)",
+            "creator": [
+              {
+                "RoleTypeID": "1",
+                "LastName": "Charrier",
+                "creator": "Pierre Charrier",
+                "DisplayOrder": "1",
+                "ConstituentID": "14962",
+                "Role": "Auteur matériel",
+                "FirstName": "Pierre",
+                "AlphaSort": "Charrier, Pierre"
+              },
+              {
+                "RoleTypeID": "1",
+                "creator": "Marcel Industrie",
+                "DisplayOrder": "3",
+                "ConstituentID": "15500",
+                "Role": "Personne mentionnée",
+                "AlphaSort": "Marcel Industrie"
+              },
+              {
+                "RoleTypeID": "1",
+                "LastName": "Pascal",
+                "position": "Mathématicien, physicien, inventeur",
+                "creator": "Blaise Pascal",
+                "Biography": "Enfant précoce, il est éduqué par son père. Les premiers travaux de Pascal concernent les sciences naturelles et appliquées. Il contribue de manière importante à l’étude des fluides et clarifie les concepts de pression et de vide en étendant le travail de Torricelli. Il est l'auteur de textes importants sur la méthode scientifique. Mathématicien de premier ordre, il crée deux nouveaux champs de recherche majeurs :- À 16 ans, il publie un traité de géométrie projective ; À 19 ans, il invente la première machine à calculer, la développe, puis présente à ses contemporains sa pascaline achevée ; À 31 ans, il développe une méthode de résolution du « problème des partis » qui, donnant naissance au cours du XVIIIe siècle au calcul des probabilités, influencera fortement les théories économiques modernes et les sciences sociales. https://fr.wikipedia.org/wiki/Blaise_Pascal",
+                "DisplayOrder": "2",
+                "ConstituentID": "10194",
+                "displaydate": "1623 - 1662",
+                "Role": "Auteur intellectuel",
+                "FirstName": "Blaise ",
+                "AlphaSort": "Pascal, Blaise"
+              }
+            ],
+            "Obj_Dwords": [
+              {
+                "num": "1",
+                "Obj_Dwords": "reproduction"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "machine"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "arithmétique"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "pascal"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "dite"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "pascaline"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "acier"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "bois"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "fer"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "laiton"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "textile"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "réplique"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "d'une"
+              },
+              {
+                "num": "7",
+                "Obj_Dwords": "machine"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "calculer"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "blaise"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "pascal"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "tat"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "fonctionnement"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "arythmétique"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "conservée"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "coffret"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "bois"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "muni"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "poignées"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "laiton"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "stylet"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "conserv"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "permet"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "manipulation"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "machine. une"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "ouverture"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "située"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "fond"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "d'en"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "voir"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "mécanisme. la"
+              },
+              {
+                "num": "4",
+                "Obj_Dwords": "partie"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "supérieure"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "dispose"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "d'un"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "totalisateur"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "constitu"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "cinq"
+              },
+              {
+                "num": "3",
+                "Obj_Dwords": "cylindres"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "représentant"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "dix"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "milles"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "centaines"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "dizaines"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "unit"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "portant"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "chacun"
+              },
+              {
+                "num": "3",
+                "Obj_Dwords": "chiffres"
+              },
+              {
+                "num": "4",
+                "Obj_Dwords": "ordre"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "croissant"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "cylindre"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "l'addition"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "multiplication"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "décroissant"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "inférieure"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "soustraction"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "division"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "cette"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "sélection"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "se"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "biais"
+              },
+              {
+                "num": "3",
+                "Obj_Dwords": "lamelle"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "mobile"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "position"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "basse"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "affiche"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "résultats"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "haute"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "ne"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "tournent"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "seul"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "sens l'inscripteur"
+              },
+              {
+                "num": "3",
+                "Obj_Dwords": "situ"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "galement"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "tambours"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "reliés"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "aux"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "chiffrés"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "engrenages"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "l'inscripteur"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "manipule"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "bois. ainsi"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "lorsque"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "défilent"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "qu'un"
+              },
+              {
+                "num": "4",
+                "Obj_Dwords": "tambour"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "effectue"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "tour"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "complet"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "moment"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "passage"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "retenue"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "s'ajoute"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "automatiquement"
+              },
+              {
+                "num": "2",
+                "Obj_Dwords": "gauche"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "passe"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "retire"
+              }
+            ],
+            "lastupdate": "07/01/2026 00:00:05",
+            "virtuel": "Non",
+            "carteltitle": "Reproduction de la machine arithmétique de Pascal dite la Pascaline",
+            "department": "Objet Cnam",
+            "sortnumber": "C       2008  168",
+            "thesmaterial": [
+              "Acier",
+              "Bois",
+              "Fer",
+              "Laiton",
+              "Textile"
+            ],
+            "carteldated": "2007",
+            "titleorobjectname": "Reproduction de la machine arithmétique de Pascal dite la Pascaline",
+            "expose": "Non",
+            "image": {
+              "copyright": "© Musée des arts et métiers-Cnam / Photo Elodie Pignol",
+              "image": "p_demos-0168_inve2008_001.jpg",
+              "rank": "1",
+              "imagecopy": "\\\\163.173.62.35\\Media\\Photos de travail\\Inventaire\\p_demos-0168_inve2008_001.jpg",
+              "restrictions": "Droits réservés - Aucun usage autorisé"
+            },
+            "description": "Réplique d'une machine à calculer de Blaise Pascal, en état de fonctionnement. La machine arythmétique est conservée dans un coffret en bois, muni de deux poignées en laiton. Un stylet en bois, conservé dans le même coffret, permet la manipulation de la machine. Une ouverture située au fond la machine à calculer permet d'en voir le mécanisme. La partie supérieure de la machine dispose d'un totalisateur constitué de cinq cylindres (représentant les dix milles,  milles, centaines, dizaines et unité) portant chacun les chiffres de 1 à 9 en ordre croissant dans la partie supérieure du cylindre, pour l'addition et la multiplication, et en ordre décroissant dans la partie inférieure du cylindre, pour la soustraction et la division. Cette sélection se fait par le biais d'une lamelle mobile en laiton : si la lamelle est en position basse, la machine affiche les résultats de l'addition et de la multiplication, si la lamelle est en position haute, la machine affiche les résultats de la soustraction et de la division. Les cylindres ne tournent donc que dans un seul sens L'inscripteur est situé dans la partie inférieure de la machine, il est également constitué de cinq tambours, reliés aux cylindres chiffrés du totalisateur par des engrenages. L'inscripteur se manipule avec le stylet en bois. Ainsi, lorsque les chiffres défilent en ordre croissant et qu'un tambour effectue un tour complet, au moment du passage de 9 à 0, une retenue s'ajoute automatiquement sur le tambour situé à sa gauche, et lorsque les chiffres défilent en ordre décroissant et qu'un tambour effectue un tour complet, au moment du passage de 0 à 9, une retenue passe sur le tambour situé à sa gauche qui retire automatiquement une unité.",
+            "relatedid": "128088",
+            "dimensiondate": "Dimensions de la machine: 9,5 x 28,5 x 14,5 cm, 3,5 kg<br>autre (Dimensions de l'écrin de la machine): 13,5 x 33,5 x 18,3 cm, 0,95 kg (5 5/16 x 13 3/16 x 7 3/16in., 2,09lb.)<br>autre (Dimensions du stylet): 12,5 x 0,6 cm (4 15/16in.) (2008-02-11)",
+            "conlinkedtoacquisitions": "Pierre Charrier",
+            "accessionmethod": "Achat",
+            "avecimage": "Uniquement avec images",
+            "location": {
+              "location": "Musée",
+              "site": "Musée"
+            },
+            "recordtypeshow": "Objects",
+            "conlinkedtoobjects": [
+              "Pierre Charrier",
+              "Marcel Industrie",
+              "Blaise Pascal"
+            ],
+            "cartellocdescr": "Non exposé actuellement",
+            "titlesort": "Reproduction de la machine arithmétique de Pascal dite la Pascali",
+            "title": {
+              "titleshort": "Reproduction de la machine arithmétique de Pascal dite la Pascali",
+              "title": "Reproduction de la machine arithmétique de Pascal dite la Pascaline"
+            },
+            "displayname": [
+              "Pierre Charrier",
+              "Marcel Industrie",
+              "Blaise Pascal"
+            ],
+            "dated": "2007",
+            "dateend": "2007",
+            "thesthemes": "Calcul mécanique/Calcul informatique",
+            "ccobjectid": "128088",
+            "workpackage": [
+              {
+                "packageid": "957",
+                "workpackage": "AnciensDEMOS"
+              },
+              {
+                "packageid": "41191",
+                "workpackage": "Modèles pédagogiques Musée - 2020-01-15"
+              },
+              {
+                "packageid": "43338",
+                "workpackage": "CATALOGUE INSTRUMENTS CALCUL"
+              },
+              {
+                "packageid": "47188",
+                "workpackage": "ObjetsDemo"
+              },
+              {
+                "packageid": "94018",
+                "workpackage": "PbObjectStatus"
+              }
+            ],
+            "creatorname": [
+              {
+                "RoleTypeID": "1",
+                "DisplayOrder": "1",
+                "ConstituentID": "14962",
+                "Role": "Auteur matériel",
+                "creatorname": "Pierre Charrier",
+                "AlphaSort": "Charrier, Pierre"
+              },
+              {
+                "RoleTypeID": "1",
+                "DisplayOrder": "3",
+                "ConstituentID": "15500",
+                "Role": "Personne mentionnée",
+                "creatorname": "Marcel Industrie",
+                "AlphaSort": "Marcel Industrie"
+              },
+              {
+                "RoleTypeID": "1",
+                "DisplayOrder": "2",
+                "ConstituentID": "10194",
+                "DisplayDate": "1623 - 1662",
+                "Role": "Auteur intellectuel",
+                "creatorname": "Blaise Pascal",
+                "AlphaSort": "Pascal, Blaise"
+              }
+            ],
+            "cartelcreator": [
+              "Pierre Charrier",
+              "Blaise Pascal"
+            ],
+            "validationconservateur": "Non",
+            "classification": "Objet grandeur réelle",
+            "dimensions": "Dimensions de la machine: 9,5 x 28,5 x 14,5 cm, 3,5 kg autre (Dimensions de l'écrin de la machine): 13,5 x 33,5 x 18,3 cm, 0,95 kg (5 5/16 x 13 3/16 x 7 3/16in., 2,09lb.) autre (Dimensions du stylet): 12,5 x 0,6 cm (4 15/16in.)",
+            "accountability": "1",
+            "recordtype": "objects",
+            "objectcount": "3",
+            "objectnumber": "C-2008-0168-",
+            "conservateur": "non renseignÃƒÂ©"
+          }
+        }
+      },
+      {
+        "metadata": {
+          "publisher": "CollectionConnection",
+          "recordnumber": "4",
+          "dcls": {}
+        },
+        "data": {
+          "record": {
+            "deeplink": "http://163.173.128.91/?queries=query=search=N°%20d'inventaire=[C-2008-0253-]&showtype=record",
+            "objectnumbersearch": "C-2008-0253-",
+            "sortname": "Lycée professionnel Clément Ader",
+            "medium": "Acier  bois  Laiton  Fer  Verre",
+            "datebegin": "2006",
+            "entereddate": "10/03/2008 15:22:08",
+            "ThesTerm": [
+              {
+                "TermCN": "Modèle ou Maquette MAM.017.001",
+                "ThesTerm": "Modèle ou Maquette",
+                "TermPath": "Modèle ou Maquette < Classification Générale- Domaine Nature < CNAM",
+                "CN": "MAM.017.001",
+                "TermPathPart": [
+                  {
+                    "TermCN": "CNAM MAM",
+                    "GuideTerm": "0",
+                    "CN": "MAM",
+                    "TermPathPart": "CNAM"
+                  },
+                  {
+                    "TermCN": "Classification Générale- Domaine Nature MAM.017",
+                    "GuideTerm": "0",
+                    "CN": "MAM.017",
+                    "TermPathPart": "Classification Générale- Domaine Nature"
+                  },
+                  {
+                    "TermCN": "Modèle ou Maquette MAM.017.001",
+                    "GuideTerm": "0",
+                    "CN": "MAM.017.001",
+                    "TermPathPart": "Modèle ou Maquette"
+                  }
+                ],
+                "Type": "xClassification Générale- Domaine Nature"
+              },
+              {
+                "TermCN": "Acier MAM.AAB.059.029.001.000",
+                "ThesTerm": "Acier",
+                "TermPath": "Acier < Alliage ferreux < Materiaux < CNAM",
+                "CN": "MAM.AAB.059.029.001.000",
+                "TermPathPart": [
+                  {
+                    "TermCN": "CNAM MAM",
+                    "GuideTerm": "0",
+                    "CN": "MAM",
+                    "TermPathPart": "CNAM"
+                  },
+                  {
+                    "TermCN": "Materiaux MAM.AAB",
+                    "GuideTerm": "0",
+                    "CN": "MAM.AAB",
+                    "TermPathPart": "Materiaux"
+                  },
+                  {
+                    "TermCN": "Matériau métallique MAM.AAB.059",
+                    "GuideTerm": "1",
+                    "CN": "MAM.AAB.059",
+                    "TermPathPart": "Matériau métallique"
+                  },
+                  {
+                    "TermCN": "Alliage MAM.AAB.059.029",
+                    "GuideTerm": "1",
+                    "CN": "MAM.AAB.059.029",
+                    "TermPathPart": "Alliage"
+                  },
+                  {
+                    "TermCN": "Alliage ferreux MAM.AAB.059.029.001",
+                    "GuideTerm": "0",
+                    "CN": "MAM.AAB.059.029.001",
+                    "TermPathPart": "Alliage ferreux"
+                  },
+                  {
+                    "TermCN": "Acier MAM.AAB.059.029.001.000",
+                    "GuideTerm": "0",
+                    "CN": "MAM.AAB.059.029.001.000",
+                    "TermPathPart": "Acier"
+                  }
+                ],
+                "Type": "Matériaux et techniques"
+              },
+              {
+                "TermCN": "Démonstration MAM.018.000.000",
+                "ThesTerm": "Démonstration",
+                "TermPath": "Démonstration < Objet Cnam < Classification Département < CNAM",
+                "CN": "MAM.018.000.000",
+                "TermPathPart": [
+                  {
+                    "TermCN": "CNAM MAM",
+                    "GuideTerm": "0",
+                    "CN": "MAM",
+                    "TermPathPart": "CNAM"
+                  },
+                  {
+                    "TermCN": "Classification Département MAM.018",
+                    "GuideTerm": "0",
+                    "CN": "MAM.018",
+                    "TermPathPart": "Classification Département"
+                  },
+                  {
+                    "TermCN": "Objet Cnam MAM.018.000",
+                    "GuideTerm": "0",
+                    "CN": "MAM.018.000",
+                    "TermPathPart": "Objet Cnam"
+                  },
+                  {
+                    "TermCN": "Démonstration MAM.018.000.000",
+                    "GuideTerm": "0",
+                    "CN": "MAM.018.000.000",
+                    "TermPathPart": "Démonstration"
+                  }
+                ],
+                "Type": "xGestion des numéro d'inventaire"
+              },
+              {
+                "TermCN": "Laiton MAM.AAB.059.029.000.001",
+                "ThesTerm": "Laiton",
+                "TermPath": "Laiton < Alliage cuivreux < Materiaux < CNAM",
+                "CN": "MAM.AAB.059.029.000.001",
+                "TermPathPart": [
+                  {
+                    "TermCN": "CNAM MAM",
+                    "GuideTerm": "0",
+                    "CN": "MAM",
+                    "TermPathPart": "CNAM"
+                  },
+                  {
+                    "TermCN": "Materiaux MAM.AAB",
+                    "GuideTerm": "0",
+                    "CN": "MAM.AAB",
+                    "TermPathPart": "Materiaux"
+                  },
+                  {
+                    "TermCN": "Matériau métallique MAM.AAB.059",
+                    "GuideTerm": "1",
+                    "CN": "MAM.AAB.059",
+                    "TermPathPart": "Matériau métallique"
+                  },
+                  {
+                    "TermCN": "Alliage MAM.AAB.059.029",
+                    "GuideTerm": "1",
+                    "CN": "MAM.AAB.059.029",
+                    "TermPathPart": "Alliage"
+                  },
+                  {
+                    "TermCN": "Alliage cuivreux MAM.AAB.059.029.000",
+                    "GuideTerm": "0",
+                    "CN": "MAM.AAB.059.029.000",
+                    "TermPathPart": "Alliage cuivreux"
+                  },
+                  {
+                    "TermCN": "Laiton MAM.AAB.059.029.000.001",
+                    "GuideTerm": "0",
+                    "CN": "MAM.AAB.059.029.000.001",
+                    "TermPathPart": "Laiton"
+                  }
+                ],
+                "Type": "Matériaux et techniques"
+              },
+              {
+                "TermCN": "Fer MAM.AAB.059.021",
+                "ThesTerm": "Fer",
+                "TermPath": "Fer < Materiaux < CNAM",
+                "CN": "MAM.AAB.059.021",
+                "TermPathPart": [
+                  {
+                    "TermCN": "CNAM MAM",
+                    "GuideTerm": "0",
+                    "CN": "MAM",
+                    "TermPathPart": "CNAM"
+                  },
+                  {
+                    "TermCN": "Materiaux MAM.AAB",
+                    "GuideTerm": "0",
+                    "CN": "MAM.AAB",
+                    "TermPathPart": "Materiaux"
+                  },
+                  {
+                    "TermCN": "Matériau métallique MAM.AAB.059",
+                    "GuideTerm": "1",
+                    "CN": "MAM.AAB.059",
+                    "TermPathPart": "Matériau métallique"
+                  },
+                  {
+                    "TermCN": "Fer MAM.AAB.059.021",
+                    "GuideTerm": "0",
+                    "CN": "MAM.AAB.059.021",
+                    "TermPathPart": "Fer"
+                  }
+                ],
+                "Type": "Matériaux et techniques"
+              }
+            ],
+            "sorttitle": "MAQUETTE DE LA PASCALINE",
+            "condition": "3. Bon état (2008-03-10)",
+            "creator": {
+              "RoleTypeID": "1",
+              "creator": "Lycée professionnel Clément Ader",
+              "DisplayOrder": "1",
+              "ConstituentID": "15260",
+              "Role": "Auteur matériel",
+              "AlphaSort": "Lycée professionnel Clément Ader"
+            },
+            "Obj_Dwords": [
+              {
+                "num": "1",
+                "Obj_Dwords": "maquette"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "pascaline"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "acier"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "bois"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "laiton"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "fer"
+              },
+              {
+                "num": "1",
+                "Obj_Dwords": "verre"
+              }
+            ],
+            "lastupdate": "07/01/2026 00:00:05",
+            "virtuel": "Non",
+            "carteltitle": "Maquette de la pascaline",
+            "department": "Objet Cnam",
+            "sortnumber": "C       2008  253",
+            "thesmaterial": [
+              "Acier",
+              "Bois",
+              "Laiton",
+              "Fer",
+              "Verre"
+            ],
+            "carteldated": "2006",
+            "titleorobjectname": "Maquette de la pascaline",
+            "expose": "Non",
+            "relatedid": "128279",
+            "dimensiondate": "23 x 58,7 x 39,4 cm (2008-03-10)",
+            "accessionmethod": "Don ou donation",
+            "location": {
+              "location": "Musée",
+              "site": "Musée"
+            },
+            "recordtypeshow": "Objects",
+            "conlinkedtoobjects": "Lycée professionnel Clément Ader",
+            "cartellocdescr": "Non exposé actuellement",
+            "titlesort": "Maquette de la pascaline",
+            "title": {
+              "titleshort": "Maquette de la pascaline",
+              "title": "Maquette de la pascaline"
+            },
+            "displayname": "Lycée professionnel Clément Ader",
+            "dated": "2006",
+            "dateend": "2006",
+            "ccobjectid": "128279",
+            "workpackage": [
+              {
+                "packageid": "957",
+                "workpackage": "AnciensDEMOS"
+              },
+              {
+                "packageid": "41191",
+                "workpackage": "Modèles pédagogiques Musée - 2020-01-15"
+              },
+              {
+                "packageid": "83032",
+                "workpackage": "Modèles ou maquettes"
+              },
+              {
+                "packageid": "94018",
+                "workpackage": "PbObjectStatus"
+              }
+            ],
+            "creatorname": {
+              "RoleTypeID": "1",
+              "DisplayOrder": "1",
+              "ConstituentID": "15260",
+              "Role": "Auteur matériel",
+              "creatorname": "Lycée professionnel Clément Ader",
+              "AlphaSort": "Lycée professionnel Clément Ader"
+            },
+            "cartelcreator": "Lycée professionnel Clément Ader",
+            "validationconservateur": "Non",
+            "classification": "Modèle ou Maquette",
+            "dimensions": "23 x 58,7 x 39,4 cm",
+            "accountability": "1",
+            "recordtype": "objects",
+            "objectcount": "1",
+            "objectnumber": "C-2008-0253-",
+            "conservateur": "non renseignÃƒÂ©"
+          }
+        }
+      }
+    ]
+  },
+  "request": {
+    "lastRequested": "20",
+    "sortKey": {},
+    "firstRequested": "1",
+    "count": "4",
+    "query": "and(recordtype=objects;/record/title=\"Pascaline\")"
+  },
+  "index": {
+    "indexCreationDate": "07-01-2026 00:12",
+    "indexName": "Muam_DataServer.idx",
+    "publisher": "CollectionConnection"
+  }
+}

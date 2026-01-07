@@ -86,12 +86,18 @@ Quipu / khipu
 Pascaline (Pascal, 1645)
 - Primary target: Pascal, Account of the Arithmetic Machine (1645)
   Access: not yet linked. Status: missing
+- Museum target: CNAM collections (Pascaline reproductions and maquette, object numbers C-2008-0166/0167/0168 and C-2008-0253)
+  Access: ccProxy search via https://collections.arts-et-metiers.net/ccProxy.ashx. Status: local
+  Local: docs/sources/cache/CNAM_Pascaline_ccProxy_search.json
 - Museum target: Arts et Metiers Pascaline page
   Access: 404 at https://www.arts-et-metiers.net/musee/pascaline; search page shows no results via curl. Status: missing
 
 Leibniz stepped reckoner
 - Primary target: Leibniz Archive (Hanover) manuscript scans
   Access: not yet linked. Status: missing
+- Museum target: CNAM collections (photographs of Leibniz calculating machine)
+  Access: ccProxy search via https://collections.arts-et-metiers.net/ccProxy.ashx. Status: local
+  Local: docs/sources/cache/CNAM_Leibniz_ccProxy_search.json
 - Primary target: Leibniz 1703 binary paper (Gallica)
   Access: Gallica triggers Altcha bot check and ARK link in docs returns HTTP 400. Status: blocked
 - Secondary: Strickland/Lewis MIT Press 2022
@@ -147,6 +153,7 @@ Online access checks performed
 - https://archive.org/details/KFGdatafiles (reachable)
 - https://archive.org/details/bim_early-english-books-1475-1640_the-circles-of-proportio_oughtred-william_1632 (reachable)
 - https://archive.org/details/acreatiseonastr00chaugoog (reachable)
+- https://collections.arts-et-metiers.net/ccProxy.ashx (reachable)
 - https://www.arts-et-metiers.net/musee/pascaline (404)
 - https://dataverse.harvard.edu/api/search?q=khipu&per_page=5 (reachable, not artifact-focused)
 - https://www.antikythera-mechanism.gr/ (HTTP 200 but no content via curl; JS required)
