@@ -52,16 +52,16 @@ Pascaline
 - Notes: logic-only stub
 
 Leibniz stepped reckoner
-- Status: spec-only
+- Status: implemented
 - Target: Tier 2
-- Assets: docs/simulation/specs/leibniz_spec.md
-- Notes: stepped drum + carriage shift
+- Assets: backend/src/emulator/leibniz_reckoner.py, backend/tests/unit/test_leibniz_reckoner.py
+- Notes: logic-only stub
 
 Jacquard loom (card control)
-- Status: spec-only
+- Status: implemented
 - Target: Tier 1
-- Assets: docs/simulation/specs/jacquard_spec.md
-- Notes: use card deck -> pattern row output
+- Assets: backend/src/emulator/jacquard.py, backend/tests/unit/test_jacquard.py
+- Notes: card->hook selection model
 
 Babbage Analytical Engine (base)
 - Status: implemented

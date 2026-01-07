@@ -67,6 +67,8 @@ from backend.src.emulator.clay_tokens import ClayTokensEmulator
 from backend.src.emulator.quipu import QuipuEmulator
 from backend.src.emulator.slide_rule import SlideRuleEmulator
 from backend.src.emulator.pascaline import PascalineEmulator
+from backend.src.emulator.jacquard import JacquardEmulator
+from backend.src.emulator.leibniz_reckoner import LeibnizReckonerEmulator
 
 __all__ = [
     # Type system
@@ -94,6 +96,8 @@ __all__ = [
     "QuipuEmulator",
     "SlideRuleEmulator",
     "PascalineEmulator",
+    "JacquardEmulator",
+    "LeibnizReckonerEmulator",
 ]
 
 __version__ = "0.1.0"
