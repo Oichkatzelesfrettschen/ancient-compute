@@ -2,7 +2,7 @@
 
 **Collection Status:** ✓ Complete
 **Last Updated:** 2026-01-07
-**Total Resources:** 189 MB cached locally + 20+ online references
+**Total Resources:** 191 MB cached locally + 20+ online references
 **Primary Focus:** Babbage's Analytical Engine, Ada Lovelace, Modern Reconstructions
 **Scope Note:** Cache now also includes non-Babbage sources for the broader Ancient Compute scope (see `SOURCES_INDEX.md`).
 
@@ -49,7 +49,7 @@ cache/17_Montana_Binary_Number_System_Development.pdf    (Computing history)
 
 ## What's Included
 
-### Local Cache (189 MB, 24 PDF + 16 TXT + 8 HTML + 1 ZIP + 2 SH)
+### Local Cache (191 MB, 26 PDF + 16 TXT + 8 HTML + 1 ZIP + 2 SH)
 
 **Science Museum Official Documentation** (54 MB)
 - Complete technical specifications of the reconstructed Difference Engine No. 2

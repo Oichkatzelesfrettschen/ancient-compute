@@ -75,6 +75,9 @@ Antikythera mechanism
 Quipu / khipu
 - Primary target: Harvard Khipu Database Project (khipudatabase.com)
   Access: DNS failed from environment. Status: blocked
+- Primary target: Khipu Field Guide datafiles (Internet Archive)
+  Access: https://archive.org/details/KFGdatafiles. Status: online
+  Local: not cached (many xlsx files)
 - Primary target: Harvard Dataverse quipu datasets
   Access: API reachable but search results not artifact-focused. Status: partial
 - Secondary: Urton (2003) Signs of the Inka Khipu
@@ -95,10 +98,14 @@ Leibniz stepped reckoner
   Access: paywalled. Status: paywalled
 
 Jacquard loom (punch card control)
-- Primary target: Jacquard patent or museum technical record
-  Access: not yet linked. Status: missing
-- Secondary: textile museum catalogs
-  Access: not yet linked. Status: missing
+- Primary target: Correspondence relating to the invention of the Jacquard brussels carpet power loom (Internet Archive)
+  Access: https://archive.org/details/correspondencere00wood. Status: local
+  Local: docs/sources/cache/Jacquard_Correspondence_Power_Loom.pdf
+- Primary target: No. I. Addition to the Jacquard Loom (Internet Archive / JSTOR scan)
+  Access: https://archive.org/details/jstor-41326751. Status: local
+  Local: docs/sources/cache/Jacquard_Addition_Loom_JSTOR_41326751.pdf
+- Secondary: museum catalogs (CNAM, Science Museum)
+  Access: blocked or not yet linked. Status: missing
 
 Slide rule
 - Primary target: Oughtred 1622 publication (slide rule origins)
@@ -133,6 +140,9 @@ Online access checks performed
 - https://ctext.org/nine-chapters (reachable)
 - https://ctext.org/sunzi-suan-jing (reachable)
 - https://ctext.org/book-of-changes (reachable)
+- https://archive.org/details/correspondencere00wood (reachable)
+- https://archive.org/details/jstor-41326751 (reachable)
+- https://archive.org/details/KFGdatafiles (reachable)
 - https://www.arts-et-metiers.net/musee/pascaline (404)
 - https://dataverse.harvard.edu/api/search?q=khipu&per_page=5 (reachable, not artifact-focused)
 - https://www.antikythera-mechanism.gr/ (HTTP 200 but no content via curl; JS required)
