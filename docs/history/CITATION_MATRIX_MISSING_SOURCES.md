@@ -51,9 +51,11 @@ Abacus / counting rods
 
 Antikythera mechanism
 - Primary target: Antikythera Mechanism Research Project (AMRP) site
-  Access: JS blocked via curl. Status: blocked
+  Access: JS blocked via curl; r.jina.ai returns empty. Status: blocked
 - Primary target: National Archaeological Museum object record
   Access: not yet linked. Status: missing
+- Museum fallback: NAM temporary exhibition page
+  Access: reachable at https://www.namuseum.gr/en/temporary_exhibition/to-nayagio-ton-antikythiron-to-ploio-oi-thisayroi-o-michanismos/. Status: online
 - Secondary: Freeth et al. Nature papers (2006/2008)
   Access: likely paywalled. Status: paywalled
 
@@ -69,13 +71,13 @@ Pascaline (Pascal, 1645)
 - Primary target: Pascal, Account of the Arithmetic Machine (1645)
   Access: not yet linked. Status: missing
 - Museum target: Arts et Metiers Pascaline page
-  Access: 404 at https://www.arts-et-metiers.net/musee/pascaline. Status: missing
+  Access: 404 at https://www.arts-et-metiers.net/musee/pascaline; search page shows no results via curl. Status: missing
 
 Leibniz stepped reckoner
 - Primary target: Leibniz Archive (Hanover) manuscript scans
   Access: not yet linked. Status: missing
 - Primary target: Leibniz 1703 binary paper (Gallica)
-  Access: ARK link in docs returns HTTP 400. Status: missing
+  Access: Gallica triggers Altcha bot check and ARK link in docs returns HTTP 400. Status: blocked
 - Secondary: Strickland/Lewis MIT Press 2022
   Access: paywalled. Status: paywalled
 
@@ -118,6 +120,8 @@ Online access checks performed
 - https://www.arts-et-metiers.net/musee/pascaline (404)
 - https://dataverse.harvard.edu/api/search?q=khipu&per_page=5 (reachable, not artifact-focused)
 - https://www.antikythera-mechanism.gr/ (HTTP 200 but no content via curl; JS required)
+- https://www.namuseum.gr/en/?s=antikythera (reachable; search results)
+- https://www.namuseum.gr/en/temporary_exhibition/to-nayagio-ton-antikythiron-to-ploio-oi-thisayroi-o-michanismos/ (reachable; exhibition page)
 
 Next acquisition pass (recommended)
 - Update Ishango museum link; capture artifact ID and page title
