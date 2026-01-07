@@ -2,7 +2,7 @@
 
 **Collection Status:** ✓ Complete
 **Last Updated:** 2025-12-30
-**Total Resources:** 77 MB cached locally + 20+ online references
+**Total Resources:** 129 MB cached locally + 20+ online references
 **Primary Focus:** Babbage's Analytical Engine, Ada Lovelace, Modern Reconstructions
 
 ---
@@ -48,7 +48,7 @@ cache/17_Montana_Binary_Number_System_Development.pdf    (Computing history)
 
 ## What's Included
 
-### Local Cache (77 MB, 15 PDF + 2 HTML files)
+### Local Cache (129 MB, 15 PDF + 2 HTML + 1 ZIP file)
 
 **Science Museum Official Documentation** (54 MB)
 - Complete technical specifications of the reconstructed Difference Engine No. 2
@@ -80,6 +80,9 @@ cache/17_Montana_Binary_Number_System_Development.pdf    (Computing history)
 **Supporting Materials** (2 HTML files cached)
 - Ed Thelen's comprehensive technical reference
 - FourmiLab's complete Babbage collection index
+
+**Ishango Bone 3D Scans** (52 MB)
+- RBINS Collections: Ishango project archive (zip bundle)
 
 ### Online Resources (Referenced, Not Downloaded)
 
@@ -127,6 +130,7 @@ docs/sources/
     ├── 17_Montana_Binary_Number_System_Development.pdf    (826 KB)
     ├── Ed_Thelen_Technical_Reference.html                 (35 KB)
     ├── FourmiLab_Babbage_Contents.html                    (15 KB)
+    ├── Ishango.zip                                         (RBINS 3D scans, 52 MB)
     └── MANIFEST.txt                                        (Reference)
 ```
 

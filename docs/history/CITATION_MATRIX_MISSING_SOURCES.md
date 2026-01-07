@@ -7,8 +7,9 @@ Status legend: local = cached in repo, online = reachable via HTTP, blocked = JS
 
 Ishango Bone (tally marks)
 - Primary target: RBINS Collections site (Ishango project, 3D scans)
-  Access: https://collections.naturalsciences.be/projects/ishango/ (public files). Status: online
+  Access: https://collections.naturalsciences.be/projects/ishango/ (public files). Status: local
   Download: https://collections.naturalsciences.be/projects/ishango/Ishango.zip/at_download/file
+  Local: docs/sources/cache/Ishango.zip
 - Primary target: RBINS main museum object record (museum artifact)
   Access: URL in docs is 404 (site redesign). Status: missing
 - Primary target: Heinzelin 1962 Scientific American article

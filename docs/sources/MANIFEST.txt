@@ -1,4 +1,4 @@
-Last updated: 2025-12-30T17:01:22Z
+Last updated: 2026-01-07T06:17:02Z
 MANIFEST (auto-generated)
 - docs/sources/cache/17_Montana_Binary_Number_System_Development.pdf
 - docs/sources/cache/DoronSwade_ConstructionOfDifferenceEngine.pdf
@@ -33,3 +33,4 @@ MANIFEST (auto-generated)
 - docs/sources/cache/03_ScienceMuseum_DE2_User_Manual.txt
 - docs/sources/cache/14_Stanford_The_Analytical_Engine.pdf
 - docs/sources/cache/01_ScienceMuseum_DE2_Technical_Description.pdf
+- docs/sources/cache/Ishango.zip
