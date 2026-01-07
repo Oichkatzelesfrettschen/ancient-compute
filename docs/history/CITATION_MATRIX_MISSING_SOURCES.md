@@ -30,20 +30,29 @@ Plimpton 322 (Babylonian algorithms)
   Access: likely paywalled. Status: paywalled
 
 Nine Chapters / Liu Hui (China)
+- Primary target: Chinese Text Project edition (Nine Chapters)
+  Access: https://ctext.org/nine-chapters. Status: local
+  Local: docs/sources/cache/ctext_nine_chapters.html
 - Primary target: Critical editions or scans of Nine Chapters + Liu Hui commentary
   Access: not yet linked. Status: missing
 - Secondary: Shen, Crossley, Lun (OUP, 1999)
   Access: paywalled. Status: paywalled
 
-Sunzi Suanjing / Qin Jiushao (CRT origins)
-- Primary target: Sunzi Suanjing text, Qin Jiushao (1247)
-  Access: not yet linked. Status: missing
+Sunzi Suanjing (CRT origins)
+- Primary target: Chinese Text Project edition (Sunzi Suan Jing)
+  Access: https://ctext.org/sunzi-suan-jing. Status: local
+  Local: docs/sources/cache/ctext_sunzi_suan_jing.html
 - Secondary: Britannica/JSTOR summaries
   Access: mixed. Status: paywalled
 
-I Ching binary tradition
-- Primary target: historical edition scans of I Ching
+Qin Jiushao / Shu Shu Jiu Zhang (1247)
+- Primary target: Qin Jiushao text or scans
   Access: not yet linked. Status: missing
+
+I Ching binary tradition
+- Primary target: Chinese Text Project edition (Book of Changes / I Ching)
+  Access: https://ctext.org/book-of-changes. Status: local
+  Local: docs/sources/cache/ctext_book_of_changes.html
 - Secondary: Needham citations
   Access: paywalled. Status: paywalled
 
@@ -121,6 +130,9 @@ Online access checks performed
 - https://blog.plan28.org/ (reachable)
 - https://www.computerhistory.org/babbage/ (reachable)
 - https://www.computerhistory.org/babbage/modernsequel/ (reachable)
+- https://ctext.org/nine-chapters (reachable)
+- https://ctext.org/sunzi-suan-jing (reachable)
+- https://ctext.org/book-of-changes (reachable)
 - https://www.arts-et-metiers.net/musee/pascaline (404)
 - https://dataverse.harvard.edu/api/search?q=khipu&per_page=5 (reachable, not artifact-focused)
 - https://www.antikythera-mechanism.gr/ (HTTP 200 but no content via curl; JS required)

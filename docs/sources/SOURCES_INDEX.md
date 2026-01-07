@@ -1,5 +1,8 @@
-Last updated: 2025-12-30T17:01:22Z
-# SOURCES_INDEX\n\nCached sources (auto-generated)\n
+Last updated: 2026-01-07T06:30:45Z
+# SOURCES_INDEX
+
+Cached sources (auto-generated)
+
 - 01_ScienceMuseum_DE2_Technical_Description.pdf (18165066 bytes)
 - 01_ScienceMuseum_DE2_Technical_Description.txt (480551 bytes)
 - 02_ScienceMuseum_DE2_Technical_Online.pdf (18204868 bytes)
@@ -28,8 +31,26 @@ Last updated: 2025-12-30T17:01:22Z
 - 16_York_Babbage_Mechanical_Model_Mind.txt (36852 bytes)
 - 17_Montana_Binary_Number_System_Development.pdf (826318 bytes)
 - 17_Montana_Binary_Number_System_Development.txt (41345 bytes)
+- 21_Virginia_Ada_First_Computer_Robins.pdf (541468 bytes)
+- 22_Virginia_Theory_Slides_Computing_History.pdf (25600291 bytes)
+- 23_CMU_Computing_History_Babbage.pdf (2662657 bytes)
+- 25_Buffalo_Babbage_Menabrea.pdf (1172592 bytes)
+- 26_Stanford_Difference_Engine.pdf (4788546 bytes)
+- 31_Clay_Lovelace_De_Morgan_Correspondence.pdf (1566257 bytes)
+- 32_Clay_Early_Mathematical_Education_Ada.pdf (429326 bytes)
+- 33_Academia_Swade_Construction.pdf (287351 bytes)
+- 34_RetroComputerLab_AnalyticalEngine_Evolution.html (10043 bytes)
+- 35_Archive_Babbage_Passages_Life.pdf (16136033 bytes)
 - DoronSwade_ConstructionOfDifferenceEngine.pdf (1552846 bytes)
 - DoronSwade_ConstructionOfDifferenceEngine.txt (80381 bytes)
 - Ed_Thelen_Technical_Reference.html (35244 bytes)
 - FourmiLab_Babbage_Contents.html (14541 bytes)
+- Ishango.zip (54148980 bytes)
 - MANIFEST.txt (15172 bytes)
+- Plan28_Blog_2024.html (45327 bytes)
+- Plan28_Blog_Main.html (87086 bytes)
+- ctext_book_of_changes.html (84443 bytes)
+- ctext_nine_chapters.html (80111 bytes)
+- ctext_sunzi_suan_jing.html (279495 bytes)
+- download_bromley.sh (2422 bytes)
+- download_bromley_alternatives.sh (2346 bytes)
