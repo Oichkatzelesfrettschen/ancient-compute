@@ -59,8 +59,14 @@ from backend.src.emulator.analytical_engine import (
 from backend.src.emulator.note_g_deck import (
     load_deck as load_note_g_deck,
     run_once as run_note_g_once,
+    run_series as run_note_g_series,
 )
 from backend.src.emulator.tally_marks import TallyMarksEmulator
+from backend.src.emulator.abacus import AbacusEmulator
+from backend.src.emulator.clay_tokens import ClayTokensEmulator
+from backend.src.emulator.quipu import QuipuEmulator
+from backend.src.emulator.slide_rule import SlideRuleEmulator
+from backend.src.emulator.pascaline import PascalineEmulator
 
 __all__ = [
     # Type system
@@ -81,7 +87,13 @@ __all__ = [
     "TIMING_TABLE",
     "load_note_g_deck",
     "run_note_g_once",
+    "run_note_g_series",
     "TallyMarksEmulator",
+    "AbacusEmulator",
+    "ClayTokensEmulator",
+    "QuipuEmulator",
+    "SlideRuleEmulator",
+    "PascalineEmulator",
 ]
 
 __version__ = "0.1.0"

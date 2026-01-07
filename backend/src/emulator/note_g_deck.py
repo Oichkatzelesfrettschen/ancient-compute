@@ -57,3 +57,15 @@ def run_once(n: int, deck_path: Path | None = None) -> Dict[str, BabbageNumber]:
     for step in deck:
         _apply_op(state, step)
     return state
+
+
+def run_series(n_max: int, deck_path: Path | None = None) -> list[BabbageNumber]:
+    """Run the deck for n=1..n_max and return V24 outputs per run.
+
+    This is a logic-level approximation; full card-loop semantics remain TODO.
+    """
+    results = []
+    for n in range(1, n_max + 1):
+        state = run_once(n, deck_path=deck_path)
+        results.append(state["V24"])
+    return results
