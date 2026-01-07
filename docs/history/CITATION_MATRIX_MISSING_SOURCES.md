@@ -115,8 +115,9 @@ Slide rule
   Access: not yet linked. Status: missing
 
 Astrolabe
-- Primary target: historical astrolabe manuals and object records
-  Access: not yet linked. Status: missing
+- Primary target: Chaucer, A Treatise on the Astrolabe (1872 edition)
+  Access: https://archive.org/details/acreatiseonastr00chaugoog. Status: local
+  Local: docs/sources/cache/Chaucer_Treatise_on_the_Astrolabe_1872.pdf
 - Secondary: museum collections (NMAH, British Museum)
   Access: not yet linked. Status: missing
 
@@ -145,6 +146,7 @@ Online access checks performed
 - https://archive.org/details/jstor-41326751 (reachable)
 - https://archive.org/details/KFGdatafiles (reachable)
 - https://archive.org/details/bim_early-english-books-1475-1640_the-circles-of-proportio_oughtred-william_1632 (reachable)
+- https://archive.org/details/acreatiseonastr00chaugoog (reachable)
 - https://www.arts-et-metiers.net/musee/pascaline (404)
 - https://dataverse.harvard.edu/api/search?q=khipu&per_page=5 (reachable, not artifact-focused)
 - https://www.antikythera-mechanism.gr/ (HTTP 200 but no content via curl; JS required)

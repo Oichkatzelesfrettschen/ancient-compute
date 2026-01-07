@@ -1,4 +1,4 @@
-Last updated: 2026-01-07T06:57:41Z
+Last updated: 2026-01-07T07:00:05Z
 # SOURCES_INDEX
 
 Cached sources (auto-generated)
@@ -41,6 +41,7 @@ Cached sources (auto-generated)
 - 33_Academia_Swade_Construction.pdf (287351 bytes)
 - 34_RetroComputerLab_AnalyticalEngine_Evolution.html (10043 bytes)
 - 35_Archive_Babbage_Passages_Life.pdf (16136033 bytes)
+- Chaucer_Treatise_on_the_Astrolabe_1872.pdf (7124374 bytes)
 - DoronSwade_ConstructionOfDifferenceEngine.pdf (1552846 bytes)
 - DoronSwade_ConstructionOfDifferenceEngine.txt (80381 bytes)
 - Ed_Thelen_Technical_Reference.html (35244 bytes)
