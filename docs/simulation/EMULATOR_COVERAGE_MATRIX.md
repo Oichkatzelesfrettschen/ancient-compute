@@ -72,7 +72,7 @@ Babbage Analytical Engine (base)
 Ada Lovelace Bernoulli deck
 - Status: spec-only
 - Target: Tier 3
-- Assets: docs references; no canonical deck fixture
+- Assets: Menabrea 1843 PDF + Fourmilab Note G images; no canonical deck fixture
 - Notes: create test deck and expected outputs
 
 Difference Engine No. 2 (DE2)

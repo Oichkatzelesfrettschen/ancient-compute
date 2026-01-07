@@ -138,6 +138,11 @@ Babbage/Ada core (already covered)
   Access: cached locally in docs/sources/cache/05_Menabrea_Sketch_Analytical_Engine_1843.pdf. Status: local
 - Secondary: Lovelace analyses (Robins, Stonybrook, Rod Smith)
   Access: cached locally in docs/sources/cache/*.pdf. Status: local
+- Reproduction target: Fourmilab "Sketch of the Analytical Engine" HTML (Note G equations + cycle notation + table clip)
+  Access: https://www.fourmilab.ch/babbage/sketch.html. Status: local
+  Local: docs/sources/cache/Fourmilab_Sketch_Analytical_Engine.html
+  Local: docs/sources/cache/Fourmilab_notegt1.png, docs/sources/cache/Fourmilab_notegt2.png, docs/sources/cache/Fourmilab_t6clip.png (Note G cycle notation + table clip)
+- Gap: Note G Table A.2 still only available as raster (PDF); no machine-readable transcription. Status: missing
 
 -------------------------------------------------------------------------------
 
