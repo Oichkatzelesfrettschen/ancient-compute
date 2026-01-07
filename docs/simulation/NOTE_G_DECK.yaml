@@ -1,0 +1,151 @@
+deck:
+  - op: 1
+    opcode: mult
+    lhs: V2
+    rhs: V3
+    out: [V4, V5, V6]
+    expr: "2n"
+  - op: 2
+    opcode: sub
+    lhs: V4
+    rhs: V1
+    out: [V4]
+    expr: "2n - 1"
+  - op: 3
+    opcode: add
+    lhs: V5
+    rhs: V1
+    out: [V5]
+    expr: "2n + 1"
+  - op: 4
+    opcode: div
+    lhs: V5
+    rhs: V4
+    out: [V11]
+    expr: "(2n - 1) / (2n + 1)"
+  - op: 5
+    opcode: div
+    lhs: V11
+    rhs: V2
+    out: [V11]
+    expr: "(1/2) * ((2n - 1) / (2n + 1))"
+  - op: 6
+    opcode: sub
+    lhs: V13
+    rhs: V11
+    out: [V13]
+    expr: "-(1/2) * ((2n - 1) / (2n + 1)) = A0"
+  - op: 7
+    opcode: sub
+    lhs: V3
+    rhs: V1
+    out: [V10]
+    expr: "n - 1"
+  - op: 8
+    opcode: add
+    lhs: V2
+    rhs: V7
+    out: [V7]
+    expr: "2 + 0 = 2"
+  - op: 9
+    opcode: div
+    lhs: V6
+    rhs: V7
+    out: [V11]
+    expr: "(2n / 2) = A1"
+  - op: 10
+    opcode: mult
+    lhs: V21
+    rhs: V11
+    out: [V12]
+    expr: "B1 * (2n/2) = B1 A1"
+  - op: 11
+    opcode: add
+    lhs: V12
+    rhs: V13
+    out: [V13]
+    expr: "-(1/2)*((2n-1)/(2n+1)) + B1*(2n/2)"
+  - op: 12
+    opcode: sub
+    lhs: V10
+    rhs: V1
+    out: [V10]
+    expr: "n - 2"
+  - op: 13
+    opcode: sub
+    lhs: V6
+    rhs: V1
+    out: [V6]
+    expr: "2n - 1"
+  - op: 14
+    opcode: add
+    lhs: V1
+    rhs: V7
+    out: [V7]
+    expr: "2 + 1 = 3"
+  - op: 15
+    opcode: div
+    lhs: V6
+    rhs: V7
+    out: [V8]
+    expr: "(2n - 1) / 3"
+  - op: 16
+    opcode: mult
+    lhs: V8
+    rhs: V11
+    out: [V11]
+    expr: "(2n/2) * ((2n - 1)/3)"
+  - op: 17
+    opcode: sub
+    lhs: V6
+    rhs: V1
+    out: [V6]
+    expr: "2n - 2"
+  - op: 18
+    opcode: add
+    lhs: V1
+    rhs: V7
+    out: [V7]
+    expr: "3 + 1 = 4"
+  - op: 19
+    opcode: div
+    lhs: V6
+    rhs: V7
+    out: [V9]
+    expr: "(2n - 2) / 4"
+  - op: 20
+    opcode: mult
+    lhs: V9
+    rhs: V11
+    out: [V11]
+    expr: "(2n/2) * ((2n - 1)/3) * ((2n - 2)/4) = A3"
+  - op: 21
+    opcode: mult
+    lhs: V22
+    rhs: V11
+    out: [V12]
+    expr: "B3 * A3 = B3 A3"
+  - op: 22
+    opcode: add
+    lhs: V12
+    rhs: V13
+    out: [V13]
+    expr: "A0 + B1 A1 + B3 A3"
+  - op: 23
+    opcode: sub
+    lhs: V10
+    rhs: V1
+    out: [V10]
+    expr: "n - 3"
+  - op: 24
+    opcode: add
+    lhs: V13
+    rhs: V24
+    out: [V24]
+    expr: "B7 (output column)"
+  - op: 25
+    opcode: add
+    lhs: V1
+    rhs: V3
+    out: [V3]
+    expr: "n + 1; variable-card reset for V6/V7 indices"

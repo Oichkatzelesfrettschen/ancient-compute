@@ -56,6 +56,12 @@ from backend.src.emulator.analytical_engine import (
     TIMING_TABLE,
 )
 
+from backend.src.emulator.note_g_deck import (
+    load_deck as load_note_g_deck,
+    run_once as run_note_g_once,
+)
+from backend.src.emulator.tally_marks import TallyMarksEmulator
+
 __all__ = [
     # Type system
     "DebugSnapshot",
@@ -73,6 +79,9 @@ __all__ = [
     "Instruction",
     "Engine",
     "TIMING_TABLE",
+    "load_note_g_deck",
+    "run_note_g_once",
+    "TallyMarksEmulator",
 ]
 
 __version__ = "0.1.0"
