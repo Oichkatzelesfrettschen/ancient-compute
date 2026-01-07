@@ -108,8 +108,9 @@ Jacquard loom (punch card control)
   Access: blocked or not yet linked. Status: missing
 
 Slide rule
-- Primary target: Oughtred 1622 publication (slide rule origins)
-  Access: not yet linked. Status: missing
+- Primary target: Oughtred, The circles of proportion and the horizontall instrument (1632)
+  Access: https://archive.org/details/bim_early-english-books-1475-1640_the-circles-of-proportio_oughtred-william_1632. Status: local
+  Local: docs/sources/cache/Oughtred_Circles_of_Proportion_1632.pdf
 - Secondary: museum collections (NMAH, Science Museum)
   Access: not yet linked. Status: missing
 
@@ -143,6 +144,7 @@ Online access checks performed
 - https://archive.org/details/correspondencere00wood (reachable)
 - https://archive.org/details/jstor-41326751 (reachable)
 - https://archive.org/details/KFGdatafiles (reachable)
+- https://archive.org/details/bim_early-english-books-1475-1640_the-circles-of-proportio_oughtred-william_1632 (reachable)
 - https://www.arts-et-metiers.net/musee/pascaline (404)
 - https://dataverse.harvard.edu/api/search?q=khipu&per_page=5 (reachable, not artifact-focused)
 - https://www.antikythera-mechanism.gr/ (HTTP 200 but no content via curl; JS required)

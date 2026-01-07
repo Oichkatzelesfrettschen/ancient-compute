@@ -1,4 +1,4 @@
-Last updated: 2026-01-07T06:52:04Z
+Last updated: 2026-01-07T06:57:41Z
 # SOURCES_INDEX
 
 Cached sources (auto-generated)
@@ -49,6 +49,7 @@ Cached sources (auto-generated)
 - Jacquard_Addition_Loom_JSTOR_41326751.pdf (501956 bytes)
 - Jacquard_Correspondence_Power_Loom.pdf (882053 bytes)
 - MANIFEST.txt (15329 bytes)
+- Oughtred_Circles_of_Proportion_1632.pdf (55263828 bytes)
 - Plan28_Blog_2024.html (45327 bytes)
 - Plan28_Blog_Main.html (87086 bytes)
 - ctext_book_of_changes.html (84443 bytes)
