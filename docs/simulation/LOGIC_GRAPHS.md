@@ -109,6 +109,7 @@ Logic graph
 Suggested tests
 - 1 synodic month step updates lunar phase
 - 1 Metonic cycle (235 months) returns calendar alignment
+- Draconic pointer ratio sanity: s1 rotations per b1 rotation matches sourced ratio (arXiv:2104.06181)
 
 -------------------------------------------------------------------------------
 
@@ -243,10 +244,10 @@ Suggested tests
 11) Astrolabe (astronomical time/position solver)
 
 Core logic
-- Inputs: date, time, observed altitude
-- State: rete rotation, plate alignment
-- Operations: rotate_rete, align_alidade, read_scale
-- Outputs: time or celestial position
+- Inputs: date, time, latitude, target body (e.g., Sun)
+- State: declination model and local hour angle
+- Operations: compute_declination, compute_hour_angle, spherical_altitude
+- Outputs: altitude (or inferred time/position in inverse mode)
 
 Logic graph
 [Date/time] -> (rotate_rete) -> {rete_state}
@@ -254,7 +255,8 @@ Logic graph
 {alignment} -> (read_scale) -> [time/position]
 
 Suggested tests
-- Known date/time -> expected star position (from reference table)
+- Equinox at equator, local noon -> near-zenith altitude
+- (Future) extracted primary tables cross-check computed model
 
 -------------------------------------------------------------------------------
 
