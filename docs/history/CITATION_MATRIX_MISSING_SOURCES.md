@@ -94,6 +94,9 @@ Quipu / khipu
 Pascaline (Pascal, 1645)
 - Primary target: Pascal, Account of the Arithmetic Machine (1645)
   Access: not yet linked. Status: missing
+- Related (partial): Blaise Pascal article (Internet Archive)
+  Access: https://archive.org/details/14BlaisePascal. Status: local
+  Local: docs/sources/cache/pascaline/internetarchive/14BlaisePascal/14-Blaise-Pascal.pdf
 - Museum target: CNAM collections (Pascaline reproductions and maquette, object numbers C-2008-0166/0167/0168 and C-2008-0253)
   Access: ccProxy search via https://collections.arts-et-metiers.net/ccProxy.ashx. Status: local
   Local: docs/sources/cache/CNAM_Pascaline_ccProxy_search.json
