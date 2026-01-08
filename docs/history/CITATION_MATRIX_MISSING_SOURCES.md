@@ -71,6 +71,11 @@ Antikythera mechanism
   Access: reachable at https://www.namuseum.gr/en/temporary_exhibition/to-nayagio-ton-antikythiron-to-ploio-oi-thisayroi-o-michanismos/. Status: online
 - Secondary: Freeth et al. Nature papers (2006/2008)
   Access: likely paywalled. Status: paywalled
+- Open-access acquisition: arXiv preprints (gear/dial reconstructions and fragment analyses)
+  Access: https://arxiv.org/search/?query=antikythera+mechanism&searchtype=all. Status: local
+  Local: docs/sources/cache/antikythera/arxiv_2104.06181.pdf
+  Local: docs/sources/cache/antikythera/arxiv_2204.11136.pdf
+  Local: docs/sources/cache/antikythera/arxiv_2505.08484.pdf
 
 Quipu / khipu
 - Primary target: Harvard Khipu Database Project (khipudatabase.com)

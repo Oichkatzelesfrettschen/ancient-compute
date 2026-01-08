@@ -69,6 +69,8 @@ from backend.src.emulator.slide_rule import SlideRuleEmulator
 from backend.src.emulator.pascaline import PascalineEmulator
 from backend.src.emulator.jacquard import JacquardEmulator
 from backend.src.emulator.leibniz_reckoner import LeibnizReckonerEmulator
+from backend.src.emulator.antikythera import GearEdge, GearTrain
+from backend.src.emulator.astrolabe import AstrolabeEmulator, AstrolabeQuery
 
 __all__ = [
     # Type system
@@ -98,6 +100,10 @@ __all__ = [
     "PascalineEmulator",
     "JacquardEmulator",
     "LeibnizReckonerEmulator",
+    "GearEdge",
+    "GearTrain",
+    "AstrolabeEmulator",
+    "AstrolabeQuery",
 ]
 
 __version__ = "0.1.0"
