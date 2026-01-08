@@ -11,6 +11,7 @@ Categories
 1) Record-keeping substrates (discrete, manual)
 - Tally marks / tally sticks
 - Clay tokens / bullae
+- Quipu / khipu (knot record-keeping)
 
 2) Manual calculation devices (discrete, manual)
 - Counting rods / abacus

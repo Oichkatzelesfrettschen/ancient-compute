@@ -97,6 +97,10 @@ Pascaline (Pascal, 1645)
 - Museum target: CNAM collections (Pascaline reproductions and maquette, object numbers C-2008-0166/0167/0168 and C-2008-0253)
   Access: ccProxy search via https://collections.arts-et-metiers.net/ccProxy.ashx. Status: local
   Local: docs/sources/cache/CNAM_Pascaline_ccProxy_search.json
+- Museum fallback: Wikimedia Commons CNAM object photo (via Wikipedia)
+  Access: https://en.wikipedia.org/wiki/Pascaline. Status: local
+  Local: docs/sources/cache/pascaline/wikimedia/Pascaline-CnAM_823-1-IMG_1506-black_1200px.jpg
+- Blocked: CNAM ccProxy `imageproxy.aspx` links in the cached search JSON point at `http://163.173.128.91/...` which times out from this environment.
 - Museum target: Arts et Metiers Pascaline page
   Access: 404 at https://www.arts-et-metiers.net/musee/pascaline; search page shows no results via curl. Status: missing
 
@@ -106,6 +110,9 @@ Leibniz stepped reckoner
 - Museum target: CNAM collections (photographs of Leibniz calculating machine)
   Access: ccProxy search via https://collections.arts-et-metiers.net/ccProxy.ashx. Status: local
   Local: docs/sources/cache/CNAM_Leibniz_ccProxy_search.json
+- Museum fallback: Wikimedia Commons object photo (via Wikipedia)
+  Access: https://en.wikipedia.org/wiki/Stepped_reckoner. Status: local
+  Local: docs/sources/cache/leibniz/wikimedia/Leibnitzrechenmaschine_1280px.jpg
 - Primary target: Leibniz 1703 binary paper (Gallica)
   Access: Gallica triggers Altcha bot check and ARK link in docs returns HTTP 400. Status: blocked
 - Secondary: Strickland/Lewis MIT Press 2022

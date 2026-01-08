@@ -1,0 +1,160 @@
+# Table A.2 (Note G) operation deck with explicit versioned variables.
+#
+# Token grammar:
+# - "<k>V<n>" means version k of variable V<n>.
+# - "V<n>" means "latest version" of V<n> at runtime.
+#
+# The version annotations follow the transcription in:
+# docs/simulation/NOTE_G_TRANSCRIPTION.md
+deck:
+  - op: 1
+    opcode: mult
+    lhs: 1V2
+    rhs: 1V3
+    out: [1V4, 1V5, 1V6]
+    expr: "2n"
+  - op: 2
+    opcode: sub
+    lhs: 1V4
+    rhs: 1V1
+    out: [2V4]
+    expr: "2n - 1"
+  - op: 3
+    opcode: add
+    lhs: 1V5
+    rhs: 1V1
+    out: [2V5]
+    expr: "2n + 1"
+  - op: 4
+    opcode: div
+    lhs: 2V5
+    rhs: 2V4
+    out: [1V11]
+    expr: "(2n - 1) / (2n + 1)"
+  - op: 5
+    opcode: div
+    lhs: 1V11
+    rhs: 1V2
+    out: [2V11]
+    expr: "(1/2) * ((2n - 1) / (2n + 1))"
+  - op: 6
+    opcode: sub
+    lhs: 0V13
+    rhs: 2V11
+    out: [1V13]
+    expr: "-(1/2) * ((2n - 1) / (2n + 1)) = A0"
+  - op: 7
+    opcode: sub
+    lhs: 1V3
+    rhs: 1V1
+    out: [1V10]
+    expr: "n - 1"
+  - op: 8
+    opcode: add
+    lhs: 1V2
+    rhs: 0V7
+    out: [1V7]
+    expr: "2 + 0 = 2"
+  - op: 9
+    opcode: div
+    lhs: 1V6
+    rhs: 1V7
+    out: [3V11]
+    expr: "(2n / 2) = A1"
+  - op: 10
+    opcode: mult
+    lhs: 1V21
+    rhs: 3V11
+    out: [1V12]
+    expr: "B1 * (2n/2) = B1 A1"
+  - op: 11
+    opcode: add
+    lhs: 1V12
+    rhs: 1V13
+    out: [2V13]
+    expr: "A0 + B1 A1"
+  - op: 12
+    opcode: sub
+    lhs: 1V10
+    rhs: 1V1
+    out: [2V10]
+    expr: "n - 2"
+  - op: 13
+    opcode: sub
+    lhs: 1V6
+    rhs: 1V1
+    out: [2V6]
+    expr: "2n - 1"
+  - op: 14
+    opcode: add
+    lhs: 1V1
+    rhs: 1V7
+    out: [2V7]
+    expr: "2 + 1 = 3"
+  - op: 15
+    opcode: div
+    lhs: 2V6
+    rhs: 2V7
+    out: [1V8]
+    expr: "(2n - 1) / 3"
+  - op: 16
+    opcode: mult
+    lhs: 1V8
+    rhs: 3V11
+    out: [4V11]
+    expr: "(2n/2) * ((2n - 1)/3)"
+  - op: 17
+    opcode: sub
+    lhs: 2V6
+    rhs: 1V1
+    out: [3V6]
+    expr: "2n - 2"
+  - op: 18
+    opcode: add
+    lhs: 1V1
+    rhs: 2V7
+    out: [3V7]
+    expr: "3 + 1 = 4"
+  - op: 19
+    opcode: div
+    lhs: 3V6
+    rhs: 3V7
+    out: [1V9]
+    expr: "(2n - 2) / 4"
+  - op: 20
+    opcode: mult
+    lhs: 1V9
+    rhs: 4V11
+    out: [5V11]
+    expr: "(2n/2) * ((2n - 1)/3) * ((2n - 2)/4) = A3"
+  - op: 21
+    opcode: mult
+    lhs: 1V22
+    rhs: 5V11
+    out: [0V12]
+    expr: "B3 * A3 = B3 A3 (errata: denominator term uses 4)"
+  - op: 22
+    opcode: add
+    lhs: 2V12
+    rhs: 2V13
+    out: [3V13]
+    expr: "A0 + B1 A1 + B3 A3"
+  - op: 23
+    opcode: sub
+    lhs: 2V10
+    rhs: 1V1
+    out: [3V10]
+    expr: "n - 3"
+  - op: 24
+    opcode: add
+    lhs: 4V13
+    rhs: 0V24
+    out: [1V24]
+    expr: "Output (table shown for n=4): B7"
+  - op: 25
+    opcode: add
+    lhs: 1V1
+    rhs: 1V3
+    out: [1V3]
+    expr: "n + 1; variable-card reset for V6/V7 indices"
+

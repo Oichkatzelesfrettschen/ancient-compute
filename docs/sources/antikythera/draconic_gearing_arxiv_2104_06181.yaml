@@ -1,0 +1,15 @@
+source:
+  id: arxiv:2104.06181
+  note: Explicit tooth counts from text near equations (v)-(vi).
+gears:
+  a1:
+    teeth: 48
+  r1:
+    teeth: 63
+  b1:
+    teeth: 225
+  s1:
+    teeth: 22
+remarks:
+- This is a partial parameter set; full train factors (b3/e1, e6/k2, ...) are not
+  yet extracted.

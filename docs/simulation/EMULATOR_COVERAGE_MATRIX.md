@@ -34,16 +34,16 @@ Counting rods / abacus
 - Notes: decimal carry/borrow model
 
 Antikythera mechanism
-- Status: spec-only
+- Status: implemented
 - Target: Tier 2
-- Assets: docs/simulation/specs/antikythera_spec.md
-- Notes: gear ratios + dials, needs source data
+- Assets: backend/src/emulator/antikythera.py, backend/tests/unit/test_antikythera_gears.py, docs/simulation/specs/antikythera_spec.md
+- Notes: generic gear-train propagation works; still missing historically sourced ratio/dial map
 
 Quipu / khipu
 - Status: implemented
 - Target: Tier 1
-- Assets: backend/src/emulator/quipu.py, backend/tests/unit/test_quipu.py
-- Notes: simplified knot encoding/ledger
+- Assets: backend/src/emulator/quipu.py, backend/tests/unit/test_quipu.py, backend/src/emulator/quipu_kfg/*, backend/tests/unit/test_quipu_kfg_emulator.py
+- Notes: includes Khipu Field Guide XLSX normalization pipeline and a dataset-driven emulator
 
 Pascaline
 - Status: implemented
@@ -94,10 +94,10 @@ Slide rule
 - Notes: log scale approximation model
 
 Astrolabe
-- Status: spec-only
+- Status: implemented
 - Target: Tier 1 -> Tier 2
-- Assets: docs/simulation/specs/astrolabe_spec.md
-- Notes: use simplified spherical model with reference tables
+- Assets: backend/src/emulator/astrolabe.py, backend/tests/unit/test_astrolabe_table.py, docs/simulation/specs/astrolabe_spec.md, docs/sources/astrolabe/reference_table.json
+- Notes: table-driven placeholder; replace with extracted primary tables
 
 -------------------------------------------------------------------------------
 
@@ -148,10 +148,10 @@ In-materio computing
 -------------------------------------------------------------------------------
 
 Immediate gaps
-- No emulator modules for most non-Babbage mechanisms.
-- Shared emulator interface defined; implementations pending.
-- Note G deck fixture exists; loop semantics pending.
+- Note G deck fixture exists; loop semantics + correctness pending.
+- Antikythera and astrolabe require primary-source derived parameters.
+- Pascaline/Leibniz/Jacquard remain logic-only stubs (no mechanical constraints).
 
 Recommended next step
-- Define a shared emulator interface (step(), run(), state(), reset())
-- Implement Tier 1 logic models for tally/tokens/abacus/quipu as fast wins
+- Replace placeholder/table models with extracted primary-source data (Antikythera ratios; astrolabe tables).
+- Fix Note G runner semantics against Bernoulli outputs and published errata.

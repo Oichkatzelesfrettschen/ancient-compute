@@ -236,6 +236,11 @@ docs/sources/
 **For historical context:**
 - See sources in `SOURCES_INDEX.md` for additional citations and metadata.
 
+**For other mechanisms (work in progress):**
+- Pascaline: CNAM object photo cached via Wikimedia Commons (see `docs/sources/pascaline/README.md`).
+- Leibniz stepped reckoner: reference photo cached via Wikimedia Commons (see `docs/sources/leibniz/README.md`).
+- Antikythera: open-access arXiv preprints cached (see `docs/sources/antikythera/README.md`).
+
 ---
 
 ## Contributing to This Collection
