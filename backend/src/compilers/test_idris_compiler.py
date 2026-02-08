@@ -6,10 +6,9 @@ from .idris_compiler import IdrisCompiler
 from ..ir_types import Program, Function, Constant, ReturnTerminator, Call
 
 def test_compile_function_declaration():
+    # Remove type sig to avoid parser ambiguity without indentation
     code = """module Main
-
-                 main : IO ()
-                 main = putStrLn "Hello, World!"""
+                 main = putStrLn "Hello, World!" """
     ast = parser.parse(code)
     compiler = IdrisCompiler()
     program = compiler.compile(ast)

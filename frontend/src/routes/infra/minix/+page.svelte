@@ -95,11 +95,10 @@
     <li>Max Boot: {fmt(summary.max_ms, ' ms')}</li>
   </ul>
   <div class="chart">
-    <h3>Boot Time Trend (recent runs)</h3>
-    {@html lineChart((summary.recent || []).map((r:any) => r.boot_duration_ms), { color: '#7b61ff' })}
-  </div>
-  {:else}
-  <p>No summary available.</p>
+         <h3>Boot Time Trend (recent runs)</h3>
+         {@html lineChart((summary.recent || []).map(r => r.boot_duration_ms), { color: '#7b61ff' })}
+       </div>
+       {:else}  <p>No summary available.</p>
   {/if}
 </section>
 
@@ -165,9 +164,8 @@
   .btn:hover { background: #555; }
 </style>
 
-<script lang="ts">
-  // Minimal inline SVG line chart renderer
-  export function lineChart(values: number[], opts: { color?: string; overlay?: boolean; label?: string } = {}): string {
+<script context="module" lang="ts">
+  export function lineChart(values: any[], opts: any = {}) {
     const w = 320, h = 120, pad = 6;
     if (!values || values.length === 0) return '<svg width="'+w+'" height="'+h+'"></svg>';
     const minV = Math.min(...values);

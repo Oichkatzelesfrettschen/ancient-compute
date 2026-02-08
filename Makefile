@@ -354,9 +354,6 @@ sim-extract:
 sim-report:
 	@echo Extracted params: && cat docs/simulation/extracted.yaml || true
 
-1 docs | head -n 20 > /dev/null || true
-
-
 docs-validate:
 	@echo Validating YAML and links...
 	@python3 -c "import yaml;yaml.safe_load(open('docs/agents.yaml'))" && echo YAML OK || echo YAML ERR

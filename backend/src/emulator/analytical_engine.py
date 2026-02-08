@@ -5,7 +5,7 @@ A faithful mechanical simulation of Charles Babbage's Analytical Engine (AE),
 based on Menabrea/Lovelace (1842-1843) and Babbage's mechanical notation.
 
 Architecture:
-  - Store: 2,000 × 50-digit decimal numbers (memory)
+  - Store: 2,000 x 50-digit decimal numbers (memory)
   - Mill: Arithmetic unit (ADD, SUB, MULT, DIV, SQRT)
   - Ingress/Egress: Punch card I/O (operation, variable, number cards)
   - Control: Instruction sequencing via operation cards
@@ -20,7 +20,7 @@ Instruction Set:
 
 Numbering System:
   - 50-digit decimal representation
-  - Scaling: value × 10^40 (40 fractional digits internally)
+  - Scaling: value x 10^40 (40 fractional digits internally)
   - Full arithmetic with overflow detection
   - Supports negative numbers and comparisons
 
@@ -34,8 +34,7 @@ Program Control:
 
 Timing Model:
   - Each instruction has a cost in abstract time units
-  - NOP: 0, ADD: 8, MULT: 400, DIV: 750, SQRT: 250
-  - Load/store: 15 cycles, Jump: 4 cycles, I/O: 30 cycles
+  - NOP: 0, ADD: 8, SUB: 8, MULT: 400, DIV: 750, SQRT: 250, RDCRD: 30, WRPCH: 30, WRPRN: 2, CALL: 8, RET: 4, PUSH: 4, POP: 4
   - Used for performance analysis and historical accuracy
 
 References:
@@ -44,25 +43,28 @@ References:
   - SMG Technical Description (DE2 comparison)
 """
 
+from typing import Optional, Any
+from .barrels import BarrelController, MicroOp
+
 TIMING_TABLE = {
-    'NOP':      0,
-    'ADD':      8,
-    'SUB':      8,
-    'CMP':      4,
-    'JMP':      4,
-    'JZ':       4,
-    'LOAD':    15,
-    'STOR':    15,
-    'MULT':   400,
-    'DIV':    750,
-    'SQRT':   250,
-    'RDCRD':   30,
-    'WRPCH':   30,
-    'WRPRN':    2,
-    'CALL':     8,
-    'RET':      4,
-    'PUSH':     4,
-    'POP':      4,
+    "NOP": 0,
+    "ADD": 8,
+    "SUB": 8,
+    "CMP": 4,
+    "JMP": 4,
+    "JZ": 4,
+    "LOAD": 15,
+    "STOR": 15,
+    "MULT": 400,
+    "DIV": 750,
+    "SQRT": 250,
+    "RDCRD": 30,
+    "WRPCH": 30,
+    "WRPRN": 2,
+    "CALL": 8,
+    "RET": 4,
+    "PUSH": 4,
+    "POP": 4,
 }
 
 
@@ -70,11 +72,11 @@ class BabbageNumber:
     """
     50-digit decimal fixed-point number representation.
 
-    Internal representation: value × 10^(-40) where value is an integer.
+    Internal representation: value x 10^-40 where value is an integer.
     This provides 50 decimal digits total with 40 fractional digits.
 
-    Maximum magnitude: ±(10^50 - 1)
-    Minimum non-zero: ±10^(-40)
+    Maximum magnitude: +/-(10^50 - 1)
+    Minimum non-zero: +/-10^-40
 
     Supports full arithmetic operations with overflow detection.
     """
@@ -108,35 +110,37 @@ class BabbageNumber:
             True if overflow occurred, False otherwise
             Sets internal overflow flag for later inspection
         """
-        max_value = (10**50) - 1
-        min_value = -(10**50) + 1
-        if self.value > max_value or self.value < min_value:
+        # Adjusted for scaled value
+        max_internal_value = (10**50 - 1) * (10**40)
+        min_internal_value = -(10**50 - 1) * (10**40)
+
+        if self.value > max_internal_value or self.value < min_internal_value:
             self._overflow_flag = True
-            # Truncate to 50 digits
-            self.value = self.value % (10**50)
-            if self.value > max_value:
-                self.value -= (10**50)
+            # For now, let's keep the flag and not modify value on overflow here.
             return True
         return False
 
     def __add__(self, other):
         """Addition with overflow check."""
         result = BabbageNumber(0)
-        result.value = self.value + BabbageNumber(other).value
+        other_babbage = BabbageNumber(other)
+        result.value = self.value + other_babbage.value
         result._check_overflow()
         return result
 
     def __sub__(self, other):
         """Subtraction with overflow check."""
         result = BabbageNumber(0)
-        result.value = self.value - BabbageNumber(other).value
+        other_babbage = BabbageNumber(other)
+        result.value = self.value - other_babbage.value
         result._check_overflow()
         return result
 
     def __mul__(self, other):
         """Multiplication with overflow check."""
         result = BabbageNumber(0)
-        result.value = self.value * BabbageNumber(other).value
+        # Multiply scaled integer values, then scale back by 10^40
+        result.value = (self.value * BabbageNumber(other).value) // (10**40)
         result._check_overflow()
         return result
 
@@ -201,7 +205,7 @@ class Engine:
     Babbage Analytical Engine emulator.
 
     Complete simulation of the mechanical Analytical Engine architecture:
-    - 2,000 word memory (store) with 50-digit decimal numbers
+    - 2,000 x word memory (store) with 50-digit decimal numbers
     - 4 arithmetic registers (A, B, C, D) for mill operations
     - Program counter for instruction sequencing
     - Flag registers (ZERO, SIGN, OVERFLOW, comparison flags)
@@ -217,66 +221,81 @@ class Engine:
 
         # Registers: Mill components for arithmetic
         self.registers = {
-            'A': BabbageNumber(0),  # Accumulator
-            'B': BabbageNumber(0),  # Operand register
-            'C': BabbageNumber(0),  # Auxiliary
-            'D': BabbageNumber(0),  # Auxiliary
+            "A": BabbageNumber(0),  # Accumulator
+            "B": BabbageNumber(0),  # Operand register
+            "C": BabbageNumber(0),  # Auxiliary
+            "D": BabbageNumber(0),  # Auxiliary
         }
+        # Micro-Architectural State for Barrel Execution
+        self.mill_operand_buffer = BabbageNumber(0)  # Ingress Axis
+        self.mill_result_buffer = BabbageNumber(0)  # Egress Axis
+        self.active_store_address: Optional[int] = None  # V.A. (Variable Axis) card
+        # New Micro-Architectural State for Multiplication
+        self.mill_product_accumulator = BabbageNumber(0)  # Intermediate product
+        self.mill_multiplier_digit_buffer = 0  # Current multiplier digit
+        self.mill_counter = 0  # Generic counter for loops
+        # New Micro-Architectural State for Division
+        self.mill_divisor_buffer = BabbageNumber(0)  # Holds the divisor for division ops
+        self.mill_quotient_buffer = BabbageNumber(0)  # Builds the quotient during division
+        self.mill_remainder_buffer = BabbageNumber(0)  # Holds the remainder during division
 
         # Control: Program sequencing and timing
-        self.PC = 0                        # Program Counter
-        self.running = True                # Execution flag
-        self.clock_time = 0                # Simulated elapsed time
+        self.PC = 0  # Program Counter
+        self.running = True  # Execution flag
+        self.clock_time = 0  # Simulated elapsed time
 
         # I/O: Punch cards and results
-        self.instruction_cards = []        # Loaded program
-        self.result_cards = []             # Output results
+        self.instruction_cards = []  # Loaded program
+        self.result_cards = []  # Output results
 
         # Flags: Condition codes from operations
         self.flags = {
-            'ZERO': False,      # Result was zero
-            'SIGN': False,      # Result was negative
-            'OVERFLOW': False,  # Arithmetic overflow
-            'GREATER': False,   # CMP: first > second
-            'LESS': False,      # CMP: first < second
-            'EQUAL': False,     # CMP: first == second
+            "ZERO": False,  # Result was zero
+            "SIGN": False,  # Result was negative
+            "OVERFLOW": False,  # Arithmetic overflow
+            "GREATER": False,  # CMP: first > second
+            "LESS": False,  # CMP: first < second
+            "EQUAL": False,  # CMP: first == second
         }
 
         # Control stacks: For subroutines and temporary storage
-        self.return_stack = []             # CALL/RET return addresses (max 16)
-        self.data_stack = []               # PUSH/POP temporary storage
+        self.return_stack = []  # CALL/RET return addresses (max 16)
+        self.data_stack = []  # PUSH/POP temporary storage
 
         # Debugging: Breakpoints and tracing
-        self.breakpoints = []              # Conditional breakpoints
-        self.trace_enabled = False         # Trace execution to console
-        self.paused = False                # Execution paused at breakpoint
-        self.interactive_mode = False      # Interactive debugging mode
+        self.breakpoints = []  # Conditional breakpoints
+        self.trace_enabled = False  # Trace execution to console
+        self.paused = False  # Execution paused at breakpoint
+        self.interactive_mode = False  # Interactive debugging mode
+
+        # Barrels
+        self.barrels = BarrelController()
 
         # Instruction handlers: Maps opcode to execution function
         self._opcode_handlers = {
-            'NOP': self._execute_NOP,
-            'ADD': self._execute_ADD,
-            'SUB': self._execute_SUB,
-            'MULT': self._execute_MULT,
-            'DIV': self._execute_DIV,
-            'SQRT': self._execute_SQRT,
-            'LOAD': self._execute_LOAD,
-            'STOR': self._execute_STOR,
-            'JMP': self._execute_JMP,
-            'JZ': self._execute_JZ,
-            'JNZ': self._execute_JNZ,
-            'JLT': self._execute_JLT,
-            'JGT': self._execute_JGT,
-            'JLE': self._execute_JLE,
-            'JGE': self._execute_JGE,
-            'CMP': self._execute_CMP,
-            'CALL': self._execute_CALL,
-            'RET': self._execute_RET,
-            'PUSH': self._execute_PUSH,
-            'POP': self._execute_POP,
-            'RDCRD': self._execute_RDCRD,
-            'WRPCH': self._execute_WRPCH,
-            'WRPRN': self._execute_WRPRN,
+            "NOP": self._execute_NOP,
+            "ADD": self._execute_ADD_micro,
+            "SUB": self._execute_SUB_micro,
+            "MULT": self._execute_MULT_micro,  # Now using micro-programmed MULT
+            "DIV": self._execute_DIV_micro,
+            "SQRT": self._execute_SQRT_micro,
+            "LOAD": self._execute_LOAD_micro,
+            "STOR": self._execute_STOR_micro,
+            "JMP": self._execute_JMP,
+            "JZ": self._execute_JZ,
+            "JNZ": self._execute_JNZ,
+            "JLT": self._execute_JLT,
+            "JGT": self._execute_JGT,
+            "JLE": self._execute_JLE,
+            "JGE": self._execute_JGE,
+            "CMP": self._execute_CMP,
+            "CALL": self._execute_CALL,
+            "RET": self._execute_RET,
+            "PUSH": self._execute_PUSH,
+            "POP": self._execute_POP,
+            "RDCRD": self._execute_RDCRD,
+            "WRPCH": self._execute_WRPCH,
+            "WRPRN": self._execute_WRPRN,
         }
 
     def _get_register_value(self, reg_name):
@@ -294,17 +313,17 @@ class Engine:
 
     def _update_flags(self, value1, value2=None, comparison_result=None):
         """Update condition flags based on operation result."""
-        self.flags['ZERO'] = (value1 == BabbageNumber(0))
-        self.flags['SIGN'] = (value1 < BabbageNumber(0))
+        self.flags["ZERO"] = value1 == BabbageNumber(0)
+        self.flags["SIGN"] = value1 < BabbageNumber(0)
 
         if comparison_result is not None:
-            self.flags['GREATER'] = comparison_result > 0
-            self.flags['LESS'] = comparison_result < 0
-            self.flags['EQUAL'] = comparison_result == 0
+            self.flags["GREATER"] = comparison_result > 0
+            self.flags["LESS"] = comparison_result < 0
+            self.flags["EQUAL"] = comparison_result == 0
         else:
-            self.flags['GREATER'] = False
-            self.flags['LESS'] = False
-            self.flags['EQUAL'] = False
+            self.flags["GREATER"] = False
+            self.flags["LESS"] = False
+            self.flags["EQUAL"] = False
 
     def _get_operand_value(self, operand_str):
         """
@@ -317,7 +336,7 @@ class Engine:
         """
         if operand_str in self.registers:
             return self._get_register_value(operand_str)
-        elif operand_str.startswith('[') and operand_str.endswith(']'):
+        elif operand_str.startswith("[") and operand_str.endswith("]"):
             mem_address = int(operand_str[1:-1])
             if 0 <= mem_address < len(self.memory):
                 return self.memory[mem_address]
@@ -334,25 +353,228 @@ class Engine:
         """No operation (1 cycle, no effect)."""
         pass
 
-    def _execute_ADD(self, reg_dest, operand):
-        """Add: reg_dest += operand (8 cycles)."""
-        val1 = self._get_register_value(reg_dest)
-        val2 = self._get_operand_value(operand)
-        result = val1 + val2
-        if result._check_overflow():
-            self.flags['OVERFLOW'] = True
-        self._set_register_value(reg_dest, result)
-        self._update_flags(result)
+    def _execute_ADD_micro(self, reg_dest: str, operand_src: Any):
+        """Execute ADD using micro-ops (Hybrid Tier 1/3)."""
+        self.barrels.select_barrel("ADD")
 
-    def _execute_SUB(self, reg_dest, operand):
-        """Subtract: reg_dest -= operand (8 cycles)."""
-        val1 = self._get_register_value(reg_dest)
-        val2 = self._get_operand_value(operand)
-        result = val1 - val2
-        if result._check_overflow():
-            self.flags['OVERFLOW'] = True
-        self._set_register_value(reg_dest, result)
-        self._update_flags(result)
+        # Micro-op execution loop
+        while self.barrels.active_barrel:
+            ops = self.barrels.step()
+            for op in ops:
+                self._execute_micro_op(op, reg_dest, operand_src)  # Pass context
+
+        # Final step in ADD micro-program: Transfer result from Egress to Mill Reg A
+        self.registers[reg_dest] = self.mill_result_buffer
+        self._update_flags(self.mill_result_buffer)
+
+    def _execute_SUB_micro(self, reg_dest: str, operand_src: Any):
+        """Execute SUB using micro-ops."""
+        self.barrels.select_barrel("SUB")
+
+        # Micro-op execution loop
+        while self.barrels.active_barrel:
+            ops = self.barrels.step()
+            for op in ops:
+                self._execute_micro_op(op, reg_dest, operand_src)  # Pass context
+
+        self.registers[reg_dest] = self.mill_result_buffer
+        self._update_flags(self.mill_result_buffer)
+
+    def _execute_micro_op(self, op: MicroOp, reg_dest: str, operand_src: Any):
+        """Execute a single physical micro-operation, modifying engine state."""
+        # This translates Barrel "studs" to mechanical actions.
+        if op == MicroOp.LIFT_STORE_AXIS:
+            # Assume Variable Axis card is read, setting active_store_address
+            # For now, let's just resolve the operand as the source address.
+            if isinstance(operand_src, str) and operand_src.startswith("["):
+                self.active_store_address = int(operand_src[1:-1])
+            # If reg_dest is used as operand_src, it is handled via CONNECT_STORE_TO_MILL path.
+
+        elif op == MicroOp.CONNECT_STORE_TO_MILL:
+            if self.active_store_address is not None:
+                self.mill_operand_buffer = self.memory[self.active_store_address]
+            else:  # This path is for immediate values or other non-memory sources for now.
+                # For example, if the operand_src itself is an immediate number (e.g., '10')
+                self.mill_operand_buffer = self._get_operand_value(operand_src)
+
+        elif op == MicroOp.ADVANCE_MILL:
+            # This is where the actual arithmetic happens based on instruction context
+            current_mill_value = self.registers[reg_dest]  # First operand is in A or specified dest
+
+            # Perform addition in the mill
+            self.mill_result_buffer = current_mill_value + self.mill_operand_buffer
+
+        elif op == MicroOp.REVERSE_MILL:
+            current_mill_value = self.registers[reg_dest]
+            self.mill_result_buffer = current_mill_value - self.mill_operand_buffer
+
+        elif op == MicroOp.RUN_CARRY:
+            # Simulate the anticipating carriage for the mill
+            # BabbageNumber already handles carry internally, so this is symbolic.
+            pass
+
+        elif op == MicroOp.LIFT_EGRESS:
+            # Prepares Egress Axis to receive result
+            pass
+
+        elif op == MicroOp.CONNECT_MILL_TO_STORE:
+            # Transfer from Egress to Store
+            if self.active_store_address is not None:
+                self.memory[self.active_store_address] = self.mill_result_buffer
+
+        elif op == MicroOp.DROP_STORE_AXIS:
+            self.active_store_address = None
+
+        elif op == MicroOp.DROP_INGRESS:
+            self.mill_operand_buffer = BabbageNumber(0)
+
+        elif op == MicroOp.DROP_EGRESS:
+            self.mill_result_buffer = BabbageNumber(0)
+
+        elif op == MicroOp.LOAD_MILL_ACCUMULATOR:
+            self.mill_product_accumulator = self.registers[reg_dest]
+
+        elif op == MicroOp.STORE_MILL_ACCUMULATOR:
+            self.registers[reg_dest] = self.mill_product_accumulator
+
+        elif op == MicroOp.SHIFT_MILL_LEFT:
+            self.mill_product_accumulator = self.mill_product_accumulator * BabbageNumber(10)
+
+        elif op == MicroOp.SHIFT_MILL_RIGHT:
+            self.mill_product_accumulator = self.mill_product_accumulator / BabbageNumber(10)
+
+        elif op == MicroOp.GET_MULTIPLIER_DIGIT:
+            # This micro-op is highly context-dependent.
+            # For a proper implementation, the multiplier digit would be loaded from a specific card or register.
+            # For now, assume operand_src contains the full multiplier and we just grab the last digit for simulation.
+            # This is a simplification; a real AE would use complex gear trains for digit extraction.
+            multiplier_val = int(
+                self._get_operand_value(operand_src).to_decimal()
+            )  # Get integer part
+            self.mill_multiplier_digit_buffer = multiplier_val % 10  # Get units digit
+
+        elif op == MicroOp.DECREMENT_COUNTER:
+            self.mill_counter -= 1
+
+        elif op == MicroOp.COMPARE_MILL_BUFFERS:
+            # For division, compare current dividend part (mill_result_buffer) with divisor (mill_operand_buffer)
+            self.flags["GREATER"] = (
+                self.mill_remainder_buffer > self.mill_operand_buffer
+            )  # Compare remainder buffer with operand buffer
+            self.flags["LESS"] = self.mill_remainder_buffer < self.mill_operand_buffer
+            self.flags["EQUAL"] = self.mill_remainder_buffer == self.mill_operand_buffer
+
+        elif op == MicroOp.SHIFT_MILL_DIVISOR:
+            # Shift the divisor (mill_operand_buffer) to align it for subtraction
+            self.mill_operand_buffer = self.mill_operand_buffer * BabbageNumber(10)
+
+        elif op == MicroOp.INCREMENT_QUOTIENT_DIGIT:
+            # Increment the current digit of the quotient being built
+            self.mill_quotient_buffer += BabbageNumber(1)
+
+        elif op == MicroOp.RESET_REMAINDER:
+            self.mill_remainder_buffer = BabbageNumber(0)
+
+        # Other MicroOps (Fetch, etc.) can be implemented here as needed
+        # For now, FETCH_VAR_CARD is a symbolic trigger.
+
+    def _execute_MULT_micro(self, reg_dest: str, operand_src: Any):
+        """
+        Execute MULT using micro-ops, leveraging repeated additions and shifts.
+
+        This simulates the core principle of mechanical multiplication as
+        repeated addition and shifting, orchestrated at a higher level
+        by Python for now, but using low-level mill state.
+        """
+        multiplicand = self._get_operand_value(reg_dest)  # Assuming reg_dest holds multiplicand
+        multiplier = self._get_operand_value(operand_src)  # Get multiplier from operand
+
+        self.mill_product_accumulator = BabbageNumber(0)  # Initialize product to zero
+        current_multiplicand_shifted = (
+            multiplicand  # Multiplicand to be added in current shift position
+        )
+
+        str_multiplier = str(int(multiplier.to_decimal()))  # Get integer part of multiplier
+
+        # Iterate through multiplier digits from right to left (units to MSB)
+        for i, char_digit in enumerate(reversed(str_multiplier)):
+            digit = int(char_digit)
+
+            # Add multiplicand 'digit' times
+            for _ in range(digit):
+                self.mill_product_accumulator += current_multiplicand_shifted
+
+            # After adding for a digit, shift the 'current_multiplicand_shifted' left for the next digit place
+            # This is equivalent to shifting the product accumulator right.
+            # In AE, the multiplicand would remain fixed, and the product accumulator would shift right.
+            # Here, we simulate by shifting multiplicand left to match place value.
+            if i < len(str_multiplier) - 1:  # Don't shift after last digit
+                current_multiplicand_shifted = current_multiplicand_shifted * BabbageNumber(10)
+
+        # Store the final product
+        self.registers[reg_dest] = self.mill_product_accumulator  # Default destination for now
+        self._update_flags(self.mill_product_accumulator)
+
+    def _execute_DIV_micro(self, reg_dest: str, operand_src: Any):
+        """
+        Execute DIV using micro-ops, leveraging repeated subtractions and shifts.
+
+        This simulates the core principle of mechanical division as
+        repeated subtraction and shifting, orchestrated at a higher level
+        by Python for now, but using low-level mill state.
+        """
+        dividend = self._get_operand_value(reg_dest)
+        divisor = self._get_operand_value(operand_src)
+
+        if divisor == BabbageNumber(0):
+            raise ZeroDivisionError("Division by zero")
+
+        self.mill_remainder_buffer = dividend
+        self.mill_quotient_buffer = BabbageNumber(0)
+
+        # Determine initial alignment - shift divisor until it's just smaller than dividend
+        dividend_int = int(dividend.to_decimal())
+        divisor_int = int(divisor.to_decimal())
+
+        if divisor_int == 0:
+            raise ZeroDivisionError("Division by zero")
+
+        initial_shift = 0
+        if dividend_int != 0 and divisor_int != 0:
+            initial_shift = len(str(abs(dividend_int))) - len(str(abs(divisor_int)))
+            # Adjust if dividend is smaller than divisor after initial alignment
+            if initial_shift > 0 and dividend_int < (divisor_int * (10 ** (initial_shift))):
+                initial_shift -= 1
+
+        scaled_divisor = divisor * BabbageNumber(10**initial_shift)
+        current_quotient_position_value = BabbageNumber(10**initial_shift)
+
+        for _ in range(initial_shift + 1):  # Iterate for each possible quotient digit
+            while self.mill_remainder_buffer >= scaled_divisor:
+                self.mill_remainder_buffer -= scaled_divisor
+                self.mill_quotient_buffer += current_quotient_position_value
+
+            # Shift divisor right for next digit position
+            scaled_divisor /= BabbageNumber(10)
+            current_quotient_position_value /= BabbageNumber(10)
+
+        # Store the final quotient (and remainder if needed)
+        self.registers[reg_dest] = self.mill_quotient_buffer
+        self._set_register_value("D", self.mill_remainder_buffer)  # Store remainder in D
+
+        self._update_flags(self.mill_quotient_buffer)
+
+    def _execute_SQRT_micro(self, reg_dest):
+        """Execute SQRT using micro-ops (calls high-level for now)."""
+        self._execute_SQRT(reg_dest)
+
+    def _execute_LOAD_micro(self, reg_dest, address_src):
+        """Execute LOAD using micro-ops (calls high-level for now)."""
+        self._execute_LOAD(reg_dest, address_src)
+
+    def _execute_STOR_micro(self, reg_source, address_dest):
+        """Execute STOR using micro-ops (calls high-level for now)."""
+        self._execute_STOR(reg_source, address_dest)
 
     def _execute_MULT(self, reg_dest, operand):
         """
@@ -387,11 +609,11 @@ class Engine:
         D_result = BabbageNumber(lower_50_digits)
 
         if A_result._overflow_flag or D_result._overflow_flag:
-            self.flags['OVERFLOW'] = True
+            self.flags["OVERFLOW"] = True
 
-        self._set_register_value('A', A_result)
-        self._set_register_value('D', D_result)
-        self._update_flags(A_result)
+        self._set_register_value("A", A_result)
+        self._set_register_value("D", D_result)
+        self._update_flags(D_result)  # Changed to D_result for flags
 
     def _execute_DIV(self, reg_dest, operand):
         """Divide: reg_dest /= operand with fixed-point scaling (750 cycles)."""
@@ -401,7 +623,7 @@ class Engine:
             raise ZeroDivisionError("Division by zero")
         result = val1 / val2
         if result._check_overflow():
-            self.flags['OVERFLOW'] = True
+            self.flags["OVERFLOW"] = True
         self._set_register_value(reg_dest, result)
         self._update_flags(result)
 
@@ -410,7 +632,7 @@ class Engine:
         Square root: reg_dest = sqrt(reg_dest) using Newton's method (250 cycles).
 
         Implementation:
-          1. Use initial guess: sqrt(unscaled_value) × 10^40
+          1. Use initial guess: sqrt(unscaled_value) x 10^40
           2. Newton iteration: x_new = (x + N/x) / 2
           3. Iterate until convergence (100 max iterations)
           4. Return integer result (truncates fractional part)
@@ -457,7 +679,7 @@ class Engine:
 
     def _execute_LOAD(self, reg_dest, address):
         """Load from store: reg_dest = memory[address] or immediate (15 cycles)."""
-        if address.startswith('[') and address.endswith(']'):
+        if address.startswith("[") and address.endswith("]"):
             mem_address = int(address[1:-1])
             if 0 <= mem_address < len(self.memory):
                 value = self.memory[mem_address]
@@ -472,7 +694,7 @@ class Engine:
 
     def _execute_STOR(self, reg_source, address):
         """Store to store: memory[address] = reg_source (15 cycles)."""
-        if address.startswith('[') and address.endswith(']'):
+        if address.startswith("[") and address.endswith("]"):
             mem_address = int(address[1:-1])
             if 0 <= mem_address < len(self.memory):
                 value = self._get_register_value(reg_source)
@@ -494,42 +716,42 @@ class Engine:
 
     def _execute_JZ(self, address):
         """Jump if zero: PC = address if ZERO flag set (4 cycles)."""
-        if self.flags['ZERO']:
+        if self.flags["ZERO"]:
             self.PC = int(address)
             return True
         return False
 
     def _execute_JNZ(self, address):
         """Jump if not zero: PC = address if ZERO flag clear (4 cycles)."""
-        if not self.flags['ZERO']:
+        if not self.flags["ZERO"]:
             self.PC = int(address)
             return True
         return False
 
     def _execute_JLT(self, address):
         """Jump if less than: PC = address if LESS flag set (4 cycles)."""
-        if self.flags['LESS']:
+        if self.flags["LESS"]:
             self.PC = int(address)
             return True
         return False
 
     def _execute_JGT(self, address):
         """Jump if greater than: PC = address if GREATER flag set (4 cycles)."""
-        if self.flags['GREATER']:
+        if self.flags["GREATER"]:
             self.PC = int(address)
             return True
         return False
 
     def _execute_JLE(self, address):
         """Jump if less or equal: PC = address if LESS or EQUAL (4 cycles)."""
-        if self.flags['LESS'] or self.flags['EQUAL']:
+        if self.flags["LESS"] or self.flags["EQUAL"]:
             self.PC = int(address)
             return True
         return False
 
     def _execute_JGE(self, address):
         """Jump if greater or equal: PC = address if GREATER or EQUAL (4 cycles)."""
-        if self.flags['GREATER'] or self.flags['EQUAL']:
+        if self.flags["GREATER"] or self.flags["EQUAL"]:
             self.PC = int(address)
             return True
         return False
@@ -589,23 +811,27 @@ class Engine:
     def _execute_WRPCH(self, reg_source):
         """Write punch card: output register value to result card (30 cycles)."""
         value = self._get_register_value(reg_source)
-        self.result_cards.append({
-            'value': value,
-            'opcode': 'WRPCH',
-            'operands': [reg_source],
-            'clock_time': self.clock_time
-        })
+        self.result_cards.append(
+            {
+                "value": value,
+                "opcode": "WRPCH",
+                "operands": [reg_source],
+                "clock_time": self.clock_time,
+            }
+        )
         print(f"WRPCH: {value.to_decimal()}")
 
     def _execute_WRPRN(self, reg_source):
         """Write printer: output register value to printer (2 cycles)."""
         value = self._get_register_value(reg_source)
-        self.result_cards.append({
-            'value': value,
-            'opcode': 'WRPRN',
-            'operands': [reg_source],
-            'clock_time': self.clock_time
-        })
+        self.result_cards.append(
+            {
+                "value": value,
+                "opcode": "WRPRN",
+                "operands": [reg_source],
+                "clock_time": self.clock_time,
+            }
+        )
         print(f"WRPRN: {value.to_decimal()}")
 
     # ========================================================================
@@ -631,7 +857,7 @@ class Engine:
         handler = self._opcode_handlers.get(opcode_name)
         if handler:
             # Control flow instructions modify PC directly
-            if opcode_name in ['JMP', 'JZ', 'JNZ', 'JLT', 'JGT', 'JLE', 'JGE', 'CALL', 'RET']:
+            if opcode_name in ["JMP", "JZ", "JNZ", "JLT", "JGT", "JLE", "JGE", "CALL", "RET"]:
                 pc_modified = handler(*operands)
             else:
                 handler(*operands)
@@ -668,10 +894,10 @@ class Engine:
         program_lines = []
 
         # Read and strip comments
-        with open(filename, 'r') as f:
+        with open(filename, "r") as f:
             for line_num, line in enumerate(f, 0):
                 original_line = line.strip()
-                line = line.split('#')[0].strip()
+                line = line.split("#")[0].strip()
                 if not line:
                     continue
                 program_lines.append((line_num, line, original_line))
@@ -679,10 +905,10 @@ class Engine:
         # Pass 1: Identify labels and store instructions
         current_instruction_address = 0
         for line_num, line, original_line in program_lines:
-            if ':' in line:
-                label_name = line.split(':')[0].strip()
+            if ":" in line:
+                label_name = line.split(":")[0].strip()
                 labels[label_name] = current_instruction_address
-                line = line.split(':', 1)[1].strip()
+                line = line.split(":", 1)[1].strip()
                 if not line:
                     continue
 
@@ -713,7 +939,7 @@ class Engine:
         while self.running and self.PC < len(self.instruction_cards):
             if self.paused and self.interactive_mode:
                 user_input = input("Emulator paused. Press Enter to continue or 's' to step: ")
-                if user_input == 's':
+                if user_input == "s":
                     self.paused = False
                     self.step_one_instruction()
                     self.paused = True
@@ -735,7 +961,7 @@ class Engine:
 
         try:
             self.execute_instruction(instruction)
-            if instruction.opcode == 'HALT':
+            if instruction.opcode == "HALT":
                 self.running = False
         except Exception as e:
             print(f"Runtime Error at PC {self.PC}: {e}")
@@ -751,31 +977,31 @@ class Engine:
           - register: Break when register value matches
           - memory: Break when memory value matches
         """
-        self.breakpoints.append({
-            'type': condition_type,
-            'target': target,
-            'enabled': True
-        })
+        self.breakpoints.append({"type": condition_type, "target": target, "enabled": True})
 
     def check_breakpoints(self):
         """Check all breakpoints and pause if triggered."""
         for bp in self.breakpoints:
-            if not bp['enabled']:
+            if not bp["enabled"]:
                 continue
 
-            if bp['type'] == 'address' and self.PC == bp['target']:
+            if bp["type"] == "address" and self.PC == bp["target"]:
                 self.paused = True
                 print(f"Breakpoint hit: PC={self.PC}")
 
-            elif bp['type'] == 'time' and self.clock_time >= bp['target']:
+            elif bp["type"] == "time" and self.clock_time >= bp["target"]:
                 self.paused = True
                 print(f"Breakpoint hit: Clock={self.clock_time}s")
 
-            elif bp['type'] == 'register' and self._get_register_value(bp['reg']) == BabbageNumber(bp['target']):
+            elif bp["type"] == "register" and self._get_register_value(bp["reg"]) == BabbageNumber(
+                bp["target"]
+            ):
                 self.paused = True
                 print(f"Breakpoint hit: {bp['reg']}={bp['target']}")
 
-            elif bp['type'] == 'memory' and self.memory[bp['address']] == BabbageNumber(bp['target']):
+            elif bp["type"] == "memory" and self.memory[bp["address"]] == BabbageNumber(
+                bp["target"]
+            ):
                 self.paused = True
                 print(f"Breakpoint hit: Memory[{bp['address']}]={bp['target']}")
 
@@ -800,12 +1026,12 @@ Memory (first 10 words):
 
     def save_result_cards(self, filename):
         """Save result cards to file in punch card format."""
-        with open(filename, 'w') as f:
+        with open(filename, "w") as f:
             for i, result_data in enumerate(self.result_cards):
-                value = result_data['value']
-                opcode = result_data['opcode']
-                operands = ', '.join(result_data['operands'])
-                clock_time = result_data['clock_time']
+                value = result_data["value"]
+                opcode = result_data["opcode"]
+                operands = ", ".join(result_data["operands"])
+                clock_time = result_data["clock_time"]
 
                 f.write(f"# RESULT CARD {i+1}\n")
                 f.write(f"# Instruction: {opcode} {operands}\n")

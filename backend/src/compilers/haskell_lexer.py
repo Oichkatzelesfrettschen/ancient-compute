@@ -5,7 +5,7 @@ Handles:
 - Keywords: let, in, where, if, then, else, case, of, do, etc.
 - Operators: ->, =>, ::, |, <-, =, etc.
 - Indentation-based blocks (INDENT/DEDENT tokens)
-- Lambda expressions (\)
+- Lambda expressions (backslash)
 - Pattern matching
 - Type annotations
 - Comments (-- and {- -})

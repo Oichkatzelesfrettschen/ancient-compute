@@ -21,94 +21,49 @@ def p_body(p):
         p[0] = [p[1]]
 
 def p_declaration_type(p):
-    """declaration : IDENTIFIER COLON type_expression"""
+    """declaration : IDENTIFIER COLON expression"""
     p[0] = TypeDeclaration(p[1], p[3])
 
-def p_type_expression(p):
-    """type_expression : simple_type_expression
-                       | type_expression simple_type_expression"""
-    if len(p) == 2:
-        p[0] = p[1]
-    else:
-        p[0] = FunctionApplication(p[1], [p[2]])
-
-def p_simple_type_expression(p):
-    """simple_type_expression : IDENTIFIER
-                              | LPAREN type_expression RPAREN
-                              | LPAREN RPAREN"""
-    if len(p) == 2:
-        p[0] = Identifier(p[1])
-    elif len(p) == 3:
-        p[0] = None
-    else:
-        p[0] = p[2]
-
 def p_declaration_function(p):
-    """declaration : IDENTIFIER opt_params EQUALS expression"""
-    p[0] = FunctionDeclaration(p[1], p[2], p[4])
-
-def p_opt_params(p):
-    """opt_params : params
-                  | empty"""
-    p[0] = p[1]
-
-def p_params(p):
-    """params : params IDENTIFIER
-             | IDENTIFIER"""
-    if len(p) == 3:
-        p[0] = p[1] + [p[2]]
-    else:
-        p[0] = [p[1]]
-
-def p_empty(p):
-    '''empty :'''
-    p[0] = []
-
-def p_expression_identifier(p):
-    """expression : IDENTIFIER"""
-    p[0] = Identifier(p[1])
-
-def p_expression_literal(p):
-    """expression : NUMBER
-                  | STRING"""
-    p[0] = Literal(p[1])
+    """declaration : IDENTIFIER EQUALS expression"""
+    p[0] = FunctionDeclaration(p[1], [], p[3])
 
 def p_expression_application(p):
-    """expression : expression expression"""
-    if isinstance(p[1], FunctionApplication):
-        p[1].args.append(p[2])
+    """expression : atom atom_list"""
+    if not p[2]:
         p[0] = p[1]
     else:
-        p[0] = FunctionApplication(p[1], [p[2]])
+        p[0] = FunctionApplication(p[1], p[2])
 
-def p_expression_paren(p):
-    """expression : LPAREN expression RPAREN
-                  | LPAREN RPAREN"""
+def p_atom_list_multiple(p):
+    """atom_list : atom atom_list"""
+    p[0] = [p[1]] + p[2]
+
+def p_atom_list_empty(p):
+    """atom_list : """
+    p[0] = []
+
+def p_atom_identifier(p):
+    """atom : IDENTIFIER"""
+    p[0] = Identifier(p[1])
+
+def p_atom_literal(p):
+    """atom : NUMBER
+            | STRING"""
+    p[0] = Literal(p[1])
+
+def p_atom_paren(p):
+    """atom : LPAREN expression RPAREN
+            | LPAREN RPAREN"""
     if len(p) == 4:
         p[0] = p[2]
     else:
-        # STUB: Or some other representation for empty parens
         p[0] = None
 
 def p_error(p):
     if p:
-        print(f"Syntax error at '{p.value}'")
+        print(f"Syntax error at '{p.value}' (type: {p.type}) at line {p.lineno}")
     else:
         print("Syntax error at EOF")
 
-parser = yacc.yacc(debug=True)
-
-
-class IDRIS2Parser:
-    """Compatibility wrapper around PLY parser.
-
-    Tests construct with tokens and then call `parse()`; for compatibility,
-    we ignore the tokens and return a non-None placeholder AST.
-    """
-
-    def __init__(self, tokens: Optional[list] = None):
-        self._tokens = tokens or []
-
-    def parse(self) -> Any:
-        # Return a minimal non-None structure to satisfy tests that only check existence.
-        return Module(name="Test", body=[])
+parser = yacc.yacc(debug=False, write_tables=False)

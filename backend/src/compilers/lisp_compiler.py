@@ -7,6 +7,7 @@ class LispCompiler:
     def __init__(self):
         self.program = Program()
         self.builder: IRBuilder = None
+        self.tmp_counter = 0
 
     def compile(self, ast: ASTNode) -> Program:
         if isinstance(ast, SExpression):
@@ -25,10 +26,15 @@ class LispCompiler:
                 return self._compile_defun(sexp)
             elif first.value == 'if':
                 return self._compile_if(sexp)
+            elif first.value == 'let':
+                return self._compile_let(sexp)
             elif first.value in ['+', '-', '*', '/']:
                 return self._compile_arithmetic(sexp)
             else:
                 return self._compile_function_call(sexp)
+        else:
+             # Handle ((lambda ...) args)
+             return self._compile_function_call(sexp)
 
     def _compile_defun(self, sexp: SExpression):
         func_name = sexp.children[1].value
@@ -39,29 +45,39 @@ class LispCompiler:
         self.builder.function.local_variables = {p: IRType.DEC50 for p in params}
         self.builder.new_block('entry')
 
+        last_result = Constant(0)
         for expr in body:
-            self._compile_expression(expr)
+            last_result = self._compile_expression(expr)
 
-        # STUB: For now, we just return 0. This should be the value of the last expression.
-        self.builder.emit_return(Constant(0))
-
+        self.builder.emit_return(last_result)
         self.program.add_function(self.builder.finalize())
 
     def _compile_arithmetic(self, sexp: SExpression):
-        op = sexp.children[0].value
+        op_map = {
+            '+': 'add',
+            '-': 'sub',
+            '*': 'mul',
+            '/': 'div'
+        }
+        op_sym = sexp.children[0].value
+        op = op_map.get(op_sym)
         args = sexp.children[1:]
 
-        # For now, we only handle binary operations
-        if len(args) != 2:
-            return
+        # IR currently supports binary ops. Lisp supports n-ary.
+        # Reduce: (+ a b c) -> (+ (+ a b) c)
+        
+        if not args:
+            return Constant(0)
+        
+        current_val = self._compile_expression(args[0])
+        
+        for arg in args[1:]:
+            next_val = self._compile_expression(arg)
+            target = self._new_tmp()
+            self.builder.emit_binary_op(op, target, current_val, next_val)
+            current_val = VariableValue(target)
 
-        op1 = self._compile_expression(args[0])
-        op2 = self._compile_expression(args[1])
-
-        target = self.builder.function.name + "_tmp"
-        self.builder.emit_binary_op(op, target, op1, op2)
-
-        return VariableValue(target)
+        return current_val
 
     def _compile_expression(self, expr):
         if isinstance(expr, Number):
@@ -69,47 +85,91 @@ class LispCompiler:
         elif isinstance(expr, Symbol):
             return VariableValue(expr.value)
         elif isinstance(expr, SExpression):
-            self._compile_sexpression(expr)
+            return self._compile_sexpression(expr)
+        elif isinstance(expr, String):
+            # STUB: Strings not fully supported in IR yet as values
+            return Constant(0) 
 
     def _compile_if(self, sexp: SExpression):
+        # (if cond then else)
         condition = sexp.children[1]
         then_branch = sexp.children[2]
-        else_branch = sexp.children[3]
+        else_branch = sexp.children[3] if len(sexp.children) > 3 else Number(0)
 
         entry_block = self.builder.current_block
-
-        cond_op = condition.children[0].value
-        op1 = self._compile_expression(condition.children[1])
-        op2 = self._compile_expression(condition.children[2])
-
+        
+        # Compile condition
+        # IR BranchTerminator expects: condition, op1, op2, true_lbl, false_lbl
+        # We need to reduce the Lisp condition to a comparison if it isn't one
+        
+        cond_val = self._compile_expression(condition)
+        
         then_block = self.builder.new_block('then')
         else_block = self.builder.new_block('else')
         merge_block = self.builder.new_block('merge')
+        
+        result_var = self._new_tmp()
 
-        entry_block.set_terminator(BranchTerminator(cond_op, op1, op2, then_block.label, else_block.label))
+        # Emit branch. checking if cond_val != 0 (Lisp truthiness)
+        # Using "ne" (not equal) 0
+        entry_block.set_terminator(
+            BranchTerminator("ne", cond_val, Constant(0), then_block.label, else_block.label)
+        )
 
+        # Then Block
         self.builder.current_block = then_block
         then_val = self._compile_expression(then_branch)
+        if then_val:
+            self.builder.emit_assignment(result_var, then_val)
         self.builder.emit_jump(merge_block.label)
 
+        # Else Block
         self.builder.current_block = else_block
         else_val = self._compile_expression(else_branch)
+        if else_val:
+            self.builder.emit_assignment(result_var, else_val)
         self.builder.emit_jump(merge_block.label)
 
+        # Merge
         self.builder.current_block = merge_block
-        # For now, we don't handle the PHI node, so we just return the then_val
-        # self.builder.emit_assignment("if_result", then_val)
+        return VariableValue(result_var)
 
+    def _compile_let(self, sexp: SExpression):
+        # (let ((var val) ...) body...)
+        bindings = sexp.children[1].children
+        body = sexp.children[2:]
+        
+        # For this basic implementation, we just register variables in the function scope
+        # Shadowing is not handled (flat scope)
+        
+        for binding in bindings:
+            # binding is SExpression(Symbol(var), Expr(val))
+            var_name = binding.children[0].value
+            val_expr = binding.children[1]
+            
+            val_compiled = self._compile_expression(val_expr)
+            self.builder.function.local_variables[var_name] = IRType.DEC50
+            self.builder.emit_assignment(var_name, val_compiled)
+            
+        last_result = Constant(0)
+        for expr in body:
+            last_result = self._compile_expression(expr)
+            
+        return last_result
 
     def _compile_function_call(self, sexp: SExpression):
         func_name = sexp.children[0].value
         args = [self._compile_expression(arg) for arg in sexp.children[1:]]
 
-        target = self.builder.function.name + "_tmp"
+        target = self._new_tmp()
         self.builder.emit_call(func_name, args, target)
 
         return VariableValue(target)
 
     def _compile_atom(self, atom):
-        # STUB: For now, we only compile top-level atoms in the REPL which is not yet implemented
+        # Top level atom? probably just return it if we are evaluating
         pass
+
+    def _new_tmp(self):
+        self.tmp_counter += 1
+        return f"tmp_{self.tmp_counter}"

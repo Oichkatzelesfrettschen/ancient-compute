@@ -20,6 +20,11 @@ make docker-up    # Detached containers for local integration testing
 ```
 Lean on `bazel build //backend:all` and `bazel test //...` for targeted polyglot builds, and prefer Make targets so pre-commit stays consistent.
 
+## Compiler & Emulator Development
+- **Machine Adapters**: When adding new historical compute methods, implement the `MachineAdapter` interface in `backend/src/emulator/adapter.py`. This ensures the Unified Debugger and Performance Analyzer work automatically.
+- **IR Erasure**: Modern language compilers (System F, IDRIS2) must perform type erasure during Phase 4 (Code Generation). The Babbage IR targets physical mechanics; types do not exist at runtime.
+- **Language Services**: Every new language service should include a lexer, parser, AST, and IR compiler. Register the new service in `backend/src/services/languages/__init__.py`.
+
 ## Coding Style & Naming Conventions
 - Python adheres to Black (100 cols) and strict mypy; keep modules `snake_case`, classes `PascalCase`, functions `snake_case`, and run `make format` (Black + isort) before committing.
 - TypeScript/Svelte follows Prettier (tabs, single quotes, 100 cols). Components use `PascalCase.svelte`, stores/utilities `camelCase.ts`, and API clients sit under `frontend/src/lib/api/`.

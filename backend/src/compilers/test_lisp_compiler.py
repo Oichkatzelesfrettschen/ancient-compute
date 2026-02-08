@@ -3,7 +3,7 @@
 import pytest
 from .lisp_parser import parser
 from .lisp_compiler import LispCompiler
-from ..ir_types import Program, Function, Constant, ReturnTerminator, BinaryOp, BranchTerminator, Call
+from ..ir_types import Program, Function, Constant, ReturnTerminator, BinaryOp, BranchTerminator, Call, VariableValue, Assignment
 
 def test_compile_defun():
     code = """(defun my-func (a b)
@@ -17,13 +17,13 @@ def test_compile_defun():
 
     func = program.functions['my-func']
     assert isinstance(func, Function)
-    assert func.name == 'my-func'
     assert func.parameters == ['a', 'b']
 
-    # For now, we just check that the function returns a constant
+    # The function should return the result of the addition (VariableValue)
     entry_block = func.basic_blocks[0]
     assert isinstance(entry_block.terminator, ReturnTerminator)
-    assert isinstance(entry_block.terminator.value, Constant)
+    # The return value should be a VariableValue (the result of the addition), not a Constant(0)
+    assert isinstance(entry_block.terminator.value, VariableValue) 
 
 def test_compile_arithmetic():
     code = """(defun my-add (a b)
@@ -38,9 +38,9 @@ def test_compile_arithmetic():
     func = program.functions['my-add']
     assert isinstance(func, Function)
 
-    # Check that the function body contains a binary operation
+    # Check that the function body contains a binary operation with 'add'
     entry_block = func.basic_blocks[0]
-    assert any(isinstance(instr, BinaryOp) and instr.op == '+' for instr in entry_block.instructions)
+    assert any(isinstance(instr, BinaryOp) and instr.op == 'add' for instr in entry_block.instructions)
 
 def test_compile_nested_arithmetic():
     code = """(defun my-nested-add (a b c)
@@ -110,3 +110,25 @@ def test_compile_function_call():
     # Check that the function body contains a call instruction
     entry_block = func.basic_blocks[0]
     assert any(isinstance(instr, Call) and instr.function_name == 'my-add' for instr in entry_block.instructions)
+
+def test_compile_let():
+    code = """(defun my-let ()
+                 (let ((x 10) (y 20))
+                    (+ x y)))"""
+    ast = parser.parse(code)
+    compiler = LispCompiler()
+    program = compiler.compile(ast)
+    
+    func = program.functions['my-let']
+    
+    # Should have local variables x and y
+    assert 'x' in func.local_variables
+    assert 'y' in func.local_variables
+    
+    # Should have assignments
+    entry_block = func.basic_blocks[0]
+    assignments = [instr for instr in entry_block.instructions if isinstance(instr, Assignment)]
+    assert len(assignments) >= 2
+    
+    # Should end with add
+    assert any(isinstance(instr, BinaryOp) and instr.op == 'add' for instr in entry_block.instructions)

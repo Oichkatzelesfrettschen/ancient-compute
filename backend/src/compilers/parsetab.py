@@ -6,9 +6,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'COLON COMMA DARROW DOT EQUALS IDENTIFIER KEYWORD LBRACE LBRACK LPAREN NUMBER OPERATOR PIPE RARROW RBRACE RBRACK RPAREN STRING SYMBOLmodule : KEYWORD IDENTIFIER bodybody : body declaration\n| declarationdeclaration : IDENTIFIER COLON type_expressiontype_expression : simple_type_expression\n| type_expression simple_type_expressionsimple_type_expression : IDENTIFIER\n| LPAREN type_expression RPAREN\n| LPAREN RPARENdeclaration : IDENTIFIER opt_params EQUALS expressionopt_params : params\n| emptyparams : params IDENTIFIER\n| IDENTIFIERempty :expression : IDENTIFIERexpression : NUMBER\n| STRINGexpression : expression expressionexpression : LPAREN expression RPAREN\n| LPAREN RPAREN'
+_lr_signature = 'LPAREN NUMBER RPAREN STRING SYMBOLexpression : atomexpression : LPAREN elements RPARENelements : elements expressionelements :atom : SYMBOLatom : NUMBERatom : STRING'
     
-_lr_action_items = {'KEYWORD':([0,],[2,]),'$end':([1,5,6,12,13,14,15,19,21,22,23,24,25,27,28,30,31,],[0,-1,-3,-2,-7,-4,-5,-6,-9,-16,-10,-17,-18,-8,-19,-21,-20,]),'IDENTIFIER':([2,3,4,5,6,7,8,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,],[3,4,7,4,-3,-14,13,18,-2,-7,13,-5,13,22,-13,-6,13,-9,-16,22,-17,-18,22,-8,22,22,-21,-20,]),'COLON':([4,],[8,]),'EQUALS':([4,7,9,10,11,18,],[-15,-14,17,-11,-12,-13,]),'LPAREN':([8,13,14,15,16,17,19,20,21,22,23,24,25,26,27,28,29,30,31,],[16,-7,16,-5,16,26,-6,16,-9,-16,26,-17,-18,26,-8,26,26,-21,-20,]),'RPAREN':([13,15,16,19,20,21,22,24,25,26,27,28,29,30,31,],[-7,-5,21,-6,27,-9,-16,-17,-18,30,-8,-19,31,-21,-20,]),'NUMBER':([17,22,23,24,25,26,28,29,30,31,],[24,-16,24,-17,-18,24,24,24,-21,-20,]),'STRING':([17,22,23,24,25,26,28,29,30,31,],[25,-16,25,-17,-18,25,25,25,-21,-20,]),}
+_lr_action_items = {'LPAREN':([0,2,3,4,5,6,7,8,9,],[3,-1,-4,-5,-6,-7,3,-2,-3,]),'SYMBOL':([0,2,3,4,5,6,7,8,9,],[4,-1,-4,-5,-6,-7,4,-2,-3,]),'NUMBER':([0,2,3,4,5,6,7,8,9,],[5,-1,-4,-5,-6,-7,5,-2,-3,]),'STRING':([0,2,3,4,5,6,7,8,9,],[6,-1,-4,-5,-6,-7,6,-2,-3,]),'$end':([1,2,4,5,6,8,],[0,-1,-5,-6,-7,-2,]),'RPAREN':([2,3,4,5,6,7,8,9,],[-1,-4,-5,-6,-7,8,-2,-3,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -17,7 +17,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'module':([0,],[1,]),'body':([3,],[5,]),'declaration':([3,5,],[6,12,]),'opt_params':([4,],[9,]),'params':([4,],[10,]),'empty':([4,],[11,]),'type_expression':([8,16,],[14,20,]),'simple_type_expression':([8,14,16,20,],[15,19,15,19,]),'expression':([17,23,26,28,29,],[23,28,29,28,28,]),}
+_lr_goto_items = {'expression':([0,7,],[1,9,]),'atom':([0,7,],[2,2,]),'elements':([3,],[7,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -26,26 +26,12 @@ for _k, _v in _lr_goto_items.items():
        _lr_goto[_x][_k] = _y
 del _lr_goto_items
 _lr_productions = [
-  ("S' -> module","S'",1,None,None,None),
-  ('module -> KEYWORD IDENTIFIER body','module',3,'p_module','idris_parser.py',11),
-  ('body -> body declaration','body',2,'p_body','idris_parser.py',15),
-  ('body -> declaration','body',1,'p_body','idris_parser.py',16),
-  ('declaration -> IDENTIFIER COLON type_expression','declaration',3,'p_declaration_type','idris_parser.py',23),
-  ('type_expression -> simple_type_expression','type_expression',1,'p_type_expression','idris_parser.py',27),
-  ('type_expression -> type_expression simple_type_expression','type_expression',2,'p_type_expression','idris_parser.py',28),
-  ('simple_type_expression -> IDENTIFIER','simple_type_expression',1,'p_simple_type_expression','idris_parser.py',35),
-  ('simple_type_expression -> LPAREN type_expression RPAREN','simple_type_expression',3,'p_simple_type_expression','idris_parser.py',36),
-  ('simple_type_expression -> LPAREN RPAREN','simple_type_expression',2,'p_simple_type_expression','idris_parser.py',37),
-  ('declaration -> IDENTIFIER opt_params EQUALS expression','declaration',4,'p_declaration_function','idris_parser.py',46),
-  ('opt_params -> params','opt_params',1,'p_opt_params','idris_parser.py',50),
-  ('opt_params -> empty','opt_params',1,'p_opt_params','idris_parser.py',51),
-  ('params -> params IDENTIFIER','params',2,'p_params','idris_parser.py',55),
-  ('params -> IDENTIFIER','params',1,'p_params','idris_parser.py',56),
-  ('empty -> <empty>','empty',0,'p_empty','idris_parser.py',63),
-  ('expression -> IDENTIFIER','expression',1,'p_expression_identifier','idris_parser.py',67),
-  ('expression -> NUMBER','expression',1,'p_expression_literal','idris_parser.py',71),
-  ('expression -> STRING','expression',1,'p_expression_literal','idris_parser.py',72),
-  ('expression -> expression expression','expression',2,'p_expression_application','idris_parser.py',76),
-  ('expression -> LPAREN expression RPAREN','expression',3,'p_expression_paren','idris_parser.py',84),
-  ('expression -> LPAREN RPAREN','expression',2,'p_expression_paren','idris_parser.py',85),
+  ("S' -> expression","S'",1,None,None,None),
+  ('expression -> atom','expression',1,'p_expression_atom','lisp_parser.py',9),
+  ('expression -> LPAREN elements RPAREN','expression',3,'p_expression_sexpression','lisp_parser.py',13),
+  ('elements -> elements expression','elements',2,'p_elements_list','lisp_parser.py',17),
+  ('elements -> <empty>','elements',0,'p_elements_empty','lisp_parser.py',21),
+  ('atom -> SYMBOL','atom',1,'p_atom_symbol','lisp_parser.py',25),
+  ('atom -> NUMBER','atom',1,'p_atom_number','lisp_parser.py',29),
+  ('atom -> STRING','atom',1,'p_atom_string','lisp_parser.py',33),
 ]

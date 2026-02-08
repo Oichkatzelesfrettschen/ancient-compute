@@ -9,7 +9,8 @@ export const nodes = [
 	() => import('./nodes/5'),
 	() => import('./nodes/6'),
 	() => import('./nodes/7'),
-	() => import('./nodes/8')
+	() => import('./nodes/8'),
+	() => import('./nodes/9')
 ];
 
 export const server_loads = [];
@@ -19,9 +20,10 @@ export const dictionary = {
 		"/about": [3],
 		"/emulator": [4],
 		"/emulator/3d": [5],
-		"/infra/minix": [6],
-		"/modules": [7],
-		"/timeline": [8]
+		"/emulator/debug": [6],
+		"/infra/minix": [7],
+		"/modules": [8],
+		"/timeline": [9]
 	};
 
 export const hooks = {

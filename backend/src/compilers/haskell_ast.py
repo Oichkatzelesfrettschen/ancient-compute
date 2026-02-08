@@ -53,7 +53,7 @@ class UnaryOp(Expr):
 
 @dataclass
 class Lambda(Expr):
-    """Lambda expression: \param -> body"""
+    """Lambda expression: backslash param -> body"""
     params: List[str]
     body: Expr
 

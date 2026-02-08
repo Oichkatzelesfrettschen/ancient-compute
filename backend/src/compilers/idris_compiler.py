@@ -9,16 +9,26 @@ class IdrisCompiler:
     def __init__(self):
         self.program = Program()
         self.builder: IRBuilder = None
+        self.tmp_counter = 0
 
     def compile(self, ast) -> Program:
         if isinstance(ast, Module):
             self._compile_module(ast)
+        elif isinstance(ast, list):
+            for decl in ast:
+                self._compile_decl(decl)
         return self.program
 
     def _compile_module(self, module: Module):
         for decl in module.body:
-            if isinstance(decl, FunctionDeclaration):
-                self._compile_function_declaration(decl)
+            self._compile_decl(decl)
+
+    def _compile_decl(self, decl):
+        if isinstance(decl, FunctionDeclaration):
+            self._compile_function_declaration(decl)
+        elif isinstance(decl, TypeDeclaration):
+            # Erase type declarations at runtime
+            pass
 
     def _compile_function_declaration(self, decl: FunctionDeclaration):
         self.builder = IRBuilder(decl.name, decl.args)
@@ -27,7 +37,8 @@ class IdrisCompiler:
 
         return_val = self._compile_expression(decl.body)
 
-        self.builder.emit_return(return_val)
+        if not self.builder.current_block.terminator:
+            self.builder.emit_return(return_val)
         self.program.add_function(self.builder.finalize())
 
     def _compile_expression(self, expr):
@@ -37,18 +48,34 @@ class IdrisCompiler:
             return Constant(expr.value)
         elif isinstance(expr, FunctionApplication):
             return self._compile_function_application(expr)
+        elif isinstance(expr, Let):
+            return self._compile_let(expr)
         else:
             # STUB: Placeholder for other expression types
             return Constant(0)
 
     def _compile_function_application(self, app: FunctionApplication):
-        func_name = app.func.name
+        func_name = app.func.name if isinstance(app.func, Identifier) else "dynamic_call"
         args = [self._compile_expression(arg) for arg in app.args]
 
-        target = self.builder.function.name + "_tmp"
+        target = self._new_tmp()
         self.builder.emit_call(func_name, args, target)
 
         return VariableValue(target)
+
+    def _compile_let(self, let_expr: Let):
+        for binding in let_expr.bindings:
+            if isinstance(binding, FunctionDeclaration):
+                # Simplified: handle as variable assignment if no args
+                val = self._compile_expression(binding.body)
+                self.builder.function.local_variables[binding.name] = IRType.DEC50
+                self.builder.emit_assignment(binding.name, val)
+        
+        return self._compile_expression(let_expr.body)
+
+    def _new_tmp(self):
+        self.tmp_counter += 1
+        return f"t{self.tmp_counter}"
 
 
 class IDRIS2Compiler(IdrisCompiler):

@@ -6,8 +6,8 @@ Handles type abstractions, universal types, and polymorphic expressions.
 
 Grammar:
   expr := lambda_expr | type_abstraction | primary_expr
-  lambda_expr := '\\' identifier ':' type '=>' expr
-  type_abstraction := '/\\' identifier '=>' expr
+  lambda_expr := '\\\' identifier ':' type '=>' expr
+  type_abstraction := '/\\\' identifier '=>' expr
   primary_expr := application | atom
   application := primary_expr (primary_expr | '[' type ']')*
   atom := var | literal | '(' expr ')'
@@ -52,6 +52,9 @@ class SystemFParser:
         if self.pos < len(self.tokens) - 1:
             self.pos += 1
             self.current_token = self.tokens[self.pos]
+        else:
+            self.pos = len(self.tokens)
+            self.current_token = Token(TokenType.EOF, '', 0, 0)
 
     def _peek(self, offset: int = 1) -> Token:
         """Peek at future token"""
@@ -60,11 +63,11 @@ class SystemFParser:
             return self.tokens[pos]
         return Token(TokenType.EOF, '', 0, 0)
 
-    def _expect(self, token_type: TokenType) -> Token:
+    def _expect(self, *token_types: TokenType) -> Token:
         """Consume token of expected type or raise error"""
-        if self.current_token.type != token_type:
+        if self.current_token.type not in token_types:
             raise SyntaxError(
-                f"Expected {token_type}, got {self.current_token.type} "
+                f"Expected {token_types}, got {self.current_token.type} "
                 f"at {self.current_token.line}:{self.current_token.column}"
             )
         token = self.current_token
@@ -108,9 +111,9 @@ class SystemFParser:
         return self._parse_application()
 
     def _parse_lambda(self) -> Lambda:
-        """Parse lambda expression: \\x : T => expr"""
+        r"""Parse lambda expression: \x : T => expr"""
         self._expect(TokenType.BACKSLASH)
-        param_name = self._expect(TokenType.IDENTIFIER).value
+        param_name = self._expect(TokenType.IDENTIFIER, TokenType.TYPE_VAR).value
         self._expect(TokenType.COLON)
         param_type = self._parse_type()
         self._expect(TokenType.FAT_ARROW)
@@ -119,9 +122,9 @@ class SystemFParser:
         return Lambda(param_name, param_type, body)
 
     def _parse_type_abstraction(self) -> TypeAbstraction:
-        """Parse type abstraction: /\\a => expr"""
+        r"""Parse type abstraction: /\a => expr"""
         self._expect(TokenType.TYPE_BACKSLASH)
-        type_var = self._expect(TokenType.TYPE_VAR).value
+        type_var = self._expect(TokenType.TYPE_VAR, TokenType.IDENTIFIER).value
         self._expect(TokenType.FAT_ARROW)
         body = self._parse_expr()
 
@@ -141,7 +144,7 @@ class SystemFParser:
     def _parse_let(self) -> LetExpr:
         """Parse let expression: let x : T = e1 in e2"""
         self._expect(TokenType.LET)
-        var_name = self._expect(TokenType.IDENTIFIER).value
+        var_name = self._expect(TokenType.IDENTIFIER, TokenType.TYPE_VAR).value
         self._expect(TokenType.COLON)
         var_type = self._parse_type()
         self._expect(TokenType.EQUALS)
@@ -170,7 +173,7 @@ class SystemFParser:
                 self._expect(TokenType.RBRACKET)
                 expr = TypeApplication(expr, type_arg)
             # Regular application: f x
-            elif self._match(TokenType.IDENTIFIER, TokenType.NUMBER, TokenType.STRING_LIT,
+            elif self._match(TokenType.IDENTIFIER, TokenType.TYPE_VAR, TokenType.NUMBER, TokenType.STRING_LIT,
                              TokenType.LPAREN):
                 arg = self._parse_primary_expr()
                 expr = Application(expr, arg)
@@ -200,7 +203,7 @@ class SystemFParser:
             return Literal(token.value)
 
         # Variable
-        if token.type == TokenType.IDENTIFIER:
+        if token.type in (TokenType.IDENTIFIER, TokenType.TYPE_VAR):
             self._advance()
             return Var(token.value)
 
@@ -223,7 +226,7 @@ class SystemFParser:
     def _parse_universal_type(self) -> Type:
         """Parse universal type: forall a. T"""
         if self._consume(TokenType.FORALL):
-            type_var = self._expect(TokenType.TYPE_VAR).value
+            type_var = self._expect(TokenType.TYPE_VAR, TokenType.IDENTIFIER).value
             self._expect(TokenType.DOT)
             body = self._parse_universal_type()
             return UniversalType(type_var, body)
@@ -244,8 +247,8 @@ class SystemFParser:
         """Parse primary type (type variable or base type)"""
         token = self.current_token
 
-        # Type variable (single letter)
-        if token.type == TokenType.TYPE_VAR:
+        # Type variable
+        if token.type in (TokenType.TYPE_VAR, TokenType.IDENTIFIER):
             self._advance()
             return TypeVar(token.value)
 

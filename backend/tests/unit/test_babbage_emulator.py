@@ -1,5 +1,5 @@
 import pytest
-from ancient_compute.BABBAGE_ANALYTICAL_ENGINE.babbage_emulator import BabbageNumber, Engine, Instruction
+from backend.src.emulator.analytical_engine import BabbageNumber, Engine, Instruction
 
 # Test BabbageNumber class
 def test_babbage_number_init():

@@ -9,13 +9,81 @@ Dataclasses and types used throughout the DE2 emulator, including:
 """
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Tuple, Optional, Any
+from enum import Enum
 
+# --- Common Types ---
+
+class MechanicalPhase(Enum):
+    """Mechanical phases during DE2 rotation (0-360°)."""
+    IDLE = "idle"
+    INPUT = "input"
+    ADDITION = "addition"
+    CARRY = "carry"
+    OUTPUT = "output"
+    ADVANCE = "advance"
+    RESET = "reset"
+    PAUSE = "pause"
+
+class CardType(Enum):
+    NUMBER = "Number"
+    OPERATION = "Operation"
+    VARIABLE = "Variable"
+    COMBINATORIAL = "Combinatorial"
+
+@dataclass
+class BabbageNumber:
+    value: int
+    
+    def to_decimal(self):
+        return self.value / (10**40)
+
+# --- Analytical Engine Types ---
+
+@dataclass
+class MillState:
+    registers: Dict[str, BabbageNumber]
+    flags: Dict[str, bool]
+
+@dataclass
+class MachineState:
+    memory: List[BabbageNumber]
+    mill: MillState
+    pc: int
+
+@dataclass
+class OperationCard:
+    opcode: str
+    operands: List[str]
+
+@dataclass
+class VariableCard:
+    address: int
+    operation: str # READ/WRITE
+
+@dataclass
+class JacquardCard:
+    card_type: CardType
+    content: Any
+
+# --- Antikythera Types ---
+
+@dataclass
+class AntikytheraGear:
+    name: str
+    teeth: int
+    angle: float
+
+@dataclass
+class AntikytheraMechanismState:
+    gears: Dict[str, AntikytheraGear]
+    pointers: Dict[str, float]
+
+# --- DE2 Types ---
 
 @dataclass
 class DebugSnapshot:
     """Complete mechanical state at a moment in time"""
-
     main_shaft_angle: int  # 0–360°
     column_states: Dict[int, List[int]]  # column_index → digit array (31 digits)
     carry_states: Dict[int, Tuple[bool, bool]]  # position → (carry_in, carry_out)
@@ -30,7 +98,6 @@ class DebugSnapshot:
 @dataclass
 class TimeEvent:
     """One mechanical event at a specific main shaft angle"""
-
     angle: int  # 0–360°
     phase: str  # "column_latch", "addition", "carry", "print", "stereo"
     component: str  # "column_0", "carry", "printer", "stereotyper"
@@ -41,7 +108,6 @@ class TimeEvent:
 @dataclass
 class CarryState:
     """State of carry mechanism at one position"""
-
     position: int  # which column position (0–30)
     carry_in: bool  # incoming carry from previous position
     carry_out: bool  # outgoing carry to next position
@@ -53,7 +119,6 @@ class CarryState:
 @dataclass
 class ColumnSnapshot:
     """State of one digit column"""
-
     column_index: int  # 0–7
     digits: List[int]  # 31 decimal digits
     carry_state: bool  # current carry flag
@@ -61,11 +126,20 @@ class ColumnSnapshot:
     is_advancing: bool  # whether column is shifting to next row
     phase: str  # current mechanical phase for this column
 
+@dataclass
+class ColumnState:
+    """State of one digit column (Deprecated alias for ColumnSnapshot compatibility)"""
+    column_index: int
+    digits: List[int]
+    carry_state: bool
+    is_latched: bool
+    is_advancing: bool
+    phase: str 
+
 
 @dataclass
 class PrinterSnapshot:
     """State of printer apparatus"""
-
     type_wheels: List[int]  # 8 digit positions (0–9 each)
     inking_engaged: bool  # inking roller active
     hammer_ready: bool  # hammer positioned
@@ -76,7 +150,6 @@ class PrinterSnapshot:
 @dataclass
 class StereotyperSnapshot:
     """State of stereotype frame"""
-
     x_position: int  # 0–7 (digit positions)
     y_position: int  # 0–49 (line positions)
     mold_image: Dict[Tuple[int, int], int] = field(default_factory=dict)  # (x,y) → raised (1) or flat (0)
@@ -86,7 +159,6 @@ class StereotyperSnapshot:
 @dataclass
 class OperationResult:
     """Result of one machine operation (e.g., one cycle)"""
-
     success: bool
     cycle_count: int
     events: List[TimeEvent] = field(default_factory=list)
@@ -100,7 +172,6 @@ class OperationResult:
 @dataclass
 class TimingSpec:
     """Timing specification (from SMG Technical Description)"""
-
     # Phase timing (0–360° per cycle)
     phase_map: Dict[Tuple[int, int], str] = field(default_factory=lambda: {
         (0, 30): "column_latch",
@@ -141,15 +212,12 @@ class TimingSpec:
     carry_evaluation_2_angle: int = 120  # Second evaluation
 
 
-# Default timing spec (from SMG Technical Description)
 DEFAULT_TIMING_SPEC = TimingSpec()
 
 
-# Test helper: machine configuration
 @dataclass
 class MachineConfig:
     """Configuration for DE2 machine"""
-
     num_columns: int = 8  # Always 8 for DE2
     digits_per_column: int = 31  # Always 31 for DE2
     timing_spec: TimingSpec = field(default_factory=TimingSpec)

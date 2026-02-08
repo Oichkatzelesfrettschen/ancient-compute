@@ -3,6 +3,7 @@
 	"/about": [],
 	"/emulator": [],
 	"/emulator/3d": [],
+	"/emulator/debug": [],
 	"/infra/minix": [],
 	"/modules": [],
 	"/timeline": []

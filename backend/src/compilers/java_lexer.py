@@ -68,6 +68,7 @@ class TokenType(Enum):
     CONTINUE = auto()
     RETURN = auto()
     THROW = auto()
+    THROWS = auto()
     TRY = auto()
     CATCH = auto()
     FINALLY = auto()
@@ -192,6 +193,7 @@ class JavaLexer:
         'continue': TokenType.CONTINUE,
         'return': TokenType.RETURN,
         'throw': TokenType.THROW,
+        'throws': TokenType.THROWS,
         'try': TokenType.TRY,
         'catch': TokenType.CATCH,
         'finally': TokenType.FINALLY,
@@ -273,7 +275,7 @@ class JavaLexer:
             ch = self._current_char()
 
             # Whitespace
-            if ch in ' \t\n\r':
+            if ch in ' 	\n\r':
                 self._advance()
             # Line comment
             elif ch == '/' and self._peek() == '/':
@@ -372,6 +374,13 @@ class JavaLexer:
         self._advance()
         next_ch = self._current_char()
 
+        # Three-character operators
+        if ch == '.' and next_ch == '.' and self._peek() == '.':
+            self._advance() # 2nd dot
+            self._advance() # 3rd dot
+            self.tokens.append(Token(TokenType.ELLIPSIS, '...', start_line, start_col))
+            return
+
         # Two-character operators
         two_char = ch + (next_ch or '')
 
@@ -430,12 +439,6 @@ class JavaLexer:
         elif two_char == '::':
             self._advance()
             self.tokens.append(Token(TokenType.DOUBLE_COLON, '::', start_line, start_col))
-        elif two_char == '...':
-            if self._peek() == '.':
-                self._advance()
-                self.tokens.append(Token(TokenType.ELLIPSIS, '...', start_line, start_col))
-            else:
-                self.tokens.append(Token(TokenType.DOT, '.', start_line, start_col))
         # Single-character operators
         elif ch == '+':
             self.tokens.append(Token(TokenType.PLUS, '+', start_line, start_col))
@@ -463,7 +466,7 @@ class JavaLexer:
             self.tokens.append(Token(TokenType.BIT_XOR, '^', start_line, start_col))
         elif ch == '~':
             self.tokens.append(Token(TokenType.BIT_NOT, '~', start_line, start_col))
-        elif ch == '(':
+        elif ch == '(': 
             self.tokens.append(Token(TokenType.LPAREN, '(', start_line, start_col))
         elif ch == ')':
             self.tokens.append(Token(TokenType.RPAREN, ')', start_line, start_col))
