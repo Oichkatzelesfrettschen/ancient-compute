@@ -2,7 +2,7 @@
 
 A comprehensive educational platform teaching the complete 12,500-year history of computation, logic, and programming paradigms - from prehistoric tally marks to modern dependent type theory.
 
-**Status**: Phase 1 ✓ COMPLETE | Phase 2 → 85% (3 of 7 language services) | Phase 3 → DESIGNED
+**Status**: Phase 1 ✓ COMPLETE | Phase 2 → IN PROGRESS (assembly implemented; other language paths partial or stub) | Phase 3 → DESIGNED
 **Codebase**: ~28,000 lines total | Phase 1: 7,070 lines | Phase 2+: 10,270 lines | Phase 3: 10,660 lines
 **Tests**: 500+ tests | 100% pass rate | >90% code coverage
 **Last Updated**: 2025-11-19
@@ -27,7 +27,7 @@ Developers who know C, Python, Assembly, Java, Haskell, IDRIS2, and LISP but lac
 ## Features
 
 - **Interactive Timeline**: D3.js + Three.js visualization spanning 12,500 years
-- **Multi-Language Execution**: Secure sandboxed code execution for 8+ languages
+- **Multi-Language Bring-up**: Capability-tracked execution API with readiness metadata
 - **Type Theory Curriculum**: From simply-typed lambda calculus to dependent types
 - **Cross-Cultural Perspectives**: Babylonian, Greek, Indian, Islamic, Chinese contributions
 - **Formal Documentation**: LaTeX + TikZ academic-quality materials
@@ -44,14 +44,17 @@ Developers who know C, Python, Assembly, Java, Haskell, IDRIS2, and LISP but lac
 
 ## Supported Languages
 
-- C (GCC/Clang)
-- Python (CPython with RestrictedPython)
-- Babbage Assembly (emulator)
-- Java (OpenJDK)
-- Haskell (GHC)
-- IDRIS2 (dependent types)
-- LISP (SBCL)
-- System F (custom interpreter)
+- Babbage Assembly (`implemented`)
+- C (`partial`)
+- Python (`partial`)
+- Haskell (`partial`)
+- LISP (`partial`)
+- IDRIS2 (`stub`)
+- System F (`stub`)
+- Java (`stub`)
+
+Canonical bring-up sequencing is documented in
+`docs/general/HARDWARE_LANGUAGE_BRINGUP_PLAN.md` (assembly -> ABI -> freestanding C subset -> higher-level frontends).
 
 ## Quick Start
 
@@ -245,6 +248,7 @@ All comprehensive project documentation is located in the `docs/` directory.
 - **[README.md](./README.md)** - This file: Project overview and quick start
 - **[docs/general/MASTER_ROADMAP.md](docs/general/MASTER_ROADMAP.md)** - Comprehensive synthesis of all phases, consolidates 50+ planning documents
 - **[docs/general/TODO_TRACKER.md](docs/general/TODO_TRACKER.md)** - Active task tracking, priorities, execution plan
+- **[docs/general/HARDWARE_LANGUAGE_BRINGUP_PLAN.md](docs/general/HARDWARE_LANGUAGE_BRINGUP_PLAN.md)** - Hardware-first language bring-up strategy and gate criteria
 - **[docs/general/REPOSITORY_GUIDELINES.md](docs/general/REPOSITORY_GUIDELINES.md)** - General guidelines for contributing and development workflow.
 
 ### AI Agents

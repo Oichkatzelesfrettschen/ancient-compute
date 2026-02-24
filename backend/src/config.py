@@ -3,11 +3,13 @@
 import os
 from typing import List
 
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
     """Application settings loaded from environment variables"""
+
+    model_config = SettingsConfigDict(env_file=".env", case_sensitive=True)
 
     # Application
     APP_NAME: str = "Ancient Compute"
@@ -43,11 +45,6 @@ class Settings(BaseSettings):
 
     # Logging
     LOG_LEVEL: str = "DEBUG"
-
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
-
 
 # Create global settings instance
 settings = Settings()

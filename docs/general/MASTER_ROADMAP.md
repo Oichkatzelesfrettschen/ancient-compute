@@ -9,6 +9,7 @@
 - Canonical strategy roadmap: `docs/general/MASTER_ROADMAP.md`
 - Canonical execution tracker: `docs/general/TODO_TRACKER.md`
 - Planning classification and archive policy: `docs/general/PLANNING_CANONICAL_MAP.md`
+- Hardware-first sequencing: `docs/general/HARDWARE_LANGUAGE_BRINGUP_PLAN.md`
 
 ---
 
@@ -20,14 +21,14 @@ Ancient Compute is a comprehensive educational platform teaching 12,500 years of
 
 **Current Status** (Verified Date: February 24, 2026):
 - Phase 1 ✓ COMPLETE (Foundation)
-- Phase 2 → IN PROGRESS (3 of 7 production-ready service paths; additional services exist as stubs/partial)
+- Phase 2 → IN PROGRESS (assembly stable; C/Python/Haskell/LISP partial; IDRIS2/SystemF/Java stub)
 - Phase 3 → 80% IMPLEMENTED (13/15 historical emulators plus debugger/analyzer integration)
 - Phase 4 → 80% (Frontend visualization complete)
 
 **Total Codebase**: ~28,000 lines
 **Test Coverage**: 533 tests passing, 25% line coverage (needs improvement)
-**Known Issues**: Service completion gaps remain for IDRIS2/SystemF/Java runtime paths and advanced LISP runtime semantics. `test_haskell_service.py` async fixture issue from Jan audit is no longer reproducing locally.
-**Last Verified Against Tests**: `pytest -q backend/tests/unit/test_haskell_service.py` and `pytest -q -rs backend/tests/unit/test_executors_unit.py` on February 24, 2026.
+**Known Issues**: Language backend maturity is uneven; only assembly has an implemented execution path. C/Python/Haskell/LISP remain partial and IDRIS2/SystemF/Java are placeholder stubs.
+**Last Verified Against Tests**: `pytest -q backend/tests/unit/test_executors_unit.py backend/tests/unit/test_language_registry.py backend/tests/integration/test_cross_language.py` on February 24, 2026.
 
 ## Archive Synthesis Integration (2026-02-24)
 
@@ -37,20 +38,22 @@ The following recurring insights from superseded planning docs were retained in 
 2. Preserve parallel workstream modeling (language services, simulation, docs quality) with explicit critical paths.
 3. Keep week/day decomposition in execution tracker docs, not in strategic roadmap snapshots.
 4. Treat migration and link-update plans as provenance artifacts and keep them in archive with successor links.
+5. Sequence language work using assembly-first bring-up gates before frontend expansion.
 
 ---
 
 ## Table of Contents
 
 1. [Project Architecture](#project-architecture)
-2. [Phase 1: Foundation (Complete)](#phase-1-foundation-complete)
-3. [Phase 2: Language Services (43%)](#phase-2-language-services-43)
-4. [Phase 3: Historical Emulators (80% Implemented)](#phase-3-historical-emulators-80-implemented)
-5. [Phase 4: Frontend & Visualization (80%)](#phase-4-frontend--visualization-80)
-6. [Phase 5-7: Future Directions (Planned)](#phase-5-7-future-directions-planned)
-7. [Technical Debt Inventory](#technical-debt-inventory)
-8. [Quality Standards](#quality-standards)
-9. [Timeline and Milestones](#timeline-and-milestones)
+2. [Hardware Bring-up Strategy (Active)](#hardware-bring-up-strategy-active)
+3. [Phase 1: Foundation (Complete)](#phase-1-foundation-complete)
+4. [Phase 2: Language Services (43%)](#phase-2-language-services-43)
+5. [Phase 3: Historical Emulators (80% Implemented)](#phase-3-historical-emulators-80-implemented)
+6. [Phase 4: Frontend & Visualization (80%)](#phase-4-frontend--visualization-80)
+7. [Phase 5-7: Future Directions (Planned)](#phase-5-7-future-directions-planned)
+8. [Technical Debt Inventory](#technical-debt-inventory)
+9. [Quality Standards](#quality-standards)
+10. [Timeline and Milestones](#timeline-and-milestones)
 
 ---
 
@@ -72,15 +75,10 @@ Ancient Compute Architecture
 │   ├── User authentication and progress tracking
 │   └── Metrics and health monitoring
 │
-├── Language Services: Docker containers (8+ languages)
-│   ├── C (imperative, systems programming)
-│   ├── Python (dynamic, general-purpose)
-│   ├── Haskell (functional, parametric polymorphism)
-│   ├── IDRIS2 (dependent types, proofs)
-│   ├── LISP (meta-programming, homoiconicity)
-│   ├── System F (polymorphic lambda calculus)
-│   ├── Java (OOP, class hierarchies)
-│   └── Assembly (x86-64, direct hardware)
+├── Language Services: Mixed maturity (8 registered services)
+│   ├── Assembly (implemented, Babbage-native assembler path)
+│   ├── C/Python/Haskell/LISP (partial bring-up)
+│   └── IDRIS2/SystemF/Java (stub placeholders)
 │
 ├── Compiler Pipeline: Universal IR (Babbage ISA)
 │   ├── 4-phase compiler (lexer, parser, semantic, codegen)
@@ -107,6 +105,19 @@ Ancient Compute Architecture
     ├── Cross-platform (Windows, Linux)
     └── Multi-language coordination
 ```
+
+---
+
+## Hardware Bring-up Strategy (Active)
+
+The active sequencing policy is assembly-first and ABI-driven. The canonical plan is:
+
+1. Stabilize ISA + assembler behavior.
+2. Lock ABI + runtime contract.
+3. Bring up freestanding C subset.
+4. Expand higher-level frontends only after backend gates pass.
+
+Reference: `docs/general/HARDWARE_LANGUAGE_BRINGUP_PLAN.md`.
 
 ---
 

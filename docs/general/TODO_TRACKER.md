@@ -9,6 +9,7 @@
 - Canonical strategy roadmap: `docs/general/MASTER_ROADMAP.md`
 - Canonical execution tracker: `docs/general/TODO_TRACKER.md`
 - Planning classification and archive policy: `docs/general/PLANNING_CANONICAL_MAP.md`
+- Hardware-first sequencing: `docs/general/HARDWARE_LANGUAGE_BRINGUP_PLAN.md`
 
 ---
 
@@ -29,42 +30,67 @@ This document tracks all pending tasks across the Ancient Compute project, organ
 
 ## Last Verified Against Tests
 
-- `pytest -q backend/tests/unit/test_haskell_service.py` (passes locally)
-- `pytest -q backend/tests/unit/test_executors_unit.py` (passes locally after service-API rewrite)
-- `pytest -q backend/tests/unit/test_ir_dynamic_dispatch.py backend/tests/unit/test_heap_runtime.py` (runtime-gap unit tests pass)
+- `pytest -q backend/tests/unit/test_executors_unit.py` (passes locally)
+- `pytest -q backend/tests/unit/test_language_registry.py` (passes locally)
+- `pytest -q backend/tests/integration/test_cross_language.py` (passes locally)
 
 ## Test Status Matrix (2026-02-24)
 
 | Suite | Current Status | Notes |
 |------|----------------|-------|
-| `backend/tests/unit/test_haskell_service.py` | PASS | Async fixture issue from Jan audit not reproduced in local rerun |
 | `backend/tests/unit/test_executors_unit.py` | PASS | Rewritten to current `services.languages` API and no longer module-skipped |
-| `backend/tests/unit/test_ir_dynamic_dispatch.py` | PASS | Verifies `IndirectCall` lowering for register and spilled-pointer cases |
-| `backend/tests/unit/test_heap_runtime.py` | PASS | Verifies `malloc`/`free` plus mark-and-sweep behavior |
+| `backend/tests/unit/test_language_registry.py` | PASS | Verifies canonical IDs, alias normalization, and status-summary integrity |
+| `backend/tests/integration/test_cross_language.py` | PASS | Verifies execution API language metadata, alias handling, and health summary consistency |
 | Full backend unit suite | NOT RUN IN THIS PASS | Needs scheduled gate run after tracker/docs reconciliation |
 
 ## CI Gate Tiers
 
 | Tier | Purpose | Command(s) |
 |------|---------|------------|
-| Tier A | Fast unit smoke (pre-merge) | `pytest -q backend/tests/unit/test_haskell_service.py backend/tests/unit/test_executors_unit.py` |
-| Tier B | Service integration focus | `pytest -q backend/tests/integration/test_phase2_languages.py backend/tests/integration/test_cross_language.py` |
+| Tier A | Fast unit smoke (pre-merge) | `pytest -q backend/tests/unit/test_executors_unit.py backend/tests/unit/test_language_registry.py` |
+| Tier B | Service integration focus | `pytest -q backend/tests/integration/test_cross_language.py` |
 | Tier C | Full backend regression | `pytest -q backend/tests` |
 
 ---
 
 ## Table of Contents
 
-1. [Current Sprint (Week 9)](#current-sprint-week-9)
-2. [High Priority (Weeks 9-12)](#high-priority-weeks-9-12)
-3. [Medium Priority (Weeks 13-18)](#medium-priority-weeks-13-18)
-4. [Low Priority (Weeks 19+)](#low-priority-weeks-19)
-5. [Backlog](#backlog)
-6. [Completed](#completed)
+1. [Current Sprint (Hardware Bring-up Rescope)](#current-sprint-hardware-bring-up-rescope)
+2. [Legacy Sprint Snapshot (Week 9, Historical)](#legacy-sprint-snapshot-week-9-historical)
+3. [High Priority (Weeks 9-12)](#high-priority-weeks-9-12)
+4. [Medium Priority (Weeks 13-18)](#medium-priority-weeks-13-18)
+5. [Low Priority (Weeks 19+)](#low-priority-weeks-19)
+6. [Backlog](#backlog)
+7. [Completed](#completed)
 
 ---
 
-## Current Sprint (Week 9)
+## Current Sprint (Hardware Bring-up Rescope)
+
+**Focus**: Assembly-first stabilization, ABI lock-in, and freestanding C subset bring-up  
+**Reference**: `docs/general/HARDWARE_LANGUAGE_BRINGUP_PLAN.md`  
+**Execution Window**: Immediate next 2-3 engineering cycles
+
+### Sprint Tasks
+
+- [x] Make language readiness machine-readable in API metadata (`implementation_status`, aliases, execution mode).
+- [x] Normalize `/api/v1/execute/run` language IDs/aliases to canonical IDs.
+- [x] Add registry/health consistency tests for `/api/v1/execute/languages` and `/api/v1/execute/health`.
+- [ ] Build assembler golden corpus under `backend/tests` for deterministic machine-code verification.
+- [ ] Write ABI contract spec doc (calling convention, stack/memory model, register preservation).
+- [ ] Add ABI conformance tests (positive and intentional-violation cases).
+- [ ] Define freestanding C subset matrix and explicit unsupported-feature diagnostics.
+- [ ] Promote one partial frontend at a time only after Gate 0/1/2 criteria are green.
+
+### Exit Criteria
+
+- [ ] Gate 0 (assembler stability) is green in CI.
+- [ ] Gate 1 (ABI conformance) is green in CI.
+- [ ] Gate 2 (freestanding C subset) has deterministic compile/execute examples.
+
+---
+
+## Legacy Sprint Snapshot (Week 9, Historical)
 
 **Focus**: LISP Language Service Implementation
 **Duration**: November 2-8, 2025 (7 days)

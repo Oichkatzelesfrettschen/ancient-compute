@@ -14,10 +14,11 @@ These two files are the default planning sources for project-wide execution:
 Supporting canonical context:
 
 1. `docs/general/ROADMAP_RECONCILIATION_JAN_2026.md` (audit and reconciliation baseline)
+2. `docs/general/HARDWARE_LANGUAGE_BRINGUP_PLAN.md` (assembly-first language bring-up sequencing)
 
 ## Planning Taxonomy Snapshot
 
-### Active General Planning Docs (6)
+### Active General Planning Docs (7)
 
 1. `docs/general/MASTER_ROADMAP.md`
 2. `docs/general/TODO_TRACKER.md`
@@ -25,6 +26,7 @@ Supporting canonical context:
 4. `docs/general/HYPERGRANULAR_ROADMAP.md`
 5. `docs/general/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md`
 6. `docs/general/LOGIC_COMPUTATION_HISTORIAN_PLAN.md`
+7. `docs/general/HARDWARE_LANGUAGE_BRINGUP_PLAN.md`
 
 ### Active Domain Planning Docs (6)
 
@@ -67,6 +69,7 @@ Archived docs are not discarded. Novel content has been incorporated into active
 2. Day-by-day execution granularity and acceptance criteria integrated into `TODO_TRACKER.md`.
 3. Documentation migration verification checklists and cross-reference repair patterns integrated into this file and `docs/archive/INDEX.md`.
 4. Phase 4 educational/timeline delivery decomposition integrated into `HYPERGRANULAR_ROADMAP.md`.
+5. Hardware-first sequencing constraints consolidated into `HARDWARE_LANGUAGE_BRINGUP_PLAN.md`.
 
 ## Maintenance Rules
 
