@@ -41,6 +41,12 @@ Tasks:
 3. Gate 2: freestanding C subset profile + unsupported-feature diagnostics.
 4. Gate 3 prep: keep stub languages as stubs until runtime evidence exists.
 
+Progress (2026-02-24):
+
+1. Gate 0 corpus tests are implemented in Tier A.
+2. Gate 1 ABI contract doc and conformance tests are implemented in Tier A.
+3. Gate 2 subset profile and explicit unsupported-feature diagnostics are implemented; compile/execute examples remain open.
+
 Completion criteria:
 
 1. Gate 0-2 have tests and acceptance evidence.

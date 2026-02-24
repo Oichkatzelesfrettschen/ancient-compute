@@ -81,9 +81,9 @@ This document tracks all pending tasks across the Ancient Compute project, organ
 - [x] Add Babbage simulation parameter verifier and contract tests.
 - [x] Add active test-gate matrix and quarantine register.
 - [x] Build assembler golden corpus under `backend/tests` for deterministic machine-code verification.
-- [ ] Write ABI contract spec doc (calling convention, stack/memory model, register preservation).
-- [ ] Add ABI conformance tests (positive and intentional-violation cases).
-- [ ] Define freestanding C subset matrix and explicit unsupported-feature diagnostics.
+- [x] Write ABI contract spec doc (calling convention, stack/memory model, register preservation).
+- [x] Add ABI conformance tests (positive and intentional-violation cases).
+- [x] Define freestanding C subset matrix and explicit unsupported-feature diagnostics.
 - [ ] Promote one partial frontend at a time only after Gate 0/1/2 criteria are green.
 
 ### Exit Criteria

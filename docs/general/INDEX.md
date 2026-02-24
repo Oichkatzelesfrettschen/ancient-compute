@@ -10,6 +10,8 @@
 6. `docs/general/EXECUTION_RESCOPED_PLAN_2026-02.md`
 7. `docs/general/TEST_GATE_MATRIX.md`
 8. `docs/general/TEST_QUARANTINE.md`
+9. `docs/general/BABBAGE_ABI_RUNTIME_CONTRACT.md`
+10. `docs/general/FREESTANDING_C_SUBSET_PROFILE.md`
 
 ## Taxonomy and Navigation
 

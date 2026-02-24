@@ -99,6 +99,8 @@ test-active:
 	  backend/tests/integration/test_cross_language.py \
 	  backend/tests/unit/test_babbage_assembler_golden.py \
 	  backend/tests/unit/test_babbage_parameter_contract.py \
+	  backend/tests/unit/test_c_freestanding_subset.py \
+	  backend/tests/integration/test_babbage_abi_contract.py \
 	  backend/tests/integration/test_babbage_mechanical_profile.py
 
 verify-simulation:

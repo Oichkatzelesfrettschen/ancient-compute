@@ -18,7 +18,7 @@ from dataclasses import dataclass
 from enum import Enum
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
-import sys
+import re
 
 from backend.src.compilers.c_compiler import CCompiler
 from backend.src.codegen.codegen import CodeGenerator
@@ -60,6 +60,24 @@ class CService:
         self.c_compiler = CCompiler(verbose=verbose)
         self.code_generator = CodeGenerator()
         self.executor = ThreadPoolExecutor(max_workers=4)
+        self._unsupported_feature_checks: list[tuple[str, re.Pattern[str]]] = [
+            ("preprocessor directives", re.compile(r"(?m)^\s*#")),
+            ("struct/union/enum types", re.compile(r"\b(struct|union|enum)\b")),
+            ("switch statements", re.compile(r"\bswitch\b")),
+            ("goto statements", re.compile(r"\bgoto\b")),
+            (
+                "array declarators",
+                re.compile(
+                    r"\b(?:int|float|double|char|short|long|signed|unsigned)\s+[A-Za-z_][A-Za-z0-9_]*\s*\["
+                ),
+            ),
+            (
+                "pointer declarators",
+                re.compile(
+                    r"\b(?:int|float|double|char|void|short|long|signed|unsigned)\s*\*+\s*[A-Za-z_][A-Za-z0-9_]*"
+                ),
+            ),
+        ]
 
     async def execute(self, code: str, input_data: str = "") -> CompilationResult:
         """Execute C code by compiling to IR, generating assembly, and assembling.
@@ -105,6 +123,20 @@ class CService:
         start_time = time.time()
 
         try:
+            unsupported = self._detect_unsupported_features(code)
+            if unsupported:
+                feature_list = ", ".join(unsupported)
+                guidance = (
+                    "Unsupported C feature(s) for freestanding subset: "
+                    f"{feature_list}. "
+                    "See docs/general/FREESTANDING_C_SUBSET_PROFILE.md."
+                )
+                return CompilationResult(
+                    status=ExecutionStatus.COMPILE_ERROR,
+                    stderr=guidance,
+                    compilation_time=time.time() - start_time,
+                )
+
             # Phase 1: C → IR compilation
             if self.verbose:
                 print("[C SERVICE] Phase 1: C → IR compilation...")
@@ -169,6 +201,14 @@ class CService:
                 stderr=error_msg,
                 compilation_time=time.time() - start_time
             )
+
+    def _detect_unsupported_features(self, code: str) -> list[str]:
+        """Return stable labels for unsupported freestanding C features."""
+        found: list[str] = []
+        for label, pattern in self._unsupported_feature_checks:
+            if pattern.search(code):
+                found.append(label)
+        return found
 
     def _ir_to_string(self, ir_program: Any) -> str:
         """Convert IR program to readable string format.
