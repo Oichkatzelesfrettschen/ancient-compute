@@ -13,7 +13,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import List, Optional
 from backend.src.ir_types import (
-    Instruction, Assignment, BinaryOp, Load, Store, Call, Return,
+    Instruction, Assignment, BinaryOp, Load, Store, Call, IndirectCall, Return,
     VariableValue, RegisterValue, Constant, MemoryValue,
     BranchTerminator, JumpTerminator, ReturnTerminator,
 )
@@ -76,6 +76,8 @@ class InstructionSelector:
             result = self._select_store(instr)
         elif isinstance(instr, Call):
             result = self._select_call(instr)
+        elif isinstance(instr, IndirectCall):
+            result = self._select_indirect_call(instr)
         elif isinstance(instr, Return):
             result = self._select_return(instr)
         
@@ -246,6 +248,57 @@ class InstructionSelector:
                     AsmOperand("reg", "A")
                 ], comment="move return value to target"))
         
+        return result
+
+    def _select_indirect_call(self, instr: IndirectCall) -> List[AsmInstruction]:
+        """Select for: target = call function_pointer(args)"""
+        result: List[AsmInstruction] = []
+        ptr_op = self._get_operand(instr.function_pointer)
+
+        # If pointer is spilled to memory, load into C and call via register.
+        if ptr_op.operand_type == "addr":
+            result.append(
+                AsmInstruction(
+                    "LOAD",
+                    [AsmOperand("reg", "C"), ptr_op],
+                    comment="load function pointer for indirect call",
+                )
+            )
+            call_operand = AsmOperand("reg", "C")
+        elif ptr_op.operand_type == "reg":
+            call_operand = ptr_op
+        elif ptr_op.operand_type == "immed":
+            call_operand = ptr_op
+        else:
+            call_operand = AsmOperand("reg", "C")
+            result.append(
+                AsmInstruction(
+                    "MOV",
+                    [AsmOperand("reg", "C"), ptr_op],
+                    comment="normalize function pointer for indirect call",
+                )
+            )
+
+        result.append(
+            AsmInstruction(
+                "CALL",
+                [call_operand],
+                comment="indirect call",
+            )
+        )
+
+        # Return value is in A by convention.
+        if instr.target:
+            target_reg = self.allocation.get_allocation(instr.target)
+            if target_reg != "A":
+                result.append(
+                    AsmInstruction(
+                        "MOV",
+                        [AsmOperand("reg", target_reg), AsmOperand("reg", "A")],
+                        comment="move indirect call result to target",
+                    )
+                )
+
         return result
     
     def _select_return(self, instr: Return) -> List[AsmInstruction]:

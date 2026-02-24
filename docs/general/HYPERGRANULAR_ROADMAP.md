@@ -3,6 +3,7 @@
 **Date**: February 7, 2026
 **Status**: Active Execution
 **Purpose**: Detailed technical breakdown of Phase 2 (Languages) and Phase 3 (Tools) completion.
+**Last Verified Against Tests**: February 24, 2026 (targeted unit reruns for Haskell service and executor factory path).
 
 ## Planning Context
 
@@ -59,6 +60,8 @@
 *   [ ] **Curta Calculator**: The pinnacle of mechanical handheld compute.
 
 ### 2. Infrastructure Gaps
-*   [ ] **IR Dynamic Dispatch**: Update `IRBuilder` to support `CALL [reg]` for full functional closure support.
-*   [ ] **Heap Management**: Implement `malloc` and `free` routines in Babbage Assembly to support `cons` cells and objects.
-*   [ ] **Garbage Collection**: Basic mark-and-sweep for the Babbage 2000-word memory store.
+*   [~] **IR Dynamic Dispatch**: `IndirectCall` added to IR plus selector lowering to `CALL` via register/memory pointer. Compiler integration for closure-heavy paths is pending.
+*   [~] **Heap Management**: Runtime `MemoryHeap` with first-fit `malloc`/`free` implemented and unit-tested; assembly/runtime wiring remains pending.
+*   [~] **Garbage Collection**: Basic mark-and-sweep implemented in runtime heap model; integration with active execution pipelines remains pending.
+
+Detailed notes: `docs/specifications/IR_RUNTIME_GAPS.md`

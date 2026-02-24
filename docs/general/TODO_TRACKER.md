@@ -1,8 +1,8 @@
 # Ancient Compute - TODO Tracker & Project Planner
 
-**Document Version**: 2.0
-**Date**: January 14, 2026
-**Status**: Updated after Jan 2026 Consolidation Audit
+**Document Version**: 2.1
+**Date**: February 24, 2026
+**Status**: Updated after Jan 2026 audit reconciliation and test-status refresh
 **Purpose**: Comprehensive task tracking, priorities, and execution plan
 
 **Planning Context**:
@@ -23,9 +23,33 @@ This document tracks all pending tasks across the Ancient Compute project, organ
 
 ## Planning Hygiene Tasks
 
-- [ ] Ensure superseded planning docs are archived with metadata.
-- [ ] Ensure each archive entry has a canonical successor in `docs/archive/INDEX.md`.
-- [ ] Merge any novel constraints from archived plans before marking them obsolete.
+- [x] Ensure superseded planning docs are archived with metadata.
+- [x] Ensure each archive entry has a canonical successor in `docs/archive/INDEX.md`.
+- [x] Merge novel constraints from archived plans before marking them obsolete.
+
+## Last Verified Against Tests
+
+- `pytest -q backend/tests/unit/test_haskell_service.py` (passes locally)
+- `pytest -q backend/tests/unit/test_executors_unit.py` (passes locally after service-API rewrite)
+- `pytest -q backend/tests/unit/test_ir_dynamic_dispatch.py backend/tests/unit/test_heap_runtime.py` (runtime-gap unit tests pass)
+
+## Test Status Matrix (2026-02-24)
+
+| Suite | Current Status | Notes |
+|------|----------------|-------|
+| `backend/tests/unit/test_haskell_service.py` | PASS | Async fixture issue from Jan audit not reproduced in local rerun |
+| `backend/tests/unit/test_executors_unit.py` | PASS | Rewritten to current `services.languages` API and no longer module-skipped |
+| `backend/tests/unit/test_ir_dynamic_dispatch.py` | PASS | Verifies `IndirectCall` lowering for register and spilled-pointer cases |
+| `backend/tests/unit/test_heap_runtime.py` | PASS | Verifies `malloc`/`free` plus mark-and-sweep behavior |
+| Full backend unit suite | NOT RUN IN THIS PASS | Needs scheduled gate run after tracker/docs reconciliation |
+
+## CI Gate Tiers
+
+| Tier | Purpose | Command(s) |
+|------|---------|------------|
+| Tier A | Fast unit smoke (pre-merge) | `pytest -q backend/tests/unit/test_haskell_service.py backend/tests/unit/test_executors_unit.py` |
+| Tier B | Service integration focus | `pytest -q backend/tests/integration/test_phase2_languages.py backend/tests/integration/test_cross_language.py` |
+| Tier C | Full backend regression | `pytest -q backend/tests` |
 
 ---
 
@@ -512,7 +536,7 @@ This document tracks all pending tasks across the Ancient Compute project, organ
 - Phase 2 was previously reported at 85%; actual is 43% (only C, Python, Haskell complete)
 - Phase 3 emulators were implemented but not reflected in previous documentation
 - Test coverage: 25% line coverage (needs improvement)
-- Known issues: 10 async fixture errors, 1 broken test module
+- Known issues: executor unit module required API rewrite; broader full-suite rerun still pending
 
 ---
 
@@ -545,8 +569,12 @@ This document tracks all pending tasks across the Ancient Compute project, organ
 - Discovered Phase 2 was overreported (85% vs actual 43%)
 - Documented Phase 3 emulator implementations (13/15 devices at Tier 1+)
 - Updated MASTER_ROADMAP.md to v2.0 with accurate status
-- Identified 10 async fixture test issues in test_haskell_service.py
-- Identified broken test module test_executors_unit.py (stale class names)
+- Identified async fixture concerns and stale executor unit tests during initial audit
+
+### February 24, 2026 (Reconciliation Refresh)
+- Revalidated targeted backend unit tests for Haskell service.
+- Prioritized and implemented executor unit test rewrite for current service API.
+- Added CI gate tier definitions (A/B/C) to make verification cadence explicit.
 
 ### November 2, 2025
 - Created comprehensive TODO tracker
@@ -570,11 +598,12 @@ This document tracks all pending tasks across the Ancient Compute project, organ
 
 ---
 
-**Document Revision**: 2.0
-**Last Updated**: January 14, 2026
-**Next Review**: Upon Phase 2 language service completion
+**Document Revision**: 2.1
+**Last Updated**: February 24, 2026
+**Next Review**: After Tier B integration rerun
 
 **Revision History**:
+- v2.1 (Feb 24, 2026): Reconciled test status, added gate tiers, and aligned planning hygiene completion
 - v2.0 (Jan 14, 2026): Comprehensive audit - corrected Phase 2/3 status, documented fixes and known issues
 - v1.0 (Nov 2, 2025): Initial TODO tracker creation
 

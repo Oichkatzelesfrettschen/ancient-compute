@@ -4,6 +4,9 @@
 **Prepared By**: Claude Code (Opus 4.5)
 **Purpose**: Document findings from comprehensive repository audit and consolidation
 
+> Historical snapshot: this report records the Jan 14, 2026 audit baseline.  
+> Current canonical status should be read from `docs/general/MASTER_ROADMAP.md` and `docs/general/TODO_TRACKER.md`.
+
 ---
 
 ## Executive Summary
@@ -15,6 +18,14 @@ A comprehensive audit of the ancient_compute repository was conducted on January
 - Phase 3 Historical Emulators: 13/15 devices implemented (previously documented as "designed only")
 - Test Suite: 533 tests passing, 10 async fixture errors, 1 broken test module
 - Code Coverage: 25% line coverage (previously claimed >90%)
+
+## Post-Audit Updates (February 24, 2026)
+
+Follow-up verification indicates:
+
+1. `backend/tests/unit/test_haskell_service.py` passes in local reruns (the async fixture issue listed below is no longer reproducible in this environment).
+2. `backend/tests/unit/test_executors_unit.py` was intentionally stale-skipped at audit time and has now been rewritten to current service APIs.
+3. This file remains a baseline artifact; use canonical planning docs for operational status.
 
 ---
 

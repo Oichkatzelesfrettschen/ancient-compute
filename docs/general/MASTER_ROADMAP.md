@@ -1,8 +1,8 @@
 # Ancient Compute - Master Project Roadmap
 
-**Document Version**: 2.0
-**Date**: January 14, 2026
-**Status**: Comprehensive Synthesis - Updated after Jan 2026 Consolidation Audit
+**Document Version**: 2.1
+**Date**: February 24, 2026
+**Status**: Comprehensive Synthesis - Reconciled against local test reality
 **Purpose**: Single unified roadmap consolidating 50+ phase/week completion summaries
 
 **Planning Context**:
@@ -18,15 +18,16 @@ Ancient Compute is a comprehensive educational platform teaching 12,500 years of
 
 **Strategic Vision**: Build the first comprehensive compiler infrastructure proving all programming paradigms (imperative, functional, dependently-typed, meta-level) compile to a universal intermediate representation (Babbage ISA), unifying centuries of computational diversity under a single architectural vision.
 
-**Current Status** (Audit Date: February 7, 2026):
+**Current Status** (Verified Date: February 24, 2026):
 - Phase 1 ✓ COMPLETE (Foundation)
-- Phase 2 ✓ COMPLETE (7 of 7 language services: C, Python, Haskell, LISP, Java, System F, IDRIS2)
-- Phase 3 → 95% IMPLEMENTED (13/15 historical emulators + Unified Debugger & Analyzer)
+- Phase 2 → IN PROGRESS (3 of 7 production-ready service paths; additional services exist as stubs/partial)
+- Phase 3 → 80% IMPLEMENTED (13/15 historical emulators plus debugger/analyzer integration)
 - Phase 4 → 80% (Frontend visualization complete)
 
 **Total Codebase**: ~28,000 lines
 **Test Coverage**: 533 tests passing, 25% line coverage (needs improvement)
-**Known Issues**: 10 async fixture test errors, 1 broken test module (test_executors_unit.py)
+**Known Issues**: Service completion gaps remain for IDRIS2/SystemF/Java runtime paths and advanced LISP runtime semantics. `test_haskell_service.py` async fixture issue from Jan audit is no longer reproducing locally.
+**Last Verified Against Tests**: `pytest -q backend/tests/unit/test_haskell_service.py` and `pytest -q -rs backend/tests/unit/test_executors_unit.py` on February 24, 2026.
 
 ## Archive Synthesis Integration (2026-02-24)
 
@@ -699,21 +700,26 @@ See Phase 1 section above.
 ## Technical Debt Inventory
 
 ### Critical (Resolved)
-- [x] **Language Services**: All 7 planned languages (LISP, Java, etc.) are functional.
 - [x] **Tools**: Debugger and Analyzer are decoupled from DE2 and support all engines.
 - [x] **Frontend**: Unified Debugger UI built and integrated.
 
+### Critical (Open)
+- [ ] **Language Services**: C, Python, and Haskell have active service paths; LISP/IDRIS2/SystemF/Java require completion from stub or partial implementations.
+
 ### Service Implementation Gaps
-- None. All planned services are implemented.
+- LISP: parser/compiler path exists but runtime/IR feature coverage is partial.
+- IDRIS2: placeholder execution response; production compiler/runtime path incomplete.
+- System F: placeholder execution response; dynamic dispatch integration pending.
+- Java: placeholder execution response; production compiler/runtime path incomplete.
 
 ---
 
 ## Quality Standards
 
 **Current Status**:
-- Backend Tests: 100% Pass Rate (including new language compilers).
-- Frontend Build: Successful (Vite production build verified).
-- Documentation: Logic Audits and API Schemas complete.
+- Backend Tests: mixed; targeted unit suites pass/skip, full-suite status requires periodic rerun.
+- Frontend Build: successful in prior validation runs; rerun required for this revision stamp.
+- Documentation: canonical planning docs updated and archived planning metadata normalized.
 
 ---
 

@@ -19,6 +19,8 @@ class LISPService(BaseExecutor):
         """Execute LISP code"""
         try:
             ast = parser.parse(code)
+            if ast is None:
+                raise ValueError("LISP parse error")
             compiler = LispCompiler()
             program = compiler.compile(ast)
             # STUB: For now, we just return a success message if the compilation is successful.

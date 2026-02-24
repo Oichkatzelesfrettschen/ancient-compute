@@ -154,6 +154,14 @@ class Call(Instruction):
 
 
 @dataclass
+class IndirectCall(Instruction):
+    """target = call function_pointer, arguments"""
+    function_pointer: Operand
+    arguments: List[Operand] = field(default_factory=list)
+    target: Optional[str] = None  # None if return value discarded
+
+
+@dataclass
 class Return(Instruction):
     """return value"""
     value: Optional[Operand] = None
@@ -309,6 +317,15 @@ class IRBuilder:
                   target: Optional[str] = None) -> None:
         """Emit: target = call function_name, arguments"""
         self.current_block.add_instruction(Call(function_name, arguments, target))
+
+    def emit_indirect_call(
+        self,
+        function_pointer: Operand,
+        arguments: List[Operand],
+        target: Optional[str] = None,
+    ) -> None:
+        """Emit: target = call function_pointer, arguments"""
+        self.current_block.add_instruction(IndirectCall(function_pointer, arguments, target))
     
     def emit_jump(self, label: str) -> None:
         """Emit: jump label (terminator)"""
