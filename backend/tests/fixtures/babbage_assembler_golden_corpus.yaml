@@ -1,0 +1,61 @@
+cases:
+  - name: simple_add
+    source: |
+      .global main
+      .text
+      main:
+          LOAD A, 10
+          LOAD B, 5
+          ADD A, B
+          WRPRN A
+          RET
+    expected_hex:
+      - "0x18000000000a"
+      - "0x190000000005"
+      - "0x044000000000"
+      - "0x580000000000"
+      - "0x440000000000"
+    expected_symbols:
+      main: 0
+
+  - name: loop_with_label
+    source: |
+      .global loop
+      .text
+      loop:
+          LOAD A, 0
+          LOAD B, 3
+      start:
+          ADD A, B
+          SUB B, 1
+          JNZ start
+          RET
+    expected_hex:
+      - "0x180000000000"
+      - "0x190000000003"
+      - "0x044000000000"
+      - "0x090000000001"
+      - "0x280000000002"
+      - "0x440000000000"
+    expected_symbols:
+      loop: 0
+      start: 2
+
+  - name: forward_jump
+    source: |
+      .global forward
+      .text
+      forward:
+          JMP target
+          LOAD A, 1
+      target:
+          LOAD B, 2
+          RET
+    expected_hex:
+      - "0x200000000002"
+      - "0x180000000001"
+      - "0x190000000002"
+      - "0x440000000000"
+    expected_symbols:
+      forward: 0
+      target: 2

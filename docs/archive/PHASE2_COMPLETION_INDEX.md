@@ -72,8 +72,8 @@ Phase 2 delivers **complete implementation infrastructure** for manufacturing an
 
 ---
 
-### 3. **INFRASTRUCTURE_STRATEGY.md** ✅
-**File**: `INFRASTRUCTURE_AND_DEPLOYMENT/INFRASTRUCTURE_STRATEGY.md`  
+### 3. **docs/general/INFRASTRUCTURE_STRATEGY.md** ✅
+**File**: `docs/general/docs/general/INFRASTRUCTURE_STRATEGY.md`  
 **Size**: 8,000+ lines | **Format**: Comprehensive markdown specification
 
 **Sections** (11 total):
@@ -94,7 +94,7 @@ Phase 2 delivers **complete implementation infrastructure** for manufacturing an
 ---
 
 ### 4. **SIMULATOR_RESEARCH_NOTES.md** ✅
-**File**: `infrastructure/SIMULATOR_RESEARCH_NOTES.md`  
+**File**: `docs/archive/SIMULATOR_RESEARCH_NOTES.md`  
 **Size**: 4,000+ lines | **Format**: Detailed research and analysis
 
 **Contents**:
@@ -123,8 +123,8 @@ Phase 2 delivers **complete implementation infrastructure** for manufacturing an
 
 ---
 
-### 5. **BSD_INTEGRATION_SPEC.md** ✅
-**File**: `INFRASTRUCTURE_AND_DEPLOYMENT/BSD_INTEGRATION_SPEC.md`  
+### 5. **docs/specifications/BSD_INTEGRATION_SPEC.md** ✅
+**File**: `docs/specifications/docs/specifications/BSD_INTEGRATION_SPEC.md`  
 **Size**: 3,500+ lines | **Format**: Complete implementation specification
 
 **Contents**:
@@ -154,7 +154,7 @@ Phase 2 delivers **complete implementation infrastructure** for manufacturing an
 ---
 
 ### 6. **PHASE2_DELIVERY_SUMMARY.md** ✅
-**File**: `whitepaper/PHASE2_DELIVERY_SUMMARY.md`  
+**File**: `docs/archive/PHASE2_DELIVERY_SUMMARY.md`  
 **Size**: 5,000+ lines | **Format**: Executive summary and status report
 
 **Contents**:
@@ -201,9 +201,9 @@ Phase 2 delivers **complete implementation infrastructure** for manufacturing an
 │   └── PROJECT_COMPLETION_REPORT.txt        (Phase 1, reference)
 │
 ├── infrastructure/
-│   ├── INFRASTRUCTURE_STRATEGY.md           (8,000 lines) ✅
+│   ├── docs/general/INFRASTRUCTURE_STRATEGY.md           (8,000 lines) ✅
 │   ├── SIMULATOR_RESEARCH_NOTES.md          (4,000 lines) ✅
-│   └── BSD_INTEGRATION_SPEC.md              (3,500 lines) ✅
+│   └── docs/specifications/BSD_INTEGRATION_SPEC.md              (3,500 lines) ✅
 │
 ├── docs/
 │   ├── HISTORICAL_AUDIT_AND_CORRECTIONS.md  (Phase 1, reference)
@@ -336,9 +336,9 @@ Phase 2 delivers **complete implementation infrastructure** for manufacturing an
 **All Deliverables**:
 - ✅ Phase 2 Whitepaper Part 1 (30 pages, 121 KB PDF)
 - ✅ Phase 2 Whitepaper Part 2 (19 pages, 83 KB PDF)
-- ✅ INFRASTRUCTURE_STRATEGY.md (8,000 lines)
+- ✅ docs/general/INFRASTRUCTURE_STRATEGY.md (8,000 lines)
 - ✅ SIMULATOR_RESEARCH_NOTES.md (4,000 lines)
-- ✅ BSD_INTEGRATION_SPEC.md (3,500 lines)
+- ✅ docs/specifications/BSD_INTEGRATION_SPEC.md (3,500 lines)
 - ✅ PHASE2_DELIVERY_SUMMARY.md (5,000 lines)
 - ✅ Supporting specifications and cross-references
 
@@ -357,18 +357,18 @@ Phase 2 delivers **complete implementation infrastructure** for manufacturing an
 1. Start with `PHASE2_DELIVERY_SUMMARY.md` (executive overview)
 2. Review timeline and budget in whitepaper Part 1
 3. Use risk matrix from Part 2 for contingency planning
-4. Distribute `INFRASTRUCTURE_STRATEGY.md` to team leads
+4. Distribute `docs/general/INFRASTRUCTURE_STRATEGY.md` to team leads
 
 ### For Manufacturing Engineers
 1. Read `whitepaper/babbage_phase2_buildout.pdf` Chapters 3-4
-2. Study `INFRASTRUCTURE_STRATEGY.md` sections 1 and 4
+2. Study `docs/general/INFRASTRUCTURE_STRATEGY.md` sections 1 and 4
 3. Use detailed procedures as work instructions
 4. Reference quality acceptance criteria in delivery summary
 
 ### For Software Engineers
 1. Review `SIMULATOR_RESEARCH_NOTES.md` for clone strategy
-2. Read `BSD_INTEGRATION_SPEC.md` for device driver design
-3. Follow 5-phase timeline in `INFRASTRUCTURE_STRATEGY.md` Section 2
+2. Read `docs/specifications/BSD_INTEGRATION_SPEC.md` for device driver design
+3. Follow 5-phase timeline in `docs/general/INFRASTRUCTURE_STRATEGY.md` Section 2
 4. Use provided C code templates as implementation starting point
 
 ### For System Architects

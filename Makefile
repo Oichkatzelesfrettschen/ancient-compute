@@ -1,7 +1,7 @@
 # Ancient Compute - Makefile
 # Common development tasks for cross-platform development
 
-.PHONY: help setup dev test build clean install-hooks lint format docker-up docker-down
+.PHONY: help setup dev test build clean install-hooks lint format docker-up docker-down test-active verify-simulation links-check links-check-full archive-audit
 
 # Default target
 help:
@@ -90,6 +90,32 @@ test-frontend:
 test-coverage:
 	@echo "Running tests with coverage..."
 	cd backend && pytest --cov=src --cov-report=html --cov-report=term
+
+test-active:
+	@echo "Running active-contract test gate (Tier A)..."
+	pytest -q \
+	  backend/tests/unit/test_executors_unit.py \
+	  backend/tests/unit/test_language_registry.py \
+	  backend/tests/integration/test_cross_language.py \
+	  backend/tests/unit/test_babbage_assembler_golden.py \
+	  backend/tests/unit/test_babbage_parameter_contract.py \
+	  backend/tests/integration/test_babbage_mechanical_profile.py
+
+verify-simulation:
+	@echo "Verifying Babbage simulation parameter contract..."
+	python3 tools/simulation/verify_babbage_params.py
+
+links-check:
+	@echo "Validating markdown links with scoped validator..."
+	python3 scripts/VALIDATE_LINKS.py --scope active
+
+links-check-full:
+	@echo "Validating markdown links across docs and archive (legacy audit)..."
+	python3 scripts/VALIDATE_LINKS.py --scope all
+
+archive-audit:
+	@echo "Regenerating archive audit ledger and quarantine..."
+	python3 scripts/regenerate_archive_audit.py
 
 # Code quality
 lint:

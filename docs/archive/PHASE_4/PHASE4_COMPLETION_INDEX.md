@@ -38,7 +38,7 @@ Phase 4 implements comprehensive integration testing and operational validation 
 ### 1.1 Testing Specifications Documents
 
 #### Document 1: PHASE4_COMPONENT_TEST_SPECIFICATIONS.md
-**Location**: `/IMPLEMENTATION_PHASES/PHASE_4/testing/PHASE4_COMPONENT_TEST_SPECIFICATIONS.md`  
+**Location**: `/IMPLEMENTATION_PHASES/PHASE_4/docs/archive/PHASE_4/PHASE4_COMPONENT_TEST_SPECIFICATIONS.md`  
 **Size**: 8,000+ lines, 60+ KB  
 **Status**: ✅ COMPLETE
 
@@ -65,7 +65,7 @@ Phase 4 implements comprehensive integration testing and operational validation 
 - Comprehensive rework procedures for failed components
 
 #### Document 2: PHASE4_SUBASSEMBLY_INTEGRATION_TESTS.md
-**Location**: `/IMPLEMENTATION_PHASES/PHASE_4/testing/PHASE4_SUBASSEMBLY_INTEGRATION_TESTS.md`  
+**Location**: `/IMPLEMENTATION_PHASES/PHASE_4/docs/archive/PHASE_4/PHASE4_SUBASSEMBLY_INTEGRATION_TESTS.md`  
 **Size**: 6,000+ lines, 45+ KB  
 **Status**: ✅ COMPLETE
 
@@ -106,7 +106,7 @@ Phase 4 implements comprehensive integration testing and operational validation 
 - Load and stress test procedures
 
 #### Document 3: PHASE4_SYSTEM_OPERATIONAL_VALIDATION.md
-**Location**: `/IMPLEMENTATION_PHASES/PHASE_4/validation/PHASE4_SYSTEM_OPERATIONAL_VALIDATION.md`  
+**Location**: `/IMPLEMENTATION_PHASES/PHASE_4/docs/archive/PHASE_4/PHASE4_SYSTEM_OPERATIONAL_VALIDATION.md`  
 **Size**: 7,000+ lines, 50+ KB  
 **Status**: ✅ COMPLETE
 
@@ -136,7 +136,7 @@ Phase 4 implements comprehensive integration testing and operational validation 
 - Detailed failure response procedures if testing unsuccessful
 
 #### Document 4: PHASE4_HANDOFF_ACCEPTANCE_CRITERIA.md
-**Location**: `/IMPLEMENTATION_PHASES/PHASE_4/acceptance/PHASE4_HANDOFF_ACCEPTANCE_CRITERIA.md`  
+**Location**: `/IMPLEMENTATION_PHASES/PHASE_4/docs/archive/PHASE_4/PHASE4_HANDOFF_ACCEPTANCE_CRITERIA.md`  
 **Size**: 5,000+ lines, 40+ KB  
 **Status**: ✅ COMPLETE
 

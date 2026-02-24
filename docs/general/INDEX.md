@@ -7,6 +7,9 @@
 3. `docs/general/PLANNING_CANONICAL_MAP.md`
 4. `docs/general/HARDWARE_LANGUAGE_BRINGUP_PLAN.md`
 5. `docs/archive/INDEX.md` (archived planning ledger)
+6. `docs/general/EXECUTION_RESCOPED_PLAN_2026-02.md`
+7. `docs/general/TEST_GATE_MATRIX.md`
+8. `docs/general/TEST_QUARANTINE.md`
 
 ## Taxonomy and Navigation
 

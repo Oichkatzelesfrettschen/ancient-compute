@@ -9,7 +9,7 @@
 ## QUICK START (Choose Your Role)
 
 ### 🔧 Manufacturing/Assembly Lead
-**Start here**: `testing/PHASE4_COMPONENT_TEST_SPECIFICATIONS.md`
+**Start here**: `docs/archive/PHASE_4/PHASE4_COMPONENT_TEST_SPECIFICATIONS.md`
 
 You need to understand:
 - How components were tested (8,000+ lines of procedures)
@@ -17,13 +17,13 @@ You need to understand:
 - Test results summary (96% first-pass, 98% final yield)
 - Equipment calibration status
 
-**Then read**: `acceptance/PHASE4_HANDOFF_ACCEPTANCE_CRITERIA.md`  
+**Then read**: `docs/archive/PHASE_4/PHASE4_HANDOFF_ACCEPTANCE_CRITERIA.md`  
 **Time to read**: 30-45 minutes
 
 ---
 
 ### 🧪 Quality Assurance / Test Engineer
-**Start here**: `validation/PHASE4_SYSTEM_OPERATIONAL_VALIDATION.md`
+**Start here**: `docs/archive/PHASE_4/PHASE4_SYSTEM_OPERATIONAL_VALIDATION.md`
 
 You need to understand:
 - 20 comprehensive test programs (Categories A-D)
@@ -31,7 +31,7 @@ You need to understand:
 - System validation outcomes (100% success rate, 20/20 passed)
 - Mechanical condition assessment
 
-**Then read**: `testing/PHASE4_SUBASSEMBLY_INTEGRATION_TESTS.md`  
+**Then read**: `docs/archive/PHASE_4/PHASE4_SUBASSEMBLY_INTEGRATION_TESTS.md`  
 **Time to read**: 45-60 minutes
 
 ---
@@ -56,10 +56,10 @@ You need to understand:
 
 You need to understand:
 - What you're receiving (fully tested, operational Babbage Engine)
-- How to operate it: `PHASE3_OPERATIONAL_MANUAL.md` (from Phase 3)
-- Maintenance requirements: `PHASE3_OPERATIONAL_MANUAL.md` (daily through annual)
+- How to operate it: `docs/archive/PHASE_3/PHASE3_OPERATIONAL_MANUAL.md` (from Phase 3)
+- Maintenance requirements: `docs/archive/PHASE_3/PHASE3_OPERATIONAL_MANUAL.md` (daily through annual)
 - Warranty and support: `PHASE4_HANDOFF_ACCEPTANCE_CRITERIA.md` (Section 5)
-- Historical accuracy: `HISTORICAL_CONTEXT/HISTORICAL_AUDIT_AND_CORRECTIONS.md` (from Phase 3)
+- Historical accuracy: `docs/general/HISTORICAL_AUDIT_AND_CORRECTIONS.md` (from Phase 3)
 
 **Reference document**: `PHASE4_WHITEPAPER_MAIN.tex` (compile for exhibit materials)  
 **Time to read**: 15-20 minutes
@@ -73,7 +73,7 @@ You need to understand:
 - How the system was tested and validated
 - What the engine can do (20 test programs demonstrate capabilities)
 - Historical significance (demonstrates feasibility, enables education)
-- How it works: `PHASE3_OPERATIONAL_MANUAL.md` (from Phase 3)
+- How it works: `docs/archive/PHASE_3/PHASE3_OPERATIONAL_MANUAL.md` (from Phase 3)
 
 **Optional deep-dive**: All Phase 4 specifications for complete technical detail  
 **Time to read**: 30 minutes to 2 hours (depending on depth desired)
@@ -347,23 +347,23 @@ phase4/
 ### For Questions About:
 
 **Component Testing**  
-→ See: `testing/PHASE4_COMPONENT_TEST_SPECIFICATIONS.md`  
+→ See: `docs/archive/PHASE_4/PHASE4_COMPONENT_TEST_SPECIFICATIONS.md`  
 → Contact: Manufacturing Lead or QC Manager
 
 **System Validation**  
-→ See: `validation/PHASE4_SYSTEM_OPERATIONAL_VALIDATION.md`  
+→ See: `docs/archive/PHASE_4/PHASE4_SYSTEM_OPERATIONAL_VALIDATION.md`  
 → Contact: Lead Test Engineer
 
 **Project Acceptance**  
-→ See: `acceptance/PHASE4_HANDOFF_ACCEPTANCE_CRITERIA.md`  
+→ See: `docs/archive/PHASE_4/PHASE4_HANDOFF_ACCEPTANCE_CRITERIA.md`  
 → Contact: Project Director
 
 **Historical Accuracy**  
-→ See: `../HISTORICAL_CONTEXT/HISTORICAL_AUDIT_AND_CORRECTIONS.md`  
+→ See: `../docs/general/HISTORICAL_AUDIT_AND_CORRECTIONS.md`  
 → Contact: Project Research Lead
 
 **Operation & Maintenance**  
-→ See: `../IMPLEMENTATION_PHASES/PHASE_3/PHASE3_OPERATIONAL_MANUAL.md`  
+→ See: `../IMPLEMENTATION_PHASES/PHASE_3/docs/archive/PHASE_3/PHASE3_OPERATIONAL_MANUAL.md`  
 → Contact: Operations Lead or recipient technical support
 
 ---

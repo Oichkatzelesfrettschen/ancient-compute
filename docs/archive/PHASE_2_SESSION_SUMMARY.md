@@ -14,7 +14,7 @@
 
 **Deliverables**:
 - ✅ Reviewed SIMULATOR_RESEARCH_NOTES.md (537 lines)
-- ✅ Reviewed BSD_INTEGRATION_SPEC.md (882 lines)
+- ✅ Reviewed docs/specifications/BSD_INTEGRATION_SPEC.md (882 lines)
 - ✅ Reviewed IMPLEMENTATION_ROADMAP.md (partial, Phase 2 section)
 - ✅ Consolidated findings into actionable plan
 
@@ -36,7 +36,7 @@
 
 ### 2. Comprehensive Phase 2 Implementation Plan
 
-**File**: `/PHASE_2_IMPLEMENTATION_PLAN.md` (400+ lines)
+**File**: `docs/archive/PHASE_2_IMPLEMENTATION_PLAN.md` (400+ lines)
 
 **Contents**:
 - Executive summary with 3 parallel workstreams

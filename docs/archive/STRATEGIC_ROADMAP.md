@@ -104,17 +104,17 @@ ARCHIVE/                      # Historical & deprecated docs
 - SITE_MAP.md - Visual hierarchy and learning paths
 
 **Architecture & Design** (3 files, 12,000+ lines)
-- ./ARCHITECTURE.md - Complete technical specification
-- ./PROJECT_STRUCTURE.md - Directory organization and rationale
+- ./docs/general/ARCHITECTURE.md - Complete technical specification
+- docs/general/PROJECT_STRUCTURE.md - Directory organization and rationale
 - ./IMPLEMENTATION_ROADMAP.md - 52-week phased development plan
 
 ### Remaining Files to Migrate (62 files)
 
 **Priority Tier 1** (Critical - Week 1-2 completion)
-- WEEK_1_COMPLETION_STATUS.md → ARCHITECTURE_AND_DESIGN/
+- docs/archive/WEEK_1_CHECKLIST.md → ARCHITECTURE_AND_DESIGN/
 - SOURCE_CODE_AND_BUILD_AUDIT.md → ARCHITECTURE_AND_DESIGN/
 - DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md → ARCHITECTURE_AND_DESIGN/
-- README.md (current root) → Archive & link to GETTING_STARTED/README.md
+- README.md (current root) → Archive & link to docs/general/README.md
 - AGENTS.md → DEVELOPMENT_GUIDES/
 - CLAUDE.md → Reference in GETTING_STARTED/
 
@@ -165,8 +165,8 @@ ARCHIVE/                      # Historical & deprecated docs
    - → Organize into IMPLEMENTATION_PHASES/ and BABBAGE_ENGINE_SPECIFICATION/
 
 3. **Project Structure & Architecture**
-   - ./PROJECT_STRUCTURE.md
-   - ./ARCHITECTURE.md
+   - docs/general/PROJECT_STRUCTURE.md
+   - ./docs/general/ARCHITECTURE.md
    - Whitepaper project structure
    - → Consolidated into ARCHITECTURE_AND_DESIGN/
 
@@ -494,18 +494,18 @@ ARCHIVE/                      # Historical & deprecated docs
 ## References & Related Documents
 
 **Architecture & Planning**:
-- [./ARCHITECTURE.md](../.././ARCHITECTURE.md) - Complete technical specification
+- [./docs/general/ARCHITECTURE.md](../.././docs/general/ARCHITECTURE.md) - Complete technical specification
 - [./IMPLEMENTATION_ROADMAP.md](./IMPLEMENTATION_ROADMAP.md) - 52-week phased plan
-- [./PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md) - Directory organization
+- [docs/general/PROJECT_STRUCTURE.md](docs/general/PROJECT_STRUCTURE.md) - Directory organization
 
 **Audit Findings**:
-- [SOURCE_CODE_AND_BUILD_AUDIT.md](../SOURCE_CODE_AND_BUILD_AUDIT.md) - Detailed code analysis
-- [DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md](../DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md) - Complete file inventory
+- [SOURCE_CODE_AND_BUILD_AUDIT.md](docs/archive/SOURCE_CODE_AND_BUILD_AUDIT.md) - Detailed code analysis
+- [DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md](docs/general/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md) - Complete file inventory
 
 **Navigation**:
-- [../GETTING_STARTED/README.md](../GETTING_STARTED/README.md) - Main entry point
-- [../GETTING_STARTED/DOCUMENT_FINDER.md](../GETTING_STARTED/DOCUMENT_FINDER.md) - Searchable index
-- [../GETTING_STARTED/SITE_MAP.md](../GETTING_STARTED/SITE_MAP.md) - Visual hierarchy
+- [../docs/general/README.md](../docs/general/README.md) - Main entry point
+- [docs/general/DOCUMENT_FINDER.md](docs/general/DOCUMENT_FINDER.md) - Searchable index
+- [docs/general/SITE_MAP.md](docs/general/SITE_MAP.md) - Visual hierarchy
 
 ---
 
@@ -541,4 +541,4 @@ With this strategic roadmap and reorganized documentation, the team has clear di
 
 ---
 
-**Questions?** See [GETTING_STARTED/README.md](../GETTING_STARTED/README.md) for guidance by role and audience.
+**Questions?** See [docs/general/README.md](../docs/general/README.md) for guidance by role and audience.

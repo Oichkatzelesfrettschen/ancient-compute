@@ -100,7 +100,7 @@ ARCHIVE/                      → Historical documents location
 - SITE_MAP.md - Visual hierarchy
 
 **Architecture & Design** (3 files):
-- ../ARCHITECTURE_AND_DESIGN/ARCHITECTURE.md - Complete technical specification
+- ../docs/general/docs/general/ARCHITECTURE.md - Complete technical specification
 - ../ARCHITECTURE_AND_DESIGN/PROJECT_STRUCTURE.md - Directory organization
 - ../ARCHITECTURE_AND_DESIGN/IMPLEMENTATION_ROADMAP.md - 52-week development plan
 
@@ -110,7 +110,7 @@ ARCHIVE/                      → Historical documents location
 
 ### Workstream C: Strategic Roadmap & Synthesis ✅
 
-**Deliverable**: `../ARCHITECTURE_AND_DESIGN/STRATEGIC_ROADMAP.md` (3,000+ lines, comprehensive strategic document)
+**Deliverable**: `docs/archive/STRATEGIC_ROADMAP.md` (3,000+ lines, comprehensive strategic document)
 
 **Content**:
 - Executive summary of project status
@@ -227,34 +227,34 @@ ARCHIVE/                      → Historical documents location
 ## How to Use These New Resources
 
 ### For Getting Started
-→ Start at `GETTING_STARTED/README.md`  
+→ Start at `docs/general/README.md`  
 → Choose your role, follow the quick-start path  
 → Use DOCUMENT_FINDER.md to locate specific topics
 
 ### For Finding Anything
-→ Use `GETTING_STARTED/DOCUMENT_FINDER.md`  
+→ Use `docs/general/DOCUMENT_FINDER.md`  
 → Search by topic, role, type, or keyword  
 → Or browse visual hierarchy in SITE_MAP.md
 
 ### For Understanding Architecture
-→ Start with `../../ARCHITECTURE_AND_DESIGN/ARCHITECTURE.md`  
+→ Start with `docs/general/docs/general/ARCHITECTURE.md`  
 → Follow with ../ARCHITECTURE_AND_DESIGN/PROJECT_STRUCTURE.md and ../ARCHITECTURE_AND_DESIGN/IMPLEMENTATION_ROADMAP.md  
 → Reference specific domains (Backend, Frontend, Security) as needed
 
 ### For Manufacturing Babbage
-→ Start with `BABBAGE_ENGINE_SPECIFICATION/00_QUICK_FACTS_AND_OVERVIEW.md`  
+→ Start with `docs/babbage_engine/OPTIMAL_BABBAGE_SPECIFICATION.md`  
 → Read 01_COMPLETE_TECHNICAL_SPECIFICATION.md  
 → Check IMPLEMENTATION_PHASES/ for phase-by-phase details
 
 ### For Development
-→ Start with `DEVELOPMENT_GUIDES/01_SETUP_AND_INSTALLATION.md`  
-→ Read ../../ARCHITECTURE_AND_DESIGN/ARCHITECTURE.md for design overview  
+→ Start with `docs/general/QUICK_START_5_MINUTES.md`  
+→ Read docs/general/docs/general/ARCHITECTURE.md for design overview  
 → Reference REFERENCE_MATERIALS/ for standards and best practices
 
 ### For Strategic Planning
-→ Read `../../ARCHITECTURE_AND_DESIGN/STRATEGIC_ROADMAP.md` (this document)  
+→ Read `../docs/archive/STRATEGIC_ROADMAP.md` (this document)  
 → Reference ../ARCHITECTURE_AND_DESIGN/IMPLEMENTATION_ROADMAP.md for 52-week phased plan  
-→ Check WEEK_1_COMPLETION_STATUS.md for current progress
+→ Check docs/archive/WEEK_1_CHECKLIST.md for current progress
 
 ---
 
@@ -335,10 +335,10 @@ GETTING_STARTED/
 └── SITE_MAP.md
 
 ARCHITECTURE_AND_DESIGN/
-├── ../ARCHITECTURE_AND_DESIGN/ARCHITECTURE.md
+├── ../docs/general/docs/general/ARCHITECTURE.md
 ├── ../ARCHITECTURE_AND_DESIGN/PROJECT_STRUCTURE.md
 ├── ../ARCHITECTURE_AND_DESIGN/IMPLEMENTATION_ROADMAP.md
-├── ../ARCHITECTURE_AND_DESIGN/STRATEGIC_ROADMAP.md         # ← Strategic planning
+├── docs/archive/STRATEGIC_ROADMAP.md         # ← Strategic planning
 └── [more files to be added]
 
 [and 7 other directories...]
@@ -366,13 +366,13 @@ This comprehensive documentation audit, synthesis, and reorganization initiative
 
 ## Questions or Next Steps?
 
-**Need help getting started?** → See `GETTING_STARTED/README.md`
+**Need help getting started?** → See `docs/general/README.md`
 
-**Looking for a specific document?** → Use `GETTING_STARTED/DOCUMENT_FINDER.md`
+**Looking for a specific document?** → Use `docs/general/DOCUMENT_FINDER.md`
 
-**Want the strategic plan?** → Read `../../ARCHITECTURE_AND_DESIGN/STRATEGIC_ROADMAP.md`
+**Want the strategic plan?** → Read `../docs/archive/STRATEGIC_ROADMAP.md`
 
-**Ready to contribute?** → See `DEVELOPMENT_GUIDES/01_SETUP_AND_INSTALLATION.md`
+**Ready to contribute?** → See `docs/general/QUICK_START_5_MINUTES.md`
 
 ---
 

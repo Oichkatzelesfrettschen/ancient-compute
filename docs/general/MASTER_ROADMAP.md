@@ -10,6 +10,7 @@
 - Canonical execution tracker: `docs/general/TODO_TRACKER.md`
 - Planning classification and archive policy: `docs/general/PLANNING_CANONICAL_MAP.md`
 - Hardware-first sequencing: `docs/general/HARDWARE_LANGUAGE_BRINGUP_PLAN.md`
+- Active execution wave ledger: `docs/general/EXECUTION_RESCOPED_PLAN_2026-02.md`
 
 ---
 
@@ -27,7 +28,7 @@ Ancient Compute is a comprehensive educational platform teaching 12,500 years of
 
 **Total Codebase**: ~28,000 lines
 **Test Coverage**: 533 tests passing, 25% line coverage (needs improvement)
-**Known Issues**: Language backend maturity is uneven; only assembly has an implemented execution path. C/Python/Haskell/LISP remain partial and IDRIS2/SystemF/Java are placeholder stubs.
+**Known Issues**: Language backend maturity is uneven; only assembly has an implemented execution path. C/Python/Haskell/LISP remain partial and IDRIS2/SystemF/Java are placeholder stubs. Babbage simulation calibration still contains provisional defaults pending higher-fidelity extraction.
 **Last Verified Against Tests**: `pytest -q backend/tests/unit/test_executors_unit.py backend/tests/unit/test_language_registry.py backend/tests/integration/test_cross_language.py` on February 24, 2026.
 
 ## Archive Synthesis Integration (2026-02-24)

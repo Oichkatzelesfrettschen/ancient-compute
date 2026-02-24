@@ -15,8 +15,7 @@ A file is quarantined when either condition is true:
 
 | File | Risk | Why Quarantined | Use Instead |
 |---|---|---|---|
-| `docs/archive/WEEK_3_TASK_3_LINK_MAPPING_AND_UPDATE_PLAN.md` | high | 27 broken internal links and malformed path examples from migration-time rewrites | `docs/general/PLANNING_CANONICAL_MAP.md`, `docs/archive/INDEX.md` |
-| `docs/archive/STRATEGIC_ROADMAP.md` | medium | 8 stale links to pre-restructure doc paths | `docs/general/MASTER_ROADMAP.md`, `docs/general/TODO_TRACKER.md` |
+| _none_ | low | no files exceed threshold | n/a |
 
 ## Handling Rules
 

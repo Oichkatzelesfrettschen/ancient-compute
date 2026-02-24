@@ -1,143 +1,174 @@
 #!/usr/bin/env python3
-"""
-Link validation script for documentation files
-Validates all markdown cross-references and checks for broken links
-"""
+"""Validate markdown cross-references with repo-aware path resolution."""
 
-import os
+from __future__ import annotations
+
+import argparse
 import re
 from pathlib import Path
 
-def find_all_markdown_files():
-    """Find all markdown files in project"""
-    md_files = []
-    skip_dirs = {'.backup_20251031_192302', '.git', 'node_modules', '.backup_links_20251031_204331'}
-    
-    for root, dirs, files in os.walk('.'):
-        dirs[:] = [d for d in dirs if d not in skip_dirs and not d.startswith('.')]
-        for file in files:
-            if file.endswith('.md'):
-                md_files.append(os.path.join(root, file))
-    
-    return sorted(md_files)
+ROOT = Path(__file__).resolve().parents[1]
+DOCS_ROOT = ROOT / "docs"
+ARCHIVE_ROOT = DOCS_ROOT / "archive"
 
-def extract_links_from_file(filepath):
-    """Extract all markdown links from a file"""
-    links = []
-    with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
-        content = f.read()
-    
-    # Find markdown links: [text](path)
-    pattern = r'\[([^\]]+)\]\(([^)]+\.md)\)'
-    matches = re.finditer(pattern, content)
-    
-    for match in matches:
-        text, link = match.groups()
-        links.append({
-            'file': filepath,
-            'text': text,
-            'link': link,
-            'type': 'markdown'
-        })
-    
-    # Find inline backtick references: `FILENAME.md`
-    pattern = r'`([^`]*\.md)`'
-    matches = re.finditer(pattern, content)
-    
-    for match in matches:
-        link = match.group(1)
-        # Only add if it looks like a file reference
-        if '/' in link or not '/' in filepath.split(os.sep)[-1]:
-            links.append({
-                'file': filepath,
-                'text': link,
-                'link': link,
-                'type': 'backtick'
-            })
-    
+SKIP_DIRS = {
+    ".git",
+    "node_modules",
+    "__pycache__",
+    "venv",
+    ".venv",
+    ".pytest_cache",
+    ".mypy_cache",
+    ".ruff_cache",
+    "dist",
+    "build",
+    "target",
+    ".backup_20251031_192302",
+    ".backup_links_20251031_204331",
+}
+
+MARKDOWN_LINK_RE = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
+BACKTICK_MD_RE = re.compile(r"`([^`\n]*\.md(?:#[^`\n]+)?)`")
+FENCED_CODE_RE = re.compile(r"```.*?```", re.DOTALL)
+
+ACTIVE_DOCS = [
+    "README.md",
+    "docs/general/INDEX.md",
+    "docs/general/MASTER_ROADMAP.md",
+    "docs/general/TODO_TRACKER.md",
+    "docs/general/PLANNING_CANONICAL_MAP.md",
+    "docs/general/HARDWARE_LANGUAGE_BRINGUP_PLAN.md",
+    "docs/general/EXECUTION_RESCOPED_PLAN_2026-02.md",
+    "docs/general/TEST_GATE_MATRIX.md",
+    "docs/general/TEST_QUARANTINE.md",
+    "docs/simulation/PARAMETERS.md",
+    "docs/simulation/CITATIONS.md",
+    "docs/simulation/GAP_REPORT.md",
+]
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--scope",
+        choices=("active", "archive", "all"),
+        default="active",
+        help="Validation scope (default: active canonical docs).",
+    )
+    return parser.parse_args()
+
+
+def iter_markdown_files(scope: str) -> list[Path]:
+    if scope == "active":
+        files = []
+        for rel in ACTIVE_DOCS:
+            path = ROOT / rel
+            if path.exists():
+                files.append(path)
+        return sorted(set(files))
+
+    if scope == "archive":
+        files = []
+        for path in ARCHIVE_ROOT.rglob("*.md"):
+            if any(part in SKIP_DIRS for part in path.parts):
+                continue
+            files.append(path)
+        return sorted(set(files))
+
+    files: list[Path] = []
+    if (ROOT / "README.md").exists():
+        files.append(ROOT / "README.md")
+
+    for path in DOCS_ROOT.rglob("*.md"):
+        if any(part in SKIP_DIRS for part in path.parts):
+            continue
+        files.append(path)
+    return sorted(set(files))
+
+
+def extract_links(markdown_path: Path) -> list[str]:
+    text = markdown_path.read_text(encoding="utf-8", errors="ignore")
+    # Ignore code examples; we only validate prose/documentation references.
+    text = FENCED_CODE_RE.sub("", text)
+    links: list[str] = []
+
+    for match in MARKDOWN_LINK_RE.finditer(text):
+        links.append(match.group(1).strip())
+    for match in BACKTICK_MD_RE.finditer(text):
+        candidate = match.group(1).strip()
+        # Ignore compound values from ledger cells.
+        if ";" in candidate or "," in candidate or " " in candidate:
+            continue
+        links.append(candidate)
+
     return links
 
-def resolve_link(file_context, link):
-    """Resolve a relative link from a file context"""
-    file_dir = os.path.dirname(file_context)
-    
-    # Handle relative paths
-    if link.startswith('../'):
-        # Go up directories
-        parts = link.split('/')
-        current = file_dir
-        for part in parts:
-            if part == '..':
-                current = os.path.dirname(current)
-            elif part:
-                current = os.path.join(current, part)
-        return current
-    elif link.startswith('./'):
-        return os.path.join(file_dir, link[2:])
-    else:
-        # Same directory
-        return os.path.join(file_dir, link)
 
-def validate_links():
-    """Validate all links in documentation"""
-    all_files = find_all_markdown_files()
-    print(f"Found {len(all_files)} markdown files\n")
-    
-    # Create mapping of all files
-    file_map = {os.path.normpath(f): f for f in all_files}
-    
-    broken_links = []
-    valid_links = 0
-    invalid_links = 0
-    
-    # Check each file's links
-    for md_file in all_files:
-        links = extract_links_from_file(md_file)
-        
-        for link_info in links:
-            link = link_info['link']
-            
-            # Skip external links
-            if link.startswith('http'):
+def normalize_target(source: Path, raw_link: str) -> Path | None:
+    # Drop optional title fragments and anchors.
+    link = raw_link.split(" ", 1)[0]
+    link = link.split("#", 1)[0]
+    link = link.split("?", 1)[0].strip()
+
+    if not link:
+        return None
+
+    if link.startswith(("http://", "https://", "mailto:")):
+        return None
+
+    if link.startswith("/"):
+        return ROOT / link.lstrip("/")
+
+    if link.startswith("./") or link.startswith("../"):
+        return (source.parent / link).resolve()
+
+    # Treat repo-root style markdown references as root-relative.
+    if "/" in link:
+        return (ROOT / link).resolve()
+
+    # Fallback: same-directory file.
+    return (source.parent / link).resolve()
+
+
+def main() -> int:
+    args = parse_args()
+    markdown_files = iter_markdown_files(args.scope)
+    broken: list[tuple[Path, str, Path]] = []
+    valid = 0
+
+    for md_file in markdown_files:
+        for raw_link in extract_links(md_file):
+            target = normalize_target(md_file, raw_link)
+            if target is None:
                 continue
-            
-            # Resolve the link
-            resolved = resolve_link(md_file, link)
-            resolved = os.path.normpath(resolved)
-            
-            # Check if file exists
-            if resolved in file_map or os.path.exists(resolved):
-                valid_links += 1
+            if target.exists():
+                valid += 1
             else:
-                invalid_links += 1
-                broken_links.append({
-                    'source': md_file,
-                    'link': link,
-                    'resolved': resolved,
-                    'type': link_info['type']
-                })
-    
-    # Print results
-    print(f"=== LINK VALIDATION RESULTS ===")
-    print(f"Valid links: {valid_links}")
-    print(f"Invalid/Broken links: {invalid_links}")
-    print(f"Success rate: {100 * valid_links / (valid_links + invalid_links):.1f}%\n")
-    
-    if broken_links:
-        print(f"Found {len(broken_links)} broken links:\n")
-        for broken in broken_links[:20]:  # Show first 20
-            print(f"File: {broken['source']}")
-            print(f"  Link: {broken['link']}")
-            print(f"  Resolved to: {broken['resolved']}")
-            print()
-        
-        if len(broken_links) > 20:
-            print(f"... and {len(broken_links) - 20} more broken links")
-    else:
-        print("No broken links found! ✓")
-    
-    return len(broken_links) == 0
+                broken.append((md_file, raw_link, target))
 
-if __name__ == '__main__':
-    success = validate_links()
-    exit(0 if success else 1)
+    total_checked = valid + len(broken)
+    success_rate = 100.0 if total_checked == 0 else (100.0 * valid / total_checked)
+
+    print(f"Scope: {args.scope}")
+    print(f"Found {len(markdown_files)} markdown files")
+    print("\n=== LINK VALIDATION RESULTS ===")
+    print(f"Valid links: {valid}")
+    print(f"Invalid/Broken links: {len(broken)}")
+    print(f"Success rate: {success_rate:.1f}%\n")
+
+    if broken:
+        print(f"Found {len(broken)} broken links:\n")
+        for source, link, resolved in broken[:50]:
+            print(f"File: {source.relative_to(ROOT)}")
+            print(f"  Link: {link}")
+            print(f"  Resolved to: {resolved}")
+            print()
+        if len(broken) > 50:
+            print(f"... and {len(broken) - 50} more broken links")
+        return 1
+
+    print("No broken links found! -> OK")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -58,7 +58,7 @@ Phase 2 builds upon the Phase 1 technical specification to deliver complete **im
 - ✅ Volume economics analysis (1-100 units)
 - ✅ Risk probability/impact matrix
 
-### 3. **INFRASTRUCTURE_STRATEGY.md**
+### 3. **docs/general/INFRASTRUCTURE_STRATEGY.md**
 **Size**: 8,000 lines | **Format**: Comprehensive markdown specification
 
 **Contents** (11 sections):
@@ -85,7 +85,7 @@ Phase 2 builds upon the Phase 1 technical specification to deliver complete **im
 - Simulator validation strategy
 - Hardware-simulator timing comparison
 
-### 5. **BSD_INTEGRATION_SPEC.md**
+### 5. **docs/specifications/BSD_INTEGRATION_SPEC.md**
 **Size**: 3,500 lines | **Format**: Complete implementation specification
 
 **Contents**:
@@ -359,14 +359,14 @@ All deliverables are located in `/home/eirikr/Playground/ancient_compute/`:
 - `whitepaper/babbage_phase2_buildout_part2.pdf` (19 pages, 83 KB)
 
 ### Detailed Specifications
-- `INFRASTRUCTURE_AND_DEPLOYMENT/INFRASTRUCTURE_STRATEGY.md` (8,000 lines)
-- `infrastructure/SIMULATOR_RESEARCH_NOTES.md` (4,000 lines)
-- `INFRASTRUCTURE_AND_DEPLOYMENT/BSD_INTEGRATION_SPEC.md` (3,500 lines)
+- `docs/general/docs/general/INFRASTRUCTURE_STRATEGY.md` (8,000 lines)
+- `docs/archive/SIMULATOR_RESEARCH_NOTES.md` (4,000 lines)
+- `docs/specifications/docs/specifications/BSD_INTEGRATION_SPEC.md` (3,500 lines)
 
 ### Phase 1 (Reference)
 - `whitepaper/babbage_whitepaper_main.pdf` (30 pages, 121 KB)
-- `BABBAGE_ANALYTICAL_ENGINE/whitepaper/WHITEPAPER_DELIVERY_SUMMARY.md`
-- `HISTORICAL_CONTEXT/HISTORICAL_AUDIT_AND_CORRECTIONS.md` (4,500 lines)
+- `BABBAGE_ANALYTICAL_ENGINE/docs/whitepaper/WHITEPAPER_DELIVERY_SUMMARY.md`
+- `docs/general/HISTORICAL_AUDIT_AND_CORRECTIONS.md` (4,500 lines)
 
 ---
 

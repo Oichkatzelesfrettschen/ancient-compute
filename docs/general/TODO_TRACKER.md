@@ -10,6 +10,8 @@
 - Canonical execution tracker: `docs/general/TODO_TRACKER.md`
 - Planning classification and archive policy: `docs/general/PLANNING_CANONICAL_MAP.md`
 - Hardware-first sequencing: `docs/general/HARDWARE_LANGUAGE_BRINGUP_PLAN.md`
+- Active wave ledger: `docs/general/EXECUTION_RESCOPED_PLAN_2026-02.md`
+- Active test gate policy: `docs/general/TEST_GATE_MATRIX.md`
 
 ---
 
@@ -76,7 +78,9 @@ This document tracks all pending tasks across the Ancient Compute project, organ
 - [x] Make language readiness machine-readable in API metadata (`implementation_status`, aliases, execution mode).
 - [x] Normalize `/api/v1/execute/run` language IDs/aliases to canonical IDs.
 - [x] Add registry/health consistency tests for `/api/v1/execute/languages` and `/api/v1/execute/health`.
-- [ ] Build assembler golden corpus under `backend/tests` for deterministic machine-code verification.
+- [x] Add Babbage simulation parameter verifier and contract tests.
+- [x] Add active test-gate matrix and quarantine register.
+- [x] Build assembler golden corpus under `backend/tests` for deterministic machine-code verification.
 - [ ] Write ABI contract spec doc (calling convention, stack/memory model, register preservation).
 - [ ] Add ABI conformance tests (positive and intentional-violation cases).
 - [ ] Define freestanding C subset matrix and explicit unsupported-feature diagnostics.

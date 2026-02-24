@@ -1,6 +1,7 @@
 meta:
   version: 0.1
   description: Babbage engine physics/timing simulation schema
+  profile: babbage_wave1_hard_gate
 materials:
 - name: brass
   density_kg_m3: 8500
@@ -13,7 +14,7 @@ mechanisms:
     type: steam_piston
     valve_gear: stephenson
     stroke_m: 0.2
-    rpm: 20
+    rpm: 30
     pressure_bar: 6
   gear_train:
     stages:
@@ -22,7 +23,7 @@ mechanisms:
     total_efficiency: 0.85
   card_feed:
     feed_rate_cards_per_min: 10
-    jam_rate_per_1k: 1
+    jam_rate_per_1k: 2
   bearings:
     type: plain
     oil: mineral_19th_c
@@ -61,9 +62,19 @@ tolerances:
 lubrication:
   oil_type: mineral_19th_c
   viscosity_cSt_40C: 68.0
-  schedule_hours: TBD
+  schedule_hours: 160
+  schedule_cycles_min: 500
+  schedule_cycles_max: 600
 valve_gear_params:
   lap_mm: 3.0
   lead_mm: 1.0
   cutoff_pct: 60.0
   notes: Stephenson link parameters to map stroke and rpm to port events
+provisional_defaults:
+- gear_module_mm
+- backlash_mm
+- shaft_clearance_mm
+- bearing_clearance_mm
+- lap_mm
+- lead_mm
+- cutoff_pct

@@ -59,28 +59,28 @@ Successfully completed **Task 3: Update 200+ Internal Cross-References** with al
 All 200+ cross-references were successfully updated from old paths to new directory structure:
 
 **Old Patterns** → **New Patterns**:
-- `BUILD.md` → `DEVELOPMENT_GUIDES/BUILD.md`
-- `ARCHITECTURE.md` → `ARCHITECTURE_AND_DESIGN/ARCHITECTURE.md`
-- `docs/OPTIMAL_BABBAGE_SPECIFICATION.md` → `BABBAGE_ANALYTICAL_ENGINE/OPTIMAL_BABBAGE_SPECIFICATION.md`
-- `infrastructure/INFRASTRUCTURE_STRATEGY.md` → `INFRASTRUCTURE_AND_DEPLOYMENT/INFRASTRUCTURE_STRATEGY.md`
-- `phase3/PHASE3_MANUFACTURING_PROCEDURES.md` → `IMPLEMENTATION_PHASES/PHASE_3/PHASE3_MANUFACTURING_PROCEDURES.md`
-- `whitepaper/WHITEPAPER_DELIVERY_SUMMARY.md` → `BABBAGE_ANALYTICAL_ENGINE/whitepaper/WHITEPAPER_DELIVERY_SUMMARY.md`
+- `docs/general/BUILD.md` → `docs/general/BUILD.md`
+- `docs/general/ARCHITECTURE.md` → `docs/general/ARCHITECTURE.md`
+- `docs/babbage_engine/OPTIMAL_BABBAGE_SPECIFICATION.md` → `docs/babbage_engine/OPTIMAL_BABBAGE_SPECIFICATION.md`
+- `docs/general/INFRASTRUCTURE_STRATEGY.md` → `docs/general/INFRASTRUCTURE_STRATEGY.md`
+- `docs/archive/PHASE_3/PHASE3_MANUFACTURING_PROCEDURES.md` → `docs/archive/PHASE_3/PHASE3_MANUFACTURING_PROCEDURES.md`
+- `docs/whitepaper/WHITEPAPER_DELIVERY_SUMMARY.md` → `docs/whitepaper/WHITEPAPER_DELIVERY_SUMMARY.md`
 
 ### Validation Findings
 
 The validation script identified 352 "broken" links. Analysis shows:
 - **~50 actual broken links**: References to files that should exist but have path issues
 - **~300 placeholder references**: References to files that don't exist in codebase
-  - Examples: `WEEK_1_COMPLETION_STATUS.md`, `BACKEND_ARCHITECTURE.md`, `FRONTEND_ARCHITECTURE.md`
+  - Examples: `docs/archive/WEEK_1_CHECKLIST.md`, `docs/general/ARCHITECTURE.md`, `docs/general/ARCHITECTURE.md`
   - These were placeholder references in original documentation that reference files never created
   - **Not a migration problem** - these existed as broken references in original structure too
 
 ### Files with Most Fixes Required
 
 Files that had most manual intervention:
-1. ARCHITECTURE_AND_DESIGN/ARCHITECTURE.md (many internal references)
+1. docs/general/ARCHITECTURE.md (many internal references)
 2. AGENTS.md (4 explicit fixes applied)
-3. GETTING_STARTED/README.md (navigation links)
+3. docs/general/README.md (navigation links)
 4. DOCUMENTATION_AND_ORGANIZATION files (planning documents)
 
 ---
@@ -170,7 +170,7 @@ Files that had most manual intervention:
    - Create missing files if needed
 
 2. ✓ **Spot-check critical files**:
-   - GETTING_STARTED/README.md
+   - docs/general/README.md
    - ARCHITECTURE_AND_DESIGN/README.md
    - DEVELOPMENT_GUIDES/README.md
 
