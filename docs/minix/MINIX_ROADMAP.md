@@ -2,6 +2,11 @@
 
 Status: Phase 0–1 implemented; Phase 2–4 scoped.
 
+Planning Context
+- Domain plan classification: active-domain
+- Canonical strategy roadmap: `docs/general/MASTER_ROADMAP.md`
+- Canonical execution tracker: `docs/general/TODO_TRACKER.md`
+
 ## Phases
 
 - Phase 0 — Wire-in Existing Implementation [DONE]
@@ -55,4 +60,3 @@ Status: Phase 0–1 implemented; Phase 2–4 scoped.
 - Aggregate: `scripts/minix_aggregate.py`
 - Regression: `scripts/minix_regression_check.py`
 - Docs: `INFRASTRUCTURE_AND_DEPLOYMENT/MINIX_QEMU_DOCKER_METRICS.md`
-

@@ -5,6 +5,11 @@
 **Archive Size:** 112 MB (20 PDFs + 16 text extractions + HTML references)
 **Purpose:** Actionable steps to leverage the collected materials
 
+**Planning Context**
+- Domain plan classification: active-domain
+- Canonical strategy roadmap: `docs/general/MASTER_ROADMAP.md`
+- Canonical execution tracker: `docs/general/TODO_TRACKER.md`
+
 ---
 
 ## Phase 1: Foundation & Understanding (This Week)

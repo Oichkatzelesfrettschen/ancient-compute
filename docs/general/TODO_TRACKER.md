@@ -5,6 +5,11 @@
 **Status**: Updated after Jan 2026 Consolidation Audit
 **Purpose**: Comprehensive task tracking, priorities, and execution plan
 
+**Planning Context**:
+- Canonical strategy roadmap: `docs/general/MASTER_ROADMAP.md`
+- Canonical execution tracker: `docs/general/TODO_TRACKER.md`
+- Planning classification and archive policy: `docs/general/PLANNING_CANONICAL_MAP.md`
+
 ---
 
 ## Overview
@@ -15,6 +20,12 @@ This document tracks all pending tasks across the Ancient Compute project, organ
 - MASTER_ROADMAP.md - Strategic vision and phase planning
 - TECHNICAL_DEBT.md - Known issues and implementation gaps
 - PROJECT_STATUS.md - Current status and metrics
+
+## Planning Hygiene Tasks
+
+- [ ] Ensure superseded planning docs are archived with metadata.
+- [ ] Ensure each archive entry has a canonical successor in `docs/archive/INDEX.md`.
+- [ ] Merge any novel constraints from archived plans before marking them obsolete.
 
 ---
 

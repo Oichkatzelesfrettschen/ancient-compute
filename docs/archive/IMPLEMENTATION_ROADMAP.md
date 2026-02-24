@@ -1,5 +1,15 @@
 # Ancient Compute: Implementation Roadmap
 
+## Archive Metadata
+
+- Archive Status: archived
+- Archive Reason: superseded_by_newer_canonical
+- Canonical Successor: docs/general/MASTER_ROADMAP.md; docs/general/TODO_TRACKER.md
+- Novel Content Integrated: yes
+- Merged Into: docs/general/MASTER_ROADMAP.md
+- Last Validated: 2026-02-24
+
+
 ## Executive Summary
 
 This 52-week implementation roadmap guides the development of Ancient Compute from initial project scaffolding through production launch. The plan is organized into 12 phases, balancing foundation building, feature development, content creation, and quality assurance.

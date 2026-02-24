@@ -401,8 +401,16 @@ class Engine:
             # This is where the actual arithmetic happens based on instruction context
             current_mill_value = self.registers[reg_dest]  # First operand is in A or specified dest
 
-            # Perform addition in the mill
-            self.mill_result_buffer = current_mill_value + self.mill_operand_buffer
+            # Check if we are in a MULT context (using mill_product_accumulator)
+            if self.barrels.active_barrel == "MULT":
+                # Multiplicand is in mill_operand_buffer? No, let's assume it's loaded.
+                # In our MULT barrel, we LOAD_MILL_ACCUMULATOR first.
+                # Let's adjust: In MULT, ADVANCE_MILL adds operand to product_accumulator
+                self.mill_product_accumulator += self.mill_operand_buffer
+                self.mill_result_buffer = self.mill_product_accumulator
+            else:
+                # Perform addition in the mill
+                self.mill_result_buffer = current_mill_value + self.mill_operand_buffer
 
         elif op == MicroOp.REVERSE_MILL:
             current_mill_value = self.registers[reg_dest]
@@ -444,16 +452,13 @@ class Engine:
             self.mill_product_accumulator = self.mill_product_accumulator / BabbageNumber(10)
 
         elif op == MicroOp.GET_MULTIPLIER_DIGIT:
-            # This micro-op is highly context-dependent.
-            # For a proper implementation, the multiplier digit would be loaded from a specific card or register.
-            # For now, assume operand_src contains the full multiplier and we just grab the last digit for simulation.
-            # This is a simplification; a real AE would use complex gear trains for digit extraction.
-            multiplier_val = int(
-                self._get_operand_value(operand_src).to_decimal()
-            )  # Get integer part
-            self.mill_multiplier_digit_buffer = multiplier_val % 10  # Get units digit
+            # Extract current units digit and set as mill_counter
+            multiplier_val = int(abs(self._get_operand_value(operand_src).to_decimal()))
+            self.mill_multiplier_digit_buffer = multiplier_val % 10
+            self.mill_counter = self.mill_multiplier_digit_buffer
 
         elif op == MicroOp.DECREMENT_COUNTER:
+            print(f"DECREMENT_COUNTER: {self.mill_counter} -> {self.mill_counter - 1}")
             self.mill_counter -= 1
 
         elif op == MicroOp.COMPARE_MILL_BUFFERS:
@@ -475,44 +480,44 @@ class Engine:
         elif op == MicroOp.RESET_REMAINDER:
             self.mill_remainder_buffer = BabbageNumber(0)
 
+        elif op == MicroOp.JUMP_RELATIVE:
+            # For simplicity, assume the 'offset' is passed via some mechanism.
+            # In a real AE, this would be a mechanical linkage.
+            # We'll use a fixed offset for specific use cases here.
+            pass
+
+        elif op == MicroOp.REPEAT_IF_COUNTER:
+            if self.mill_counter > 0:
+                # Jump back to the start of the loop
+                # This requires finding the loop start. 
+                # For MULT, we'll hardcode the jump to step 3.
+                self.barrels.step_index = 3 
+            else:
+                # Loop terminated
+                pass
+
         # Other MicroOps (Fetch, etc.) can be implemented here as needed
         # For now, FETCH_VAR_CARD is a symbolic trigger.
 
     def _execute_MULT_micro(self, reg_dest: str, operand_src: Any):
         """
         Execute MULT using micro-ops, leveraging repeated additions and shifts.
-
-        This simulates the core principle of mechanical multiplication as
-        repeated addition and shifting, orchestrated at a higher level
-        by Python for now, but using low-level mill state.
         """
-        multiplicand = self._get_operand_value(reg_dest)  # Assuming reg_dest holds multiplicand
-        multiplier = self._get_operand_value(operand_src)  # Get multiplier from operand
+        self.barrels.select_barrel("MULT")
+        
+        # Setup: multiplicand into operand_buffer
+        self.mill_operand_buffer = self._get_operand_value(reg_dest)
+        # Clear product accumulator (conceptual reset)
+        self.mill_product_accumulator = BabbageNumber(0)
 
-        self.mill_product_accumulator = BabbageNumber(0)  # Initialize product to zero
-        current_multiplicand_shifted = (
-            multiplicand  # Multiplicand to be added in current shift position
-        )
+        # Micro-op execution loop
+        while self.barrels.active_barrel:
+            ops = self.barrels.step()
+            for op in ops:
+                self._execute_micro_op(op, reg_dest, operand_src)
 
-        str_multiplier = str(int(multiplier.to_decimal()))  # Get integer part of multiplier
-
-        # Iterate through multiplier digits from right to left (units to MSB)
-        for i, char_digit in enumerate(reversed(str_multiplier)):
-            digit = int(char_digit)
-
-            # Add multiplicand 'digit' times
-            for _ in range(digit):
-                self.mill_product_accumulator += current_multiplicand_shifted
-
-            # After adding for a digit, shift the 'current_multiplicand_shifted' left for the next digit place
-            # This is equivalent to shifting the product accumulator right.
-            # In AE, the multiplicand would remain fixed, and the product accumulator would shift right.
-            # Here, we simulate by shifting multiplicand left to match place value.
-            if i < len(str_multiplier) - 1:  # Don't shift after last digit
-                current_multiplicand_shifted = current_multiplicand_shifted * BabbageNumber(10)
-
-        # Store the final product
-        self.registers[reg_dest] = self.mill_product_accumulator  # Default destination for now
+        # Store result back from egress/accumulator
+        self.registers[reg_dest] = self.mill_product_accumulator
         self._update_flags(self.mill_product_accumulator)
 
     def _execute_DIV_micro(self, reg_dest: str, operand_src: Any):

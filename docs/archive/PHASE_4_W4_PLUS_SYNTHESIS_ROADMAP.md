@@ -1,4 +1,14 @@
 # Ancient Compute: Complete Synthesis Roadmap
+
+## Archive Metadata
+
+- Archive Status: archived
+- Archive Reason: superseded_by_newer_canonical
+- Canonical Successor: docs/general/HYPERGRANULAR_ROADMAP.md; docs/general/MASTER_ROADMAP.md
+- Novel Content Integrated: yes
+- Merged Into: docs/general/HYPERGRANULAR_ROADMAP.md
+- Last Validated: 2026-02-24
+
 ## Phase 4.W4+ Through Production (Weeks 17-21)
 
 **Date:** November 1, 2025

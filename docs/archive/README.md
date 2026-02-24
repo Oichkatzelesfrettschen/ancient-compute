@@ -15,6 +15,10 @@ This directory contains:
 - **Obsolete tools and processes**: How things used to be done (for reference only)
 - **Historical records**: Early decisions, alternatives considered, lessons learned
 
+Planning-specific archive metadata and successor mappings are tracked in:
+- `docs/archive/INDEX.md`
+- `docs/general/PLANNING_CANONICAL_MAP.md`
+
 ---
 
 ## Important Note
@@ -22,10 +26,11 @@ This directory contains:
 **Files in this directory should not be used for current development.**
 
 If you're looking for:
-- **Current architecture**: See ARCHITECTURE_AND_DESIGN/
-- **Development guides**: See DEVELOPMENT_GUIDES/
-- **Manufacturing specs**: See BABBAGE_ANALYTICAL_ENGINE/
-- **Curriculum materials**: See CURRICULUM_AND_CONTENT/
+- **Current architecture**: See `docs/general/ARCHITECTURE.md`
+- **Development guides**: See `docs/general/BUILD.md`, `docs/general/DEPLOYMENT_GUIDE.md`, and `docs/general/TROUBLESHOOTING_GUIDE.md`
+- **Manufacturing specs**: See `docs/babbage_engine/`
+- **Curriculum materials**: See `docs/general/TYPE_THEORY_CURRICULUM.md` and `docs/general/EDUCATIONAL_CURRICULUM_MATERIALS_CONSOLIDATED.md`
+- **Canonical planning docs**: See `docs/general/MASTER_ROADMAP.md` and `docs/general/TODO_TRACKER.md`
 
 ---
 
@@ -137,6 +142,14 @@ If a previously-abandoned approach becomes relevant again, documentation exists.
 
 ## Archive Policy
 
+All archived planning docs must include an `Archive Metadata` section with:
+- `Archive Status`
+- `Archive Reason`
+- `Canonical Successor`
+- `Novel Content Integrated`
+- `Merged Into`
+- `Last Validated`
+
 ### What Gets Archived
 - Superseded specifications (older version exists)
 - Completed phase documentation (phase is done)
@@ -163,6 +176,7 @@ A document is archived when:
 - Mark as obsolete/archived in document header
 - Link to current version where applicable
 - Include "DO NOT USE" warning if applicable
+- Record planning archive rows in `docs/archive/INDEX.md`
 
 ---
 

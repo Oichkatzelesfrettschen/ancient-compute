@@ -1,5 +1,15 @@
 # Ancient Compute: Strategic Roadmap & Next Steps
 
+## Archive Metadata
+
+- Archive Status: archived
+- Archive Reason: superseded_by_newer_canonical
+- Canonical Successor: docs/general/MASTER_ROADMAP.md; docs/general/TODO_TRACKER.md
+- Novel Content Integrated: yes
+- Merged Into: docs/general/PLANNING_CANONICAL_MAP.md
+- Last Validated: 2026-02-24
+
+
 **Document Type**: Executive Summary & Strategic Planning  
 **Created**: October 31, 2025  
 **Status**: Active - Guides Phase 2+ Implementation  

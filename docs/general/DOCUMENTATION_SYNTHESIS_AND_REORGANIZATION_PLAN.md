@@ -5,6 +5,10 @@
 **Status**: Synthesis Complete - Ready for Implementation  
 **Author**: Claude Code Assistant  
 
+> Planning context: this file remains active as historical reorganization design input.  
+> Canonical planning docs are `docs/general/MASTER_ROADMAP.md` and `docs/general/TODO_TRACKER.md`.  
+> Archive policy and classification are defined in `docs/general/PLANNING_CANONICAL_MAP.md`.
+
 ---
 
 ## EXECUTIVE SUMMARY

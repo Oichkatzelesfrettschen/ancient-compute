@@ -4,6 +4,18 @@
 **Status**: Active Execution
 **Purpose**: Detailed technical breakdown of Phase 2 (Languages) and Phase 3 (Tools) completion.
 
+## Planning Context
+
+- Canonical strategy roadmap: `docs/general/MASTER_ROADMAP.md`
+- Canonical execution tracker: `docs/general/TODO_TRACKER.md`
+- Archive and supersedence policy: `docs/general/PLANNING_CANONICAL_MAP.md`
+
+## Integrated From Archived Phase 4 Plans
+
+- Preserved timeline-first decomposition from `docs/archive/PHASE_4_W4_DETAILED_EXECUTION_PLAN.md`.
+- Preserved week-level visualization delivery structure from `docs/archive/PHASE_4_W2_IMPLEMENTATION_ROADMAP.md`.
+- Preserved production-synthesis sequencing from `docs/archive/PHASE_4_W4_PLUS_SYNTHESIS_ROADMAP.md`.
+
 ---
 
 ## Phase 2: Modern Language Services

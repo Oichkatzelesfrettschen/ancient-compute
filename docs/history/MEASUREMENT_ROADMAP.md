@@ -1,4 +1,10 @@
 Measurement Roadmap (Q1)
+
+Planning Context
+- Domain plan classification: active-domain
+- Canonical strategy roadmap: `docs/general/MASTER_ROADMAP.md`
+- Canonical execution tracker: `docs/general/TODO_TRACKER.md`
+
 Phase 1: Baselines
 - Document hardware/software env; create runbook.
 - Collect emulator op latencies (10–30 runs): NOP, ADD, SUB, MULT, DIV, SQRT, LOAD, STOR, JMP.

@@ -1,4 +1,10 @@
 Extraction Plan (DE2 Technical Description → sim_schema.yaml)
+
+Planning Context
+- Domain plan classification: active-domain
+- Canonical strategy roadmap: `docs/general/MASTER_ROADMAP.md`
+- Canonical execution tracker: `docs/general/TODO_TRACKER.md`
+
 - Materials: brass/steel specs (density, strength) → materials.*
 - Tolerances: gear module/backlash, shaft/bearing clearances → tolerances.*
 - Valve timing: lap/lead/cutoff → valve_gear_params.*

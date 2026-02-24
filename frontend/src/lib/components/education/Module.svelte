@@ -10,7 +10,13 @@
  * - Responsive layout for mobile/desktop
  */
 
-import { currentModule, previousModule, nextModule, selectLesson, selectEra, selectModule } from '../../stores/timelineStore';
+import {
+  currentModule,
+  previousModule,
+  nextModule,
+  selectLesson,
+  selectExercise,
+} from '../../stores/timelineStore';
 import type { Module, Lesson, Exercise } from '../../stores/timelineStore';
 
 let module: Module | null = null;
@@ -26,22 +32,12 @@ currentModule.subscribe((m) => {
   }
 });
 
-function toggleSection(sectionId: string): void {
-  const newExpanded = new Set(expandedSections);
-  if (newExpanded.has(sectionId)) {
-    newExpanded.delete(sectionId);
-  } else {
-    newExpanded.add(sectionId);
-  }
-  expandedSections = newExpanded;
-}
-
 function handleLessonClick(lesson: Lesson): void {
   selectLesson(lesson.id);
 }
 
 function handleExerciseClick(exercise: Exercise): void {
-  // TODO: Navigate to exercise view
+  selectExercise(exercise.id);
 }
 
 function getModuleProgressPercentage(): number {

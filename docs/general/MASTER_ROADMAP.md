@@ -5,6 +5,11 @@
 **Status**: Comprehensive Synthesis - Updated after Jan 2026 Consolidation Audit
 **Purpose**: Single unified roadmap consolidating 50+ phase/week completion summaries
 
+**Planning Context**:
+- Canonical strategy roadmap: `docs/general/MASTER_ROADMAP.md`
+- Canonical execution tracker: `docs/general/TODO_TRACKER.md`
+- Planning classification and archive policy: `docs/general/PLANNING_CANONICAL_MAP.md`
+
 ---
 
 ## Executive Summary
@@ -22,6 +27,15 @@ Ancient Compute is a comprehensive educational platform teaching 12,500 years of
 **Total Codebase**: ~28,000 lines
 **Test Coverage**: 533 tests passing, 25% line coverage (needs improvement)
 **Known Issues**: 10 async fixture test errors, 1 broken test module (test_executors_unit.py)
+
+## Archive Synthesis Integration (2026-02-24)
+
+The following recurring insights from superseded planning docs were retained in active planning:
+
+1. Keep explicit phase gates and milestone checkpoints at roadmap level.
+2. Preserve parallel workstream modeling (language services, simulation, docs quality) with explicit critical paths.
+3. Keep week/day decomposition in execution tracker docs, not in strategic roadmap snapshots.
+4. Treat migration and link-update plans as provenance artifacts and keep them in archive with successor links.
 
 ---
 

@@ -1,4 +1,10 @@
 Documentation Architect Execution Plan
+
+Planning Context
+- Domain plan classification: active-domain
+- Canonical strategy roadmap: `docs/general/MASTER_ROADMAP.md`
+- Canonical execution tracker: `docs/general/TODO_TRACKER.md`
+
 - Fetch targets: Science Museum Babbage drawings, British Library/Royal Society archives, Menabrea (1842) and Lovelace (1843) scans, 19th-c. piston/valve gear references.
 - Cleanroom reconstruction: materials (brass/steel), tolerances, lubrication model, gear train losses, piston/valve timing simulation.
 - Physics model: rigid body + contact friction, fluid dynamics for steam drive, clocking model per TIMING_TABLE.

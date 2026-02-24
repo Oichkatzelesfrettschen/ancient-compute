@@ -12,7 +12,7 @@
  */
 
 import { markExerciseComplete } from '../../stores/timelineStore';
-import type { Exercise, TestCase } from '../../stores/timelineStore';
+import type { Exercise } from '../../stores/timelineStore';
 
 interface ExecutionResult {
   testCaseId: string;
@@ -33,13 +33,47 @@ interface ExerciseState {
   completionScore: number;
 }
 
+interface CodeExecutionResponse {
+  status: string;
+  stdout: string;
+  stderr: string;
+  compile_output?: string | null;
+  execution_time: number;
+  memory_used: number;
+}
+
+interface ApiErrorResponse {
+  detail?: string;
+  message?: string;
+}
+
 export let exercise: Exercise;
+
+const CODE_EXECUTION_ENDPOINT = '/api/v1/execute/run';
+const SUPPORTED_BACKEND_LANGUAGES = new Set([
+  'c',
+  'python',
+  'haskell',
+  'idris',
+  'lisp',
+  'assembly',
+  'java',
+  'systemf',
+]);
+const LANGUAGE_ALIASES: Record<string, string> = {
+  idris2: 'idris',
+  'idris 2': 'idris',
+  'system f': 'systemf',
+  system_f: 'systemf',
+};
+
+const initialLanguage = exercise.languages[0] ?? 'python';
 
 let state: ExerciseState = {
   isRunning: false,
   results: [],
-  userCode: getDefaultTemplate(exercise.languages[0]),
-  selectedLanguage: exercise.languages[0],
+  userCode: getDefaultTemplate(initialLanguage),
+  selectedLanguage: initialLanguage,
   showHints: false,
   showSolution: false,
   completionScore: 0,
@@ -67,38 +101,122 @@ function handleLanguageChange(newLanguage: string): void {
   state.userCode = getDefaultTemplate(newLanguage);
 }
 
+function normalizeLanguage(language: string): string | null {
+  const normalized = language.trim().toLowerCase();
+  if (SUPPORTED_BACKEND_LANGUAGES.has(normalized)) {
+    return normalized;
+  }
+
+  return LANGUAGE_ALIASES[normalized] ?? null;
+}
+
+function normalizeOutput(output: string): string {
+  return output.replace(/\r\n/g, '\n').trim();
+}
+
+function buildExecutionError(response: CodeExecutionResponse): string {
+  const compileOutput = response.compile_output?.trim();
+  const stderr = response.stderr.trim();
+
+  if (compileOutput) {
+    return compileOutput;
+  }
+  if (stderr) {
+    return stderr;
+  }
+  return `Execution failed (${response.status})`;
+}
+
 async function runTests(): Promise<void> {
   state.isRunning = true;
   state.results = [];
 
   try {
-    // TODO: Implement actual code execution via backend API
-    // For now, simulate test execution
+    const language = normalizeLanguage(state.selectedLanguage);
+    if (!language) {
+      state.results = exercise.testCases.map((testCase) => ({
+        testCaseId: testCase.id,
+        passed: false,
+        actualOutput: '',
+        expectedOutput: testCase.expectedOutput,
+        executionTime: 0,
+        error: `Language "${state.selectedLanguage}" is not supported by backend execution`,
+      }));
+      return;
+    }
 
-    const results: ExecutionResult[] = exercise.testCases.map((testCase) => ({
-      testCaseId: testCase.id,
-      passed: Math.random() > 0.5, // Mock
-      actualOutput: 'mock output',
-      expectedOutput: testCase.expectedOutput,
-      executionTime: Math.random() * 1000,
-    }));
+    const results: ExecutionResult[] = [];
+    for (const testCase of exercise.testCases) {
+      const response = await fetch(CODE_EXECUTION_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          language,
+          code: state.userCode,
+          input_data: testCase.input,
+        }),
+      });
+
+      if (!response.ok) {
+        let errorMessage = `HTTP ${response.status}`;
+        try {
+          const payload = (await response.json()) as ApiErrorResponse;
+          errorMessage =
+            payload.detail?.toString() ?? payload.message?.toString() ?? errorMessage;
+        } catch {
+          // Ignore JSON parsing errors and keep generic HTTP message.
+        }
+
+        results.push({
+          testCaseId: testCase.id,
+          passed: false,
+          actualOutput: '',
+          expectedOutput: testCase.expectedOutput,
+          executionTime: 0,
+          error: errorMessage,
+        });
+        continue;
+      }
+
+      const execution = (await response.json()) as CodeExecutionResponse;
+      const actualOutput = normalizeOutput(execution.stdout);
+      const expectedOutput = normalizeOutput(testCase.expectedOutput);
+      const passed = execution.status === 'success' && actualOutput === expectedOutput;
+
+      results.push({
+        testCaseId: testCase.id,
+        passed,
+        actualOutput,
+        expectedOutput: testCase.expectedOutput,
+        executionTime: execution.execution_time * 1000,
+        error: passed ? undefined : buildExecutionError(execution),
+      });
+    }
 
     state.results = results;
 
     // Calculate completion score
     const passedTests = results.filter((r) => r.passed).length;
-    const completionScore = Math.round(
-      (passedTests / exercise.testCases.length) * 100
-    );
+    const totalTests = results.length;
+    const completionScore = totalTests > 0 ? Math.round((passedTests / totalTests) * 100) : 0;
     state.completionScore = completionScore;
 
     // Mark as complete if all tests pass
-    if (completionScore === 100) {
+    if (completionScore === 100 && totalTests > 0) {
       markExerciseComplete(exercise.id, completionScore);
     }
   } catch (error) {
     console.error('Exercise execution error:', error);
-    state.results = [];
+    state.results = exercise.testCases.map((testCase) => ({
+      testCaseId: testCase.id,
+      passed: false,
+      actualOutput: '',
+      expectedOutput: testCase.expectedOutput,
+      executionTime: 0,
+      error: error instanceof Error ? error.message : 'Unknown execution error',
+    }));
   } finally {
     state.isRunning = false;
   }

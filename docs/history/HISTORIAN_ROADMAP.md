@@ -1,4 +1,10 @@
 Historian Roadmap (Q1)
+
+Planning Context
+- Domain plan classification: active-domain
+- Canonical strategy roadmap: `docs/general/MASTER_ROADMAP.md`
+- Canonical execution tracker: `docs/general/TODO_TRACKER.md`
+
 - Fill regional sources (Africa/Americas/East Asia/Islamic) with primary references and DOIs.
 - Lesson citation completeness: ensure explicit Citations in all lessons.
 - Verification completion: resolve all pending claims with precise citations.

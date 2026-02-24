@@ -49,7 +49,9 @@ class MicroOp(Enum):
     INCREMENT_QUOTIENT_DIGIT = auto() # Increment a quotient digit
     RESET_REMAINDER = auto()    # Reset the remainder buffer
 
-    # Card Reader Control (Simplified for this model)
+    # Control Ops
+    JUMP_RELATIVE = auto()      # Relative jump in micro-program
+    REPEAT_IF_COUNTER = auto()  # Jump back if mill_counter > 0
     FETCH_OP_CARD = auto()
     FETCH_VAR_CARD = auto()
 
@@ -97,9 +99,24 @@ class BarrelController:
         sub.add_step([MicroOp.DROP_INGRESS, MicroOp.LIFT_EGRESS])
         self.barrels["SUB"] = sub
 
-        # Multiplication Barrel (Highly simplified - actual multiplication is complex repeated addition/shift)
+        # Multiplication Barrel (Simulated "Method of Repeated Addition")
         mul = Barrel("MULT")
-        # ... (multiplication barrel definition)
+        # 0: Fetch Multiplicand (reg_dest) to Mill Accumulator
+        mul.add_step([MicroOp.LOAD_MILL_ACCUMULATOR])
+        # 1: Fetch Multiplier (operand_src) and extract units digit
+        mul.add_step([MicroOp.GET_MULTIPLIER_DIGIT]) 
+        # 2: Copy digit to counter for addition loop
+        # (In reality, the counter is mechanical)
+        # 3: Add Multiplicand to Result (repeated addition loop start)
+        mul.add_step([MicroOp.ADVANCE_MILL, MicroOp.DECREMENT_COUNTER])
+        # 4: Repeat if counter > 0
+        mul.add_step([MicroOp.REPEAT_IF_COUNTER])
+        # 5: Shift Multiplicand left for next place value
+        mul.add_step([MicroOp.SHIFT_MILL_LEFT])
+        # 6: Prepare next multiplier digit (simplified logic)
+        # In a real AE, this would involve shifting the multiplier register.
+        # mul.add_step([MicroOp.SHIFT_MULTIPLIER_RIGHT, MicroOp.GET_MULTIPLIER_DIGIT])
+        # mul.add_step([MicroOp.REPEAT_FOR_ALL_DIGITS])
         self.barrels["MULT"] = mul
 
         # Division Barrel (Placeholder for now)
@@ -130,9 +147,11 @@ class BarrelController:
             
         barrel = self.barrels[self.active_barrel]
         if self.step_index >= len(barrel.rows):
+            print(f"Barrel {self.active_barrel} finished.")
             self.active_barrel = None # Sequence complete
             return []
             
         ops = list(barrel.rows[self.step_index].studs)
+        print(f"Step {self.step_index}: {ops}")
         self.step_index += 1
         return ops

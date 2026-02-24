@@ -1,7 +1,17 @@
-================================================================================
-PHASE 3 IMPLEMENTATION ROADMAP & GRANULAR TASK LIST
-Ancient Compute Project
-9-Week Sprint (Weeks 1–9)
+# PHASE 3 IMPLEMENTATION ROADMAP & GRANULAR TASK LIST
+
+## Archive Metadata
+
+- Archive Status: archived
+- Archive Reason: phase_completed_snapshot
+- Canonical Successor: docs/general/MASTER_ROADMAP.md; docs/general/TODO_TRACKER.md
+- Novel Content Integrated: yes
+- Merged Into: docs/general/TODO_TRACKER.md
+- Last Validated: 2026-02-24
+
+Ancient Compute Project  
+9-Week Sprint (Weeks 1-9)
+
 ================================================================================
 
 SPRINT OVERVIEW

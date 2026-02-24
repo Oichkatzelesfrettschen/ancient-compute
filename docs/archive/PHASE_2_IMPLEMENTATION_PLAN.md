@@ -1,5 +1,15 @@
 # Phase 2 Implementation Plan: Language Services & Simulator
 
+## Archive Metadata
+
+- Archive Status: archived
+- Archive Reason: phase_completed_snapshot
+- Canonical Successor: docs/general/MASTER_ROADMAP.md; docs/general/TODO_TRACKER.md
+- Novel Content Integrated: yes
+- Merged Into: docs/general/TODO_TRACKER.md
+- Last Validated: 2026-02-24
+
+
 **Date Created**: November 1, 2025
 **Status**: READY FOR EXECUTION
 **Duration**: Weeks 5-8 (plus simulator/BSD work in parallel)

@@ -1,5 +1,10 @@
 Logic-Computation-Historian: Repository Modularization and Execution Plan
 
+Planning Context
+- Canonical strategy roadmap: `docs/general/MASTER_ROADMAP.md`
+- Canonical execution tracker: `docs/general/TODO_TRACKER.md`
+- Archive and supersedence policy: `docs/general/PLANNING_CANONICAL_MAP.md`
+
 Scope
 - Establish docs/history/, docs/babbage/, docs/speculative/, docs/restoration/; content/modules/, content/synthesis/; tools/emulator/ alignment; archive/ for deprecated.
 - Add verification.md, perspective.md, disclaimer.md templates per unit; build curriculum index.

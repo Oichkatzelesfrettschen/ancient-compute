@@ -108,6 +108,7 @@ export interface TimelineState {
   selectedEraId: string | null;
   selectedModuleId: string | null;
   selectedLessonId: string | null;
+  selectedExerciseId: string | null;
   currentView: 'timeline' | 'era' | 'module' | 'lesson' | 'exercise';
   isLoading: boolean;
   error: string | null;
@@ -132,6 +133,7 @@ const initialState: TimelineState = {
   selectedEraId: null,
   selectedModuleId: null,
   selectedLessonId: null,
+  selectedExerciseId: null,
   currentView: 'timeline',
   isLoading: false,
   error: null,
@@ -173,6 +175,17 @@ export const currentLesson = derived(
   ([$state, $module]) =>
     $state.selectedLessonId && $module
       ? $module.lessons.find((l) => l.id === $state.selectedLessonId)
+      : null
+);
+
+/**
+ * Get currently selected exercise
+ */
+export const currentExercise = derived(
+  [timelineStore, currentModule],
+  ([$state, $module]) =>
+    $state.selectedExerciseId && $module
+      ? $module.exercises.find((e) => e.id === $state.selectedExerciseId)
       : null
 );
 
@@ -279,6 +292,7 @@ export function selectEra(eraId: string): void {
       selectedEraId: eraId,
       selectedModuleId: era?.modules?.[0]?.id || null,
       selectedLessonId: null,
+      selectedExerciseId: null,
       currentView: 'era',
     };
   });
@@ -297,6 +311,7 @@ export function selectModule(moduleId: string): void {
       ...state,
       selectedModuleId: moduleId,
       selectedLessonId: module?.lessons?.[0]?.id || null,
+      selectedExerciseId: null,
       currentView: 'module',
     };
   });
@@ -309,7 +324,20 @@ export function selectLesson(lessonId: string): void {
   timelineStore.update((state) => ({
     ...state,
     selectedLessonId: lessonId,
+    selectedExerciseId: null,
     currentView: 'lesson',
+  }));
+}
+
+/**
+ * Select an exercise within current module
+ */
+export function selectExercise(exerciseId: string): void {
+  timelineStore.update((state) => ({
+    ...state,
+    selectedLessonId: null,
+    selectedExerciseId: exerciseId,
+    currentView: 'exercise',
   }));
 }
 
@@ -434,6 +462,7 @@ export function previousModule(): void {
       ...state,
       selectedModuleId: era.modules[currentIndex - 1].id,
       selectedLessonId: era.modules[currentIndex - 1].lessons[0]?.id || null,
+      selectedExerciseId: null,
     };
   });
 }
@@ -455,6 +484,7 @@ export function nextModule(): void {
       ...state,
       selectedModuleId: era.modules[currentIndex + 1].id,
       selectedLessonId: era.modules[currentIndex + 1].lessons[0]?.id || null,
+      selectedExerciseId: null,
     };
   });
 }

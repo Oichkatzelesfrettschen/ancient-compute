@@ -1,5 +1,15 @@
 # Week 3 Task 1: File Migration Audit and Mapping Plan
 
+## Archive Metadata
+
+- Archive Status: archived
+- Archive Reason: migration_or_audit_artifact
+- Canonical Successor: docs/general/PLANNING_CANONICAL_MAP.md; docs/archive/INDEX.md
+- Novel Content Integrated: yes
+- Merged Into: docs/general/PLANNING_CANONICAL_MAP.md
+- Last Validated: 2026-02-24
+
+
 **Status**: Audit Complete - Ready for Migration Execution
 **Date**: October 31, 2025
 **Total Files Found**: 76 markdown files

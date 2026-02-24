@@ -12,15 +12,21 @@
  */
 
 import { currentLesson, previousLesson, nextLesson, markLessonComplete } from '../../stores/timelineStore';
-import type { Lesson, KeyConcept, CodeExample } from '../../stores/timelineStore';
+import type { Lesson } from '../../stores/timelineStore';
 
 let lesson: Lesson | null = null;
 let expandedExamples: Set<string> = new Set();
-let scrollPosition = 0;
+let copyFeedback: string | null = null;
+let copyFeedbackType: 'success' | 'error' = 'success';
+let copyFeedbackTimeout: ReturnType<typeof setTimeout> | null = null;
 
 currentLesson.subscribe((l) => {
   lesson = l;
-  scrollPosition = 0;
+  copyFeedback = null;
+  if (copyFeedbackTimeout) {
+    clearTimeout(copyFeedbackTimeout);
+    copyFeedbackTimeout = null;
+  }
 });
 
 function toggleExample(exampleId: string): void {
@@ -55,9 +61,24 @@ function getLanguageColor(language: string): string {
   return colors[language.toLowerCase()] || '#999';
 }
 
-function copyCodeToClipboard(code: string): void {
-  navigator.clipboard.writeText(code);
-  // TODO: Show toast notification
+async function copyCodeToClipboard(code: string): Promise<void> {
+  try {
+    await navigator.clipboard.writeText(code);
+    copyFeedback = 'Code copied to clipboard.';
+    copyFeedbackType = 'success';
+  } catch (error) {
+    console.error('Clipboard copy failed:', error);
+    copyFeedback = 'Unable to copy code in this browser context.';
+    copyFeedbackType = 'error';
+  } finally {
+    if (copyFeedbackTimeout) {
+      clearTimeout(copyFeedbackTimeout);
+    }
+    copyFeedbackTimeout = setTimeout(() => {
+      copyFeedback = null;
+      copyFeedbackTimeout = null;
+    }, 2200);
+  }
 }
 </script>
 
@@ -130,6 +151,11 @@ function copyCodeToClipboard(code: string): void {
         {#if lesson.codeExamples.length > 0}
           <section class="code-examples-section">
             <h2 class="section-title">💻 Code Examples</h2>
+            {#if copyFeedback}
+              <p class="copy-feedback" class:error={copyFeedbackType === 'error'} aria-live="polite">
+                {copyFeedback}
+              </p>
+            {/if}
             <div class="examples-list">
               {#each lesson.codeExamples as example (example.id)}
                 <div class="code-example">
@@ -485,6 +511,21 @@ function copyCodeToClipboard(code: string): void {
     display: flex;
     flex-direction: column;
     gap: 16px;
+  }
+
+  .copy-feedback {
+    margin: 0;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    background: #e8f5e9;
+    color: #2e7d32;
+  }
+
+  .copy-feedback.error {
+    background: #ffebee;
+    color: #b71c1c;
   }
 
   .examples-list {
