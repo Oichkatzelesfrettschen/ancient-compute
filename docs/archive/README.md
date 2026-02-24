@@ -17,6 +17,9 @@ This directory contains:
 
 Planning-specific archive metadata and successor mappings are tracked in:
 - `docs/archive/INDEX.md`
+- `docs/archive/AUDIT_LEDGER.md`
+- `docs/archive/audit_ledger.csv`
+- `docs/archive/QUARANTINE.md`
 - `docs/general/PLANNING_CANONICAL_MAP.md`
 
 ---
@@ -45,7 +48,7 @@ Early project MVP (Minimum Viable Product) file structure plan:
 
 **Historical significance**: Shows the project's evolution from flat to 9-directory structure.
 
-**Status**: Obsolete - superseded by current 9-directory organization (ARCHITECTURE_AND_DESIGN/PROJECT_STRUCTURE.md in ARCHITECTURE_AND_DESIGN/)
+**Status**: Obsolete - superseded by current structure in `docs/general/PROJECT_STRUCTURE.md`
 
 ### ./README_OUTPUT.md
 Documentation of build output structure:
@@ -61,7 +64,7 @@ Early review and index document:
 - Document organization notes
 - Cross-reference index
 
-**Status**: Obsolete - superseded by DOCUMENT_FINDER.md in GETTING_STARTED/
+**Status**: Obsolete - superseded by `docs/general/DOCUMENT_FINDER.md`
 
 ### PROJECT_COMPLETION_SUMMARY.md
 Summary from earlier project phase:
@@ -77,7 +80,7 @@ Research notes on Babbage Analytical Engine simulation:
 - Alternative approaches considered
 - Learning for eventual EMULATOR_SPECIFICATION.md
 
-**Status**: Research phase - formalized as EMULATOR_SPECIFICATION.md
+**Status**: Research phase - formalized in `docs/simulation/EMULATOR_INTERFACE.md` and `docs/simulation/specs/`
 
 ### PHASE2_DELIVERY_SUMMARY.md
 Delivery summary from Phase 2:
@@ -119,19 +122,19 @@ If a previously-abandoned approach becomes relevant again, documentation exists.
 ## How to Use This Archive
 
 ### If You're Implementing Something
-1. Check DEVELOPMENT_GUIDES/ and ARCHITECTURE_AND_DESIGN/ for current approach
-2. Check ARCHIVED_AND_LEGACY/ only if you need historical context
+1. Check `docs/general/BUILD.md`, `docs/general/ARCHITECTURE.md`, and `docs/general/BUILDOUT_DOC_MAP.md` for current approach
+2. Check `docs/archive/` only if you need historical context
 3. Do NOT use legacy documents as specification (they're outdated)
 
 ### If You're Researching Project Decisions
-1. Look at ARCHITECTURE_AND_DESIGN/ first (current decision rationale)
-2. Check ARCHIVED_AND_LEGACY/ for earlier alternatives
-3. Read ARCHITECTURE_AND_DESIGN/STRATEGIC_ROADMAP.md for evolution story
+1. Look at `docs/general/MASTER_ROADMAP.md` and `docs/general/PLANNING_CANONICAL_MAP.md` first
+2. Check `docs/archive/` for earlier alternatives and provenance
+3. Use `docs/archive/INDEX.md` and `docs/archive/AUDIT_LEDGER.md` for deterministic archive mapping
 
 ### If You're New to the Project
-1. Start with GETTING_STARTED/README.md
-2. Use DOCUMENT_FINDER.md to locate current documentation
-3. Avoid ARCHIVED_AND_LEGACY/ until you understand current state
+1. Start with `docs/general/README.md`
+2. Use `docs/general/DOCUMENT_FINDER.md` to locate current documentation
+3. Avoid `docs/archive/` until you understand current state
 
 ### If You're Nostalgic
 1. Review ./MVP_FILE_STRUCTURE.md to see early organizational thinking
@@ -159,9 +162,9 @@ All archived planning docs must include an `Archive Metadata` section with:
 
 ### What Doesn't Get Archived
 - Current specifications (stays in active directory)
-- Active phase documentation (stays in IMPLEMENTATION_PHASES/)
-- Learning materials (stays in CURRICULUM_AND_CONTENT/)
-- Current development guides (stays in DEVELOPMENT_GUIDES/)
+- Active phase documentation (stays in active docs such as `docs/general/` and domain directories)
+- Learning materials (stays in active docs such as `docs/general/` and `docs/history/`)
+- Current development guides (stays in `docs/general/` and domain-specific active directories)
 
 ### Archive Criteria
 A document is archived when:
@@ -258,10 +261,10 @@ Even "obsolete" documents provide valuable context. Archive, don't delete.
 ## Related Documentation
 
 For current equivalents of archived documents, see:
-- [../../ARCHITECTURE_AND_DESIGN/PROJECT_STRUCTURE.md](../../ARCHITECTURE_AND_DESIGN/PROJECT_STRUCTURE.md) - Current structure (replaces ./MVP_FILE_STRUCTURE.md)
-- [../GETTING_STARTED/DOCUMENT_FINDER.md](../GETTING_STARTED/DOCUMENT_FINDER.md) - Current index (replaces 00_REVIEW_INDEX.md)
-- [../IMPLEMENTATION_PHASES/README.md](../IMPLEMENTATION_PHASES/README.md) - Current phase docs
-- [../BABBAGE_ANALYTICAL_ENGINE/EMULATOR_SPECIFICATION.md](../BABBAGE_ANALYTICAL_ENGINE/EMULATOR_SPECIFICATION.md) - Formalized emulator spec (from SIMULATOR_RESEARCH_NOTES.md)
+- [../general/PROJECT_STRUCTURE.md](../general/PROJECT_STRUCTURE.md) - Current structure (replaces `./MVP_FILE_STRUCTURE.md`)
+- [../general/DOCUMENT_FINDER.md](../general/DOCUMENT_FINDER.md) - Current index (replaces `00_REVIEW_INDEX.md`)
+- [../general/BUILDOUT_DOC_MAP.md](../general/BUILDOUT_DOC_MAP.md) - Current build-out source map
+- [../simulation/EMULATOR_INTERFACE.md](../simulation/EMULATOR_INTERFACE.md) - Current emulator interface guidance
 
 ---
 
@@ -284,7 +287,7 @@ A: Only with careful consideration and tech lead approval. Legacy approaches wer
 
 ---
 
-**Last Updated**: October 31, 2025
+**Last Updated**: February 24, 2026
 **Status**: Archive - Not Actively Maintained
 **DO NOT USE**: For current development or implementation
 **REFERENCE ONLY**: For historical understanding and research
@@ -293,7 +296,7 @@ A: Only with careful consideration and tech lead approval. Legacy approaches wer
 
 **Archive Metadata**
 - Created: October 31, 2025
-- Last Review: October 31, 2025
-- Next Review: December 31, 2025 (end of Phase 4)
+- Last Review: February 24, 2026
+- Next Review: March 31, 2026
 - Archival Reason: Legacy documentation from Phase 1-2
-- Current Equivalent: ARCHITECTURE_AND_DESIGN/ + GETTING_STARTED/
+- Current Equivalent: docs/general/ + domain-specific active docs

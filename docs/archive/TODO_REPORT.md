@@ -214,3 +214,14 @@ Note: Treat warnings as errors — prioritize critical items first.
 ## whitepaper/babbage_phase2_buildout.tex
 - L162: Cutting and sawing & Hack saw, band saw blade, tin snips & 70 & Immediate \\
 
+---
+
+## Archive Metadata
+
+- Archive Status: archived
+- Archive Reason: superseded_by_newer_canonical
+- Canonical Successor: docs/general/MASTER_ROADMAP.md, docs/general/TODO_TRACKER.md
+- Novel Content Integrated: yes
+- Merged Into: docs/general/MASTER_ROADMAP.md
+- Last Validated: 2026-02-24
+

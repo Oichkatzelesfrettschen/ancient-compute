@@ -146,3 +146,14 @@ With recommended revisions, this becomes an excellent educational resource.
 
 **All documents available in**: `/home/eirikr/Playground/ancient_compute/docs/`
 
+---
+
+## Archive Metadata
+
+- Archive Status: archived
+- Archive Reason: migration_or_audit_artifact
+- Canonical Successor: docs/general/PLANNING_CANONICAL_MAP.md, docs/archive/INDEX.md
+- Novel Content Integrated: yes
+- Merged Into: docs/general/PLANNING_CANONICAL_MAP.md
+- Last Validated: 2026-02-24
+

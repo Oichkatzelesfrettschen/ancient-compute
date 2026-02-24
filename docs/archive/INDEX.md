@@ -2,7 +2,7 @@
 
 **Date**: 2026-02-24  
 **Status**: Active Index  
-**Purpose**: Index of archived roadmap/plan/tracker artifacts with deterministic reason and successor mapping.
+**Purpose**: Index of archived roadmap/plan/tracker artifacts with deterministic reason and successor mapping, plus pointers to full archive audit coverage.
 
 ## Canonical Successors
 
@@ -14,6 +14,26 @@ Primary project planning canonical docs:
 Classification and policy:
 
 1. `docs/general/PLANNING_CANONICAL_MAP.md`
+
+## Full Archive Inventory (97 Legacy Files)
+
+Full archive audit outputs:
+
+1. `docs/archive/AUDIT_LEDGER.md`
+2. `docs/archive/audit_ledger.csv`
+3. `docs/archive/QUARANTINE.md`
+
+Latest snapshot (2026-02-24):
+
+1. Legacy files audited: 97
+2. `functional_planning`: 23
+3. `functional_design_code`: 15
+4. `historical_only`: 59
+5. Metadata coverage: 24 files
+6. Files with broken internal links: 6
+7. Quarantine candidates: 2
+
+Classification note: these totals are generated from deterministic filename heuristics plus link-health checks in `docs/archive/audit_ledger.csv`.
 
 ## Archived Planning Ledger
 
@@ -39,3 +59,15 @@ Classification and policy:
 1. Archive retention is intentional: evidence and historical context are preserved.
 2. Archived docs are not default implementation specs.
 3. New archive entries must include metadata and a successor mapping.
+4. Full-file audit classification is maintained in `docs/archive/audit_ledger.csv`.
+
+---
+
+## Archive Metadata
+
+- Archive Status: archived
+- Archive Reason: migration_or_audit_artifact
+- Canonical Successor: docs/general/PLANNING_CANONICAL_MAP.md, docs/archive/INDEX.md
+- Novel Content Integrated: yes
+- Merged Into: docs/general/PLANNING_CANONICAL_MAP.md
+- Last Validated: 2026-02-24
