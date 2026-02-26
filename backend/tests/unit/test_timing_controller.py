@@ -9,6 +9,8 @@ Test structure: 60 tests covering initialization, phase management, rotation, ev
 """
 
 import pytest
+
+pytestmark = pytest.mark.physics
 from backend.src.emulator.timing import (
     TimingController,
     TimingEvent,

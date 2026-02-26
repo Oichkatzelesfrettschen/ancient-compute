@@ -11,6 +11,8 @@ Validates:
 import math
 import pytest
 
+pytestmark = pytest.mark.physics
+
 from backend.src.emulator.tribology import (
     WearModel,
     PVAnalysis,

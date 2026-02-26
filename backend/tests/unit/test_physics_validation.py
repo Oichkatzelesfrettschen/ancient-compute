@@ -21,6 +21,8 @@ import math
 
 import pytest
 
+pytestmark = pytest.mark.physics
+
 # -- Module 1: Materials ---------------------------------------------------
 from backend.src.emulator.materials import MaterialLibrary
 

@@ -1,4 +1,6 @@
 import pytest
+
+pytestmark = pytest.mark.physics
 import math
 from backend.src.emulator.analytical_engine import Engine, Instruction, MechanicalFailureError
 from backend.src.emulator.simulation.engine import SimulationEngine

@@ -7,6 +7,8 @@ energy conservation, and long-duration evolution.
 import math
 import pytest
 
+pytestmark = pytest.mark.physics
+
 from backend.src.emulator.simulation.state import SimulationState, SimulationConfig
 from backend.src.emulator.simulation.engine import SimulationEngine, StepResult, SimulationResult
 from backend.src.emulator.simulation.coupling import CouplingFunctions

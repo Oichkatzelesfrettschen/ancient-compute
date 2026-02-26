@@ -1,6 +1,8 @@
 """Tests for valve timing provenance and configuration loading."""
 
 import pytest
+
+pytestmark = pytest.mark.physics
 from pathlib import Path
 
 import yaml

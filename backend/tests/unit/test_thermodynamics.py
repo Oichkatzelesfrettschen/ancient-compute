@@ -11,6 +11,8 @@ Validates:
 import math
 import pytest
 
+pytestmark = pytest.mark.physics
+
 from backend.src.emulator.thermodynamics import (
     FrictionHeatModel,
     ThermalExpansionModel,

@@ -7,6 +7,8 @@ increases, wear accumulates, and mechanical failure halts execution.
 
 import pytest
 
+pytestmark = pytest.mark.physics
+
 from backend.src.emulator.analytical_engine import (
     Engine,
     BabbageNumber,

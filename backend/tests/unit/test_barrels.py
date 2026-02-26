@@ -6,6 +6,8 @@ and the BarrelController dispatch mechanism.
 
 import pytest
 
+pytestmark = pytest.mark.physics
+
 from backend.src.emulator.barrels import (
     Barrel,
     BarrelController,
