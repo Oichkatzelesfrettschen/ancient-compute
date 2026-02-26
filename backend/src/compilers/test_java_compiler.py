@@ -8,16 +8,19 @@ Comprehensive tests for all compilation phases:
   - Code generation (IR)
 """
 
-import pytest
-from backend.src.compilers.java_lexer import JavaLexer, TokenType
-from backend.src.compilers.java_parser import JavaParser
 from backend.src.compilers.java_ast import (
-    PrimitiveType, ReferenceType, ArrayType, Variable, Literal,
-    MethodCall, BinaryOp, MethodDecl, ClassDecl, CompilationUnit
+    ArrayType,
+    BinaryOp,
+    ClassDecl,
+    Literal,
+    PrimitiveType,
+    ReferenceType,
+    Variable,
 )
 from backend.src.compilers.java_compiler import JavaCompiler
+from backend.src.compilers.java_lexer import JavaLexer, TokenType
+from backend.src.compilers.java_parser import JavaParser
 from backend.src.compilers.java_types import JavaTypeSystem
-
 
 # ==============================================================================
 # LEXER TESTS

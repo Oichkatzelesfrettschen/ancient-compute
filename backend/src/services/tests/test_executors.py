@@ -1,8 +1,8 @@
 # Ancient Compute - Language Executor Tests
-import pytest
-import asyncio
-from ..base_executor import ExecutionStatus
 
+import pytest
+
+from ..base_executor import ExecutionStatus
 
 # Note: These tests require Docker to be running and images to be built
 # Run with: pytest backend/services/tests/test_executors.py -v
@@ -94,7 +94,7 @@ def test_resource_limits():
 
 def test_source_filenames():
     """Test source filename generation"""
-    from ..languages import CExecutor, PythonExecutor, HaskellExecutor
+    from ..languages import CExecutor, HaskellExecutor, PythonExecutor
 
     assert CExecutor()._get_source_filename() == "main.c"
     assert PythonExecutor()._get_source_filename() == "main.py"

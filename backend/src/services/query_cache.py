@@ -6,11 +6,9 @@ to reduce query count and improve response times.
 """
 
 import time
-from typing import Optional, List, Dict, Any
-from functools import wraps
 from dataclasses import dataclass
+from typing import TYPE_CHECKING, Any, Optional
 
-from typing import TYPE_CHECKING
 try:
     # Only needed at runtime when DB paths are used
     from sqlalchemy.orm import Session  # type: ignore
@@ -22,10 +20,8 @@ except Exception:  # pragma: no cover - environment without SQLAlchemy
 if TYPE_CHECKING:  # for type checkers only
     from src.models import (
         Exercise,
-        Module,
-        Era,
         ExerciseProgress,
-        ExerciseSubmission,
+        Module,
     )
 
 
@@ -57,7 +53,7 @@ class QueryCache:
             max_entries: Maximum number of cached query results
             default_ttl: Default time-to-live in seconds
         """
-        self._cache: Dict[str, QueryCacheEntry] = {}
+        self._cache: dict[str, QueryCacheEntry] = {}
         self.max_entries = max_entries
         self.default_ttl = default_ttl
         self.hits = 0
@@ -188,7 +184,7 @@ class QueryCache:
 
     def list_exercises_by_module(
         self, db: Session, module_id: int
-    ) -> List["Exercise"]:
+    ) -> list["Exercise"]:
         """
         List all exercises for a module with eager loading.
 
@@ -280,7 +276,7 @@ class QueryCache:
             del self._cache[key]
         return initial_size - len(self._cache)
 
-    def get_stats(self) -> Dict[str, any]:
+    def get_stats(self) -> dict[str, any]:
         """Get cache statistics."""
         total_requests = self.hits + self.misses
         hit_rate = (

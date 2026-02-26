@@ -13,8 +13,8 @@ Test coverage target: 80+ tests for DigitColumn
 """
 
 import pytest
-from backend.src.emulator.columns import DigitColumn, ColumnSnapshot
 
+from backend.src.emulator.columns import ColumnSnapshot, DigitColumn
 
 # ============================================================================
 # Initialization Tests (5 tests)
@@ -26,8 +26,8 @@ def test_digit_column_init_empty():
     assert col.column_index == 0
     assert col.get_value_as_int() == 0
     assert all(d == 0 for d in col.digits)
-    assert col.carry_in == False
-    assert col.carry_out == False
+    assert not col.carry_in
+    assert not col.carry_out
 
 
 def test_digit_column_init_with_value():
@@ -246,7 +246,7 @@ def test_digit_column_add_difference_full_carry_chain():
     # All positions should be 0, carry_out should be set
     for i in range(31):
         assert col.get_digit(i) == 0
-    assert col.carry_out == True  # Overflow detected
+    assert col.carry_out  # Overflow detected
 
 
 def test_digit_column_add_difference_carry_in():
@@ -282,7 +282,7 @@ def test_digit_column_add_all_nines():
     diff = [9] * 31
     col.add_difference(diff)
     # 1 + 999...999 = 1000...000 (carries out)
-    assert col.carry_out == True
+    assert col.carry_out
 
 
 def test_digit_column_add_single_operation():
@@ -318,21 +318,21 @@ def test_digit_column_reset():
     col.reset()
 
     assert col.get_value_as_int() == 0
-    assert col.carry_in == False
-    assert col.carry_out == False
+    assert not col.carry_in
+    assert not col.carry_out
 
 
 def test_digit_column_carry_flags():
     """Test carry_in and carry_out flags."""
     col = DigitColumn(0)
-    assert col.carry_in == False
-    assert col.carry_out == False
+    assert not col.carry_in
+    assert not col.carry_out
 
     col.set_carry_in(True)
-    assert col.carry_in == True
+    assert col.carry_in
 
     col.set_carry_in(False)
-    assert col.carry_in == False
+    assert not col.carry_in
 
 
 def test_digit_column_get_carry_out():
@@ -347,7 +347,7 @@ def test_digit_column_get_carry_out():
 
     # Carry should propagate from position 0 all the way to position 30,
     # then overflow as carry_out
-    assert col.get_carry_out() == True
+    assert col.get_carry_out()
 
 
 def test_digit_column_snapshot():
@@ -360,7 +360,7 @@ def test_digit_column_snapshot():
     assert isinstance(snap, ColumnSnapshot)
     assert snap.column_index == 0
     assert snap.digits == col.digits
-    assert snap.carry_in == True
+    assert snap.carry_in
     assert snap.phase == "addition"
 
 
@@ -380,25 +380,25 @@ def test_digit_column_snapshot_independence():
 def test_digit_column_latch_operations():
     """Test latch (mechanical lock) operations."""
     col = DigitColumn(0)
-    assert col.is_locked() == False
+    assert not col.is_locked()
 
     col.latch()
-    assert col.is_locked() == True
+    assert col.is_locked()
 
     col.unlatch()
-    assert col.is_locked() == False
+    assert not col.is_locked()
 
 
 def test_digit_column_advancing_state():
     """Test advancing (row shift) state."""
     col = DigitColumn(0)
-    assert col.is_advancing_state() == False
+    assert not col.is_advancing_state()
 
     col.start_advancing()
-    assert col.is_advancing_state() == True
+    assert col.is_advancing_state()
 
     col.stop_advancing()
-    assert col.is_advancing_state() == False
+    assert not col.is_advancing_state()
 
 
 def test_digit_column_phase_tracking():

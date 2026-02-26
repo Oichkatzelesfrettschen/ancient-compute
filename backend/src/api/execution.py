@@ -5,22 +5,20 @@ Endpoints for submitting and validating code against exercises, with integration
 to language services for polyglot code execution in Docker containers.
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel
-from sqlalchemy.orm import Session
-from typing import Optional, List
 from datetime import datetime
 
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
+
+from ..auth import UserResponse, get_current_user
 from ..database import get_db
 from ..models import (
     Exercise,
-    ExerciseSubmission,
     ExerciseProgress,
-    User,
-    Module,
+    ExerciseSubmission,
 )
 from ..services.execution_orchestrator import ExecutionOrchestrator
-from ..auth import get_current_user, UserResponse
 
 router = APIRouter(prefix="/exercises", tags=["execution"])
 
@@ -54,12 +52,12 @@ class CodeExecutionResult(BaseModel):
     stdout: str
     stderr: str
     execution_time_ms: float
-    memory_used_mb: Optional[int]
+    memory_used_mb: int | None
     exit_code: int
-    test_results: Optional[List[TestCaseResult]] = None
-    passed_tests: Optional[int] = None
-    total_tests: Optional[int] = None
-    score_percentage: Optional[int] = None
+    test_results: list[TestCaseResult] | None = None
+    passed_tests: int | None = None
+    total_tests: int | None = None
+    score_percentage: int | None = None
 
 
 class ExerciseSubmissionResponse(BaseModel):

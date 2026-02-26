@@ -53,8 +53,9 @@ Remaining Open Gaps
 - Steam drive mapping: rpm/pressure profile remains conservative; calibrate
   against measured load behavior requires physical access to operational DE2.
 
-- Monte Carlo tolerance stack-up: implementation planned in Phase H to confirm
-  mechanical feasibility across manufacturing tolerance distributions.
+- Monte Carlo tolerance stack-up: COMPLETED in Phase IX. See
+  tools/simulation/monte_carlo_tolerance.py (7/7 checks pass). Manufacturing
+  feasibility confirmed across tolerance distributions.
 
 - DE2 comparison validation: quantitative comparison of simulation predictions
   against observed DE2 performance (calculation rate, crank turns, error rate,

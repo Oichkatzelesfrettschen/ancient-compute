@@ -9,9 +9,9 @@ Represents:
 """
 
 from __future__ import annotations
-from dataclasses import dataclass
-from typing import List, Optional, Union
 
+from dataclasses import dataclass
+from typing import Union
 
 # ==============================================================================
 # TYPES
@@ -33,7 +33,7 @@ class PrimitiveType(Type):
 class ReferenceType(Type):
     """Reference type: class name, interface"""
     name: str
-    type_args: List[Type] = None
+    type_args: list[Type] = None
 
     def __post_init__(self):
         if self.type_args is None:
@@ -51,7 +51,7 @@ class ArrayType(Type):
 class TypeParameter(Type):
     """Type parameter: T, U, K, V"""
     name: str
-    bounds: List[Type] = None
+    bounds: list[Type] = None
 
     def __post_init__(self):
         if self.bounds is None:
@@ -61,8 +61,8 @@ class TypeParameter(Type):
 @dataclass
 class WildcardType(Type):
     """Wildcard type: ?, ? extends T, ? super T"""
-    upper_bound: Optional[Type] = None
-    lower_bound: Optional[Type] = None
+    upper_bound: Type | None = None
+    lower_bound: Type | None = None
 
 
 # ==============================================================================
@@ -104,26 +104,26 @@ class ArrayAccess(Expr):
 @dataclass
 class MethodCall(Expr):
     """Method call: obj.method(args) or method(args)"""
-    object_expr: Optional[Expr]
+    object_expr: Expr | None
     method_name: str
-    type_args: List[Type]
-    arguments: List[Expr]
+    type_args: list[Type]
+    arguments: list[Expr]
 
 
 @dataclass
 class NewExpression(Expr):
     """Object creation: new ClassName(args)"""
     type_: Type
-    type_args: List[Type]
-    arguments: List[Expr]
+    type_args: list[Type]
+    arguments: list[Expr]
 
 
 @dataclass
 class ArrayCreation(Expr):
     """Array creation: new int[10] or new String[]{...}"""
     element_type: Type
-    dimensions: List[Expr]
-    initializer: Optional[List[Expr]] = None
+    dimensions: list[Expr]
+    initializer: list[Expr] | None = None
 
 
 @dataclass
@@ -167,8 +167,8 @@ class InstanceofExpr(Expr):
 @dataclass
 class LambdaExpr(Expr):
     """Lambda expression: (x, y) -> x + y"""
-    parameters: List[Parameter]
-    body: Union[Expr, List[Stmt]]
+    parameters: list[Parameter]
+    body: Union[Expr, list[Stmt]]
 
 
 @dataclass
@@ -197,7 +197,7 @@ class ExprStmt(Stmt):
 @dataclass
 class BlockStmt(Stmt):
     """Block statement: { statements }"""
-    statements: List[Stmt]
+    statements: list[Stmt]
 
 
 @dataclass
@@ -205,7 +205,7 @@ class VarDeclStmt(Stmt):
     """Variable declaration: int x = 5;"""
     name: str
     type_: Type
-    initializer: Optional[Expr] = None
+    initializer: Expr | None = None
 
 
 @dataclass
@@ -213,7 +213,7 @@ class IfStmt(Stmt):
     """If statement: if (cond) then_stmt else else_stmt"""
     condition: Expr
     then_stmt: Stmt
-    else_stmt: Optional[Stmt] = None
+    else_stmt: Stmt | None = None
 
 
 @dataclass
@@ -233,9 +233,9 @@ class DoWhileStmt(Stmt):
 @dataclass
 class ForStmt(Stmt):
     """For statement: for (init; cond; update) body"""
-    initializer: Optional[Union[VarDeclStmt, Expr]]
-    condition: Optional[Expr]
-    update: Optional[Expr]
+    initializer: Union[VarDeclStmt, Expr] | None
+    condition: Expr | None
+    update: Expr | None
     body: Stmt
 
 
@@ -252,33 +252,33 @@ class EnhancedForStmt(Stmt):
 class SwitchStmt(Stmt):
     """Switch statement: switch (expr) { case ... }"""
     expr: Expr
-    cases: List[SwitchCase]
-    default_case: Optional[List[Stmt]] = None
+    cases: list[SwitchCase]
+    default_case: list[Stmt] | None = None
 
 
 @dataclass
 class SwitchCase:
     """Single case in switch statement"""
     pattern: Expr  # Usually a literal
-    statements: List[Stmt]
+    statements: list[Stmt]
 
 
 @dataclass
 class BreakStmt(Stmt):
     """Break statement"""
-    label: Optional[str] = None
+    label: str | None = None
 
 
 @dataclass
 class ContinueStmt(Stmt):
     """Continue statement"""
-    label: Optional[str] = None
+    label: str | None = None
 
 
 @dataclass
 class ReturnStmt(Stmt):
     """Return statement: return expr;"""
-    expr: Optional[Expr] = None
+    expr: Expr | None = None
 
 
 @dataclass
@@ -291,8 +291,8 @@ class ThrowStmt(Stmt):
 class TryStmt(Stmt):
     """Try-catch-finally statement"""
     try_block: BlockStmt
-    catch_blocks: List[CatchBlock]
-    finally_block: Optional[BlockStmt] = None
+    catch_blocks: list[CatchBlock]
+    finally_block: BlockStmt | None = None
 
 
 @dataclass
@@ -340,11 +340,11 @@ class MethodDecl(Declaration):
     """Method declaration"""
     name: str
     return_type: Type
-    parameters: List[Parameter]
-    body: Optional[BlockStmt]
-    type_parameters: List[TypeParameter]
-    modifiers: List[str]
-    exceptions: List[Type]
+    parameters: list[Parameter]
+    body: BlockStmt | None
+    type_parameters: list[TypeParameter]
+    modifiers: list[str]
+    exceptions: list[Type]
 
 
 @dataclass
@@ -352,65 +352,65 @@ class FieldDecl(Declaration):
     """Field declaration"""
     name: str
     type_: Type
-    initializer: Optional[Expr]
-    modifiers: List[str]
+    initializer: Expr | None
+    modifiers: list[str]
 
 
 @dataclass
 class ConstructorDecl(Declaration):
     """Constructor declaration"""
     name: str
-    parameters: List[Parameter]
+    parameters: list[Parameter]
     body: BlockStmt
-    type_parameters: List[TypeParameter]
-    modifiers: List[str]
-    exceptions: List[Type]
+    type_parameters: list[TypeParameter]
+    modifiers: list[str]
+    exceptions: list[Type]
 
 
 @dataclass
 class ClassDecl(Declaration):
     """Class declaration"""
     name: str
-    type_parameters: List[TypeParameter]
-    superclass: Optional[Type]
-    interfaces: List[Type]
-    modifiers: List[str]
-    members: List[Union[MethodDecl, FieldDecl, ConstructorDecl, ClassDecl]]
+    type_parameters: list[TypeParameter]
+    superclass: Type | None
+    interfaces: list[Type]
+    modifiers: list[str]
+    members: list[Union[MethodDecl, FieldDecl, ConstructorDecl, ClassDecl]]
 
 
 @dataclass
 class InterfaceDecl(Declaration):
     """Interface declaration"""
     name: str
-    type_parameters: List[TypeParameter]
-    extends: List[Type]
-    modifiers: List[str]
-    members: List[Union[MethodDecl, FieldDecl]]
+    type_parameters: list[TypeParameter]
+    extends: list[Type]
+    modifiers: list[str]
+    members: list[Union[MethodDecl, FieldDecl]]
 
 
 @dataclass
 class EnumDecl(Declaration):
     """Enum declaration"""
     name: str
-    interfaces: List[Type]
-    modifiers: List[str]
-    constants: List[EnumConstant]
-    members: List[Union[MethodDecl, FieldDecl]]
+    interfaces: list[Type]
+    modifiers: list[str]
+    constants: list[EnumConstant]
+    members: list[Union[MethodDecl, FieldDecl]]
 
 
 @dataclass
 class EnumConstant:
     """Single enum constant"""
     name: str
-    arguments: List[Expr]
+    arguments: list[Expr]
 
 
 @dataclass
 class AnnotationDecl(Declaration):
     """Annotation declaration"""
     name: str
-    modifiers: List[str]
-    members: List[AnnotationMember]
+    modifiers: list[str]
+    members: list[AnnotationMember]
 
 
 @dataclass
@@ -418,7 +418,7 @@ class AnnotationMember:
     """Single annotation member"""
     name: str
     type_: Type
-    default_value: Optional[Expr]
+    default_value: Expr | None
 
 
 @dataclass
@@ -438,6 +438,6 @@ class PackageDecl(Declaration):
 @dataclass
 class CompilationUnit:
     """Top-level compilation unit (file)"""
-    package_decl: Optional[PackageDecl]
-    import_decls: List[ImportDecl]
-    type_decls: List[Union[ClassDecl, InterfaceDecl, EnumDecl, AnnotationDecl]]
+    package_decl: PackageDecl | None
+    import_decls: list[ImportDecl]
+    type_decls: list[Union[ClassDecl, InterfaceDecl, EnumDecl, AnnotationDecl]]

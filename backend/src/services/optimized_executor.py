@@ -5,18 +5,17 @@ High-performance wrapper around ExecutionOrchestrator with integrated
 result caching and database query optimization.
 """
 
-from typing import Optional, List, Dict, Any, Tuple
+from typing import Any
 
-from typing import TYPE_CHECKING
 try:
     from sqlalchemy.orm import Session  # type: ignore
 except Exception:  # pragma: no cover - allow running without SQLAlchemy
     Session = Any  # type: ignore
 
+from .base_executor import ExecutionResult
+from .execution_cache import ExecutionCache, get_execution_cache
 from .execution_orchestrator import ExecutionOrchestrator
-from .execution_cache import get_execution_cache, ExecutionCache
-from .query_cache import get_query_cache, QueryCache
-from .base_executor import ExecutionResult, ExecutionStatus
+from .query_cache import QueryCache, get_query_cache
 
 
 class OptimizedExecutor:
@@ -29,9 +28,9 @@ class OptimizedExecutor:
 
     def __init__(
         self,
-        orchestrator: Optional[ExecutionOrchestrator] = None,
-        execution_cache: Optional[ExecutionCache] = None,
-        query_cache: Optional[QueryCache] = None,
+        orchestrator: ExecutionOrchestrator | None = None,
+        execution_cache: ExecutionCache | None = None,
+        query_cache: QueryCache | None = None,
     ):
         """
         Initialize optimized executor.
@@ -49,7 +48,7 @@ class OptimizedExecutor:
         self,
         code: str,
         language: str,
-        exercise: Optional[Any] = None,
+        exercise: Any | None = None,
         timeout: int = 10,
         use_cache: bool = True,
         input_data: str = "",
@@ -93,9 +92,9 @@ class OptimizedExecutor:
     async def validate_test_cases(
         self,
         execution_result: ExecutionResult,
-        test_cases: List[Dict[str, Any]],
+        test_cases: list[dict[str, Any]],
         exercise_language: str = "python",
-    ) -> Tuple[List[Dict[str, Any]], int, int]:
+    ) -> tuple[list[dict[str, Any]], int, int]:
         """
         Validate execution against test cases.
 
@@ -109,7 +108,7 @@ class OptimizedExecutor:
 
     def get_exercise_with_optimization(
         self, db: Session, exercise_id: int
-    ) -> Optional[Any]:
+    ) -> Any | None:
         """
         Get exercise with optimized queries (eager loading).
 
@@ -119,11 +118,11 @@ class OptimizedExecutor:
             db, exercise_id
         )
 
-    def get_supported_languages(self) -> List[str]:
+    def get_supported_languages(self) -> list[str]:
         """Get list of supported programming languages."""
         return self.orchestrator.get_supported_languages()
 
-    def get_cache_stats(self) -> Dict[str, Dict[str, Any]]:
+    def get_cache_stats(self) -> dict[str, dict[str, Any]]:
         """Get statistics from all caches."""
         return {
             "execution_cache": self.execution_cache.get_stats(),

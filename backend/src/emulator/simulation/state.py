@@ -11,7 +11,6 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Tuple
 
 
 @dataclass
@@ -34,9 +33,9 @@ class SimulationState:
     radiation_heat_loss_W: float = 0.0
 
     # Bearing state (per-bearing, indexed by position)
-    bearing_clearances_mm: List[float] = field(default_factory=list)
-    bearing_wear_volumes_mm3: List[float] = field(default_factory=list)
-    bearing_loads_N: List[float] = field(default_factory=list)
+    bearing_clearances_mm: list[float] = field(default_factory=list)
+    bearing_wear_volumes_mm3: list[float] = field(default_factory=list)
+    bearing_loads_N: list[float] = field(default_factory=list)
 
     # Gear state
     gear_backlash_mm: float = 0.0
@@ -148,25 +147,25 @@ class SimulationConfig:
     piston_stroke_m: float = 0.2  # ASSUMPTION: Estimated from Babbage drawings
     thermal_efficiency_pct: float = 8.0  # ASSUMPTION: Typical 1840s steam engine range
 
-    def randomize_tolerances(self, seed: Optional[int] = None) -> None:
+    def randomize_tolerances(self, seed: int | None = None) -> None:
         """Inject Monte Carlo variance based on historical manufacturing precision.
-        
+
         Babbage Era (1840s) achievable precision was ~0.002 inches (0.05 mm).
         This method applies a Gaussian perturbation to key geometric parameters.
         """
         import random
         if seed is not None:
             random.seed(seed)
-            
+
         # SOURCE:SWADE-2001 -- achievable precision ~0.002 inches (0.05 mm) at 3-sigma
         sigma = 0.05 / 3.0
-        
+
         self.initial_clearance_mm += random.gauss(0, sigma)
         self.initial_gear_backlash_mm += random.gauss(0, sigma)
-        
+
         # Gear module also subject to manufacturing variance
         self.gear_module_mm += random.gauss(0, sigma / 10.0) # Module variance is typically smaller
-        
+
         # Clamp to ensure physical sanity
         self.initial_clearance_mm = max(0.001, self.initial_clearance_mm)
         self.initial_gear_backlash_mm = max(0.001, self.initial_gear_backlash_mm)

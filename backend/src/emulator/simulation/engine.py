@@ -11,28 +11,19 @@ Long-duration runs accumulate state history for post-analysis.
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Tuple
+from dataclasses import dataclass
 
+from backend.src.emulator.electromagnetic import EddyCurrentModel, GalvanicCorrosionMatrix
 from backend.src.emulator.materials import MaterialLibrary
+from backend.src.emulator.simulation.coupling import CouplingFunctions
+from backend.src.emulator.simulation.state import SimulationConfig, SimulationState
 from backend.src.emulator.thermodynamics import (
     FrictionHeatModel,
-    RadiationHeatModel,
-    TransientThermalSolver,
-    ThermalClearanceFeedback,
 )
 from backend.src.emulator.tribology import (
-    WearModel,
-    RunningInWear,
-    WearClearanceFeedback,
     LubricationModel,
     PVAnalysis,
 )
-from backend.src.emulator.electromagnetic import EddyCurrentModel, GalvanicCorrosionMatrix
-from backend.src.emulator.structural import ShaftAnalysis, ShaftCriticalSpeed
-from backend.src.emulator.kinematics import CamTorqueRipple, CamFollower, CamAnalysis
-from backend.src.emulator.simulation.state import SimulationState, SimulationConfig
-from backend.src.emulator.simulation.coupling import CouplingFunctions
 
 
 @dataclass
@@ -57,7 +48,7 @@ class SimulationResult:
     duration_s: float
     steps: int
     final_state: SimulationState
-    history: List[StepResult]
+    history: list[StepResult]
     limiting_component: str = ""
     failure_time_s: float = float("inf")
 
@@ -84,7 +75,7 @@ class SimulationEngine:
     def __init__(
         self,
         config: SimulationConfig,
-        lib: Optional[MaterialLibrary] = None,
+        lib: MaterialLibrary | None = None,
     ) -> None:
         self.config = config
         self.lib = lib if lib is not None else MaterialLibrary()
@@ -252,7 +243,7 @@ class SimulationEngine:
         Returns:
             SimulationResult with final state and sampled history.
         """
-        history: List[StepResult] = []
+        history: list[StepResult] = []
         steps = 0
         next_record = 0.0
 
@@ -312,7 +303,7 @@ class SimulationEngine:
         else:
             return base_mu  # boundary/dry
 
-    def _update_lubrication(self) -> Tuple[float, str]:
+    def _update_lubrication(self) -> tuple[float, str]:
         """Compute lambda ratio and lubrication regime.
 
         Uses Hamrock-Dowson film thickness with current viscosity,

@@ -3,6 +3,7 @@ Integration Tests for Engine Tools API
 """
 
 from fastapi.testclient import TestClient
+
 from backend.src.main import app
 
 client = TestClient(app)
@@ -11,14 +12,14 @@ def test_debug_step():
     """Test stepping the emulator via API."""
     # First reset to ensure known state
     client.post("/api/v1/tools/debug/command", json={"action": "reset"})
-    
+
     response = client.post("/api/v1/tools/debug/step")
     assert response.status_code == 200
     data = response.json()
     assert "state" in data
     assert "cycle" in data["state"]
     # Analytical Engine adapter returns clock_time as cycle
-    assert data["state"]["cycle"] >= 0 
+    assert data["state"]["cycle"] >= 0
 
 def test_performance_report():
     """Test retrieving performance report."""

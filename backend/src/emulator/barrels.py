@@ -14,9 +14,9 @@ Control Flow:
 4. Levers execute mechanical actions.
 """
 
-from enum import Enum, auto
-from typing import List, Dict, Set, Optional
 from dataclasses import dataclass
+from enum import Enum, auto
+
 
 class MicroOp(Enum):
     # Axis Control
@@ -26,7 +26,7 @@ class MicroOp(Enum):
     DROP_EGRESS = auto()        # Drop the Egress Axis
     LIFT_STORE_AXIS = auto()    # Lift a specific Store column to engage Mill
     DROP_STORE_AXIS = auto()    # Drop a specific Store column
-    
+
     # Mill Control
     CONNECT_MILL_TO_STORE = auto() # Mill output to Store input
     CONNECT_STORE_TO_MILL = auto() # Store output to Mill input (Ingress Axis)
@@ -77,27 +77,27 @@ class MicroOp(Enum):
 @dataclass
 class BarrelRow:
     """A vertical column of studs on a barrel (activates simultaneously)."""
-    studs: Set[MicroOp]
+    studs: set[MicroOp]
 
 class Barrel:
     """A control barrel (drum) defining a micro-program."""
     def __init__(self, name: str):
         self.name = name
-        self.rows: List[BarrelRow] = []
-        
-    def add_step(self, ops: List[MicroOp]):
+        self.rows: list[BarrelRow] = []
+
+    def add_step(self, ops: list[MicroOp]) -> None:
         self.rows.append(BarrelRow(set(ops)))
 
 class BarrelController:
     """Orchestrates the barrels."""
-    def __init__(self):
-        self.barrels: Dict[str, Barrel] = {}
-        self.active_barrel: Optional[str] = None
+    def __init__(self) -> None:
+        self.barrels: dict[str, Barrel] = {}
+        self.active_barrel: str | None = None
         self.step_index = 0
-        
+
         self._init_standard_barrels()
-        
-    def _init_standard_barrels(self):
+
+    def _init_standard_barrels(self) -> None:
         # Addition Barrel
         add = Barrel("ADD")
         add.add_step([MicroOp.FETCH_VAR_CARD, MicroOp.LIFT_STORE_AXIS])
@@ -178,7 +178,7 @@ class BarrelController:
         shl = Barrel("SHL")
         shl.add_step([MicroOp.SHIFT_MILL_LEFT])
         self.barrels["SHL"] = shl
-        
+
         shr = Barrel("SHR")
         shr.add_step([MicroOp.SHIFT_MILL_RIGHT])
         self.barrels["SHR"] = shr
@@ -187,11 +187,11 @@ class BarrelController:
         and_b = Barrel("AND")
         and_b.add_step([MicroOp.BITWISE_AND])
         self.barrels["AND"] = and_b
-        
+
         or_b = Barrel("OR")
         or_b.add_step([MicroOp.BITWISE_OR])
         self.barrels["OR"] = or_b
-        
+
         xor_b = Barrel("XOR")
         xor_b.add_step([MicroOp.BITWISE_XOR])
         self.barrels["XOR"] = xor_b
@@ -205,29 +205,29 @@ class BarrelController:
         play = Barrel("PLAY")
         play.add_step([MicroOp.PLAY_NOTE])
         self.barrels["PLAY"] = play
-        
+
         setmode = Barrel("SETMODE")
         setmode.add_step([MicroOp.SET_MODE_SYMBOLIC]) # Simplified: assume SETMODE handles toggle or param
         self.barrels["SETMODE"] = setmode
 
-    def select_barrel(self, op_name: str):
+    def select_barrel(self, op_name: str) -> None:
         if op_name in self.barrels:
             self.active_barrel = op_name
             self.step_index = 0
         else:
             raise ValueError(f"Unknown barrel: {op_name}")
 
-    def step(self) -> List[MicroOp]:
+    def step(self) -> list[MicroOp]:
         """Execute next micro-step."""
         if not self.active_barrel:
             return []
-            
+
         barrel = self.barrels[self.active_barrel]
         if self.step_index >= len(barrel.rows):
             print(f"Barrel {self.active_barrel} finished.")
-            self.active_barrel = None 
+            self.active_barrel = None
             return []
-            
+
         ops = list(barrel.rows[self.step_index].studs)
         print(f"Step {self.step_index}: {ops}")
         self.step_index += 1

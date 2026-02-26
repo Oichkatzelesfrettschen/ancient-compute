@@ -2,17 +2,22 @@ import logging
 import time
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
-from fastapi.responses import Response, JSONResponse
-from prometheus_client import Counter, Gauge, generate_latest, CONTENT_TYPE_LATEST, CollectorRegistry, REGISTRY
-import redis
+from fastapi.responses import JSONResponse, Response
+from prometheus_client import (
+    CONTENT_TYPE_LATEST,
+    REGISTRY,
+    Counter,
+    Gauge,
+    generate_latest,
+)
 
 from .api.router import api_router
-from .api.tools_router import router as tools_router # Import new router
+from .api.tools_router import router as tools_router  # Import new router
 from .config import settings
-from .rate_limiting import RateLimitMiddleware, RateLimiter
+from .rate_limiting import RateLimiter, RateLimitMiddleware
 
 # Configure logging
 logging.basicConfig(
@@ -115,7 +120,7 @@ async def health_check():
 @app.get("/ready")
 async def readiness_check():
     # ... (Same logic as before)
-    return {"status": "ready"} 
+    return {"status": "ready"}
 
 @app.get("/metrics")
 async def metrics():

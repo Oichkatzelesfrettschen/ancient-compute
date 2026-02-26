@@ -43,9 +43,11 @@ References:
   - SMG Technical Description (DE2 comparison)
 """
 
-from typing import Optional, Any, Dict, List
+from typing import Any
+
 from .barrels import BarrelController, MicroOp
 from .types import BabbageNumber
+
 
 class MechanicalFailureError(Exception):
     """Raised when the engine suffers a physical breakdown (seizure, breakage, etc.)"""
@@ -214,7 +216,7 @@ class Engine:
         # Micro-Architectural State for Barrel Execution
         self.mill_operand_buffer = BabbageNumber(0)  # Ingress Axis
         self.mill_result_buffer = BabbageNumber(0)  # Egress Axis
-        self.active_store_address: Optional[int] = None  # V.A. (Variable Axis) card
+        self.active_store_address: int | None = None  # V.A. (Variable Axis) card
         # New Micro-Architectural State for Multiplication
         self.mill_product_accumulator = BabbageNumber(0)  # Intermediate product
         self.mill_multiplier_digit_buffer = 0  # Current multiplier digit
@@ -617,7 +619,7 @@ class Engine:
         Execute MULT using micro-ops, leveraging repeated additions and shifts.
         """
         self.barrels.select_barrel("MULT")
-        
+
         # Setup: multiplicand into operand_buffer
         self.mill_operand_buffer = self._get_operand_value(reg_dest)
         # Clear product accumulator (conceptual reset)
@@ -661,13 +663,13 @@ class Engine:
         # Outer loop for each quotient digit
         for k in range(initial_shift, -1, -1): # Integer division only
             if k < 0: break
-            
+
             self.mill_operand_buffer = divisor * BabbageNumber(10**k)
             self.mill_quotient_digit_value = BabbageNumber(10**k)
-            
+
             self.barrels.select_barrel("DIV")
             # We skip the first 4 steps of the DIV barrel (setup) because we did it in Python
-            self.barrels.step_index = 4 
+            self.barrels.step_index = 4
 
             # Micro-op execution loop for ONE digit position
             while self.barrels.active_barrel:
@@ -1123,18 +1125,18 @@ class Engine:
 
         # Update clock time based on instruction cost (dynamic RPM/physics coupling)
         base_cycles = TIMING_TABLE.get(opcode_name, 0)
-        
+
         if self.physical_engine:
             # Dynamic timing model:
             # time [s] = cycles / (rotations/sec) * lag
             # lag increases with shaft deflection (simulating mechanical resistance)
             rpm = self.physical_engine.config.rpm
             deflection = self.physical_engine.state.shaft_deflection_mm
-            
+
             # 5% time penalty per mm of shaft deflection
             lag_factor = 1.0 + (0.05 * deflection)
             time_cost = (base_cycles / (rpm / 60.0)) * lag_factor
-            
+
             # Synchronize physical engine state to match logic engine instruction step
             self.physical_engine.run(self.physical_engine.state.time_s + time_cost)
         else:
@@ -1178,7 +1180,7 @@ class Engine:
         program_lines = []
 
         # Read and strip comments
-        with open(filename, "r") as f:
+        with open(filename) as f:
             for line_num, line in enumerate(f, 0):
                 original_line = line.strip()
                 line = line.split("#")[0].strip()
@@ -1220,7 +1222,7 @@ class Engine:
     def run(self):
         """Execute loaded program until completion or error."""
         self.running = True
-        while self.running and self.PC < len(self.instruction_cards):
+        while self.running and len(self.instruction_cards) > self.PC:
             if self.paused and self.interactive_mode:
                 user_input = input("Emulator paused. Press Enter to continue or 's' to step: ")
                 if user_input == "s":
@@ -1234,7 +1236,7 @@ class Engine:
 
     def step_one_instruction(self):
         """Execute a single instruction with breakpoint and physical failure checking."""
-        if self.PC >= len(self.instruction_cards):
+        if len(self.instruction_cards) <= self.PC:
             self.running = False
             return
 
@@ -1274,7 +1276,7 @@ class Engine:
             if not bp["enabled"]:
                 continue
 
-            if bp["type"] == "address" and self.PC == bp["target"]:
+            if bp["type"] == "address" and bp["target"] == self.PC:
                 self.paused = True
                 print(f"Breakpoint hit: PC={self.PC}")
 

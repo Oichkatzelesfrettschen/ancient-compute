@@ -7,7 +7,7 @@ import tempfile
 import time
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, Optional, TypedDict
+from typing import Any, TypedDict
 
 try:
     import docker  # type: ignore[import-not-found]
@@ -33,7 +33,7 @@ class ExecutionResult:
     status: ExecutionStatus
     stdout: str
     stderr: str
-    compile_output: Optional[str] = None
+    compile_output: str | None = None
     execution_time: float = 0.0
     memory_used: int = 0
     exit_code: int = 0
@@ -42,7 +42,7 @@ class ExecutionResult:
 class ContainerConfig(TypedDict, total=False):
     image: str
     command: str
-    volumes: Dict[str, Dict[str, str]]
+    volumes: dict[str, dict[str, str]]
     working_dir: str
     mem_limit: str
     memswap_limit: str
@@ -50,7 +50,7 @@ class ContainerConfig(TypedDict, total=False):
     cpu_period: int
     network_mode: str
     read_only: bool
-    tmpfs: Dict[str, str]
+    tmpfs: dict[str, str]
     security_opt: list[str]
     detach: bool
     remove: bool
@@ -63,7 +63,7 @@ class BaseExecutor:
         self.language = language
         self.docker_image = docker_image
         self.timeout = timeout
-        self.client: Optional[Any] = None
+        self.client: Any | None = None
         self.docker_available = self._check_docker()
         if self.docker_available:
             self._ensure_image()
@@ -216,7 +216,7 @@ class BaseExecutor:
                     exit_code=exit_code,
                 )
 
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 return ExecutionResult(
                     status=ExecutionStatus.TIMEOUT,
                     stdout="",

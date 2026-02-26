@@ -10,11 +10,11 @@ Provides full content delivery for:
 - User progress tracking
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from ..database import get_db
-from ..models import Era, Module, Lesson, Exercise, User
+from ..models import Era, Exercise, Lesson, Module
 
 router = APIRouter(prefix="/timeline", tags=["timeline"])
 

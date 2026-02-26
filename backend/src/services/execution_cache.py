@@ -7,7 +7,6 @@ code submissions. Uses content-addressable hashing for cache key generation.
 
 import hashlib
 import time
-from typing import Optional, Dict, Tuple
 from dataclasses import dataclass
 
 from .base_executor import ExecutionResult, ExecutionStatus
@@ -46,7 +45,7 @@ class ExecutionCache:
             max_entries: Maximum number of cached results
             default_ttl: Default time-to-live in seconds
         """
-        self._cache: Dict[str, CacheEntry] = {}
+        self._cache: dict[str, CacheEntry] = {}
         self.max_entries = max_entries
         self.default_ttl = default_ttl
         self.hits = 0
@@ -59,12 +58,12 @@ class ExecutionCache:
 
         Uses SHA256 for content-addressable caching.
         """
-        content = f"{language}|{code}|{input_data}".encode("utf-8")
+        content = f"{language}|{code}|{input_data}".encode()
         return hashlib.sha256(content).hexdigest()
 
     def get(
         self, language: str, code: str, input_data: str = ""
-    ) -> Optional[ExecutionResult]:
+    ) -> ExecutionResult | None:
         """
         Retrieve cached execution result if available.
 
@@ -146,7 +145,7 @@ class ExecutionCache:
             del self._cache[key]
         return initial_size - len(self._cache)
 
-    def get_stats(self) -> Dict[str, any]:
+    def get_stats(self) -> dict[str, any]:
         """Get cache statistics."""
         total_requests = self.hits + self.misses
         hit_rate = (

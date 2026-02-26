@@ -16,24 +16,20 @@ Test coverage:
 
 import pytest
 
-from backend.src.compilers.java_lexer import JavaLexer
-from backend.src.compilers.java_parser import JavaParser
-from backend.src.compilers.java_compiler import JavaCompiler
-from backend.src.compilers.java_types import JavaTypeSystem
-
+from backend.src.compilers.idris_compiler import IDRIS2Compiler
 from backend.src.compilers.idris_lexer import IDRIS2Lexer
 from backend.src.compilers.idris_parser import IDRIS2Parser
-from backend.src.compilers.idris_compiler import IDRIS2Compiler
 from backend.src.compilers.idris_types import IDRISTypeSystem
-
+from backend.src.compilers.java_compiler import JavaCompiler
+from backend.src.compilers.java_lexer import JavaLexer
+from backend.src.compilers.java_parser import JavaParser
+from backend.src.compilers.java_types import JavaTypeSystem
+from backend.src.compilers.systemf_compiler import SystemFCompiler
 from backend.src.compilers.systemf_lexer import SystemFLexer
 from backend.src.compilers.systemf_parser import SystemFParser
-from backend.src.compilers.systemf_compiler import SystemFCompiler
 from backend.src.compilers.systemf_types import SystemFTypeSystem
-
-from backend.src.ir_types import Program, Function, BasicBlock
+from backend.src.ir_types import Function, Program
 from backend.src.services.base_executor import ExecutionStatus
-
 
 # ==============================================================================
 # INDIVIDUAL LANGUAGE SERVICE TESTS

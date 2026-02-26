@@ -26,23 +26,15 @@ jobs:
         run: |
           cd backend
           pip install -r requirements.txt
-          pip install black isort pylint mypy flake8
+          pip install -r requirements-dev.txt
+
+      - name: Run ruff (lint + import sort)
+        run: cd backend && ruff check src/ tests/
+        # FAIL on style/lint violations
 
       - name: Run black
         run: cd backend && black --check --diff src/ tests/
         # FAIL on formatting issues
-
-      - name: Run isort
-        run: cd backend && isort --check-only --diff src/ tests/
-        # FAIL on import order issues
-
-      - name: Run flake8
-        run: cd backend && flake8 src/ tests/ --max-line-length=100 --count --show-source --statistics
-        # FAIL on style violations
-
-      - name: Run pylint
-        run: cd backend && pylint src/ --fail-under=9.0
-        # FAIL if score < 9.0 (warnings as errors)
 
       - name: Run mypy
         run: cd backend && mypy src/ --strict --warn-return-any --warn-unused-configs

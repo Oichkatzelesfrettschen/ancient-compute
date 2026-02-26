@@ -8,13 +8,15 @@ Coverage: 60+ tests across 12 test classes.
 """
 
 import pytest
-from backend.src.emulator.machine import DEMachine
-from backend.src.emulator.debugger import (
-    Debugger, SymbolTable, BreakpointManager, BreakpointType,
-    SymbolEntry
-)
-from backend.src.emulator.timing import MechanicalPhase
 
+from backend.src.emulator.debugger import (
+    BreakpointManager,
+    BreakpointType,
+    Debugger,
+    SymbolTable,
+)
+from backend.src.emulator.machine import DEMachine
+from backend.src.emulator.timing import MechanicalPhase
 
 # ============================================================================
 # Symbol Table Tests (8 tests)

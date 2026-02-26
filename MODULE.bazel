@@ -1,2 +1,0 @@
-# Bazel module configuration for Ancient Compute
-module(name = "ancient_compute", version = "0.1.0")

@@ -2,8 +2,9 @@
 
 import ply.yacc as yacc
 
-from .lisp_lexer import tokens
-from .lisp_ast import Symbol, Number, String, SExpression
+from .lisp_ast import Number, SExpression, String, Symbol
+from .lisp_lexer import tokens  # noqa: F401 -- PLY requires tokens in module scope
+
 
 def p_expression_atom(p):
     '''expression : atom'''

@@ -1,7 +1,15 @@
 # Ancient Compute - LISP Compiler
 
-from .lisp_ast import ASTNode, SExpression, Symbol, Number, String
-from ..ir_types import IRBuilder, Program, Function, BasicBlock, Constant, ReturnTerminator, IRType, VariableValue, BranchTerminator
+from ..ir_types import (
+    BranchTerminator,
+    Constant,
+    IRBuilder,
+    IRType,
+    Program,
+    VariableValue,
+)
+from .lisp_ast import ASTNode, Number, SExpression, String, Symbol
+
 
 class LispCompiler:
     def __init__(self):
@@ -65,12 +73,12 @@ class LispCompiler:
 
         # IR currently supports binary ops. Lisp supports n-ary.
         # Reduce: (+ a b c) -> (+ (+ a b) c)
-        
+
         if not args:
             return Constant(0)
-        
+
         current_val = self._compile_expression(args[0])
-        
+
         for arg in args[1:]:
             next_val = self._compile_expression(arg)
             target = self._new_tmp()
@@ -100,17 +108,17 @@ class LispCompiler:
         else_branch = sexp.children[3] if len(sexp.children) > 3 else Number(0)
 
         entry_block = self.builder.current_block
-        
+
         # Compile condition
         # IR BranchTerminator expects: condition, op1, op2, true_lbl, false_lbl
         # We need to reduce the Lisp condition to a comparison if it isn't one
-        
+
         cond_val = self._compile_expression(condition)
-        
+
         then_block = self.builder.new_block('then')
         else_block = self.builder.new_block('else')
         merge_block = self.builder.new_block('merge')
-        
+
         result_var = self._new_tmp()
 
         # Emit branch. checking if cond_val != 0 (Lisp truthiness)
@@ -141,23 +149,23 @@ class LispCompiler:
         # (let ((var val) ...) body...)
         bindings = sexp.children[1].children
         body = sexp.children[2:]
-        
+
         # For this basic implementation, we just register variables in the function scope
         # Shadowing is not handled (flat scope)
-        
+
         for binding in bindings:
             # binding is SExpression(Symbol(var), Expr(val))
             var_name = binding.children[0].value
             val_expr = binding.children[1]
-            
+
             val_compiled = self._compile_expression(val_expr)
             self.builder.function.local_variables[var_name] = IRType.DEC50
             self.builder.emit_assignment(var_name, val_compiled)
-            
+
         last_result = Constant(0)
         for expr in body:
             last_result = self._compile_expression(expr)
-            
+
         return last_result
 
     def _compile_function_call(self, sexp: SExpression):

@@ -7,7 +7,6 @@ Validates:
 - EM losses << friction losses
 """
 
-import math
 import pytest
 
 pytestmark = pytest.mark.physics
@@ -16,7 +15,6 @@ from backend.src.emulator.electromagnetic import (
     EddyCurrentModel,
     GalvanicCorrosionMatrix,
     StaticChargeModel,
-    EARTH_B_FIELD_T,
 )
 from backend.src.emulator.materials import MaterialLibrary
 

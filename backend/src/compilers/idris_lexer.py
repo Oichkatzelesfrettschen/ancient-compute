@@ -1,7 +1,7 @@
 # Ancient Compute - IDRIS Lexer
 
+
 import ply.lex as lex
-from typing import List
 
 tokens = (
     'KEYWORD',
@@ -91,7 +91,7 @@ class IDRIS2Lexer:
     def __init__(self, source: str):
         self.source = source
 
-    def tokenize(self) -> List:
+    def tokenize(self) -> list:
         lexer.input(self.source)
         toks = []
         while True:

@@ -8,21 +8,22 @@ Validates:
 """
 
 import math
+
 import pytest
 
 pytestmark = pytest.mark.physics
 
-from backend.src.emulator.structural import (
-    ShaftAnalysis,
-    GearToothStress,
-    FatigueAnalysis,
-    BucklingAnalysis,
-    StressConcentration,
-    DynamicLoadFactor,
-    ShaftCriticalSpeed,
-    NotchSensitivity,
-)
 from backend.src.emulator.materials import MaterialLibrary
+from backend.src.emulator.structural import (
+    BucklingAnalysis,
+    DynamicLoadFactor,
+    FatigueAnalysis,
+    GearToothStress,
+    NotchSensitivity,
+    ShaftAnalysis,
+    ShaftCriticalSpeed,
+    StressConcentration,
+)
 
 
 @pytest.fixture

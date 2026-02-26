@@ -16,12 +16,8 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
 
 import yaml
-
-from backend.src.emulator.materials import MaterialLibrary
-
 
 # ---------------------------------------------------------------------------
 # Dataclasses
@@ -84,8 +80,8 @@ class CamFollower:
 @dataclass
 class KinematicChain:
     """Complete kinematic chain from drive to output."""
-    gear_pairs: List[GearPair] = field(default_factory=list)
-    cam_followers: List[CamFollower] = field(default_factory=list)
+    gear_pairs: list[GearPair] = field(default_factory=list)
+    cam_followers: list[CamFollower] = field(default_factory=list)
     input_rpm: float = 30.0
     link_count: int = 0
     joint_count_full: int = 0
@@ -339,7 +335,7 @@ class MainShaftModel:
 # Schema Loader
 # ---------------------------------------------------------------------------
 
-def load_kinematic_chain(schema_path: Optional[str] = None) -> KinematicChain:
+def load_kinematic_chain(schema_path: str | None = None) -> KinematicChain:
     """Load kinematic chain parameters from sim_schema.yaml."""
     path = Path(schema_path) if schema_path else (
         Path(__file__).resolve().parents[3] / "docs" / "simulation" / "sim_schema.yaml"
@@ -551,7 +547,7 @@ class CamTorqueRipple:
         cam: CamFollower,
         omega_rad_s: float,
         resolution_deg: float = 1.0,
-    ) -> Tuple[float, float, float]:
+    ) -> tuple[float, float, float]:
         """Compute torque envelope over one cam cycle.
 
         Returns (min_torque_Nm, max_torque_Nm, peak_to_peak_Nm).
@@ -605,7 +601,7 @@ class ShaftLateralDynamics:
     def bearing_reactions_N(
         total_load_N: float,
         bearing_count: int,
-    ) -> List[float]:
+    ) -> list[float]:
         """Bearing reaction forces assuming uniform load distribution.
 
         Returns list of reaction forces [N] for each bearing.
@@ -617,7 +613,7 @@ class ShaftLateralDynamics:
 
     @staticmethod
     def bearing_reactions_sum_check(
-        reactions: List[float],
+        reactions: list[float],
         total_load_N: float,
         tolerance: float = 1e-6,
     ) -> bool:

@@ -9,7 +9,6 @@ This module models a bounded address space and supports:
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, List
 
 
 class HeapAllocationError(RuntimeError):
@@ -39,10 +38,10 @@ class MemoryHeap:
 
         self.heap_start = heap_start
         self.heap_end = heap_end
-        self._cells: List[float] = [0.0] * heap_end
+        self._cells: list[float] = [0.0] * heap_end
 
-        self._free_blocks: List[HeapBlock] = [HeapBlock(start=heap_start, size_words=heap_end - heap_start)]
-        self._allocated: Dict[int, HeapBlock] = {}
+        self._free_blocks: list[HeapBlock] = [HeapBlock(start=heap_start, size_words=heap_end - heap_start)]
+        self._allocated: dict[int, HeapBlock] = {}
 
     def malloc(self, size_words: int) -> int:
         """Allocate `size_words` and return pointer to block start."""
@@ -137,7 +136,7 @@ class MemoryHeap:
             return
 
         self._free_blocks.sort(key=lambda b: b.start)
-        merged: List[HeapBlock] = [self._free_blocks[0]]
+        merged: list[HeapBlock] = [self._free_blocks[0]]
 
         for block in self._free_blocks[1:]:
             last = merged[-1]

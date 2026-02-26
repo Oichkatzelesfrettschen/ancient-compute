@@ -16,12 +16,10 @@ Usage:
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional
 
-from backend.src.emulator.simulation.engine import SimulationEngine, StepResult
+from backend.src.emulator.simulation.engine import SimulationEngine
 from backend.src.emulator.simulation.state import SimulationConfig, SimulationState
 from backend.src.emulator.timing import BarrelTimingBridge
-
 
 # Mapping from TIMING_TABLE opcode names to barrel names used by
 # BarrelTimingBridge. Only mechanical operations have barrel equivalents.

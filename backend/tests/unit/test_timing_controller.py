@@ -12,10 +12,9 @@ import pytest
 
 pytestmark = pytest.mark.physics
 from backend.src.emulator.timing import (
+    MechanicalPhase,
     TimingController,
     TimingEvent,
-    TimingSnapshot,
-    MechanicalPhase,
     TimingSequence,
 )
 
@@ -28,7 +27,7 @@ class TestTimingControllerInitialization:
         tc = TimingController()
         assert tc.angle == 0
         assert tc.rotation_count == 0
-        assert tc.is_rotating == False
+        assert not tc.is_rotating
         assert tc.phase == MechanicalPhase.IDLE
         assert len(tc.events) == 0
         assert tc.total_events == 0
@@ -48,7 +47,7 @@ class TestTimingControllerInitialization:
     def test_timing_controller_rotation_off_initially(self):
         """Rotation should be stopped initially."""
         tc = TimingController()
-        assert tc.is_rotating == False
+        assert not tc.is_rotating
 
     def test_timing_controller_no_callbacks_initially(self):
         """No callbacks should be registered initially."""
@@ -63,20 +62,20 @@ class TestTimingControllerRotationControl:
         """Starting rotation sets is_rotating to True."""
         tc = TimingController()
         tc.start_rotation()
-        assert tc.is_rotating == True
+        assert tc.is_rotating
 
     def test_timing_controller_stop_rotation(self):
         """Stopping rotation sets is_rotating to False."""
         tc = TimingController()
         tc.start_rotation()
-        assert tc.is_rotating == True
+        assert tc.is_rotating
         tc.stop_rotation()
-        assert tc.is_rotating == False
+        assert not tc.is_rotating
 
     def test_timing_controller_advance_angle_stopped(self):
         """advance_angle() does nothing if rotation stopped."""
         tc = TimingController()
-        assert tc.is_rotating == False
+        assert not tc.is_rotating
         tc.advance_angle(1)
         assert tc.angle == 0
         assert tc.total_events == 0
@@ -87,7 +86,7 @@ class TestTimingControllerRotationControl:
         tc.start_rotation()
         tc.advance_angle(1)
         assert tc.angle == 1
-        assert tc.is_rotating == True
+        assert tc.is_rotating
 
 
 class TestMechanicalPhases:
@@ -479,7 +478,7 @@ class TestFullCycleSim:
         """After full cycle, is_rotating should be False."""
         tc = TimingController()
         tc.run_full_cycle()
-        assert tc.is_rotating == False
+        assert not tc.is_rotating
 
     def test_multiple_full_cycles(self):
         """Multiple full cycles should track rotation correctly."""
@@ -521,8 +520,8 @@ class TestStateQueries:
     def test_is_in_phase_idle(self):
         """is_in_phase() should correctly identify IDLE phase."""
         tc = TimingController()
-        assert tc.is_in_phase(MechanicalPhase.IDLE) == True
-        assert tc.is_in_phase(MechanicalPhase.INPUT) == False
+        assert tc.is_in_phase(MechanicalPhase.IDLE)
+        assert not tc.is_in_phase(MechanicalPhase.INPUT)
 
     def test_is_in_phase_after_advance(self):
         """is_in_phase() reflects current self.phase property."""
@@ -532,12 +531,12 @@ class TestStateQueries:
         tc.advance_angle(1)
         # advance_angle() doesn't update self.phase, only emits events
         # self.phase is still IDLE from initialization
-        assert tc.is_in_phase(MechanicalPhase.IDLE) == True
-        assert tc.is_in_phase(MechanicalPhase.INPUT) == False
+        assert tc.is_in_phase(MechanicalPhase.IDLE)
+        assert not tc.is_in_phase(MechanicalPhase.INPUT)
         # But if we call update_phase(), it will sync to actual phase
         tc.update_phase()
-        assert tc.is_in_phase(MechanicalPhase.INPUT) == True
-        assert tc.is_in_phase(MechanicalPhase.IDLE) == False
+        assert tc.is_in_phase(MechanicalPhase.INPUT)
+        assert not tc.is_in_phase(MechanicalPhase.IDLE)
 
     def test_get_angle(self):
         """get_angle() should return current shaft angle."""
@@ -609,7 +608,7 @@ class TestReset:
         tc = TimingController()
         tc.start_rotation()
         tc.reset()
-        assert tc.is_rotating == False
+        assert not tc.is_rotating
 
     def test_reset_events(self):
         """reset() should clear event history."""
@@ -675,7 +674,7 @@ class TestSnapshots:
         tc = TimingController()
         tc.start_rotation()
         snapshot = tc.get_snapshot()
-        assert snapshot.is_rotating == True
+        assert snapshot.is_rotating
 
     def test_snapshot_is_isolated_copy(self):
         """Snapshot should be independent of controller state."""
@@ -838,8 +837,8 @@ class TestEdgeCasesAndIntegration:
         tc1.advance_angle(90)
         assert tc1.angle == 90
         assert tc2.angle == 0
-        assert tc1.is_rotating == True
-        assert tc2.is_rotating == False
+        assert tc1.is_rotating
+        assert not tc2.is_rotating
 
     def test_callback_exception_handling(self):
         """Callback that raises exception should not crash controller."""

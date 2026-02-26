@@ -7,10 +7,9 @@ so tests can assert historical values without floating-point drift.
 from __future__ import annotations
 
 from fractions import Fraction
-from typing import List
 
 
-def bernoulli_numbers(n_max: int) -> List[Fraction]:
+def bernoulli_numbers(n_max: int) -> list[Fraction]:
     """Compute Bernoulli numbers B_0..B_n_max (Akiyama–Tanigawa).
 
     Convention:
@@ -19,8 +18,8 @@ def bernoulli_numbers(n_max: int) -> List[Fraction]:
     if n_max < 0:
         raise ValueError("n_max must be >= 0")
 
-    a: List[Fraction] = [Fraction(0) for _ in range(n_max + 1)]
-    b: List[Fraction] = []
+    a: list[Fraction] = [Fraction(0) for _ in range(n_max + 1)]
+    b: list[Fraction] = []
     for m in range(n_max + 1):
         a[m] = Fraction(1, m + 1)
         for j in range(m, 0, -1):
@@ -39,7 +38,7 @@ def bernoulli_odd_by_index(n: int) -> Fraction:
     return bernoulli_numbers(2 * n - 1)[2 * n - 1]
 
 
-def bernoulli_odd_series(n_max: int) -> List[Fraction]:
+def bernoulli_odd_series(n_max: int) -> list[Fraction]:
     """Return [B1, B3, ..., B_(2n_max-1)] for n_max>=1."""
     if n_max < 1:
         raise ValueError("n_max must be >= 1")
@@ -47,7 +46,7 @@ def bernoulli_odd_series(n_max: int) -> List[Fraction]:
     return [bs[2 * n - 1] for n in range(1, n_max + 1)]
 
 
-def ada_lovelace_bernoulli_series(n_max: int) -> List[Fraction]:
+def ada_lovelace_bernoulli_series(n_max: int) -> list[Fraction]:
     """Return [B1, B3, B5, ...] as used in Ada's Note G diagram.
 
     Ada's odd-index labelling maps to modern even-index Bernoulli numbers:

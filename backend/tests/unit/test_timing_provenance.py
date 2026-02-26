@@ -9,7 +9,6 @@ import yaml
 
 from backend.src.emulator.simulation.state import SimulationConfig
 
-
 TIMING_YAML = (
     Path(__file__).parent.parent.parent.parent
     / "docs"

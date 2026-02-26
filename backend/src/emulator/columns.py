@@ -21,8 +21,6 @@ References:
   - Working hardware (1991 DE2): Physical implementation verified
 """
 
-from typing import List, Tuple, Dict, Optional
-from dataclasses import dataclass, field
 from .types import ColumnSnapshot
 
 
@@ -52,7 +50,7 @@ class DigitColumn:
             initial_value: Initial numeric value (0 by default)
         """
         self.column_index = column_index
-        self.digits: List[int] = [0] * 31
+        self.digits: list[int] = [0] * 31
         self.carry_in = False
         self.carry_out = False
         self.is_latched = False
@@ -94,7 +92,7 @@ class DigitColumn:
             result = result * 10 + self.digits[i]
         return result
 
-    def add_difference(self, difference_digits: List[int]) -> None:
+    def add_difference(self, difference_digits: list[int]) -> None:
         """
         Add difference row to column with carry propagation.
 
@@ -250,7 +248,7 @@ class ColumnBank:
         values = bank.get_all_values()          # Extract all 8 values
     """
 
-    def __init__(self, initial_differences: Optional[List[int]] = None):
+    def __init__(self, initial_differences: list[int] | None = None):
         """
         Initialize column bank with 8 columns.
 
@@ -266,7 +264,7 @@ class ColumnBank:
             for i, value in enumerate(initial_differences):
                 self.columns[i].set_value_from_int(value)
 
-    def add_difference_row(self, difference_rows: List[List[int]]) -> None:
+    def add_difference_row(self, difference_rows: list[list[int]]) -> None:
         """
         Add synchronized difference row across all 8 columns.
 
@@ -295,7 +293,7 @@ class ColumnBank:
                 if col.get_carry_out():
                     self.columns[i + 1].set_carry_in(True)
 
-    def get_all_values(self) -> List[int]:
+    def get_all_values(self) -> list[int]:
         """
         Extract integer values from all 8 columns.
 
@@ -304,7 +302,7 @@ class ColumnBank:
         """
         return [col.get_value_as_int() for col in self.columns]
 
-    def set_all_values(self, values: List[int]) -> None:
+    def set_all_values(self, values: list[int]) -> None:
         """
         Set all 8 columns to given values.
 
@@ -335,7 +333,7 @@ class ColumnBank:
         for col in self.columns:
             col.reset()
 
-    def state_snapshot(self) -> List[ColumnSnapshot]:
+    def state_snapshot(self) -> list[ColumnSnapshot]:
         """
         Capture state of all 8 columns for debugging.
 

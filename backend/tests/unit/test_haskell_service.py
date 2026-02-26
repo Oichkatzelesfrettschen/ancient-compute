@@ -9,9 +9,10 @@ Tests cover:
 - QuickCheck property testing
 """
 
+
 import pytest
-import asyncio
-from backend.src.services.languages.haskell_service import HaskellService, ExecutionStatus
+
+from backend.src.services.languages.haskell_service import ExecutionStatus, HaskellService
 
 
 @pytest.fixture
@@ -25,7 +26,7 @@ async def test_haskell_hello_world(haskell_service):
     """Test simple hello world program"""
     code = 'main = putStrLn "Hello, Haskell!"'
     result = await haskell_service.execute(code)
-    
+
     # Would pass if Docker is available and Haskell container is built
     assert result is not None
     # Status depends on Docker availability
@@ -42,7 +43,7 @@ factorial n = n * factorial (n - 1)
 main = print (factorial 5)
 '''
     result = await haskell_service.execute(code)
-    
+
     assert result is not None
     # assert result.status == ExecutionStatus.SUCCESS
     # assert "120" in result.stdout
@@ -53,7 +54,7 @@ async def test_haskell_type_error(haskell_service):
     """Test type error detection"""
     code = 'main = print (1 + "2")'
     result = await haskell_service.execute(code)
-    
+
     assert result is not None
     # assert result.status == ExecutionStatus.COMPILE_ERROR
     # assert "type" in result.stderr.lower()
@@ -69,7 +70,7 @@ fibonacci n = fibonacci (n-1) + fibonacci (n-2)
 main = print (fibonacci 10)
 '''
     result = await haskell_service.execute(code)
-    
+
     assert result is not None
     # assert result.status == ExecutionStatus.SUCCESS
     # assert "55" in result.stdout
@@ -80,7 +81,7 @@ async def test_haskell_list_processing(haskell_service):
     """Test list processing and map"""
     code = 'main = print (map (*2) [1..10])'
     result = await haskell_service.execute(code)
-    
+
     assert result is not None
     # assert result.status == ExecutionStatus.SUCCESS
     # assert "[2,4,6,8,10,12,14,16,18,20]" in result.stdout
@@ -145,7 +146,7 @@ main = do
     putStrLn (sign 0)
 '''
     result = await haskell_service.execute(code)
-    
+
     assert result is not None
     # assert result.status == ExecutionStatus.SUCCESS
     # assert "positive" in result.stdout
@@ -166,7 +167,7 @@ quadratic a b c x = a * x^2 + b * x + c
 main = print (quadratic 1 2 1 5)
 '''
     result = await haskell_service.execute(code)
-    
+
     assert result is not None
     # assert result.status == ExecutionStatus.SUCCESS
     # assert "36" in result.stdout

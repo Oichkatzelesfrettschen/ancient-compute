@@ -21,7 +21,6 @@ References:
   - Menabrea/Lovelace. "Notes on the Analytical Engine" (1843)
 """
 
-from typing import List, Optional, Dict, Tuple
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -41,11 +40,11 @@ class PrinterSnapshot:
     """Complete state of printer mechanism at a point in time."""
 
     state: PrinterState                 # Current mechanical state
-    type_wheels: List[int]              # 8 digit positions (0-9 each)
+    type_wheels: list[int]              # 8 digit positions (0-9 each)
     inking_engaged: bool                # Inking roller active
     hammer_ready: bool                  # Hammer positioned
     platen_position: int                # Current line number
-    printed_lines: List[str] = field(default_factory=list)  # Lines printed so far
+    printed_lines: list[str] = field(default_factory=list)  # Lines printed so far
     total_operations: int = 0           # Total print operations
 
 
@@ -55,7 +54,7 @@ class StereotyperSnapshot:
 
     x_position: int                     # 0-7 (digit column positions)
     y_position: int                     # 0-49 (line positions)
-    mold_image: Dict[Tuple[int, int], bool] = field(default_factory=dict)  # (x,y) -> raised
+    mold_image: dict[tuple[int, int], bool] = field(default_factory=dict)  # (x,y) -> raised
     molds_completed: int = 0            # Completed and extracted molds
     current_height: int = 0             # Current y-position for mold build
 
@@ -87,11 +86,11 @@ class Printer:
     def __init__(self):
         """Initialize printer with empty state."""
         self.state = PrinterState.IDLE
-        self.type_wheels: List[int] = [0] * self.NUM_COLUMNS  # 8 wheels, each 0-9
+        self.type_wheels: list[int] = [0] * self.NUM_COLUMNS  # 8 wheels, each 0-9
         self.inking_engaged = False
         self.hammer_ready = False
         self.platen_position = 0        # Current line (0 = top of page)
-        self.printed_lines: List[str] = []
+        self.printed_lines: list[str] = []
         self.total_operations = 0
 
     def print_number(self, number: int) -> str:
@@ -176,7 +175,7 @@ class Printer:
         self.platen_position = 0
         self.total_operations += 1
 
-    def print_multiple(self, numbers: List[int]) -> List[str]:
+    def print_multiple(self, numbers: list[int]) -> list[str]:
         """
         Print a sequence of numbers.
 
@@ -201,7 +200,7 @@ class Printer:
         """
         return "\n".join(self.printed_lines)
 
-    def get_current_page(self) -> List[str]:
+    def get_current_page(self) -> list[str]:
         """
         Get lines printed on current page.
 
@@ -281,8 +280,8 @@ class Stereotyper:
         """Initialize stereotyper with empty mold."""
         self.x_position = 0              # Current column (0-7)
         self.y_position = 0              # Current row (0-49)
-        self.mold_image: Dict[Tuple[int, int], bool] = {}  # (x,y) -> raised (True/False)
-        self.completed_molds: List[Dict[Tuple[int, int], bool]] = []
+        self.mold_image: dict[tuple[int, int], bool] = {}  # (x,y) -> raised (True/False)
+        self.completed_molds: list[dict[tuple[int, int], bool]] = []
         self.total_operations = 0
 
     def engrave_digit(self, x: int, digit: int) -> None:
@@ -336,7 +335,7 @@ class Stereotyper:
         self.y_position += 1
         self.total_operations += 1
 
-    def engrave_multiple(self, numbers: List[int]) -> None:
+    def engrave_multiple(self, numbers: list[int]) -> None:
         """
         Engrave multiple numbers to current mold.
 
@@ -348,7 +347,7 @@ class Stereotyper:
                 self.extract_mold()
             self.engrave_number(number)
 
-    def extract_mold(self) -> Dict[Tuple[int, int], bool]:
+    def extract_mold(self) -> dict[tuple[int, int], bool]:
         """
         Extract current mold (move to completed storage).
 
@@ -369,7 +368,7 @@ class Stereotyper:
 
         return mold
 
-    def get_mold_image(self) -> Dict[Tuple[int, int], bool]:
+    def get_mold_image(self) -> dict[tuple[int, int], bool]:
         """
         Get current mold image.
 
@@ -378,7 +377,7 @@ class Stereotyper:
         """
         return self.mold_image.copy()
 
-    def get_mold_as_grid(self) -> List[List[bool]]:
+    def get_mold_as_grid(self) -> list[list[bool]]:
         """
         Get current mold as 2D grid (for visualization).
 
@@ -476,7 +475,7 @@ class PrinterStereotyperSystem:
 
         return output
 
-    def output_sequence(self, numbers: List[int]) -> List[str]:
+    def output_sequence(self, numbers: list[int]) -> list[str]:
         """
         Output a sequence of numbers.
 
@@ -492,7 +491,7 @@ class PrinterStereotyperSystem:
             results.append(output)
         return results
 
-    def get_snapshot(self) -> Dict:
+    def get_snapshot(self) -> dict:
         """
         Get complete system state snapshot.
 

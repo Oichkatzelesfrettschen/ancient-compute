@@ -1,5 +1,5 @@
-import pytest
 from backend.src.emulator.analytical_engine import BabbageNumber, Engine, Instruction
+
 
 # Test BabbageNumber class
 def test_babbage_number_init():
@@ -33,8 +33,8 @@ def test_engine_add_immediate():
     instruction = Instruction('ADD', ['A', '10'])
     engine.execute_instruction(instruction)
     assert engine.registers['A'].to_decimal() == 15.0
-    assert engine.flags['ZERO'] == False
-    assert engine.flags['SIGN'] == False
+    assert not engine.flags['ZERO']
+    assert not engine.flags['SIGN']
 
 def test_engine_load_immediate():
     engine = Engine()

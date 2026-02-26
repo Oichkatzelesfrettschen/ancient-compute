@@ -17,12 +17,10 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
 
 import yaml
 
-from backend.src.emulator.materials import MaterialLibrary, MaterialProperties
-
+from backend.src.emulator.materials import MaterialLibrary
 
 # ---------------------------------------------------------------------------
 # Friction Heat Model (Shigley Ch.12-13)
@@ -143,7 +141,7 @@ class OperatingEnvelope:
     ambient_T_min_C: float = 10.0
     ambient_T_max_C: float = 40.0
     total_heat_generation_W: float = 0.0
-    heat_sources: List[HeatSource] = field(default_factory=list)
+    heat_sources: list[HeatSource] = field(default_factory=list)
     steady_state_rise_C: float = 0.0
     thermal_time_constant_s: float = 0.0
 
@@ -192,7 +190,7 @@ def compute_steady_state_rise_C(
 # ---------------------------------------------------------------------------
 
 def compute_engine_thermal_model(
-    schema_path: Optional[str] = None,
+    schema_path: str | None = None,
 ) -> OperatingEnvelope:
     """Build a complete thermal model from sim_schema.yaml parameters.
 
@@ -213,7 +211,7 @@ def compute_engine_thermal_model(
     total_power_W = float(drive.get("estimated_power_W", 500))
 
     envelope = OperatingEnvelope()
-    sources: List[HeatSource] = []
+    sources: list[HeatSource] = []
 
     # -- Bearings --
     bearings = mech.get("bearings", {})
@@ -398,7 +396,7 @@ class TransientThermalSolver:
         duration_s: float,
         dt_s: float = 1.0,
         method: str = "crank_nicolson",
-    ) -> List[Tuple[float, float]]:
+    ) -> list[tuple[float, float]]:
         """Compute temperature vs time from cold start.
 
         Returns list of (time_s, temperature_C) tuples.

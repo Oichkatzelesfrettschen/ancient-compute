@@ -7,12 +7,13 @@ Provides REST API for the emulator frontend:
 - State inspection and management
 """
 
-from fastapi import APIRouter, HTTPException, Depends
-from pydantic import BaseModel
-from typing import List, Tuple, Dict, Any, Optional
+from typing import Any
 
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
+
+from backend.src.emulator.debugger import BreakpointType, Debugger
 from backend.src.emulator.machine import DEMachine
-from backend.src.emulator.debugger import Debugger, BreakpointType
 from backend.src.emulator.timing import MechanicalPhase
 
 # Router
@@ -27,8 +28,8 @@ class EmulatorState:
     """
 
     def __init__(self) -> None:
-        self.emulator: Optional[DEMachine] = None
-        self.debugger: Optional[Debugger] = None
+        self.emulator: DEMachine | None = None
+        self.debugger: Debugger | None = None
 
 
 _state = EmulatorState()
@@ -47,8 +48,8 @@ def get_emulator_state() -> EmulatorState:
 class ExecuteRequest(BaseModel):
     """Request to execute a polynomial evaluation"""
 
-    coefficients: List[int]
-    x_range: Tuple[int, int]
+    coefficients: list[int]
+    x_range: tuple[int, int]
     execution_speed: float = 1.0
 
 
@@ -65,27 +66,27 @@ class ExecuteResponse(BaseModel):
     """Response from polynomial execution"""
 
     success: bool
-    results: Optional[List[ExecutionResultItem]] = None
-    totalCycles: Optional[int] = None
-    executionTime: Optional[float] = None
-    error: Optional[str] = None
+    results: list[ExecutionResultItem] | None = None
+    totalCycles: int | None = None
+    executionTime: float | None = None
+    error: str | None = None
 
 
 class BreakpointRequest(BaseModel):
     """Request to set a breakpoint"""
 
     type: str  # CYCLE, PHASE, VALUE_CHANGE, CONDITION
-    cycle_target: Optional[int] = None
-    phase_target: Optional[str] = None
-    variable_name: Optional[str] = None
+    cycle_target: int | None = None
+    phase_target: str | None = None
+    variable_name: str | None = None
 
 
 class BreakpointResponse(BaseModel):
     """Response from breakpoint operation"""
 
     success: bool
-    breakpointId: Optional[int] = None
-    error: Optional[str] = None
+    breakpointId: int | None = None
+    error: str | None = None
 
 
 class VariableRequest(BaseModel):
@@ -101,8 +102,8 @@ class StateResponse(BaseModel):
     cycle: int
     phase: str
     angle: int
-    columns: List[int]
-    carrySignals: List[bool]
+    columns: list[int]
+    carrySignals: list[bool]
     accumulator: int
     totalOperations: int
 
@@ -180,18 +181,17 @@ async def execute_polynomial(
         state.emulator = DEMachine()
 
     if request.x_range[0] < 0 or request.x_range[1] < 0:
-        raise HTTPException(status_code=422, detail="X range values must be non-negative")
+        return ExecuteResponse(success=False, error="X range values must be non-negative")
     if request.x_range[0] > request.x_range[1]:
-        raise HTTPException(
-            status_code=422,
-            detail="X start must be less than or equal to X end",
+        return ExecuteResponse(
+            success=False, error="X start must be less than or equal to X end"
         )
 
     try:
         results = []
-        temp_emu = DEMachine()
+        emu = state.emulator
         for x in range(request.x_range[0], request.x_range[1] + 1):
-            temp_results = temp_emu.evaluate_polynomial(
+            temp_results = emu.evaluate_polynomial(
                 request.coefficients, (x, x)
             )
             result = temp_results[0] if temp_results else 0
@@ -199,15 +199,15 @@ async def execute_polynomial(
                 ExecutionResultItem(
                     x=x,
                     result=result,
-                    cycle=temp_emu.cycle_count,
-                    phase=temp_emu.timing.phase.value,
+                    cycle=emu.cycle_count,
+                    phase=emu.timing.phase.value,
                 )
             )
 
         return ExecuteResponse(
             success=True,
             results=results,
-            totalCycles=temp_emu.cycle_count,
+            totalCycles=emu.cycle_count,
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Polynomial evaluation failed: {e}")
@@ -264,7 +264,7 @@ async def debug_step(
 
 @router.post("/debug/continue")
 async def debug_continue(
-    max_cycles: Optional[int] = 1000,
+    max_cycles: int | None = 1000,
     state: EmulatorState = Depends(get_emulator_state),
 ):
     """Continue execution until breakpoint or max cycles"""
@@ -286,8 +286,13 @@ async def set_breakpoint(
     """Set a new breakpoint"""
     _, dbg = _require_initialized(state)
 
-    breakpoint_type = BreakpointType[request.type]
-    kwargs: Dict[str, Any] = {}
+    try:
+        breakpoint_type = BreakpointType[request.type]
+    except KeyError:
+        return BreakpointResponse(
+            success=False, error=f"Invalid breakpoint type: {request.type}"
+        )
+    kwargs: dict[str, Any] = {}
 
     if request.type == "CYCLE" and request.cycle_target is not None:
         kwargs["cycle_target"] = request.cycle_target

@@ -17,19 +17,36 @@ Operator precedence (lowest to highest):
 """
 
 from __future__ import annotations
-from typing import List, Optional
-from backend.src.compilers.python_lexer import Token, TokenType, PythonLexer
+
 from backend.src.compilers.python_ast import (
-    Expr, Stmt, BinOp, UnaryOp, Call, Name, Constant, Subscript, Attribute,
-    Assign, Return, If, While, For, FunctionDef, Pass, Break, Continue, ExprStmt,
-    Module
+    Assign,
+    Attribute,
+    BinOp,
+    Break,
+    Call,
+    Constant,
+    Continue,
+    Expr,
+    ExprStmt,
+    For,
+    FunctionDef,
+    If,
+    Module,
+    Name,
+    Pass,
+    Return,
+    Stmt,
+    Subscript,
+    UnaryOp,
+    While,
 )
+from backend.src.compilers.python_lexer import Token, TokenType
 
 
 class PythonParser:
     """Recursive descent parser for Python"""
 
-    def __init__(self, tokens: List[Token]) -> None:
+    def __init__(self, tokens: list[Token]) -> None:
         """Initialize parser with token list"""
         self.tokens = tokens
         self.pos = 0
@@ -87,7 +104,7 @@ class PythonParser:
         while self.current_token.type in (TokenType.INDENT, TokenType.DEDENT):
             self._advance()
 
-    def _parse_statement(self) -> Optional[Stmt]:
+    def _parse_statement(self) -> Stmt | None:
         """Parse a single statement"""
         self._skip_newlines()
 
@@ -229,7 +246,7 @@ class PythonParser:
 
         return For(target=target, iter=iter_expr, body=body)
 
-    def _parse_block(self) -> List[Stmt]:
+    def _parse_block(self) -> list[Stmt]:
         """Parse a block of statements (after INDENT)"""
         statements = []
 
@@ -245,7 +262,7 @@ class PythonParser:
 
         return statements
 
-    def _parse_simple_statement(self) -> Optional[Stmt]:
+    def _parse_simple_statement(self) -> Stmt | None:
         """Parse simple statement (assignment or expression)"""
         expr = self._parse_expression()
 

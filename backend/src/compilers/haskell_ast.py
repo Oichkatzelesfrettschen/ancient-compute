@@ -9,9 +9,9 @@ Represents the structure of parsed Haskell code with support for:
 """
 
 from __future__ import annotations
-from dataclasses import dataclass
-from typing import List, Optional, Any
 
+from dataclasses import dataclass
+from typing import Any, List
 
 # ============================================================================
 # Expressions
@@ -83,7 +83,7 @@ class Case(Expr):
 class CaseBranch:
     """Single branch in case expression"""
     pattern: Pattern
-    guard: Optional[Expr]  # Optional guard condition
+    guard: Expr | None  # Optional guard condition
     body: Expr
 
 
@@ -161,7 +161,7 @@ class PatternTuple(Pattern):
 class PatternList(Pattern):
     """List pattern: [p1, p2, ...] or [h|t]"""
     patterns: List[Pattern]
-    tail: Optional[Pattern] = None  # For [h|t] syntax
+    tail: Pattern | None = None  # For [h|t] syntax
 
 
 @dataclass
@@ -191,7 +191,7 @@ class FunctionDef(Stmt):
 class FunctionEquation:
     """Single equation in function definition"""
     patterns: List[Pattern]  # Argument patterns
-    guard: Optional[Expr]    # Optional guard
+    guard: Expr | None    # Optional guard
     body: Expr
 
 
@@ -245,5 +245,5 @@ class InstanceDecl(Stmt):
 @dataclass
 class Module:
     """Top-level module"""
-    name: Optional[str]  # Module name (if declared)
+    name: str | None  # Module name (if declared)
     declarations: List[Stmt]  # Top-level declarations and definitions

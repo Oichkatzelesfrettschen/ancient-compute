@@ -20,8 +20,6 @@ Historical Context:
   - Represents the transition from mechanical calculation to electro-mechanical logic.
 """
 
-from typing import List, Dict, Optional, Tuple
-from dataclasses import dataclass
 
 # Rotor wiring configurations (Input A-Z maps to output string)
 # Source: http://users.telenet.be/d.rijmenants/en/enigmatech.htm
@@ -75,12 +73,12 @@ class Rotor:
         self.reverse_map = [0] * 26
         for i, out in enumerate(self.forward_map):
             self.reverse_map[out] = i
-            
+
         self.notches = [to_int(c) for c in notches] if notches else []
         self.ring_setting = ring_setting # Ringstellung (0-25)
         self.position = position # Grundstellung (0-25, current rotation)
 
-    def step(self):
+    def step(self) -> None:
         self.position = (self.position + 1) % 26
 
     def is_at_notch(self) -> bool:
@@ -112,7 +110,7 @@ class Reflector:
         return self.map[k]
 
 class Plugboard:
-    def __init__(self, connections: List[str]):
+    def __init__(self, connections: list[str]):
         """
         connections: List of two-char strings, e.g., ["AB", "CD"]
         """
@@ -132,35 +130,35 @@ class EnigmaMachine:
     Enigma Machine Simulator.
     Default configuration: Enigma I (Wehrmacht) with Rotors I, II, III and Reflector B.
     """
-    def __init__(self, rotors: List[str] = ["I", "II", "III"], reflector: str = "B", 
-                 ring_settings: List[int] = [0, 0, 0], plugboard_connections: List[str] = []):
-        
+    def __init__(self, rotors: list[str] = ["I", "II", "III"], reflector: str = "B",
+                 ring_settings: list[int] = [0, 0, 0], plugboard_connections: list[str] = []):
+
         self.rotors = []
         # Rotors are typically listed Left-to-Right in config strings, but physically
         # the signal goes Right -> Middle -> Left -> Reflector
         # We will store them [Left, Middle, Right] to match convention
         # self.rotors[0] is Left (slow), self.rotors[-1] is Right (fast)
-        
+
         for i, name in enumerate(rotors):
             wiring = ROTOR_WIRING.get(name)
             notches = ROTOR_NOTCHES.get(name, "")
             if not wiring:
                 raise ValueError(f"Unknown rotor: {name}")
-            
+
             ring = ring_settings[i] if i < len(ring_settings) else 0
             self.rotors.append(Rotor(name, wiring, notches, ring))
-            
+
         self.reflector = Reflector(reflector, REFLECTOR_WIRING[reflector])
         self.plugboard = Plugboard(plugboard_connections)
 
-    def set_rotor_positions(self, positions: str):
+    def set_rotor_positions(self, positions: str) -> None:
         """Set rotor start positions (Grundstellung), e.g., "ABC"."""
         if len(positions) != len(self.rotors):
             raise ValueError(f"Expected {len(self.rotors)} positions, got {len(positions)}")
         for i, char in enumerate(positions):
             self.rotors[i].position = to_int(char)
 
-    def step_rotors(self):
+    def step_rotors(self) -> None:
         """
         Double stepping mechanism of Enigma.
         - Right rotor always steps.
@@ -171,12 +169,12 @@ class EnigmaMachine:
         l_rotor = self.rotors[0]
         m_rotor = self.rotors[1]
         r_rotor = self.rotors[2]
-        
+
         # Determine who steps BEFORE moving anything
         rotate_l = m_rotor.is_at_notch()
         rotate_m = r_rotor.is_at_notch() or m_rotor.is_at_notch()
         rotate_r = True
-        
+
         if rotate_l: l_rotor.step()
         if rotate_m: m_rotor.step()
         if rotate_r: r_rotor.step()
@@ -184,29 +182,29 @@ class EnigmaMachine:
     def encipher_char(self, char: str) -> str:
         if not char.isalpha():
             return char # Ignore non-letters
-            
+
         k = to_int(char)
-        
+
         # 1. Step rotors
         self.step_rotors()
-        
+
         # 2. Plugboard
         k = self.plugboard.swap(k)
-        
+
         # 3. Rotors Right -> Left
         for rotor in reversed(self.rotors):
             k = rotor.encipher_forward(k)
-            
+
         # 4. Reflector
         k = self.reflector.reflect(k)
-        
+
         # 5. Rotors Left -> Right
         for rotor in self.rotors:
             k = rotor.encipher_reverse(k)
-            
+
         # 6. Plugboard
         k = self.plugboard.swap(k)
-        
+
         return to_char(k)
 
     def process_text(self, text: str) -> str:

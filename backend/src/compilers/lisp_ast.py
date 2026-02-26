@@ -1,6 +1,7 @@
 # Ancient Compute - LISP AST
 
-from typing import List, Union
+from typing import Union
+
 
 class ASTNode:
     pass
@@ -27,7 +28,7 @@ class String(ASTNode):
         return f"String({self.value})"
 
 class SExpression(ASTNode):
-    def __init__(self, children: List[ASTNode]):
+    def __init__(self, children: list[ASTNode]):
         self.children = children
 
     def __repr__(self):

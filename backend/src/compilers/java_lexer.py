@@ -11,9 +11,9 @@ Supports:
 """
 
 from __future__ import annotations
-from enum import Enum, auto
+
 from dataclasses import dataclass
-from typing import List, Optional
+from enum import Enum, auto
 
 
 class TokenType(Enum):
@@ -214,9 +214,9 @@ class JavaLexer:
         self.pos = 0
         self.line = 1
         self.column = 1
-        self.tokens: List[Token] = []
+        self.tokens: list[Token] = []
 
-    def tokenize(self) -> List[Token]:
+    def tokenize(self) -> list[Token]:
         """Tokenize entire source"""
         while self.pos < len(self.source):
             self._skip_whitespace_and_comments()
@@ -245,13 +245,13 @@ class JavaLexer:
         self.tokens.append(Token(TokenType.EOF, '', self.line, self.column))
         return self.tokens
 
-    def _current_char(self) -> Optional[str]:
+    def _current_char(self) -> str | None:
         """Get current character without advancing"""
         if self.pos < len(self.source):
             return self.source[self.pos]
         return None
 
-    def _peek(self, offset: int = 1) -> Optional[str]:
+    def _peek(self, offset: int = 1) -> str | None:
         """Peek ahead"""
         pos = self.pos + offset
         if pos < len(self.source):
@@ -466,7 +466,7 @@ class JavaLexer:
             self.tokens.append(Token(TokenType.BIT_XOR, '^', start_line, start_col))
         elif ch == '~':
             self.tokens.append(Token(TokenType.BIT_NOT, '~', start_line, start_col))
-        elif ch == '(': 
+        elif ch == '(':
             self.tokens.append(Token(TokenType.LPAREN, '(', start_line, start_col))
         elif ch == ')':
             self.tokens.append(Token(TokenType.RPAREN, ')', start_line, start_col))

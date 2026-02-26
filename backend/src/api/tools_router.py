@@ -1,6 +1,8 @@
-from typing import Dict, Any
-from fastapi import APIRouter, Depends, HTTPException
-from backend.src.models.api_schemas import EmulatorState, DebuggerCommand, PerformanceReport
+from typing import Any
+
+from fastapi import APIRouter, Depends
+
+from backend.src.models.api_schemas import DebuggerCommand, PerformanceReport
 from backend.src.services.engine_tools_service import EngineTools
 
 router = APIRouter()
@@ -13,7 +15,7 @@ def get_tools() -> EngineTools:
     return _tools
 
 
-@router.post("/debug/step", response_model=Dict[str, Any])
+@router.post("/debug/step", response_model=dict[str, Any])
 async def debug_step(tools: EngineTools = Depends(get_tools)):
     """Execute one instruction step."""
     return tools.step()

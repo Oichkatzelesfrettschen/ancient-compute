@@ -1,10 +1,10 @@
 # Ancient Compute - Analytical Engine Tools Integration
 
-from typing import Dict, Any, Optional
-from ..emulator.analytical_engine import Engine
 from ..emulator.adapter import AEMachineAdapter
+from ..emulator.analytical_engine import Engine
 from ..emulator.debugger import Debugger
 from ..emulator.performance import PerformanceAnalyzer
+
 
 class EngineTools:
     """
@@ -63,13 +63,13 @@ class EngineTools:
         """Execute one step with debugging and profiling."""
         # 1. Debugger step (checks breakpoints)
         triggered = self.debugger.step()
-        
+
         # 2. Profiler record
         # Get the instruction that was just executed (or about to be)
-        if self.engine.PC < len(self.engine.instruction_cards):
+        if len(self.engine.instruction_cards) > self.engine.PC:
             instr = self.engine.instruction_cards[self.engine.PC]
             self.profiler.record_step(instr)
-            
+
         return {
             "triggered_breakpoints": triggered,
             "state": self.debugger.get_state()

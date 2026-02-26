@@ -11,11 +11,22 @@ Supports:
 """
 
 from __future__ import annotations
-from typing import Dict, Optional, List, Tuple
+
 from backend.src.compilers.java_ast import (
-    Type, PrimitiveType, ReferenceType, ArrayType, TypeParameter,
-    Expr, Literal, Variable, FieldAccess, MethodCall, NewExpression,
-    BinaryOp, UnaryOp, InstanceofExpr, CastExpr
+    ArrayType,
+    BinaryOp,
+    CastExpr,
+    Expr,
+    FieldAccess,
+    InstanceofExpr,
+    Literal,
+    MethodCall,
+    NewExpression,
+    PrimitiveType,
+    ReferenceType,
+    Type,
+    UnaryOp,
+    Variable,
 )
 
 
@@ -38,7 +49,7 @@ class JavaTypeSystem:
     }
 
     def __init__(self) -> None:
-        self.symbols: Dict[str, Type] = {}
+        self.symbols: dict[str, Type] = {}
         self._register_builtins()
 
     def _register_builtins(self) -> None:
@@ -54,7 +65,7 @@ class JavaTypeSystem:
         """Register symbol with type"""
         self.symbols[name] = type_
 
-    def lookup_symbol(self, name: str) -> Optional[Type]:
+    def lookup_symbol(self, name: str) -> Type | None:
         """Look up symbol type"""
         return self.symbols.get(name)
 
@@ -258,9 +269,7 @@ class JavaTypeSystem:
     def to_babbage_type(self, type_: Type) -> str:
         """Map Java type to Babbage IR type"""
         if isinstance(type_, PrimitiveType):
-            if type_.name in ('int', 'short', 'byte', 'char'):
-                return 'i64'
-            elif type_.name in ('long',):
+            if type_.name in ('int', 'short', 'byte', 'char') or type_.name in ('long',):
                 return 'i64'
             elif type_.name in ('float', 'double'):
                 return 'f64'
@@ -275,7 +284,7 @@ class JavaTypeSystem:
 
         return 'ptr'
 
-    def check_method_compatibility(self, param_types: List[Type], arg_types: List[Type]) -> bool:
+    def check_method_compatibility(self, param_types: list[Type], arg_types: list[Type]) -> bool:
         """Check if arguments match parameter types"""
         if len(param_types) != len(arg_types):
             return False
@@ -286,7 +295,7 @@ class JavaTypeSystem:
 
         return True
 
-    def get_common_type(self, types: List[Type]) -> Optional[Type]:
+    def get_common_type(self, types: list[Type]) -> Type | None:
         """Find common type among multiple types"""
         if not types:
             return None

@@ -21,12 +21,9 @@ Historical Context:
 - This test suite validates all mechanisms working together as designed
 """
 
-import pytest
-from backend.src.emulator.machine import DEMachine, DEMachineSnapshot
-from backend.src.emulator.timing import MechanicalPhase
-from backend.src.emulator.card_reader import CardReader
-from backend.src.emulator.printer import Printer, Stereotyper, PrinterStereotyperSystem
-from backend.src.emulator.debugger import Debugger, BreakpointType
+from backend.src.emulator.debugger import Debugger
+from backend.src.emulator.machine import DEMachine
+from backend.src.emulator.printer import Printer, PrinterStereotyperSystem
 
 
 class TestIOPipeline:

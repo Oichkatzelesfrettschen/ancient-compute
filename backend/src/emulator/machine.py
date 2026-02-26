@@ -25,12 +25,12 @@ References:
   - Menabrea/Lovelace: Notes on the Analytical Engine (1843)
 """
 
-from typing import List, Optional, Dict, Tuple
 from dataclasses import dataclass
+
 from backend.src.emulator.analytical_engine import Engine
-from backend.src.emulator.columns import ColumnBank
 from backend.src.emulator.carry import AnticipatingCarriage
-from backend.src.emulator.timing import TimingController, MechanicalPhase
+from backend.src.emulator.columns import ColumnBank
+from backend.src.emulator.timing import MechanicalPhase, TimingController
 
 
 @dataclass
@@ -40,8 +40,8 @@ class OperationResult:
     operation: str                      # Operation name
     phase: MechanicalPhase              # Mechanical phase
     success: bool                       # Operation succeeded
-    data: Optional[Dict] = None         # Optional result data
-    error: Optional[str] = None         # Optional error message
+    data: dict | None = None         # Optional result data
+    error: str | None = None         # Optional error message
 
 
 @dataclass
@@ -51,8 +51,8 @@ class DEMachineSnapshot:
     cycle_count: int                    # Total cycles completed
     current_phase: MechanicalPhase      # Current mechanical phase
     timing_angle: int                   # Current shaft angle (0-360)
-    column_values: List[int]            # Current column values
-    carry_signals: List[bool]           # Current carry signals
+    column_values: list[int]            # Current column values
+    carry_signals: list[bool]           # Current carry signals
     ae_accumulator: int                 # Analytical Engine accumulator
     total_operations: int               # Total operations executed
 
@@ -78,7 +78,7 @@ class DEMachine:
       # Each cycle computes difference and outputs result
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize DEMachine with all subsystems."""
         self.analytical_engine = Engine()
         self.column_bank = ColumnBank()
@@ -87,7 +87,7 @@ class DEMachine:
 
         self.cycle_count = 0                # Total cycles completed
         self.total_operations = 0           # Total operations executed
-        self.operation_history: List[OperationResult] = []
+        self.operation_history: list[OperationResult] = []
 
     def run_full_cycle(self) -> int:
         """
@@ -111,7 +111,7 @@ class DEMachine:
         self._process_phase_reset()
 
         self.cycle_count += 1
-        return self.total_operations - initial_ops
+        return int(self.total_operations - initial_ops)
 
     def _process_phase_input(self) -> None:
         """Load difference values from analytical engine to column bank."""
@@ -213,8 +213,8 @@ class DEMachine:
         operation: str,
         phase: MechanicalPhase,
         success: bool,
-        data: Optional[Dict] = None,
-        error: Optional[str] = None,
+        data: dict | None = None,
+        error: str | None = None,
     ) -> None:
         """Record operation for history and debugging."""
         result = OperationResult(
@@ -223,27 +223,27 @@ class DEMachine:
         self.operation_history.append(result)
         self.total_operations += 1
 
-    def get_column_values(self) -> List[int]:
+    def get_column_values(self) -> list[int]:
         """Get current values of all 8 columns."""
         return [col.get_value_as_int() for col in self.column_bank.columns]
 
-    def set_column_values(self, values: List[int]) -> None:
+    def set_column_values(self, values: list[int]) -> None:
         """Set initial column values."""
         for i, val in enumerate(values):
             if i < 8:
                 self.column_bank.columns[i].set_value_from_int(val)
 
-    def get_difference_values(self) -> List[int]:
+    def get_difference_values(self) -> list[int]:
         """Get primary difference values (column 0-7 at output)."""
         return self.get_column_values()
 
-    def set_difference_values(self, values: List[int]) -> None:
+    def set_difference_values(self, values: list[int]) -> None:
         """Set input difference values."""
         self.set_column_values(values)
 
     def evaluate_polynomial(
-        self, coefficients: List[int], x_range: Tuple[int, int]
-    ) -> List[int]:
+        self, coefficients: list[int], x_range: tuple[int, int]
+    ) -> list[int]:
         """
         Evaluate polynomial f(x) = a_0 + a_1*x + a_2*x^2 + ... using DE2.
 
@@ -303,7 +303,7 @@ class DEMachine:
             total_operations=self.total_operations,
         )
 
-    def get_operation_history(self, limit: int = 10) -> List[OperationResult]:
+    def get_operation_history(self, limit: int = 10) -> list[OperationResult]:
         """Get recent operation history."""
         return self.operation_history[-limit:]
 

@@ -8,8 +8,7 @@ Requires: backend/src/emulator/machine.py
 Test structure: 40+ tests covering initialization, operations, cycles, polynomial eval
 """
 
-import pytest
-from backend.src.emulator.machine import DEMachine, DEMachineSnapshot, OperationResult
+from backend.src.emulator.machine import DEMachine, OperationResult
 from backend.src.emulator.timing import MechanicalPhase
 
 
@@ -174,7 +173,7 @@ class TestOperationHistory:
         de = DEMachine()
         de.run_full_cycle()
         for op in de.operation_history:
-            assert op.success == True
+            assert op.success
 
     def test_get_operation_history_limit(self):
         """get_operation_history(limit) should return last N operations."""
@@ -203,7 +202,7 @@ class TestOperationResult:
         )
         assert result.operation == "TEST"
         assert result.phase == MechanicalPhase.INPUT
-        assert result.success == True
+        assert result.success
 
     def test_operation_result_with_data(self):
         """Operation result can contain optional data."""
@@ -439,7 +438,7 @@ class TestEdgeCasesAndIntegration:
         de = DEMachine()
         de.run_full_cycle()
         # Carriage should be deactivated after cycle
-        assert de.carriage.is_active == False
+        assert not de.carriage.is_active
 
     def test_timing_integration(self):
         """DEMachine coordinates with TimingController."""

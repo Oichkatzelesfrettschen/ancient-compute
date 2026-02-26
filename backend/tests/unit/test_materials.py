@@ -9,7 +9,6 @@ Validates:
 - Error handling for missing materials
 """
 
-import math
 import pytest
 
 pytestmark = pytest.mark.physics

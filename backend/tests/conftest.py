@@ -5,6 +5,10 @@ import pytest
 def pytest_configure(config):
     """Register custom markers."""
     config.addinivalue_line("markers", "physics: physics/simulation tests")
+    config.addinivalue_line(
+        "markers",
+        "db: marks tests that require a database connection (skip with -m 'not db')",
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -43,18 +47,21 @@ def simulation_engine(simulation_config):
     return SimulationEngine(simulation_config)
 
 
-# Conditional imports for API testing (optional)
-# Guard with importorskip so pytest reports a clear skip reason
-# rather than silently swallowing import errors.
+# ---------------------------------------------------------------------------
+# DB fixtures -- conditional on database availability
+# ---------------------------------------------------------------------------
+# importorskip so pytest reports a clear skip reason when deps missing
 _fastapi = pytest.importorskip("fastapi", reason="FastAPI not installed")
 _sqlalchemy = pytest.importorskip("sqlalchemy", reason="SQLAlchemy not installed")
 
 try:
-    from src.database import Base, get_db
-    from src.main import app
+    from backend.src.database import Base, get_db
+    from backend.src.main import app
     _HAS_DB = True
 except ImportError:
     _HAS_DB = False
+
+_DB_SKIP_REASON = "database fixtures unavailable (DB not configured)"
 
 if _HAS_DB:
     from fastapi.testclient import TestClient
@@ -64,12 +71,12 @@ if _HAS_DB:
 
     SQLALCHEMY_DATABASE_URL = "sqlite:///:memory:"
 
-    engine = create_engine(
+    _engine = create_engine(
         SQLALCHEMY_DATABASE_URL,
         connect_args={"check_same_thread": False},
         poolclass=StaticPool,
     )
-    TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=_engine)
 
     def override_get_db():
         """Override database dependency for testing."""
@@ -82,7 +89,7 @@ if _HAS_DB:
     @pytest.fixture(scope="function")
     def db():
         """Get a database session for testing."""
-        connection = engine.connect()
+        connection = _engine.connect()
         transaction = connection.begin()
         session = TestingSessionLocal(bind=connection)
         yield session
@@ -93,9 +100,9 @@ if _HAS_DB:
     @pytest.fixture(scope="function")
     def test_db():
         """Create a fresh database schema for each test."""
-        Base.metadata.create_all(bind=engine)
+        Base.metadata.create_all(bind=_engine)
         yield
-        Base.metadata.drop_all(bind=engine)
+        Base.metadata.drop_all(bind=_engine)
 
     @pytest.fixture(scope="function")
     def client(test_db):
@@ -104,3 +111,17 @@ if _HAS_DB:
         with TestClient(app) as test_client:
             yield test_client
         app.dependency_overrides.clear()
+
+else:
+    # When DB is not available, define skip fixtures so tests SKIP instead of ERROR.
+    @pytest.fixture(scope="function")
+    def db():
+        pytest.skip(_DB_SKIP_REASON)
+
+    @pytest.fixture(scope="function")
+    def test_db():
+        pytest.skip(_DB_SKIP_REASON)
+
+    @pytest.fixture(scope="function")
+    def client():
+        pytest.skip(_DB_SKIP_REASON)

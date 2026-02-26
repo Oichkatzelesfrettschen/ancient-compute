@@ -14,11 +14,27 @@ Example: Vect n a (vector of length n containing type a)
 """
 
 from __future__ import annotations
-from typing import Dict, List, Optional, Tuple, Union
+
+from typing import Union
+
 from backend.src.compilers.idris_ast import (
-    Type, BaseType, TypeVariable, FunctionType, DependentType, TypeFamily, RefinementType,
-    Expr, Var, Literal, Lambda, Application, LetExpr, CaseExpr, IfExpr, ProofExpr,
-    DataConstructor
+    Application,
+    BaseType,
+    CaseExpr,
+    DataConstructor,
+    DependentType,
+    Expr,
+    FunctionType,
+    IfExpr,
+    Lambda,
+    LetExpr,
+    Literal,
+    ProofExpr,
+    RefinementType,
+    Type,
+    TypeFamily,
+    TypeVariable,
+    Var,
 )
 
 
@@ -47,9 +63,9 @@ class IDRISTypeSystem:
     """Type system for IDRIS2 with dependent types"""
 
     def __init__(self) -> None:
-        self.symbols: Dict[str, IDRISType] = {}
-        self.functions: Dict[str, FunctionType] = {}
-        self.data_types: Dict[str, Tuple[List[Tuple[str, Type]], List[Tuple[str, Type]]]] = {}
+        self.symbols: dict[str, IDRISType] = {}
+        self.functions: dict[str, FunctionType] = {}
+        self.data_types: dict[str, tuple[list[tuple[str, Type]], list[tuple[str, Type]]]] = {}
 
         # Pre-register built-in types
         self._register_builtins()
@@ -77,7 +93,7 @@ class IDRISTypeSystem:
         """Register symbol with type"""
         self.symbols[name] = IDRISType(type_, is_dependent)
 
-    def lookup_symbol(self, name: str) -> Optional[IDRISType]:
+    def lookup_symbol(self, name: str) -> IDRISType | None:
         """Look up symbol type"""
         return self.symbols.get(name)
 
@@ -89,8 +105,8 @@ class IDRISTypeSystem:
     def register_data_type(
         self,
         name: str,
-        type_params: List[Tuple[str, Type]],
-        constructors: List[Tuple[str, Type]]
+        type_params: list[tuple[str, Type]],
+        constructors: list[tuple[str, Type]]
     ) -> None:
         """Register data type definition"""
         self.data_types[name] = (type_params, constructors)
@@ -259,7 +275,7 @@ class IDRISTypeSystem:
 
         return dep_type.return_type
 
-    def instantiate_type_family(self, family: TypeFamily, args: List[Expr]) -> Type:
+    def instantiate_type_family(self, family: TypeFamily, args: list[Expr]) -> Type:
         """Instantiate type family with arguments"""
         # In simplified implementation, just return the family itself
         # Full implementation would compute actual type based on argument values

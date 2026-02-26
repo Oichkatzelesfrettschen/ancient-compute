@@ -9,8 +9,6 @@ This module provides:
 """
 
 from __future__ import annotations
-from enum import Enum
-from typing import Dict, Optional, Set
 
 
 class PythonType:
@@ -118,7 +116,7 @@ class PythonTypeSystem:
         """Check if type can be used in boolean context"""
         return ptype.kind != 'None'
 
-    def operation_type(self, op: str, left: PythonType, right: Optional[PythonType] = None) -> PythonType:
+    def operation_type(self, op: str, left: PythonType, right: PythonType | None = None) -> PythonType:
         """Determine result type of operation"""
         if right is None:
             # Unary operation

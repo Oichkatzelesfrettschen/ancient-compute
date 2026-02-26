@@ -60,37 +60,20 @@ jobs:
         run: |
           cd backend
           pip install -r requirements.txt
-          pip install black isort pylint mypy flake8 bandit safety
+          pip install -r requirements-dev.txt
+          pip install bandit
+
+      - name: Run ruff (lint + import sort, replaces flake8+isort+pylint)
+        run: |
+          cd backend
+          ruff check src/ tests/
+        # Fail on any ruff violation
 
       - name: Run black (code formatting)
         run: |
           cd backend
           black --check --diff src/ tests/
         # Fail on formatting issues
-
-      - name: Run isort (import sorting)
-        run: |
-          cd backend
-          isort --check-only --diff src/ tests/
-        # Fail on import order issues
-
-      - name: Run flake8 (style + errors)
-        # NOTE: flake8 and pylint overlap significantly. A future PR should
-        # consolidate both into ruff (faster, single-tool replacement).
-        # See: https://docs.astral.sh/ruff/faq/#is-ruff-compatible-with-flake8
-        run: |
-          cd backend
-          flake8 src/ tests/ --count --show-source --statistics \
-            --max-line-length=100 \
-            --max-complexity=10 \
-            --ignore=E203,W503
-        # Fail on any flake8 issue
-
-      - name: Run pylint (code quality)
-        run: |
-          cd backend
-          pylint src/ --fail-under=9.0 --rcfile=.pylintrc
-        # Fail if score < 9.0
 
       - name: Run mypy (type checking)
         run: |
@@ -105,15 +88,6 @@ jobs:
           cd backend
           bandit -r src/ -ll -f screen
         # Fail on medium+ severity security issues
-
-      - name: Run safety (dependency vulnerabilities)
-        run: |
-          cd backend
-          safety check --json
-        continue-on-error: true
-        # INFORMATIONAL: Dependency vulnerability reports are advisory.
-        # Upstream packages may lag on patches; failing CI here would
-        # block unrelated work. Review safety output manually.
 
   # TypeScript/JavaScript Frontend
   lint-typescript:
@@ -322,36 +296,6 @@ jobs:
             python3 -m json.tool "$file" > /dev/null
           done
 
-  # Bazel BUILD files
-  lint-bazel:
-    name: Lint Bazel Files
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Check if Bazel files exist
-        id: check_bazel
-        run: |
-          if find . -name "BUILD.bazel" -o -name "WORKSPACE.bazel" -o -name "*.bzl" | grep -q .; then
-            echo "exists=true" >> $GITHUB_OUTPUT
-          else
-            echo "exists=false" >> $GITHUB_OUTPUT
-            echo "⚠️  No Bazel files found - skipping"
-          fi
-
-      - name: Install Buildifier
-        if: steps.check_bazel.outputs.exists == 'true'
-        run: |
-          wget https://github.com/bazelbuild/buildtools/releases/download/v6.4.0/buildifier-linux-amd64
-          chmod +x buildifier-linux-amd64
-          sudo mv buildifier-linux-amd64 /usr/local/bin/buildifier
-
-      - name: Run Buildifier
-        if: steps.check_bazel.outputs.exists == 'true'
-        run: |
-          buildifier -mode=check -lint=warn -warnings=all \
-            $(find . -name "BUILD.bazel" -o -name "WORKSPACE.bazel" -o -name "*.bzl")
-
   # Summary
   lint-summary:
     name: Linting Summary
@@ -366,7 +310,6 @@ jobs:
       - lint-yaml
       - lint-json
       - lint-markdown
-      - lint-bazel
     if: always()
     steps:
       - name: All linting passed

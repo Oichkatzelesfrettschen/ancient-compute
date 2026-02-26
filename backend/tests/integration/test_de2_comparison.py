@@ -20,7 +20,6 @@ from pathlib import Path
 import pytest
 import yaml
 
-
 REPO_ROOT = Path(__file__).resolve().parents[3]
 SIM_SCHEMA = REPO_ROOT / "docs" / "simulation" / "sim_schema.yaml"
 
@@ -330,7 +329,6 @@ class TestDE2TimingComparison:
         DE2 main shaft has 8 mechanical phases at 45 degree intervals.
         """
         from backend.src.emulator.timing import TimingController
-        from backend.src.emulator.types import MechanicalPhase
         tc = TimingController()
         phases_seen = set()
         for angle in range(0, 360, 45):
@@ -362,9 +360,9 @@ class TestDE2SimulationFeasibility:
 
         DE2 operated reliably in museum conditions (~20C ambient).
         """
+        from backend.src.emulator.materials import MaterialLibrary
         from backend.src.emulator.simulation.engine import SimulationEngine
         from backend.src.emulator.simulation.state import SimulationConfig
-        from backend.src.emulator.materials import MaterialLibrary
 
         lib = MaterialLibrary()
         cfg = SimulationConfig(
@@ -382,9 +380,9 @@ class TestDE2SimulationFeasibility:
 
     def test_bearing_clearances_positive_after_warmup(self):
         """All bearing clearances remain positive after thermal warmup."""
+        from backend.src.emulator.materials import MaterialLibrary
         from backend.src.emulator.simulation.engine import SimulationEngine
         from backend.src.emulator.simulation.state import SimulationConfig
-        from backend.src.emulator.materials import MaterialLibrary
 
         lib = MaterialLibrary()
         cfg = SimulationConfig(dt_s=1.0, rpm=30.0)
@@ -395,9 +393,9 @@ class TestDE2SimulationFeasibility:
 
     def test_wear_within_design_tolerance_after_1h(self):
         """Bearing wear after 1 hour should be small relative to clearance."""
+        from backend.src.emulator.materials import MaterialLibrary
         from backend.src.emulator.simulation.engine import SimulationEngine
         from backend.src.emulator.simulation.state import SimulationConfig
-        from backend.src.emulator.materials import MaterialLibrary
 
         lib = MaterialLibrary()
         cfg = SimulationConfig(dt_s=1.0, rpm=30.0)

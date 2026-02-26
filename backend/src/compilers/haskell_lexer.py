@@ -14,9 +14,9 @@ Handles:
 """
 
 from __future__ import annotations
-from enum import Enum, auto
-from typing import List, Optional, Tuple
+
 from dataclasses import dataclass
+from enum import Enum, auto
 
 
 class TokenType(Enum):
@@ -123,10 +123,10 @@ class HaskellLexer:
         self.pos = 0
         self.line = 1
         self.column = 1
-        self.tokens: List[Token] = []
-        self.indent_stack: List[int] = [0]
+        self.tokens: list[Token] = []
+        self.indent_stack: list[int] = [0]
 
-    def tokenize(self) -> List[Token]:
+    def tokenize(self) -> list[Token]:
         """Tokenize source and return list of tokens"""
         while self.pos < len(self.source):
             # Track line starts for indentation

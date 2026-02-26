@@ -1,7 +1,5 @@
 # Ancient Compute Backend - Configuration Management
 
-import os
-from typing import List
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -23,7 +21,7 @@ class Settings(BaseSettings):
 
     # Security
     SECRET_KEY: str = "development-secret-key-change-in-production"
-    ALLOWED_ORIGINS: List[str] = [
+    ALLOWED_ORIGINS: list[str] = [
         "http://localhost:3000",
         "http://localhost:8000",
         "http://frontend:3000",

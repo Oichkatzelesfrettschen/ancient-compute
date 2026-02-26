@@ -19,9 +19,9 @@ Babbage mapping (all types compile to registers):
 """
 
 from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Optional, Dict, List, Tuple
 
 
 class LISPType(ABC):
@@ -107,7 +107,7 @@ class ListType(LISPType):
 @dataclass
 class FunctionType(LISPType):
     """Function type"""
-    arg_types: List[LISPType]
+    arg_types: list[LISPType]
     return_type: LISPType
 
     def __repr__(self) -> str:
@@ -144,7 +144,7 @@ class LISPTypeSystem:
 
     def __init__(self) -> None:
         """Initialize type system"""
-        self.symbol_types: Dict[str, LISPType] = {}
+        self.symbol_types: dict[str, LISPType] = {}
 
     def infer_type_from_literal(self, value) -> LISPType:
         """Infer type from literal value"""
@@ -159,7 +159,7 @@ class LISPTypeSystem:
         else:
             return self.ANY
 
-    def infer_operation_type(self, op: str, arg_types: List[LISPType]) -> LISPType:
+    def infer_operation_type(self, op: str, arg_types: list[LISPType]) -> LISPType:
         """Infer result type of an operation"""
 
         # Arithmetic operations
@@ -240,7 +240,7 @@ class LISPTypeSystem:
         """Register a symbol with a type"""
         self.symbol_types[name] = lisp_type
 
-    def lookup_symbol(self, name: str) -> Optional[LISPType]:
+    def lookup_symbol(self, name: str) -> LISPType | None:
         """Look up symbol type"""
         return self.symbol_types.get(name)
 

@@ -14,25 +14,49 @@ Targets Babbage ISA constraints:
 """
 
 from __future__ import annotations
-from typing import Dict, List, Optional, Any
-from dataclasses import dataclass
-import time
 
+import time
+from dataclasses import dataclass
+
+from backend.src.compilers.python_ast import (
+    Assign,
+    Attribute,
+    BinOp,
+    Break,
+    Call,
+    Constant,
+    Continue,
+    Expr,
+    ExprStmt,
+    For,
+    FunctionDef,
+    If,
+    Module,
+    Name,
+    Pass,
+    Return,
+    Stmt,
+    Subscript,
+    UnaryOp,
+    While,
+)
 from backend.src.compilers.python_lexer import PythonLexer
 from backend.src.compilers.python_parser import PythonParser
-from backend.src.compilers.python_ast import (
-    Expr, Stmt, BinOp, UnaryOp, Call, Name, Constant, Subscript, Attribute,
-    Assign, Return, If, While, For, FunctionDef, Pass, Break, Continue, ExprStmt,
-    Module
-)
-from backend.src.compilers.python_types import PythonType, PythonTypeSystem, BabbageTypeMapper
+from backend.src.compilers.python_types import PythonType, PythonTypeSystem
 from backend.src.ir_types import (
-    Program, Function, BasicBlock, Instruction,
-    Assignment, BinaryOp, Load, Store, Call as IRCall, Return as IRReturn,
-    BranchTerminator, JumpTerminator, ReturnTerminator,
-    VariableValue, Constant as IRConstant,
-    IRBuilder
+    Assignment,
+    BasicBlock,
+    BinaryOp,
+    BranchTerminator,
+    Function,
+    IRBuilder,
+    Load,
+    Program,
+    ReturnTerminator,
+    VariableValue,
 )
+from backend.src.ir_types import Call as IRCall
+from backend.src.ir_types import Constant as IRConstant
 
 
 @dataclass
@@ -46,16 +70,16 @@ class Symbol:
 class SymbolTable:
     """Symbol table with scope management"""
 
-    def __init__(self, parent: Optional[SymbolTable] = None) -> None:
+    def __init__(self, parent: SymbolTable | None = None) -> None:
         """Initialize symbol table"""
-        self.symbols: Dict[str, Symbol] = {}
+        self.symbols: dict[str, Symbol] = {}
         self.parent = parent
 
     def define(self, name: str, ptype: PythonType, scope: str = 'local') -> None:
         """Define symbol in current scope"""
         self.symbols[name] = Symbol(name=name, ptype=ptype, scope=scope)
 
-    def lookup(self, name: str) -> Optional[Symbol]:
+    def lookup(self, name: str) -> Symbol | None:
         """Look up symbol, checking parent scopes"""
         if name in self.symbols:
             return self.symbols[name]
@@ -75,12 +99,12 @@ class PythonCompiler:
         """Initialize compiler"""
         self.verbose = verbose
         self.type_system = PythonTypeSystem()
-        self.symbol_table: Optional[SymbolTable] = None
-        self.builder: Optional[IRBuilder] = None
+        self.symbol_table: SymbolTable | None = None
+        self.builder: IRBuilder | None = None
         self.temp_counter = 0
         self.label_counter = 0
-        self.break_labels: List[str] = []
-        self.continue_labels: List[str] = []
+        self.break_labels: list[str] = []
+        self.continue_labels: list[str] = []
 
     def compile(self, source: str) -> Program:
         """Compile Python source to Babbage IR"""

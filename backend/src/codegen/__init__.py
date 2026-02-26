@@ -11,11 +11,11 @@ Components:
   - codegen: Main orchestrator
 """
 
-from .liveness import LivenessAnalyzer
-from .regalloc import LinearScanAllocator, AllocationMap
-from .selector import InstructionSelector
-from .emitter import CodeEmitter
 from .codegen import CodeGenerator
+from .emitter import CodeEmitter
+from .liveness import LivenessAnalyzer
+from .regalloc import AllocationMap, LinearScanAllocator
+from .selector import InstructionSelector
 
 __all__ = [
     "LivenessAnalyzer",

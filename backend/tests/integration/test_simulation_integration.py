@@ -5,15 +5,13 @@ and opcode-coupled simulation verifying physics evolution during
 program execution.
 """
 
-import math
 
 import pytest
 
-from backend.src.emulator.simulation.engine import SimulationEngine, SimulationResult
-from backend.src.emulator.simulation.state import SimulationConfig, SimulationState
-from backend.src.emulator.simulation.coupling import CouplingFunctions
 from backend.src.emulator.materials import MaterialLibrary
-from backend.src.emulator.structural import ShaftCriticalSpeed, FatigueAnalysis
+from backend.src.emulator.simulation.engine import SimulationEngine
+from backend.src.emulator.simulation.state import SimulationConfig
+from backend.src.emulator.structural import ShaftCriticalSpeed
 from backend.src.emulator.tribology import PVAnalysis
 
 

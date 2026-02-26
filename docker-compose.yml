@@ -1,8 +1,6 @@
 ---
-version: '3.9'
-
 # Development environment for Ancient Compute
-# Full production configuration in docker-compose.prod.yml
+# Production deployment: use docker compose --env-file .env.prod up
 
 x-common-variables: &common-variables
   NODE_ENV: development
@@ -91,7 +89,7 @@ services:
     restart: unless-stopped
     ports:
       - "3000:3000"
-    command: npm run dev -- --host 0.0.0.0
+    command: pnpm dev -- --host 0.0.0.0
 
   lisp-service:
     build:

@@ -10,12 +10,11 @@ Implements:
 """
 
 import time
-from typing import Dict, List
-from prometheus_client import Counter, Histogram, Gauge, Info, generate_latest, CONTENT_TYPE_LATEST
+
 from fastapi import Request
 from fastapi.responses import Response
+from prometheus_client import CONTENT_TYPE_LATEST, Counter, Gauge, Histogram, Info, generate_latest
 from starlette.middleware.base import BaseHTTPMiddleware
-
 
 # Application info
 app_info = Info('ancient_compute_app', 'Ancient Compute application information')
@@ -102,41 +101,41 @@ class MetricsMiddleware(BaseHTTPMiddleware):
     """
     FastAPI middleware for collecting HTTP request metrics.
     """
-    
+
     async def dispatch(self, request: Request, call_next):
         """Process request and collect metrics"""
         # Skip metrics collection for /metrics endpoint itself
         if request.url.path == "/metrics":
             return await call_next(request)
-        
+
         method = request.method
         endpoint = request.url.path
-        
+
         # Increment active requests
         active_requests.inc()
-        
+
         # Time the request
         start_time = time.time()
-        
+
         try:
             response = await call_next(request)
             status = response.status_code
-            
+
             # Record metrics
             http_requests_total.labels(
                 method=method,
                 endpoint=endpoint,
                 status=status
             ).inc()
-            
+
             duration = time.time() - start_time
             http_request_duration_seconds.labels(
                 method=method,
                 endpoint=endpoint
             ).observe(duration)
-            
+
             return response
-        
+
         except Exception as e:
             # Record error
             errors_total.labels(
@@ -144,7 +143,7 @@ class MetricsMiddleware(BaseHTTPMiddleware):
                 endpoint=endpoint
             ).inc()
             raise
-        
+
         finally:
             # Decrement active requests
             active_requests.dec()
@@ -153,7 +152,7 @@ class MetricsMiddleware(BaseHTTPMiddleware):
 def metrics_response() -> Response:
     """
     Generate Prometheus metrics response.
-    
+
     Returns:
         Response with Prometheus-formatted metrics
     """
@@ -168,7 +167,7 @@ def metrics_response() -> Response:
 def record_code_execution(language: str, duration: float, status: str):
     """
     Record code execution metrics.
-    
+
     Args:
         language: Programming language
         duration: Execution duration in seconds
@@ -181,7 +180,7 @@ def record_code_execution(language: str, duration: float, status: str):
 def record_code_compilation(language: str, duration: float):
     """
     Record code compilation metrics.
-    
+
     Args:
         language: Programming language
         duration: Compilation duration in seconds
@@ -192,7 +191,7 @@ def record_code_compilation(language: str, duration: float):
 def record_cache_access(cache_type: str, hit: bool):
     """
     Record cache access metrics.
-    
+
     Args:
         cache_type: Type of cache ('ir', 'compilation', 'execution')
         hit: Whether the access was a cache hit
@@ -206,7 +205,7 @@ def record_cache_access(cache_type: str, hit: bool):
 class ExecutionContext:
     """
     Context manager for tracking code execution metrics.
-    
+
     Example:
         async with ExecutionContext('python'):
             result = await execute_code(code)
@@ -215,34 +214,34 @@ class ExecutionContext:
             else:
                 ctx.mark_error()
     """
-    
+
     def __init__(self, language: str):
         self.language = language
         self.start_time = None
         self.status = 'error'  # Default to error, mark success explicitly
-    
+
     async def __aenter__(self):
         self.start_time = time.time()
         active_executions.labels(language=self.language).inc()
         return self
-    
+
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         duration = time.time() - self.start_time
         active_executions.labels(language=self.language).dec()
-        
+
         if exc_type is not None:
             self.status = 'error'
-        
+
         record_code_execution(self.language, duration, self.status)
-    
+
     def mark_success(self):
         """Mark execution as successful"""
         self.status = 'success'
-    
+
     def mark_error(self):
         """Mark execution as error"""
         self.status = 'error'
-    
+
     def mark_timeout(self):
         """Mark execution as timeout"""
         self.status = 'timeout'

@@ -12,9 +12,7 @@ Test Categories:
 5. Error Handling: Invalid inputs, range validation
 """
 
-import pytest
 from backend.src.emulator.machine import DEMachine
-from backend.src.emulator.analytical_engine import BabbageNumber
 
 
 class TestBoundaryConditions:

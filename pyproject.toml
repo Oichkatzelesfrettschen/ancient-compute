@@ -24,6 +24,56 @@ line_length = 100
 known_first_party = ["backend"]
 skip_gitignore = true
 
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+exclude = [
+    ".git",
+    ".venv",
+    "venv",
+    "__pycache__",
+    "build",
+    "dist",
+    ".backup_*",
+]
+
+[tool.ruff.lint]
+# E/W: pycodestyle, F: pyflakes, I: isort, UP: pyupgrade, B: flake8-bugbear, SIM: flake8-simplify
+select = ["E", "F", "W", "I", "UP", "B", "SIM"]
+ignore = [
+    "E203",   # whitespace before ':', conflicts with black
+    "B008",   # do not perform function calls in default arguments (FastAPI Depends)
+    "SIM108", # ternary operator -- style preference
+    "UP007",  # use X | Y for union types -- requires Python 3.10+
+    # --- pre-existing debt; tracked for staged cleanup ---
+    "E501",   # line-too-long: 109 instances, requires line-by-line review
+    "E701",   # multiple-statements-on-one-line-colon: 79 instances
+    "E702",   # multiple-statements-on-one-line-semicolon: 142 instances
+    "E741",   # ambiguous-variable-name: 14 instances (physics loop vars l, O, I)
+    "F841",   # unused-variable: 54 instances, needs case-by-case removal
+    "E402",   # module-import-not-at-top: 37 instances in test/script files
+    "B007",   # unused-loop-control-variable: 25 instances
+    "SIM102", # collapsible-if: 14 instances, style preference
+    "F401",   # unused-import: 12 instances, needs review
+    "B905",   # zip-without-explicit-strict: 11 instances
+    "B904",   # raise-without-from-inside-except: 7 instances
+    "E722",   # bare-except: 6 instances
+    "B006",   # mutable-argument-default: 3 instances
+    "E731",   # lambda-assignment: 2 instances
+    "F811",   # redefined-while-unused: 2 instances
+    "F821",   # undefined-name: 2 instances (dynamic code)
+    "SIM101", # duplicate-isinstance-call: 2 instances
+    "SIM113", # enumerate-for-loop: 2 instances
+    "UP035",  # deprecated-import: 2 instances
+    "SIM103", # needless-bool: 1 instance
+    "SIM110", # reimplemented-builtin: 1 instance
+    "SIM116", # if-else-block-instead-of-dict-lookup: 1 instance
+    "SIM118", # in-dict-keys: 1 instance
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["backend"]
+
 [tool.mypy]
 python_version = "3.11"
 warn_return_any = true

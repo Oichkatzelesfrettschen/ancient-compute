@@ -17,9 +17,6 @@ Acceptance criteria:
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass
-from typing import Optional, Tuple
-
 
 # ---------------------------------------------------------------------------
 # Shaft Deflection Analysis (Euler-Bernoulli, Shigley Ch.4)
@@ -151,7 +148,7 @@ class FatigueAnalysis:
             "forged": (272.0, -0.995),
         }
         a, b = factors.get(finish, factors["machined"])
-        return a * Su_MPa**b
+        return float(a * Su_MPa**b)
 
     @staticmethod
     def size_factor_kb(diameter_mm: float) -> float:
@@ -163,9 +160,9 @@ class FatigueAnalysis:
         if diameter_mm <= 2.79:
             return 1.0
         elif diameter_mm <= 51.0:
-            return 1.24 * diameter_mm**(-0.107)
+            return float(1.24 * diameter_mm**(-0.107))
         elif diameter_mm <= 254.0:
-            return 1.51 * diameter_mm**(-0.157)
+            return float(1.51 * diameter_mm**(-0.157))
         else:
             return 0.6
 
@@ -229,7 +226,7 @@ class FatigueAnalysis:
         a = s_low / (n_low ** (-b))
         if b == 0:
             return 1e6
-        return (stress_amplitude_MPa / a) ** (1.0 / (-b))
+        return float((stress_amplitude_MPa / a) ** (1.0 / (-b)))
 
 
 # ---------------------------------------------------------------------------
@@ -399,7 +396,7 @@ class StressConcentration:
         else:
             A_coeff, b_exp = 1.04, -0.26
 
-        K_t = A_coeff * ratio_rd ** b_exp
+        K_t = float(A_coeff * ratio_rd ** b_exp)
         return max(1.0, K_t)
 
     @staticmethod
@@ -439,7 +436,7 @@ class DynamicLoadFactor:
         if V == 0.0:
             return 1.0
 
-        K_v = ((A + math.sqrt(V)) / A) ** B
+        K_v = float(((A + math.sqrt(V)) / A) ** B)
         return max(1.0, K_v)
 
     @staticmethod

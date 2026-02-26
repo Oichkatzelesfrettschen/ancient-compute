@@ -33,22 +33,22 @@ def run(cmd: list[str], cwd: Path | None = None) -> str:
 def count_tests() -> tuple[int, int, int]:
     """Run pytest --collect-only and count tests, passed, errors.
 
-    Falls back to counting test_*.py files if pytest import fails.
+    Collects from all test directories (unit, integration, api, etc.),
+    not just unit/.  Falls back to grepping test functions if pytest
+    import fails.
     """
     raw = run([
         sys.executable, "-m", "pytest", "--collect-only", "-q",
-        "backend/tests/unit/",
+        "backend/tests/",
     ], cwd=ROOT)
     if not raw:
         # Fallback: count test functions by grepping
-        test_dir = ROOT / "backend" / "tests" / "unit"
+        test_dir = ROOT / "backend" / "tests"
         count = 0
         if test_dir.exists():
             for f in test_dir.rglob("test_*.py"):
                 count += sum(1 for line in f.open() if line.strip().startswith("def test_"))
         return count, 0, 0
-    # Last line format: "=== 1070 tests collected in 0.75s ==="
-    # or "=== X tests collected / Y errors ==="
     import re
     lines = (raw + "\n" + "").splitlines()
     tests = 0
@@ -138,10 +138,8 @@ def generate() -> str:
 
 ## Known Issues
 
-- 3 pre-existing test failures: leibniz_reckoner, 2x pascaline
-- 3 collection errors: test_tools_router.py, test_cross_language.py, test_phase4_w1_api.py
-- 33 pre-existing DB fixture errors (excluded from CI gate)
-- flake8/pylint overlap: consolidation to ruff planned
+- DB-dependent tests skip when no database is available (by design)
+- Linter: ruff replaces flake8+pylint+isort (consolidated)
 
 ## Links
 

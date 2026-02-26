@@ -15,12 +15,11 @@ polynomial evaluation parameters for the Difference Engine No. 2.
 """
 
 import pytest
+
 from backend.src.emulator.card_reader import (
-    CardReader,
-    CardOperation,
-    PunchCard,
-    CardSequence,
     CardFormatError,
+    CardOperation,
+    CardReader,
 )
 
 

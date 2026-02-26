@@ -31,7 +31,6 @@ References:
   - Swade, Doron. "The Cogwheel Brain" (2001)
 """
 
-from typing import List, Optional, Dict, Tuple
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -84,10 +83,10 @@ class PunchCard:
 
     card_id: int                        # Card number in sequence
     operation: CardOperation            # Operation to perform
-    coefficient: Optional[int] = None   # Polynomial coefficient (as decimal)
-    x_start: Optional[int] = None       # X-range start
-    x_end: Optional[int] = None         # X-range end
-    holes: List[List[bool]] = field(default_factory=list)  # Physical hole matrix (140 cols × 80 rows)
+    coefficient: int | None = None   # Polynomial coefficient (as decimal)
+    x_start: int | None = None       # X-range start
+    x_end: int | None = None         # X-range end
+    holes: list[list[bool]] = field(default_factory=list)  # Physical hole matrix (140 cols × 80 rows)
     is_valid: bool = True               # Card format validity
     error_message: str = ""             # Validation error if any
 
@@ -96,10 +95,10 @@ class PunchCard:
 class CardSequence:
     """A sequence of punch cards forming a complete program."""
 
-    cards: List[PunchCard] = field(default_factory=list)
+    cards: list[PunchCard] = field(default_factory=list)
     total_cards: int = 0
     is_complete: bool = False
-    checksum: Optional[str] = None
+    checksum: str | None = None
 
 
 class CardFormatError(Exception):
@@ -135,13 +134,13 @@ class CardReader:
     COEFF_DIGITS = 50
     BITS_PER_DIGIT = 4
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize CardReader."""
         self.current_card_id = 0
-        self.cards_read: List[PunchCard] = []
-        self.error_log: List[str] = []
+        self.cards_read: list[PunchCard] = []
+        self.error_log: list[str] = []
 
-    def read_card(self, holes: List[List[bool]]) -> PunchCard:
+    def read_card(self, holes: list[list[bool]]) -> PunchCard:
         """
         Read a physical punch card (hole matrix) and parse its data.
 
@@ -201,9 +200,9 @@ class CardReader:
     def create_card_from_data(
         self,
         operation: CardOperation,
-        coefficient: Optional[int] = None,
-        x_start: Optional[int] = None,
-        x_end: Optional[int] = None,
+        coefficient: int | None = None,
+        x_start: int | None = None,
+        x_end: int | None = None,
     ) -> PunchCard:
         """
         Create a punch card from operation and data (programmatic, not physical).
@@ -266,7 +265,7 @@ class CardReader:
         self.cards_read.append(card)
         return card
 
-    def _decode_operation(self, holes: List[List[bool]]) -> CardOperation:
+    def _decode_operation(self, holes: list[list[bool]]) -> CardOperation:
         """
         Decode operation code from columns 1-20.
 
@@ -299,7 +298,7 @@ class CardReader:
 
         return operations[code]
 
-    def _encode_operation(self, holes: List[List[bool]], op: CardOperation) -> None:
+    def _encode_operation(self, holes: list[list[bool]], op: CardOperation) -> None:
         """
         Encode operation code into columns 1-20.
 
@@ -325,7 +324,7 @@ class CardReader:
         holes[1][0] = bit1  # Column 2, Row 0
         holes[2][0] = bit2  # Column 3, Row 0 (MSB)
 
-    def _decode_coefficient(self, holes: List[List[bool]]) -> int:
+    def _decode_coefficient(self, holes: list[list[bool]]) -> int:
         """
         Decode a 50-digit decimal coefficient from columns 21-80.
 
@@ -364,7 +363,7 @@ class CardReader:
         coeff_str = "".join(digits)
         return int(coeff_str) if coeff_str else 0
 
-    def _encode_coefficient(self, holes: List[List[bool]], coeff: int) -> None:
+    def _encode_coefficient(self, holes: list[list[bool]], coeff: int) -> None:
         """
         Encode a 50-digit decimal coefficient into columns 21-80.
 
@@ -391,7 +390,7 @@ class CardReader:
             col[2] = bit2
             col[3] = bit3  # MSB
 
-    def _decode_x_range(self, holes: List[List[bool]]) -> Tuple[int, int]:
+    def _decode_x_range(self, holes: list[list[bool]]) -> tuple[int, int]:
         """
         Decode x-range (start, end) from columns 81-100.
 
@@ -455,7 +454,7 @@ class CardReader:
 
         return x_start, x_end
 
-    def _encode_x_range(self, holes: List[List[bool]], x_start: int, x_end: int) -> None:
+    def _encode_x_range(self, holes: list[list[bool]], x_start: int, x_end: int) -> None:
         """
         Encode x-range into columns 81-100.
 
@@ -513,7 +512,7 @@ class CardReader:
             if digit_idx == 0:
                 col[9] = x_end_sign
 
-    def _validate_checksum(self, holes: List[List[bool]]) -> Tuple[bool, str]:
+    def _validate_checksum(self, holes: list[list[bool]]) -> tuple[bool, str]:
         """
         Validate card checksum (columns 101-140).
 
@@ -545,7 +544,7 @@ class CardReader:
 
         return True, ""
 
-    def _encode_checksum(self, holes: List[List[bool]]) -> None:
+    def _encode_checksum(self, holes: list[list[bool]]) -> None:
         """
         Compute and encode checksum into columns 101-140.
 
@@ -572,7 +571,7 @@ class CardReader:
             for row_idx in range(self.CARD_HEIGHT):
                 holes[col_idx][row_idx] = False
 
-    def read_card_sequence(self, card_list: List[List[List[bool]]]) -> CardSequence:
+    def read_card_sequence(self, card_list: list[list[list[bool]]]) -> CardSequence:
         """
         Read a sequence of punch cards (a complete program).
 
@@ -594,7 +593,7 @@ class CardReader:
         sequence.is_complete = len(sequence.cards) == sequence.total_cards
         return sequence
 
-    def get_error_log(self) -> List[str]:
+    def get_error_log(self) -> list[str]:
         """Return list of all errors encountered during card reading."""
         return self.error_log.copy()
 

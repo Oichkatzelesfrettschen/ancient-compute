@@ -10,6 +10,7 @@ Validates:
 """
 
 import math
+
 import pytest
 
 pytestmark = pytest.mark.physics
@@ -22,7 +23,6 @@ from backend.src.emulator.kinematics import (
     GearAnalysis,
     GearPair,
     HertzianContact,
-    KinematicChain,
     MainShaftModel,
     ShaftLateralDynamics,
     TorsionalVibration,

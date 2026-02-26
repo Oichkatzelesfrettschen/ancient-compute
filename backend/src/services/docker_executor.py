@@ -5,10 +5,8 @@ Implements proper Docker-based code execution for all supported languages
 using BaseExecutor pattern with sandboxing and resource constraints.
 """
 
-import asyncio
-from typing import Optional, Any
 
-from .base_executor import BaseExecutor, ExecutionResult, ExecutionStatus
+from .base_executor import BaseExecutor
 
 
 class PythonExecutor(BaseExecutor):
@@ -125,9 +123,9 @@ class ExecutorRegistry:
     def get_executor(
         cls,
         language: str,
-        timeout: Optional[int] = None,
-        memory_limit: Optional[int] = None,
-    ) -> Optional[BaseExecutor]:
+        timeout: int | None = None,
+        memory_limit: int | None = None,
+    ) -> BaseExecutor | None:
         """
         Get executor instance for specified language.
 

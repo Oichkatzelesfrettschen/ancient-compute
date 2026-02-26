@@ -19,8 +19,8 @@ class IDRISService(BaseExecutor):
         """Compile Idris code to Babbage IR and return compilation results."""
         start = time.monotonic()
         try:
-            from backend.src.compilers.idris_parser import IdrisParser
             from backend.src.compilers.idris_compiler import IdrisCompiler
+            from backend.src.compilers.idris_parser import IdrisParser
 
             parser = IdrisParser(code)
             ast = parser.parse()

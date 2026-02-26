@@ -9,22 +9,22 @@ Validates:
 """
 
 import math
+
 import pytest
 
 pytestmark = pytest.mark.physics
 
+from backend.src.emulator.materials import MaterialLibrary
 from backend.src.emulator.thermodynamics import (
     FrictionHeatModel,
-    ThermalExpansionModel,
     RadiationHeatModel,
-    TransientThermalSolver,
     ThermalClearanceFeedback,
-    OperatingEnvelope,
+    ThermalExpansionModel,
+    TransientThermalSolver,
     compute_engine_thermal_model,
     compute_steady_state_rise_C,
     compute_thermal_time_constant_s,
 )
-from backend.src.emulator.materials import MaterialLibrary
 
 
 @pytest.fixture
@@ -243,7 +243,7 @@ class TestRadiationHeatModel:
 
     def test_radiation_zero_at_ambient(self):
         Q = RadiationHeatModel.radiation_heat_W(0.9, 1.0, 293.0, 293.0)
-        assert Q == pytest.approx(0.0)
+        assert pytest.approx(0.0) == Q
 
     def test_radiation_T4_dependence(self):
         """Doubling T_s should produce >> 2x heat (T^4 law)."""

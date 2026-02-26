@@ -27,7 +27,6 @@ from __future__ import annotations
 import re
 from fractions import Fraction
 from pathlib import Path
-from typing import Dict, List, Optional
 
 import yaml
 
@@ -38,21 +37,21 @@ _DECK_PATH = Path(__file__).resolve().parents[3] / "docs/simulation/NOTE_G_DECK.
 _TABLE_A2_PATH = Path(__file__).resolve().parents[3] / "docs/simulation/NOTE_G_TABLE_A2.yaml"
 
 
-def load_deck(path: Optional[Path] = None) -> List[dict]:
+def load_deck(path: Path | None = None) -> list[dict]:
     deck_path = path or _DECK_PATH
-    with open(deck_path, "r", encoding="utf-8") as handle:
+    with open(deck_path, encoding="utf-8") as handle:
         data = yaml.safe_load(handle)
     return data["deck"]
 
 
-def load_table_a2(path: Optional[Path] = None) -> List[dict]:
+def load_table_a2(path: Path | None = None) -> list[dict]:
     deck_path = path or _TABLE_A2_PATH
-    with open(deck_path, "r", encoding="utf-8") as handle:
+    with open(deck_path, encoding="utf-8") as handle:
         data = yaml.safe_load(handle)
     return data["deck"]
 
 
-def init_state(n: int) -> Dict[str, BabbageNumber]:
+def init_state(n: int) -> dict[str, BabbageNumber]:
     state = {f"V{i}": BabbageNumber(0) for i in range(1, 25)}
     state["V1"] = BabbageNumber(1)
     state["V2"] = BabbageNumber(2)
@@ -75,9 +74,9 @@ def _parse_token(token: str) -> tuple:
     return (int(version_raw) if version_raw is not None else None), var
 
 
-def init_state_versioned(n: int) -> Dict[str, Dict[int, BabbageNumber]]:
+def init_state_versioned(n: int) -> dict[str, dict[int, BabbageNumber]]:
     """Initialize versioned variables: 0V* = 0, 1V1=1, 1V2=2, 1V3=n."""
-    state: Dict[str, Dict[int, BabbageNumber]] = {
+    state: dict[str, dict[int, BabbageNumber]] = {
         f"V{i}": {0: BabbageNumber(0)} for i in range(1, 25)
     }
     state["V1"][1] = BabbageNumber(1)
@@ -86,14 +85,14 @@ def init_state_versioned(n: int) -> Dict[str, Dict[int, BabbageNumber]]:
     return state
 
 
-def _latest_version(state: Dict[str, Dict[int, BabbageNumber]], var: str) -> int:
+def _latest_version(state: dict[str, dict[int, BabbageNumber]], var: str) -> int:
     versions = state.get(var)
     if not versions:
         raise KeyError(var)
     return max(versions.keys())
 
 
-def _get_value(state: Dict[str, Dict[int, BabbageNumber]], token: str) -> BabbageNumber:
+def _get_value(state: dict[str, dict[int, BabbageNumber]], token: str) -> BabbageNumber:
     version, var = _parse_token(token)
     if var.startswith("V"):
         versions = state[var]
@@ -104,7 +103,7 @@ def _get_value(state: Dict[str, Dict[int, BabbageNumber]], token: str) -> Babbag
 
 
 def _set_value(
-    state: Dict[str, Dict[int, BabbageNumber]], token: str, value: BabbageNumber
+    state: dict[str, dict[int, BabbageNumber]], token: str, value: BabbageNumber
 ) -> None:
     version, var = _parse_token(token)
     if version is None:
@@ -112,13 +111,13 @@ def _set_value(
     state[var][version] = value
 
 
-def _resolve_operand(state: Dict[str, BabbageNumber], token: str) -> BabbageNumber:
+def _resolve_operand(state: dict[str, BabbageNumber], token: str) -> BabbageNumber:
     if token.startswith("V"):
         return state[token]
     return BabbageNumber(float(token))
 
 
-def _apply_op(state: Dict[str, BabbageNumber], step: dict) -> None:
+def _apply_op(state: dict[str, BabbageNumber], step: dict) -> None:
     lhs = _resolve_operand(state, step["lhs"])
     rhs = _resolve_operand(state, step["rhs"])
     value = _exec_opcode(step["opcode"], lhs, rhs)
@@ -127,7 +126,7 @@ def _apply_op(state: Dict[str, BabbageNumber], step: dict) -> None:
 
 
 def _apply_op_versioned(
-    state: Dict[str, Dict[int, BabbageNumber]], step: dict
+    state: dict[str, dict[int, BabbageNumber]], step: dict
 ) -> None:
     lhs = _get_value(state, step["lhs"])
     rhs = _get_value(state, step["rhs"])
@@ -152,7 +151,7 @@ def _exec_opcode(opcode: str, lhs: BabbageNumber, rhs: BabbageNumber) -> Babbage
 # Single-pass execution (legacy)
 # ---------------------------------------------------------------------------
 
-def run_once(n: int, deck_path: Optional[Path] = None) -> Dict[str, BabbageNumber]:
+def run_once(n: int, deck_path: Path | None = None) -> dict[str, BabbageNumber]:
     """Execute Note G operations 1..25 once (no looping)."""
     deck = load_deck(deck_path)
     state = init_state(n)
@@ -161,14 +160,14 @@ def run_once(n: int, deck_path: Optional[Path] = None) -> Dict[str, BabbageNumbe
     return state
 
 
-def run_series(n_max: int, deck_path: Optional[Path] = None) -> list[BabbageNumber]:
+def run_series(n_max: int, deck_path: Path | None = None) -> list[BabbageNumber]:
     """Return Bernoulli series from exact oracle (validation baseline)."""
     return [BabbageNumber(float(b)) for b in ada_lovelace_bernoulli_series(n_max)]
 
 
 def run_table_a2_once(
     n: int, b1: BabbageNumber, b3: BabbageNumber
-) -> Dict[str, Dict[int, BabbageNumber]]:
+) -> dict[str, dict[int, BabbageNumber]]:
     """Execute Table A.2 deck once with preloaded B1, B3."""
     deck = load_table_a2()
     state = init_state_versioned(n)
@@ -188,7 +187,7 @@ def run_table_a2_once(
 _B_SLOTS = [21, 22, 23]  # Extendable if we add more preload columns
 
 
-def run_note_g(n_target: int) -> List[BabbageNumber]:
+def run_note_g(n_target: int) -> list[BabbageNumber]:
     """Execute Note G with full loop-back, producing B_1..B_{2*n_target-1}.
 
     This is the first computer program, fully executed from the card deck
@@ -216,8 +215,8 @@ def run_note_g(n_target: int) -> List[BabbageNumber]:
     deck = load_deck()
     ops = {step["op"]: step for step in deck}
 
-    results: List[BabbageNumber] = []
-    computed_b: List[BabbageNumber] = []
+    results: list[BabbageNumber] = []
+    computed_b: list[BabbageNumber] = []
 
     for n in range(1, n_target + 1):
         state = init_state(n)
@@ -266,7 +265,7 @@ def run_note_g(n_target: int) -> List[BabbageNumber]:
     return results
 
 
-def run_note_g_exact(n_target: int) -> List[Fraction]:
+def run_note_g_exact(n_target: int) -> list[Fraction]:
     """Run Note G and return results as exact Fractions for validation.
 
     Wraps run_note_g() and converts BabbageNumber results to Fraction.

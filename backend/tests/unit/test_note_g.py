@@ -13,24 +13,23 @@ References:
 - Glaschick, "Ada Lovelace's Calculation of Bernoulli's Numbers" (2016)
 """
 
-import pytest
 from fractions import Fraction
 
-from backend.src.emulator.note_g_deck import (
-    run_note_g,
-    run_note_g_exact,
-    run_once,
-    load_deck,
-    init_state,
-    _apply_op,
-    _exec_opcode,
-)
+import pytest
+
+from backend.src.emulator.analytical_engine import BabbageNumber
 from backend.src.emulator.bernoulli import (
     ada_lovelace_bernoulli_series,
     bernoulli_numbers,
 )
-from backend.src.emulator.analytical_engine import BabbageNumber
-
+from backend.src.emulator.note_g_deck import (
+    _apply_op,
+    init_state,
+    load_deck,
+    run_note_g,
+    run_note_g_exact,
+    run_once,
+)
 
 # Ada's B_{2k-1} = modern B_{2k}
 KNOWN_VALUES = {

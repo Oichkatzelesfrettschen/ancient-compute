@@ -3,19 +3,31 @@ System F to Babbage IR Compiler - Translates System F to language-agnostic IR
 """
 
 from __future__ import annotations
-from typing import Dict, Optional, List
 
-from backend.src.ir_types import (
-    IRType, Value, Constant, VariableValue, UndefValue,
-    BasicBlock, Function, Program, IRBuilder, BranchTerminator
+from backend.src.compilers.systemf_ast import (
+    Application,
+    Expr,
+    IfExpr,
+    Lambda,
+    LetExpr,
+    Literal,
+    TypeAbstraction,
+    TypeApplication,
+    Var,
 )
 from backend.src.compilers.systemf_lexer import SystemFLexer
 from backend.src.compilers.systemf_parser import SystemFParser
-from backend.src.compilers.systemf_ast import (
-    Type, Expr, Var, Literal, Lambda, TypeAbstraction, Application, TypeApplication,
-    IfExpr, LetExpr, FixExpr, Annotation
-)
 from backend.src.compilers.systemf_types import SystemFTypeSystem
+from backend.src.ir_types import (
+    BranchTerminator,
+    Constant,
+    IRBuilder,
+    IRType,
+    Program,
+    UndefValue,
+    Value,
+    VariableValue,
+)
 
 
 class SystemFCompiler:
@@ -24,10 +36,10 @@ class SystemFCompiler:
     def __init__(self, verbose: bool = False) -> None:
         self.verbose = verbose
         self.type_system = SystemFTypeSystem()
-        self.ir_builder: Optional[IRBuilder] = None
+        self.ir_builder: IRBuilder | None = None
         self.var_counter = 0
         self.program = Program()
-        self.symbol_table: Dict[str, VariableValue] = {}
+        self.symbol_table: dict[str, VariableValue] = {}
 
     def compile(self, source: str) -> Program:
         """Compile System F source to Babbage IR"""
@@ -68,24 +80,24 @@ class SystemFCompiler:
             # Lift lambda to global function
             func_name = self._new_tmp("lambda")
             params = [expr.param_name]
-            
+
             # Save current builder
             old_builder = self.ir_builder
             old_symbols = self.symbol_table.copy()
-            
+
             self.ir_builder = IRBuilder(func_name, params)
             self.ir_builder.function.local_variables = {expr.param_name: IRType.DEC50}
             self.ir_builder.new_block("entry")
             self.symbol_table = {expr.param_name: VariableValue(expr.param_name)}
-            
+
             body_val = self._compile_expr(expr.body)
             self.ir_builder.emit_return(body_val)
             self.program.add_function(self.ir_builder.finalize())
-            
+
             # Restore builder
             self.ir_builder = old_builder
             self.symbol_table = old_symbols
-            
+
             # Return function reference (simplified)
             return Constant(func_name, IRType.PTR)
 
@@ -97,7 +109,7 @@ class SystemFCompiler:
             func_val = self._compile_expr(expr.func)
             arg_val = self._compile_expr(expr.arg)
             target = self._new_tmp("app")
-            
+
             # Simplified: call assuming func_val is a function pointer/name
             # If func_val is a Constant containing the name:
             if isinstance(func_val, Constant):
@@ -105,7 +117,7 @@ class SystemFCompiler:
             else:
                 # Dynamic call not fully supported in IRBuilder yet, assume static for now
                 self.ir_builder.emit_call("dynamic_call", [func_val, arg_val], target)
-                
+
             return VariableValue(target)
 
         if isinstance(expr, TypeApplication):

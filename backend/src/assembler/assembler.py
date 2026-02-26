@@ -16,8 +16,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Tuple
-
+from typing import Any
 
 # ============================================================================
 # DATA STRUCTURES
@@ -38,9 +37,9 @@ class Instruction:
     """Parsed assembly instruction."""
 
     mnemonic: str
-    operands: List[Any]  # Register names, numbers, or labels
-    label: Optional[str] = None
-    comment: Optional[str] = None
+    operands: list[Any]  # Register names, numbers, or labels
+    label: str | None = None
+    comment: str | None = None
     line_number: int = 0
 
 
@@ -48,12 +47,12 @@ class Instruction:
 class AssemblyResult:
     """Result of assembling a program."""
 
-    machine_code: List[int]  # 50-bit machine words
-    symbol_table: Dict[str, int]  # Label/variable → address
+    machine_code: list[int]  # 50-bit machine words
+    symbol_table: dict[str, int]  # Label/variable → address
     instruction_count: int
     error_count: int = 0
-    errors: List[str] = field(default_factory=list)
-    warnings: List[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
 
     def get_hex_dump(self) -> str:
         """Return hex dump of machine code with symbol information."""
@@ -102,9 +101,9 @@ class Lexer:
     def __init__(self, assembly_text: str):
         self.text = assembly_text
         self.lines = assembly_text.split("\n")
-        self.tokens: List[Token] = []
+        self.tokens: list[Token] = []
 
-    def tokenize(self) -> List[Token]:
+    def tokenize(self) -> list[Token]:
         """Convert assembly text to tokens."""
         for line_num, line in enumerate(self.lines, 1):
             # Remove comments
@@ -195,11 +194,11 @@ class Lexer:
 class Parser:
     """Parses tokens into Instructions."""
 
-    def __init__(self, tokens: List[Token]):
+    def __init__(self, tokens: list[Token]):
         self.tokens = tokens
         self.pos = 0
 
-    def parse(self) -> List[Instruction]:
+    def parse(self) -> list[Instruction]:
         """Parse token stream into instructions."""
         instructions = []
         current_label = None
@@ -276,7 +275,7 @@ class InstructionEncoder:
 
     REGISTER_MAP = {"A": 0, "B": 1, "C": 2, "D": 3}
 
-    def encode(self, mnemonic: str, operands: List[int], symbol_table: Dict[str, int]) -> int:
+    def encode(self, mnemonic: str, operands: list[int], symbol_table: dict[str, int]) -> int:
         """Encode instruction to 50-bit machine word.
 
         50-bit instruction format:
@@ -315,7 +314,7 @@ class InstructionEncoder:
                     raise AssemblyError(f"Invalid register: {reg1}")
                 reg1_code = self.REGISTER_MAP[reg1]
             else:
-                raise AssemblyError(f"First operand must be register")
+                raise AssemblyError("First operand must be register")
 
             if isinstance(reg2_or_addr, str):
                 # Two registers
@@ -339,7 +338,7 @@ class SymbolTable:
     """Tracks labels, variables, and their addresses."""
 
     def __init__(self):
-        self.symbols: Dict[str, int] = {}
+        self.symbols: dict[str, int] = {}
 
     def define(self, name: str, address: int) -> None:
         """Define a symbol at an address."""
@@ -369,10 +368,10 @@ class Assembler:
     def __init__(self, assembly_text: str):
         self.assembly_text = assembly_text
         self.symbol_table = SymbolTable()
-        self.instructions: List[Instruction] = []
-        self.machine_code: List[int] = []
-        self.errors: List[str] = []
-        self.warnings: List[str] = []
+        self.instructions: list[Instruction] = []
+        self.machine_code: list[int] = []
+        self.errors: list[str] = []
+        self.warnings: list[str] = []
 
     def assemble(self, verbose: bool = False) -> AssemblyResult:
         """Two-pass assembly: resolve symbols, then emit code.

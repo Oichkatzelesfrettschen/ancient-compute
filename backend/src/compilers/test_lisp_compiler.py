@@ -1,9 +1,18 @@
 # Ancient Compute - LISP Compiler Tests
 
-import pytest
-from .lisp_parser import parser
+from ..ir_types import (
+    Assignment,
+    BinaryOp,
+    BranchTerminator,
+    Call,
+    Function,
+    Program,
+    ReturnTerminator,
+    VariableValue,
+)
 from .lisp_compiler import LispCompiler
-from ..ir_types import Program, Function, Constant, ReturnTerminator, BinaryOp, BranchTerminator, Call, VariableValue, Assignment
+from .lisp_parser import parser
+
 
 def test_compile_defun():
     code = """(defun my-func (a b)
@@ -23,7 +32,7 @@ def test_compile_defun():
     entry_block = func.basic_blocks[0]
     assert isinstance(entry_block.terminator, ReturnTerminator)
     # The return value should be a VariableValue (the result of the addition), not a Constant(0)
-    assert isinstance(entry_block.terminator.value, VariableValue) 
+    assert isinstance(entry_block.terminator.value, VariableValue)
 
 def test_compile_arithmetic():
     code = """(defun my-add (a b)
@@ -118,17 +127,17 @@ def test_compile_let():
     ast = parser.parse(code)
     compiler = LispCompiler()
     program = compiler.compile(ast)
-    
+
     func = program.functions['my-let']
-    
+
     # Should have local variables x and y
     assert 'x' in func.local_variables
     assert 'y' in func.local_variables
-    
+
     # Should have assignments
     entry_block = func.basic_blocks[0]
     assignments = [instr for instr in entry_block.instructions if isinstance(instr, Assignment)]
     assert len(assignments) >= 2
-    
+
     # Should end with add
     assert any(isinstance(instr, BinaryOp) and instr.op == 'add' for instr in entry_block.instructions)

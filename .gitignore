@@ -116,3 +116,6 @@ output/*_metrics.csv
 # Claude plans (transient session artifacts)
 .claude_plans_tmp/
 
+# Legacy backup directories
+.backup_*/
+

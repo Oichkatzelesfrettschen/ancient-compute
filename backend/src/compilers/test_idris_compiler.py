@@ -1,9 +1,9 @@
 # Ancient Compute - IDRIS Compiler Tests
 
-import pytest
-from .idris_parser import parser
+from ..ir_types import Call, Function, Program
 from .idris_compiler import IdrisCompiler
-from ..ir_types import Program, Function, Constant, ReturnTerminator, Call
+from .idris_parser import parser
+
 
 def test_compile_function_declaration():
     # Remove type sig to avoid parser ambiguity without indentation

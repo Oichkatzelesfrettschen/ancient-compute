@@ -9,8 +9,8 @@ Based on SMG Technical Description and mechanical notation.
 """
 
 import pytest
-from backend.src.emulator.carry import AnticipatingCarriage, CarryPropagationUnit
 
+from backend.src.emulator.carry import AnticipatingCarriage, CarryPropagationUnit
 
 # ============================================================================
 # Initialization Tests (5 tests)
@@ -24,7 +24,7 @@ def test_anticipating_carriage_init():
     assert carriage.current_phase == 0
     assert carriage.carry_signals == [False] * 8
     assert carriage.anticipated_carries == [False] * 8
-    assert carriage.is_active == False
+    assert not carriage.is_active
 
 
 def test_anticipating_carriage_reset():
@@ -40,7 +40,7 @@ def test_anticipating_carriage_reset():
     carriage.reset()
 
     assert carriage.current_phase == 0
-    assert carriage.is_active == False
+    assert not carriage.is_active
     assert carriage.carry_signals == [False] * 8
     assert carriage.anticipated_carries == [False] * 8
 
@@ -49,13 +49,13 @@ def test_anticipating_carriage_activate_deactivate():
     """Test activation and deactivation."""
     carriage = AnticipatingCarriage()
 
-    assert carriage.is_active == False
+    assert not carriage.is_active
 
     carriage.activate()
-    assert carriage.is_active == True
+    assert carriage.is_active
 
     carriage.deactivate()
-    assert carriage.is_active == False
+    assert not carriage.is_active
 
 
 def test_anticipating_carriage_history():
@@ -71,8 +71,8 @@ def test_anticipating_carriage_history():
 
     # Check history
     assert len(carriage.get_history()) == 2
-    assert carriage.get_history()[0].is_active == False
-    assert carriage.get_history()[1].is_active == True
+    assert not carriage.get_history()[0].is_active
+    assert carriage.get_history()[1].is_active
 
 
 def test_anticipating_carriage_clear_history():
@@ -136,7 +136,7 @@ def test_anticipating_carriage_is_carrying_false():
     carriage.set_carry_signals([False] * 8)
     carriage.anticipate_carries()
 
-    assert carriage.is_carrying() == False
+    assert not carriage.is_carrying()
 
 
 def test_anticipating_carriage_is_carrying_true():
@@ -146,7 +146,7 @@ def test_anticipating_carriage_is_carrying_true():
     carriage.set_carry_signals([True, False, False, False, False, False, False, False])
     carriage.anticipate_carries()
 
-    assert carriage.is_carrying() == True
+    assert carriage.is_carrying()
 
 
 def test_anticipating_carriage_is_carrying_middle():
@@ -156,7 +156,7 @@ def test_anticipating_carriage_is_carrying_middle():
     carriage.set_carry_signals([False, False, False, True, False, False, False, False])
     carriage.anticipate_carries()
 
-    assert carriage.is_carrying() == True
+    assert carriage.is_carrying()
 
 
 def test_anticipating_carriage_is_carrying_last():
@@ -168,7 +168,7 @@ def test_anticipating_carriage_is_carrying_last():
 
     # Last column carry doesn't propagate (no column 8)
     # So is_carrying returns False (no carries propagated)
-    assert carriage.is_carrying() == False
+    assert not carriage.is_carrying()
 
 
 # ============================================================================
@@ -237,7 +237,7 @@ def test_anticipating_carriage_get_carries_for_column_0():
     carriage.anticipate_carries()
 
     # Column 0 gets no carry (column -1 doesn't exist)
-    assert carriage.get_carries_for_column(0) == False
+    assert not carriage.get_carries_for_column(0)
 
 
 def test_anticipating_carriage_get_carries_for_column_1():
@@ -248,7 +248,7 @@ def test_anticipating_carriage_get_carries_for_column_1():
     carriage.anticipate_carries()
 
     # Column 1 gets carry from column 0
-    assert carriage.get_carries_for_column(1) == True
+    assert carriage.get_carries_for_column(1)
 
 
 def test_anticipating_carriage_get_carries_for_column_7():
@@ -259,7 +259,7 @@ def test_anticipating_carriage_get_carries_for_column_7():
     carriage.anticipate_carries()
 
     # Column 7 gets carry from column 6
-    assert carriage.get_carries_for_column(7) == True
+    assert carriage.get_carries_for_column(7)
 
 
 def test_anticipating_carriage_get_carries_invalid_index():
@@ -369,7 +369,7 @@ def test_anticipating_carriage_activate_with_phase():
 
         snapshot = carriage.get_snapshot()
         assert snapshot.phase == phase
-        assert snapshot.is_active == True
+        assert snapshot.is_active
 
         carriage.deactivate()
 
@@ -384,7 +384,7 @@ def test_anticipating_carriage_snapshot_phase():
     snapshot = carriage.get_snapshot()
 
     assert snapshot.phase == 3
-    assert snapshot.is_active == True
+    assert snapshot.is_active
 
 
 def test_anticipating_carriage_history_with_phases():
@@ -416,7 +416,7 @@ def test_anticipating_carriage_last_column_carry():
     # But is_carrying should still report True
     assert result == [False] * 8
     carriage.anticipate_carries()  # Update internal state
-    assert carriage.is_carrying() == False  # No output carries
+    assert not carriage.is_carrying()  # No output carries
 
 
 def test_anticipating_carriage_snapshot_independence():
@@ -430,8 +430,8 @@ def test_anticipating_carriage_snapshot_independence():
     snap2 = carriage.get_snapshot()
 
     # Snapshots should differ
-    assert snap1.is_active == True
-    assert snap2.is_active == False
+    assert snap1.is_active
+    assert not snap2.is_active
 
 
 def test_anticipating_carriage_repr():

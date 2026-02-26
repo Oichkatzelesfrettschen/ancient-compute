@@ -12,8 +12,9 @@ hypothesis>=6.100,<7.0
 
 # Code Quality
 black>=24.0,<25.0
-ruff>=0.5,<1.0
+ruff==0.9.10
 mypy>=1.10,<2.0
+# Note: flake8, isort, and pylint replaced by ruff (ADR 0001)
 
 # Development
 watchfiles>=1.0,<2.0

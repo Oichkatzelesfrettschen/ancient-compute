@@ -1,6 +1,5 @@
 # Ancient Compute - Resource Limits Configuration
 from dataclasses import dataclass
-from typing import Dict
 
 
 @dataclass
@@ -15,7 +14,7 @@ class ResourceLimit:
     network_enabled: bool
 
 
-LANGUAGE_LIMITS: Dict[str, ResourceLimit] = {
+LANGUAGE_LIMITS: dict[str, ResourceLimit] = {
     "c": ResourceLimit(
         memory_mb=128,
         cpu_percent=50,

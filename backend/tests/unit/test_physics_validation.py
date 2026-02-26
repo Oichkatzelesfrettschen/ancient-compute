@@ -24,7 +24,12 @@ import pytest
 pytestmark = pytest.mark.physics
 
 # -- Module 1: Materials ---------------------------------------------------
-from backend.src.emulator.materials import MaterialLibrary
+# -- Module 4: Electromagnetic ---------------------------------------------
+from backend.src.emulator.electromagnetic import (
+    EddyCurrentModel,
+    GalvanicCorrosionMatrix,
+    StaticChargeModel,
+)
 
 # -- Module 2: Kinematics --------------------------------------------------
 from backend.src.emulator.kinematics import (
@@ -35,34 +40,7 @@ from backend.src.emulator.kinematics import (
     MainShaftModel,
     load_kinematic_chain,
 )
-
-# -- Module 3: Thermodynamics ----------------------------------------------
-from backend.src.emulator.thermodynamics import (
-    FrictionHeatModel,
-    ThermalExpansionModel,
-    compute_engine_thermal_model,
-    compute_steady_state_rise_C,
-    compute_thermal_time_constant_s,
-)
-
-# -- Module 4: Electromagnetic ---------------------------------------------
-from backend.src.emulator.electromagnetic import (
-    EARTH_B_FIELD_T,
-    EddyCurrentModel,
-    GalvanicCorrosionMatrix,
-    StaticChargeModel,
-)
-
-# -- Module 5: Tribology ----------------------------------------------------
-from backend.src.emulator.tribology import (
-    ARCHARD_K_LUBRICATED_BRASS_ON_STEEL,
-    ARCHARD_K_LUBRICATED_BRONZE_ON_STEEL,
-    PV_LIMIT_BRONZE_ON_STEEL_LUBRICATED,
-    PV_LIMIT_BRASS_ON_STEEL_LUBRICATED,
-    LubricationModel,
-    PVAnalysis,
-    WearModel,
-)
+from backend.src.emulator.materials import MaterialLibrary
 
 # -- Module 6: Structural ---------------------------------------------------
 from backend.src.emulator.structural import (
@@ -72,6 +50,22 @@ from backend.src.emulator.structural import (
     ShaftAnalysis,
 )
 
+# -- Module 3: Thermodynamics ----------------------------------------------
+from backend.src.emulator.thermodynamics import (
+    ThermalExpansionModel,
+    compute_engine_thermal_model,
+)
+
+# -- Module 5: Tribology ----------------------------------------------------
+from backend.src.emulator.tribology import (
+    ARCHARD_K_LUBRICATED_BRASS_ON_STEEL,
+    ARCHARD_K_LUBRICATED_BRONZE_ON_STEEL,
+    PV_LIMIT_BRASS_ON_STEEL_LUBRICATED,
+    PV_LIMIT_BRONZE_ON_STEEL_LUBRICATED,
+    LubricationModel,
+    PVAnalysis,
+    WearModel,
+)
 
 # ---------------------------------------------------------------------------
 # Shared fixtures -- realistic parameters from sim_schema.yaml
@@ -450,7 +444,7 @@ class TestPhysicalPlausibility:
         """Engineering metals span roughly 50-250 GPa."""
         for mat in lib.all_materials():
             e_min, e_max = mat.youngs_modulus_GPa
-            assert 50 <= e_min, (
+            assert e_min >= 50, (
                 f"{mat.name}: E_min={e_min} GPa below 50"
             )
             assert e_max <= 250, (

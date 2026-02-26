@@ -7,12 +7,11 @@ unified interface for test case validation and result handling.
 
 import asyncio
 import json
-from typing import List, Tuple, Optional, Dict, Any
+from typing import Any
 
 from .base_executor import ExecutionResult, ExecutionStatus
-from .docker_manager import DockerManager
 from .docker_executor import ExecutorRegistry
-
+from .docker_manager import DockerManager
 
 # Language service mappings to Docker images and configurations
 LANGUAGE_CONFIG = {
@@ -76,7 +75,7 @@ class ExecutionOrchestrator:
         self,
         code: str,
         language: str,
-        exercise: Optional[Any] = None,
+        exercise: Any | None = None,
         timeout: int = 10,
     ) -> ExecutionResult:
         """
@@ -128,7 +127,7 @@ class ExecutionOrchestrator:
             )
             return result
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             return ExecutionResult(
                 status=ExecutionStatus.TIMEOUT,
                 stdout="",
@@ -145,9 +144,9 @@ class ExecutionOrchestrator:
     async def validate_test_cases(
         self,
         execution_result: ExecutionResult,
-        test_cases: List[Dict[str, Any]],
+        test_cases: list[dict[str, Any]],
         exercise_language: str = "python",
-    ) -> Tuple[List[Dict[str, Any]], int, int]:
+    ) -> tuple[list[dict[str, Any]], int, int]:
         """
         Validate execution result against test cases.
 
@@ -211,7 +210,7 @@ class ExecutionOrchestrator:
 
         return test_results, passed_tests, total_tests
 
-    def _parse_output(self, output: str, language: str) -> List[str]:
+    def _parse_output(self, output: str, language: str) -> list[str]:
         """
         Parse execution output into lines.
 
@@ -288,11 +287,11 @@ class ExecutionOrchestrator:
 
         return False
 
-    def get_supported_languages(self) -> List[str]:
+    def get_supported_languages(self) -> list[str]:
         """Get list of supported programming languages."""
         return ExecutorRegistry.list_supported_languages()
 
-    def get_language_info(self, language: str) -> Optional[Dict[str, Any]]:
+    def get_language_info(self, language: str) -> dict[str, Any] | None:
         """Get information about a specific language service."""
         language = language.lower()
         if not ExecutorRegistry.is_supported(language):

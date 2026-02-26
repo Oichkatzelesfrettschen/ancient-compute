@@ -5,15 +5,15 @@ energy conservation, and long-duration evolution.
 """
 
 import math
+
 import pytest
 
 pytestmark = pytest.mark.physics
 
-from backend.src.emulator.simulation.state import SimulationState, SimulationConfig
-from backend.src.emulator.simulation.engine import SimulationEngine, StepResult, SimulationResult
-from backend.src.emulator.simulation.coupling import CouplingFunctions
 from backend.src.emulator.materials import MaterialLibrary
-
+from backend.src.emulator.simulation.coupling import CouplingFunctions
+from backend.src.emulator.simulation.engine import SimulationEngine, SimulationResult, StepResult
+from backend.src.emulator.simulation.state import SimulationConfig, SimulationState
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -232,7 +232,7 @@ class TestEnergyConservation:
 
         # At steady state: Q_gen = h_total * A * (T - T_amb)
         # Check that temperature has risen above ambient (heat IS being generated)
-        assert T > T_amb
+        assert T_amb < T
 
         # Heat dissipation rate via convection + radiation
         T_s_K = T + 273.15

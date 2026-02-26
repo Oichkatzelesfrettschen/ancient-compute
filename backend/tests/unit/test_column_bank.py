@@ -9,8 +9,8 @@ Based on SMG Technical Description and Babbage mechanical notation.
 """
 
 import pytest
-from backend.src.emulator.columns import ColumnBank, DigitColumn
 
+from backend.src.emulator.columns import ColumnBank, DigitColumn
 
 # ============================================================================
 # Initialization Tests (5 tests)
@@ -296,7 +296,7 @@ def test_column_bank_latch_all():
     bank.latch_all()
 
     for col in bank.columns:
-        assert col.is_locked() == True
+        assert col.is_locked()
 
 
 def test_column_bank_unlatch_all():
@@ -307,7 +307,7 @@ def test_column_bank_unlatch_all():
     bank.unlatch_all()
 
     for col in bank.columns:
-        assert col.is_locked() == False
+        assert not col.is_locked()
 
 
 def test_column_bank_are_all_latched_true():
@@ -316,7 +316,7 @@ def test_column_bank_are_all_latched_true():
 
     bank.latch_all()
 
-    assert bank.are_all_latched() == True
+    assert bank.are_all_latched()
 
 
 def test_column_bank_are_all_latched_false():
@@ -326,7 +326,7 @@ def test_column_bank_are_all_latched_false():
     bank.latch_all()
     bank.get_column(3).unlatch()  # Unlatch one column
 
-    assert bank.are_all_latched() == False
+    assert not bank.are_all_latched()
 
 
 def test_column_bank_set_all_phases():

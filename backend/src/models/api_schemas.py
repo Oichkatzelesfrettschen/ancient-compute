@@ -1,10 +1,12 @@
+from typing import Any, Union
+
 from pydantic import BaseModel, Field
-from typing import List, Optional, Dict, Any, Union
+
 
 class ExecutionRequest(BaseModel):
     language: str
     code: str
-    input_data: Optional[str] = None
+    input_data: str | None = None
 
 class ExecutionResult(BaseModel):
     stdout: str
@@ -19,33 +21,33 @@ class CompilationRequest(BaseModel):
 
 class CompilationResult(BaseModel):
     success: bool
-    ir_code: Optional[str] = None
-    assembly_code: Optional[str] = None
-    errors: List[str] = []
+    ir_code: str | None = None
+    assembly_code: str | None = None
+    errors: list[str] = []
 
 class EmulatorState(BaseModel):
     pc: int
-    registers: Dict[str, Union[int, float, str]]
-    memory_preview: Dict[int, Union[int, float, str]]
-    flags: Dict[str, bool]
+    registers: dict[str, Union[int, float, str]]
+    memory_preview: dict[int, Union[int, float, str]]
+    flags: dict[str, bool]
     cycle_count: int
 
 class AnalyticalEngineSnapshot(BaseModel):
     pc: int
-    registers: Dict[str, Union[int, float]] # Assuming values are decimals
-    flags: Dict[str, bool]
+    registers: dict[str, Union[int, float]] # Assuming values are decimals
+    flags: dict[str, bool]
     clock_time: int
-    barrel: Dict[str, Union[str, int, None]] # active, step
+    barrel: dict[str, Union[str, int, None]] # active, step
     mill_operand_buffer: float
     mill_result_buffer: float
-    active_store_address: Optional[int] = None
+    active_store_address: int | None = None
 
 class DebuggerCommand(BaseModel):
     action: str = Field(..., description="step, continue, pause, reset")
-    breakpoints: Optional[List[int]] = None
+    breakpoints: list[int] | None = None
 
 class PerformanceReport(BaseModel):
     total_cycles: int
-    instruction_frequency: Dict[str, int]
-    hot_spots: Dict[str, Any]
-    suggestions: List[str]
+    instruction_frequency: dict[str, int]
+    hot_spots: dict[str, Any]
+    suggestions: list[str]

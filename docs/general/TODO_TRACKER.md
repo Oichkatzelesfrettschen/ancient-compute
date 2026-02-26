@@ -98,6 +98,11 @@ This document tracks all pending tasks across the Ancient Compute project, organ
 
 ## Legacy Sprint Snapshot (Week 9, Historical)
 
+> **ARCHIVED**: This sprint completed November 2025. Tasks below are historical
+> reference only. Current work tracked in docs/archive/INDEX.md and
+> docs/general/DEFERRED_WORK.md. LISP service reached ~60% completion;
+> remainder deferred per user decision (see DEFERRED_WORK.md).
+
 **Focus**: LISP Language Service Implementation
 **Duration**: November 2-8, 2025 (7 days)
 **Target**: 1,800-2,200 lines, 65+ tests

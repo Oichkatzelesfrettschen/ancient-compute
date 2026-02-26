@@ -1,19 +1,19 @@
 # Ancient Compute Backend - Main API Router
 
+import json
+import os
+from pathlib import Path
+
 from fastapi import APIRouter, Depends
+from fastapi.responses import PlainTextResponse
 from sqlalchemy.orm import Session
 
+from ..database import get_db
+from ..models import Era, Module
 from .code_execution import router as code_execution_router
 from .emulator import router as emulator_router
-from .timeline import router as timeline_router
 from .execution import router as exercise_execution_router
-from ..database import get_db
-from ..models import Module, Era
-
-import os
-import json
-from pathlib import Path
-from fastapi.responses import PlainTextResponse
+from .timeline import router as timeline_router
 
 # Create main API router
 api_router = APIRouter()
@@ -42,7 +42,7 @@ async def list_modules(db: Session = Depends(get_db)):
     """List all published educational modules ordered chronologically."""
     modules = (
         db.query(Module)
-        .filter(Module.is_published == True)
+        .filter(Module.is_published)
         .order_by(Module.sequence_order)
         .all()
     )
@@ -166,7 +166,7 @@ async def get_timeline(db: Session = Depends(get_db)):
     """Get historical timeline eras with their modules."""
     eras = (
         db.query(Era)
-        .filter(Era.is_published == True)
+        .filter(Era.is_published)
         .order_by(Era.order)
         .all()
     )

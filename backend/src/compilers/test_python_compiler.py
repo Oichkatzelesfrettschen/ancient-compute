@@ -11,14 +11,21 @@ Total: 50+ test cases
 """
 
 import pytest
-from backend.src.compilers.python_lexer import PythonLexer, TokenType, Token
-from backend.src.compilers.python_parser import PythonParser
-from backend.src.compilers.python_types import PythonType, PythonTypeSystem, BabbageTypeMapper
-from backend.src.compilers.python_compiler import PythonCompiler
+
 from backend.src.compilers.python_ast import (
-    Constant, Name, BinOp, UnaryOp, Call, Assign, Return, If, While, For,
-    FunctionDef, Module
+    Assign,
+    BinOp,
+    Constant,
+    For,
+    FunctionDef,
+    If,
+    Name,
+    While,
 )
+from backend.src.compilers.python_compiler import PythonCompiler
+from backend.src.compilers.python_lexer import PythonLexer, TokenType
+from backend.src.compilers.python_parser import PythonParser
+from backend.src.compilers.python_types import BabbageTypeMapper, PythonType, PythonTypeSystem
 
 
 class TestPythonLexer:

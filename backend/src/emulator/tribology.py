@@ -14,9 +14,7 @@ Key equations:
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Tuple
-
+from dataclasses import dataclass
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -217,7 +215,7 @@ class LubricationModel:
         # H_min = 1.6 * U^0.7 * G^0.54 * W'^(-0.13)
         H_min = 1.6 * U_param**0.7 * G_param**0.54 * w_prime**(-0.13)
         h_min_m = H_min * R_m
-        return h_min_m * 1e6  # convert to um
+        return float(h_min_m * 1e6)  # convert to um
 
     @staticmethod
     def lambda_ratio(

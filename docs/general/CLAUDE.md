@@ -27,7 +27,7 @@ Ancient Compute is a comprehensive educational platform teaching the complete 12
 2. **Backend**: FastAPI service orchestrating language execution and content delivery
 3. **Language Services**: Isolated Docker containers for C, Python, Haskell, IDRIS2, LISP, Assembly, Java, System F
 4. **Documentation System**: LaTeX + pgfplots + TikZ for academic-quality curriculum materials
-5. **Build System**: Bazel for hermetic, reproducible polyglot builds
+5. **Build System**: Makefile + Docker Compose for reproducible builds
 
 ### Key Technical Principles
 
@@ -130,27 +130,27 @@ This section consolidates all previous planning documents, ensuring a single sou
 ### Build Commands
 
 ```bash
-# Build entire project with Bazel
-bazel build //...
+# Run all verification gates (lint, test, type-check)
+make verify
 
-# Build specific components
-bazel build //frontend:app
-bazel build //backend:api
-bazel build //services/haskell:service
-bazel build //docs:curriculum-pdf
+# Run unit tests
+make test-unit
 
-# Run tests (warnings as errors)
-bazel test //... --test_output=errors
+# Run full test suite
+cd backend && pytest tests/ --cov=src -v
+
+# Generate status dashboard
+make status
 ```
 
 ### Development Workflow
 
 ```bash
-# Start all services (Docker Compose)
-docker-compose up -d
+# Start all services (Docker Compose v2)
+docker compose up -d
 
 # Frontend development server
-cd frontend && npm run dev
+cd frontend && pnpm dev
 
 # Backend development server
 cd backend && uvicorn src.main:app --reload
@@ -158,23 +158,20 @@ cd backend && uvicorn src.main:app --reload
 # Build LaTeX documentation
 cd docs/whitepaper && xelatex main.tex
 
-# Run single test
-bazel test //backend/tests:test_language_service --test_output=all
+# Run a single test file
+cd backend && pytest tests/unit/test_analytical_engine.py -v
 ```
 
 ### Language Service Testing
 
 ```bash
 # Test individual language containers
-docker-compose run c-service pytest
-docker-compose run python-service pytest
-docker-compose run haskell-service pytest
+docker compose run c-service pytest
+docker compose run python-service pytest
+docker compose run haskell-service pytest
 
 # Test backend compiler integration
 cd backend && pytest tests/ --cov=src -v
-
-# Security validation
-./scripts/validate-sandbox.sh services/*/
 ```
 
 ---
@@ -234,7 +231,7 @@ For the most up-to-date information on the status of language service implementa
 - `frontend/src/lib/api/` - Backend API client.
 
 **Services**:
-- `services/docker-compose.yml` - Container orchestration.
+- `docker-compose.yml` - Container orchestration (root level).
 - `services/{language}/Dockerfile` - Container definitions.
 - `services/{language}/src/execute.py` - Service entrypoint.
 
@@ -379,15 +376,16 @@ Do not oversimplify or create false teleological narratives. Computation's histo
 - Historical timelines must be chronologically consistent
 - Cross-references between content must resolve
 
-## Build System Philosophy
+## Build System
 
-Using Bazel for:
-- **Hermetic Builds**: Reproducible across Windows and Debian
-- **Polyglot Support**: Single build graph for 8+ languages
-- **Incremental Compilation**: Only rebuild changed components
-- **Remote Caching**: Share build artifacts across team
+The project uses Makefile targets, pytest, and Docker Compose (v2):
+- **`make verify`**: Runs lint, type-check, and tests in sequence
+- **`make test-unit`**: Runs unit tests with coverage
+- **`make status`**: Generates STATUS.md metrics dashboard
+- **Docker Compose**: Orchestrates backend, frontend, and language services
 
 All builds run with warnings as errors. No compilation warnings are acceptable.
+See [ADR 0001](../adr/0001-remove-bazel.md) for rationale on Bazel removal.
 
 ## Common Development Pitfalls
 

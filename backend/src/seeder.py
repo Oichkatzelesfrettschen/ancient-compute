@@ -1,7 +1,8 @@
 # Ancient Compute - Database Seeder
 
-from .database import SessionLocal, engine, Base
-from .models import Era, Module, Lesson, User
+from .database import Base, SessionLocal, engine
+from .models import Era, Lesson, Module, User
+
 
 def seed_database():
     """Populate the database with initial data."""

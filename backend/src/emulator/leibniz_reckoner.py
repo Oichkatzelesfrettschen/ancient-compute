@@ -13,8 +13,6 @@ Architecture:
   - Revolution Counter: Counts additions/subtractions.
 """
 
-from typing import List, Tuple
-from dataclasses import dataclass
 
 class SteppedDrum:
     """Represents a single Staffelwalze (stepped drum)."""
@@ -26,7 +24,7 @@ class SteppedDrum:
     def get_teeth_count(self) -> int:
         return self.value
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"SteppedDrum({self.value})"
 
 class CountingWheel:
@@ -35,22 +33,22 @@ class CountingWheel:
         self.position = position
         self.value = 0 # 0-9
 
-    def advance(self, steps: int):
+    def advance(self, steps: int) -> int:
         """Advance wheel by steps, returns carry."""
         old_value = self.value
         self.value = (self.value + steps) % 10
         return 1 if (old_value + steps) >= 10 else 0
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"CountingWheel({self.position}, val={self.value})"
 
 class LeibnizReckonerEmulator:
     def __init__(self, num_input_digits: int = 8, num_accumulator_digits: int = 16):
         self.num_input_digits = num_input_digits
         self.num_accumulator_digits = num_accumulator_digits
-        
-        self.input_drums: List[SteppedDrum] = [SteppedDrum(0) for _ in range(num_input_digits)]
-        self.accumulator_wheels: List[CountingWheel] = [CountingWheel(i) for i in range(num_accumulator_digits)]
+
+        self.input_drums: list[SteppedDrum] = [SteppedDrum(0) for _ in range(num_input_digits)]
+        self.accumulator_wheels: list[CountingWheel] = [CountingWheel(i) for i in range(num_accumulator_digits)]
         self.carriage_position = 0 # Offset for multiplication/division
         self.turn_counter = 0 # Revolution counter for multiplication steps
 
@@ -70,7 +68,7 @@ class LeibnizReckonerEmulator:
             "turn_counter": self.turn_counter
         }
 
-    def set_input(self, value: int):
+    def set_input(self, value: int) -> None:
         """Sets the input drums from an integer."""
         s_val = str(value).zfill(self.num_input_digits) # Pad to num_input_digits, e.g., "00000123"
         if len(s_val) > self.num_input_digits:
@@ -78,17 +76,15 @@ class LeibnizReckonerEmulator:
         for i, char in enumerate(reversed(s_val)): # Store units at input_drums[0]
             self.input_drums[i].value = int(char)
 
-    def shift_carriage(self, offset: int):
+    def shift_carriage(self, offset: int) -> None:
         """Shifts the carriage (relative position of input drums to accumulator)."""
-        print(f"shift_carriage: current_pos={self.carriage_position}, offset={offset}")
         new_pos = self.carriage_position + offset
         if 0 <= new_pos < self.num_accumulator_digits - self.num_input_digits + 1:
             self.carriage_position = new_pos
         else:
             raise ValueError(f"Carriage position {new_pos} out of bounds")
-        print(f"shift_carriage: new_pos={self.carriage_position}")
 
-    def crank_turn(self, num_turns: int = 1):
+    def crank_turn(self, num_turns: int = 1) -> None:
         """
         Simulates one turn of the main crank.
         This performs an addition (or subtraction).
@@ -99,15 +95,12 @@ class LeibnizReckonerEmulator:
         for _ in range(num_turns):
             self.turn_counter += 1
             temp_accumulator_update = [0] * self.num_accumulator_digits
-            
+
             # 1. Stepped Drums engage and add to temporary accumulator update
             for i_drum, drum in enumerate(self.input_drums):
                 effective_wheel_pos = i_drum + self.carriage_position
                 if effective_wheel_pos < self.num_accumulator_digits:
                     temp_accumulator_update[effective_wheel_pos] += drum.get_teeth_count()
-            
-            # Debug print before adding to accumulator_wheels
-            print(f"crank_turn: temp_accumulator_update={temp_accumulator_update}")
 
             # 2. Add temporary accumulator update to main accumulator with carries
             carry = 0
@@ -115,7 +108,7 @@ class LeibnizReckonerEmulator:
                 total = self.accumulator_wheels[i].value + temp_accumulator_update[i] + carry
                 self.accumulator_wheels[i].value = total % 10
                 carry = total // 10
-            
+
             # This is where the 'delayed carry' would be modeled.
             # Leibniz had issues with simultaneous carries; they had to be propagated.
             # For Tier 1 fidelity, we model it as an immediate ripple for now.
@@ -133,21 +126,18 @@ class LeibnizReckonerEmulator:
         """
         self.reset()
         self.set_input(multiplicand)
-        
+
         s_multiplier = str(multiplier)[::-1] # Process multiplier digits from right to left
-        
+
         for i, char_digit in enumerate(s_multiplier):
             digit = int(char_digit)
             if digit > 0:
-                print(f"Multiply: Before shift in loop, i={i}, digit={digit}, current carriage_pos={self.carriage_position}")
-                self.shift_carriage(i - self.carriage_position) 
-                print(f"Multiply: After shift in loop, carriage_pos={self.carriage_position}")
-                self.crank_turn(digit) # Add multiplicand 'digit' times
-                print(f"Multiply: After crank, accumulator_wheels={[w.value for w in self.accumulator_wheels]}, value={self.get_accumulator_value()}")
-        
+                self.shift_carriage(i - self.carriage_position)
+                self.crank_turn(digit)
+
         return self.get_accumulator_value()
 
-    def add_value(self, value: int):
+    def add_value(self, value: int) -> int:
         self.set_input(value)
         self.crank_turn(1)
         return self.get_accumulator_value()

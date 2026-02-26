@@ -9,8 +9,6 @@ Comprehensive end-to-end testing of complete user journeys including:
 - Error recovery and edge cases
 """
 
-import pytest
-from typing import Dict, Any
 
 from backend.src.services.base_executor import ExecutionResult, ExecutionStatus
 from backend.src.services.languages import get_executor, list_language_capabilities
@@ -417,7 +415,7 @@ class TestConcurrentUserWorkflows:
             submissions.append(submission)
 
         # Group by user
-        by_user: Dict[int, list] = {}
+        by_user: dict[int, list] = {}
         for sub in submissions:
             user = sub["user_id"]
             if user not in by_user:

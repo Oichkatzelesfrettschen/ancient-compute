@@ -5,20 +5,21 @@ Comprehensive tests for exercise code submission, validation, and result handlin
 with language service integration.
 """
 
+
 import pytest
-from datetime import datetime
 
 # Import database and models; these are importable but tests that use
 # SessionLocal directly require a running PostgreSQL instance.
 from src.database import SessionLocal
 from src.models import (
+    Era,
     Exercise,
     ExerciseProgress,
     ExerciseSubmission,
     Module,
-    Era,
     User,
 )
+
 
 def _postgres_reachable() -> bool:
     """Check whether the default PostgreSQL backend is reachable."""
@@ -788,8 +789,8 @@ class TestExecutorRegistryIntegration:
     @pytest.mark.asyncio
     async def test_execution_orchestrator_error_handling(self):
         """Test orchestrator error handling for unsupported language."""
-        from src.services.execution_orchestrator import ExecutionOrchestrator
         from src.services.base_executor import ExecutionStatus
+        from src.services.execution_orchestrator import ExecutionOrchestrator
 
         orchestrator = ExecutionOrchestrator()
         result = await orchestrator.execute_code(

@@ -10,24 +10,20 @@ Implements dynamic coupling between physics modules:
 from __future__ import annotations
 
 import math
-from typing import List, Tuple
 
-from backend.src.emulator.simulation.state import SimulationState, SimulationConfig
 from backend.src.emulator.materials import MaterialLibrary
+from backend.src.emulator.simulation.state import SimulationConfig, SimulationState
+from backend.src.emulator.structural import ShaftAnalysis
 from backend.src.emulator.thermodynamics import (
     FrictionHeatModel,
     RadiationHeatModel,
-    TransientThermalSolver,
     ThermalClearanceFeedback,
+    TransientThermalSolver,
 )
 from backend.src.emulator.tribology import (
-    WearModel,
     RunningInWear,
-    WearClearanceFeedback,
-    LubricationModel,
-    PVAnalysis,
+    WearModel,
 )
-from backend.src.emulator.structural import ShaftAnalysis
 
 
 class CouplingFunctions:
@@ -51,7 +47,7 @@ class CouplingFunctions:
 
     @staticmethod
     def friction_heat_from_bearings(
-        bearing_loads_N: List[float],
+        bearing_loads_N: list[float],
         shaft_diameter_mm: float,
         omega_rad_s: float,
         friction_coeff: float,
@@ -100,7 +96,7 @@ class CouplingFunctions:
         state: SimulationState,
         config: SimulationConfig,
         lib: MaterialLibrary,
-    ) -> List[float]:
+    ) -> list[float]:
         """Compute bearing wear increments for one time step [mm^3].
 
         Returns list of wear volume increments per bearing.
@@ -131,7 +127,7 @@ class CouplingFunctions:
         state: SimulationState,
         config: SimulationConfig,
         lib: MaterialLibrary,
-    ) -> List[float]:
+    ) -> list[float]:
         """Compute current bearing clearances combining thermal + wear [mm]."""
         bearing_mat = lib.get(config.bearing_material)
         shaft_mat = lib.get(config.shaft_material)
@@ -182,8 +178,8 @@ class CouplingFunctions:
     def redistribute_bearing_loads(
         total_load_N: float,
         bearing_count: int,
-        clearances_mm: List[float],
-    ) -> List[float]:
+        clearances_mm: list[float],
+    ) -> list[float]:
         """Redistribute bearing loads based on clearance (stiffer = more load).
 
         Bearings with smaller clearance carry proportionally more load.

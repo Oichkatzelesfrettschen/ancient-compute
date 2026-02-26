@@ -9,19 +9,30 @@ Four-phase pipeline:
 """
 
 from __future__ import annotations
-from typing import Dict, Optional, List
 
-from backend.src.ir_types import (
-    IRType, Value, Constant, VariableValue, UndefValue,
-    BasicBlock, Function, Program, IRBuilder
+from backend.src.compilers.java_ast import (
+    BinaryOp,
+    ClassDecl,
+    Expr,
+    ExprStmt,
+    Literal,
+    MethodCall,
+    MethodDecl,
+    ReturnStmt,
+    VarDeclStmt,
+    Variable,
 )
 from backend.src.compilers.java_lexer import JavaLexer
 from backend.src.compilers.java_parser import JavaParser
-from backend.src.compilers.java_ast import (
-    Expr, Literal, Variable, FieldAccess, MethodCall, BinaryOp, UnaryOp,
-    ClassDecl, MethodDecl, VarDeclStmt, ExprStmt, ReturnStmt
-)
 from backend.src.compilers.java_types import JavaTypeSystem
+from backend.src.ir_types import (
+    Constant,
+    IRBuilder,
+    IRType,
+    Program,
+    Value,
+    VariableValue,
+)
 
 
 class JavaCompiler:
@@ -30,8 +41,8 @@ class JavaCompiler:
     def __init__(self, verbose: bool = False) -> None:
         self.verbose = verbose
         self.type_system = JavaTypeSystem()
-        self.ir_builder: Optional[IRBuilder] = None
-        self.symbol_table: Dict[str, VariableValue] = {}
+        self.ir_builder: IRBuilder | None = None
+        self.symbol_table: dict[str, VariableValue] = {}
         self.var_counter = 0
         self.program = Program()
 
@@ -124,10 +135,10 @@ class JavaCompiler:
             left = self._compile_expr(expr.left)
             right = self._compile_expr(expr.right)
             target = self._new_tmp()
-            
+
             op_map = {'+': 'add', '-': 'sub', '*': 'mul', '/': 'div'}
             ir_op = op_map.get(expr.operator, 'add')
-            
+
             self.ir_builder.emit_binary_op(ir_op, target, left, right)
             return VariableValue(target)
 

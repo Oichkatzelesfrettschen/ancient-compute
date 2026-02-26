@@ -18,10 +18,13 @@ Test coverage: 55+ comprehensive tests covering:
 """
 
 import pytest
-from backend.src.emulator.analytical_engine import (
-    BabbageNumber, Engine, Instruction, TIMING_TABLE,
-)
 
+from backend.src.emulator.analytical_engine import (
+    TIMING_TABLE,
+    BabbageNumber,
+    Engine,
+    Instruction,
+)
 
 # ============================================================================
 # BabbageNumber Tests (15 tests)

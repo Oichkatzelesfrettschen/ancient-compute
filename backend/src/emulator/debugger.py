@@ -9,10 +9,13 @@ Provides interactive debugging capabilities for both DE2 and AE emulators:
   - Step-through execution
 """
 
-from typing import List, Optional, Dict, Callable, Tuple, Any
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
+from typing import Any
+
 from .adapter import MachineAdapter, MechanicalPhase
+
 
 class BreakpointType(Enum):
     """Types of breakpoints."""
@@ -31,9 +34,9 @@ class SymbolEntry:
     current_value: float = 0.0          # Current value
     read_count: int = 0                 # Times read
     write_count: int = 0                # Times written
-    first_access_cycle: Optional[int] = None  # First access cycle
-    last_access_cycle: Optional[int] = None   # Last access cycle
-    access_history: List[Tuple[int, str, float]] = field(default_factory=list)  # (cycle, op, value)
+    first_access_cycle: int | None = None  # First access cycle
+    last_access_cycle: int | None = None   # Last access cycle
+    access_history: list[tuple[int, str, float]] = field(default_factory=list)  # (cycle, op, value)
 
 
 @dataclass
@@ -43,12 +46,12 @@ class Breakpoint:
     breakpoint_type: BreakpointType     # Type of breakpoint
     enabled: bool = True                # Breakpoint enabled
     hit_count: int = 0                  # Times this breakpoint was hit
-    cycle_target: Optional[int] = None  # For CYCLE breakpoints
-    phase_target: Optional[MechanicalPhase] = None  # For PHASE breakpoints
-    variable_name: Optional[str] = None # For VALUE_CHANGE breakpoints
-    instruction_target: Optional[int] = None # For INSTRUCTION breakpoints
-    condition_func: Optional[Callable[[Any], bool]] = None  # For CONDITION
-    trigger_on_change: Optional[float] = None  # Previous value for VALUE_CHANGE
+    cycle_target: int | None = None  # For CYCLE breakpoints
+    phase_target: MechanicalPhase | None = None  # For PHASE breakpoints
+    variable_name: str | None = None # For VALUE_CHANGE breakpoints
+    instruction_target: int | None = None # For INSTRUCTION breakpoints
+    condition_func: Callable[[Any], bool] | None = None  # For CONDITION
+    trigger_on_change: float | None = None  # Previous value for VALUE_CHANGE
 
 
 class SymbolTable:
@@ -56,7 +59,7 @@ class SymbolTable:
 
     def __init__(self):
         """Initialize empty symbol table."""
-        self.symbols: Dict[str, SymbolEntry] = {}
+        self.symbols: dict[str, SymbolEntry] = {}
         self.total_accesses = 0
 
     def define_symbol(self, name: str, initial_value: float) -> None:
@@ -99,11 +102,11 @@ class SymbolTable:
             raise KeyError(f"Symbol '{name}' not defined")
         return self.symbols[name].current_value
 
-    def get_all_symbols(self) -> Dict[str, float]:
+    def get_all_symbols(self) -> dict[str, float]:
         """Get all symbol names and values."""
         return {name: entry.current_value for name, entry in self.symbols.items()}
 
-    def get_symbol_stats(self, name: str) -> Dict[str, Any]:
+    def get_symbol_stats(self, name: str) -> dict[str, Any]:
         """Get detailed statistics for a symbol."""
         if name not in self.symbols:
             raise KeyError(f"Symbol '{name}' not defined")
@@ -136,7 +139,7 @@ class BreakpointManager:
 
     def __init__(self):
         """Initialize breakpoint manager."""
-        self.breakpoints: Dict[int, Breakpoint] = {}
+        self.breakpoints: dict[int, Breakpoint] = {}
         self.next_id = 1
 
     def set_breakpoint(self, breakpoint_type: BreakpointType, **kwargs) -> int:
@@ -160,7 +163,7 @@ class BreakpointManager:
         self.breakpoints[breakpoint_id] = breakpoint
         return breakpoint_id
 
-    def check_breakpoints(self, adapter: MachineAdapter, symbol_table: SymbolTable) -> List[int]:
+    def check_breakpoints(self, adapter: MachineAdapter, symbol_table: SymbolTable) -> list[int]:
         """Check if any breakpoints are triggered."""
         triggered = []
         snapshot = adapter.get_snapshot()
@@ -212,7 +215,7 @@ class BreakpointManager:
         """Remove a breakpoint."""
         self.breakpoints.pop(bp_id, None)
 
-    def get_breakpoint_info(self, bp_id: int) -> Dict[str, Any]:
+    def get_breakpoint_info(self, bp_id: int) -> dict[str, Any]:
         """Get information about a breakpoint."""
         if bp_id not in self.breakpoints:
             raise KeyError(f"Breakpoint {bp_id} not found")
@@ -262,10 +265,10 @@ class Debugger:
     def set_variable(self, name: str, value: float) -> None:
         self.symbol_table.write_symbol(name, value, cycle=self.current_cycle)
 
-    def list_variables(self) -> Dict[str, float]:
+    def list_variables(self) -> dict[str, float]:
         return self.symbol_table.get_all_symbols()
 
-    def get_variable_stats(self, name: str) -> Dict[str, Any]:
+    def get_variable_stats(self, name: str) -> dict[str, Any]:
         return self.symbol_table.get_symbol_stats(name)
 
     # -- Breakpoint management --
@@ -294,7 +297,7 @@ class Debugger:
     def remove_breakpoint(self, bp_id: int) -> None:
         self.breakpoint_manager.remove_breakpoint(bp_id)
 
-    def list_breakpoints(self) -> List[Dict[str, Any]]:
+    def list_breakpoints(self) -> list[dict[str, Any]]:
         return [
             self.breakpoint_manager.get_breakpoint_info(bp_id)
             for bp_id in self.breakpoint_manager.breakpoints
@@ -302,7 +305,7 @@ class Debugger:
 
     # -- Execution control --
 
-    def step(self) -> Optional[List[int]]:
+    def step(self) -> list[int] | None:
         """Execute one step and check breakpoints."""
         self.adapter.step()
         self.current_cycle = self.adapter.get_cycle_count()
@@ -311,11 +314,11 @@ class Debugger:
             self.is_paused = True
         return triggered if triggered else None
 
-    def step_cycle(self) -> Optional[List[int]]:
+    def step_cycle(self) -> list[int] | None:
         """Execute one cycle and check breakpoints. Alias for step()."""
         return self.step()
 
-    def continue_execution(self, max_cycles: int = 1000) -> Dict[str, Any]:
+    def continue_execution(self, max_cycles: int = 1000) -> dict[str, Any]:
         """Run until breakpoint hit or max_cycles reached."""
         initial_cycle = self.current_cycle
         breakpoint_hit = None
@@ -339,7 +342,7 @@ class Debugger:
 
     # -- State inspection --
 
-    def get_state(self) -> Dict[str, Any]:
+    def get_state(self) -> dict[str, Any]:
         """Get current state via adapter."""
         return {
             "cycle": self.adapter.get_cycle_count(),
@@ -349,7 +352,7 @@ class Debugger:
             "variables": self.symbol_table.get_all_symbols(),
         }
 
-    def get_current_state(self) -> Dict[str, Any]:
+    def get_current_state(self) -> dict[str, Any]:
         """Get current execution state (user-facing)."""
         return {
             "cycle": self.current_cycle,

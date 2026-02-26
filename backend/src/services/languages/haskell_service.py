@@ -13,9 +13,8 @@ Endpoints:
 import asyncio
 import time
 from concurrent.futures import ThreadPoolExecutor
-from enum import Enum
 from dataclasses import dataclass
-from typing import Optional, List
+from enum import Enum
 
 from backend.src.compilers.haskell_compiler import HaskellCompiler
 
@@ -45,7 +44,7 @@ class CompilationResult:
 class HaskellService:
     """Haskell language compilation service"""
 
-    def __init__(self, executor: Optional[ThreadPoolExecutor] = None, verbose: bool = False) -> None:
+    def __init__(self, executor: ThreadPoolExecutor | None = None, verbose: bool = False) -> None:
         """Initialize service"""
         self.executor = executor or ThreadPoolExecutor(max_workers=4)
         self.verbose = verbose
@@ -67,7 +66,7 @@ class HaskellService:
                 timeout=timeout_seconds
             )
             return result
-        except asyncio.TimeoutError:
+        except TimeoutError:
             return CompilationResult(
                 status=ExecutionStatus.TIMEOUT,
                 output="",
@@ -273,7 +272,7 @@ class HaskellService:
 # Service Factory
 # =============================================================================
 
-_service_instance: Optional[HaskellService] = None
+_service_instance: HaskellService | None = None
 
 
 def get_haskell_service(verbose: bool = False) -> HaskellService:

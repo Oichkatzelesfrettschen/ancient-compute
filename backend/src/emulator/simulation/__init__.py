@@ -13,16 +13,16 @@ Public API:
     CouplingFunctions  - Inter-module coupling (thermal-tribo, kinematic-structural)
 """
 
-from backend.src.emulator.simulation.state import (
-    SimulationState,
-    SimulationConfig,
-)
+from backend.src.emulator.simulation.coupling import CouplingFunctions
 from backend.src.emulator.simulation.engine import (
     SimulationEngine,
-    StepResult,
     SimulationResult,
+    StepResult,
 )
-from backend.src.emulator.simulation.coupling import CouplingFunctions
+from backend.src.emulator.simulation.state import (
+    SimulationConfig,
+    SimulationState,
+)
 
 __all__ = [
     "SimulationState",

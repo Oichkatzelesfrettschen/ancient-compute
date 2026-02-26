@@ -9,11 +9,24 @@ Key features:
 """
 
 from __future__ import annotations
-from typing import Dict, Optional, Tuple
+
 from backend.src.compilers.systemf_ast import (
-    Type, TypeVar, BaseType, FunctionType, UniversalType,
-    Expr, Var, Literal, Lambda, TypeAbstraction, Application, TypeApplication,
-    IfExpr, LetExpr, FixExpr, Annotation
+    Annotation,
+    Application,
+    BaseType,
+    Expr,
+    FixExpr,
+    FunctionType,
+    IfExpr,
+    Lambda,
+    LetExpr,
+    Literal,
+    Type,
+    TypeAbstraction,
+    TypeApplication,
+    TypeVar,
+    UniversalType,
+    Var,
 )
 
 
@@ -26,7 +39,7 @@ class SystemFTypeSystem:
     """Type system for System F"""
 
     def __init__(self) -> None:
-        self.symbols: Dict[str, Type] = {}
+        self.symbols: dict[str, Type] = {}
         self._register_builtins()
 
     def _register_builtins(self) -> None:
@@ -40,7 +53,7 @@ class SystemFTypeSystem:
         """Register symbol with type"""
         self.symbols[name] = type_
 
-    def lookup_symbol(self, name: str) -> Optional[Type]:
+    def lookup_symbol(self, name: str) -> Type | None:
         """Look up symbol type"""
         return self.symbols.get(name)
 
@@ -74,14 +87,14 @@ class SystemFTypeSystem:
             if isinstance(expr_type, UniversalType):
                 # Instantiate universal type
                 return self._instantiate(expr_type, expr.type_arg)
-            raise SystemFTypeError(f"Cannot apply type to non-polymorphic expression")
+            raise SystemFTypeError("Cannot apply type to non-polymorphic expression")
 
         if isinstance(expr, IfExpr):
             then_type = self.infer_type(expr.then_expr)
             else_type = self.infer_type(expr.else_expr)
             if self._types_equal(then_type, else_type):
                 return then_type
-            raise SystemFTypeError(f"If branches have different types")
+            raise SystemFTypeError("If branches have different types")
 
         if isinstance(expr, LetExpr):
             # Just return body type
@@ -91,7 +104,7 @@ class SystemFTypeSystem:
             func_type = self.infer_type(expr.func)
             if isinstance(func_type, FunctionType):
                 return func_type.return_type
-            raise SystemFTypeError(f"Fix requires function type")
+            raise SystemFTypeError("Fix requires function type")
 
         if isinstance(expr, Annotation):
             return expr.type_annotation

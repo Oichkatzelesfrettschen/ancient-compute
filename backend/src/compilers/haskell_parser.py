@@ -17,23 +17,44 @@ Operator precedence (lowest to highest):
 """
 
 from __future__ import annotations
-from typing import List, Optional
-from backend.src.compilers.haskell_lexer import Token, TokenType, HaskellLexer
+
 from backend.src.compilers.haskell_ast import (
-    Expr, Stmt, Module, FunctionDef, FunctionEquation,
-    Literal, Variable, BinOp, UnaryOp, Lambda, Application,
-    Let, Case, CaseBranch, IfThenElse, List as HList, Tuple,
-    Constructor, TypeAnnotation,
-    Pattern, PatternLiteral, PatternVariable, PatternConstructor,
-    PatternTuple, PatternList, PatternWildcard,
-    TypeDecl, DataDecl, DataConstructor, ClassDecl, InstanceDecl
+    Application,
+    BinOp,
+    Case,
+    CaseBranch,
+    ClassDecl,
+    DataConstructor,
+    DataDecl,
+    Expr,
+    FunctionDef,
+    FunctionEquation,
+    IfThenElse,
+    InstanceDecl,
+    Lambda,
+    Let,
+    Literal,
+    Module,
+    Pattern,
+    PatternConstructor,
+    PatternList,
+    PatternLiteral,
+    PatternTuple,
+    PatternVariable,
+    Stmt,
+    Tuple,
+    TypeDecl,
+    UnaryOp,
+    Variable,
 )
+from backend.src.compilers.haskell_ast import List as HList
+from backend.src.compilers.haskell_lexer import Token, TokenType
 
 
 class HaskellParser:
     """Recursive descent parser for Haskell"""
 
-    def __init__(self, tokens: List[Token]) -> None:
+    def __init__(self, tokens: list[Token]) -> None:
         """Initialize parser with token list"""
         self.tokens = tokens
         self.pos = 0
@@ -102,7 +123,7 @@ class HaskellParser:
         while self.current_token.type in (TokenType.INDENT, TokenType.DEDENT):
             self._advance()
 
-    def _parse_declaration(self) -> Optional[Stmt]:
+    def _parse_declaration(self) -> Stmt | None:
         """Parse top-level declaration"""
         self._skip_newlines()
 
@@ -231,7 +252,7 @@ class HaskellParser:
 
         return FunctionDef(name=name, equations=equations)
 
-    def _parse_patterns(self) -> List[Pattern]:
+    def _parse_patterns(self) -> list[Pattern]:
         """Parse function argument patterns"""
         patterns = []
 

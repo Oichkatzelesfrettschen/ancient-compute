@@ -9,8 +9,8 @@ Dataclasses and types used throughout the DE2 emulator, including:
 """
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Tuple, Optional, Any
 from enum import Enum
+from typing import Any
 
 # --- Common Types ---
 
@@ -39,7 +39,10 @@ class BabbageNumber:
     Supports full arithmetic operations with overflow detection.
     """
 
-    def __init__(self, value):
+    value: int
+    _overflow_flag: bool
+
+    def __init__(self, value: "int | float | BabbageNumber") -> None:
         """Initialize BabbageNumber from Python number."""
         self._overflow_flag = False
         if isinstance(value, BabbageNumber):
@@ -47,11 +50,11 @@ class BabbageNumber:
         else:
             self.value = int(value * (10**40))  # Scale to 50 digits
 
-    def to_decimal(self):
+    def to_decimal(self) -> float:
         """Convert to Python float (for display and testing)."""
-        return self.value / (10**40)
+        return self.value / (10**40)  # int / int yields float in Python 3
 
-    def to_card_format(self):
+    def to_card_format(self) -> str:
         """
         Convert to punch card 50-digit format.
 
@@ -60,7 +63,7 @@ class BabbageNumber:
         """
         return str(self.value).zfill(50)
 
-    def _check_overflow(self):
+    def _check_overflow(self) -> bool:
         """
         Check if value exceeds 50-digit bounds.
 
@@ -78,7 +81,7 @@ class BabbageNumber:
             return True
         return False
 
-    def __add__(self, other):
+    def __add__(self, other: "int | float | BabbageNumber") -> "BabbageNumber":
         """Addition with overflow check."""
         result = BabbageNumber(0)
         other_babbage = BabbageNumber(other)
@@ -86,7 +89,7 @@ class BabbageNumber:
         result._check_overflow()
         return result
 
-    def __sub__(self, other):
+    def __sub__(self, other: "int | float | BabbageNumber") -> "BabbageNumber":
         """Subtraction with overflow check."""
         result = BabbageNumber(0)
         other_babbage = BabbageNumber(other)
@@ -94,7 +97,7 @@ class BabbageNumber:
         result._check_overflow()
         return result
 
-    def __mul__(self, other):
+    def __mul__(self, other: "int | float | BabbageNumber") -> "BabbageNumber":
         """Multiplication with overflow check."""
         result = BabbageNumber(0)
         # Multiply scaled integer values, then scale back by 10^40
@@ -102,7 +105,7 @@ class BabbageNumber:
         result._check_overflow()
         return result
 
-    def __truediv__(self, other):
+    def __truediv__(self, other: "int | float | BabbageNumber") -> "BabbageNumber":
         """Fixed-point division."""
         if BabbageNumber(other).value == 0:
             raise ZeroDivisionError("Division by zero")
@@ -112,35 +115,35 @@ class BabbageNumber:
         result._check_overflow()
         return result
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         """Equality comparison."""
-        return self.value == BabbageNumber(other).value
+        return self.value == BabbageNumber(other).value  # type: ignore[arg-type]
 
-    def __lt__(self, other):
+    def __lt__(self, other: "int | float | BabbageNumber") -> bool:
         """Less-than comparison."""
         return self.value < BabbageNumber(other).value
 
-    def __gt__(self, other):
+    def __gt__(self, other: "int | float | BabbageNumber") -> bool:
         """Greater-than comparison."""
         return self.value > BabbageNumber(other).value
 
-    def __le__(self, other):
+    def __le__(self, other: "int | float | BabbageNumber") -> bool:
         """Less-than-or-equal comparison."""
         return self.value <= BabbageNumber(other).value
 
-    def __ge__(self, other):
+    def __ge__(self, other: "int | float | BabbageNumber") -> bool:
         """Greater-than-or-equal comparison."""
         return self.value >= BabbageNumber(other).value
 
-    def __ne__(self, other):
+    def __ne__(self, other: object) -> bool:
         """Not-equal comparison."""
-        return self.value != BabbageNumber(other).value
+        return self.value != BabbageNumber(other).value  # type: ignore[arg-type]
 
-    def __int__(self):
+    def __int__(self) -> int:
         """Convert to integer."""
         return self.value
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """String representation."""
         return f"BabbageNumber({self.to_decimal()})"
 
@@ -156,19 +159,19 @@ class CardType(Enum):
 
 @dataclass
 class MillState:
-    registers: Dict[str, BabbageNumber]
-    flags: Dict[str, bool]
+    registers: dict[str, BabbageNumber]
+    flags: dict[str, bool]
 
 @dataclass
 class MachineState:
-    memory: List[BabbageNumber]
+    memory: list[BabbageNumber]
     mill: MillState
     pc: int
 
 @dataclass
 class OperationCard:
     opcode: str
-    operands: List[str]
+    operands: list[str]
 
 @dataclass
 class VariableCard:
@@ -190,8 +193,8 @@ class AntikytheraGear:
 
 @dataclass
 class AntikytheraMechanismState:
-    gears: Dict[str, AntikytheraGear]
-    pointers: Dict[str, float]
+    gears: dict[str, AntikytheraGear]
+    pointers: dict[str, float]
 
 # --- DE2 Types ---
 
@@ -199,14 +202,14 @@ class AntikytheraMechanismState:
 class DebugSnapshot:
     """Complete mechanical state at a moment in time"""
     main_shaft_angle: int  # 0–360°
-    column_states: Dict[int, List[int]]  # column_index → digit array (31 digits)
-    carry_states: Dict[int, Tuple[bool, bool]]  # position → (carry_in, carry_out)
+    column_states: dict[int, list[int]]  # column_index → digit array (31 digits)
+    carry_states: dict[int, tuple[bool, bool]]  # position → (carry_in, carry_out)
     printer_position: int  # line number on printed page
-    stereo_position: Tuple[int, int]  # (x, y) in stereotype frame
-    event_log: List[str]  # mechanical events at this angle
+    stereo_position: tuple[int, int]  # (x, y) in stereotype frame
+    event_log: list[str]  # mechanical events at this angle
     phase_name: str  # "column_latch", "addition", "carry", "print", etc.
     cycle_count: int  # which 360° cycle we're in
-    timestamp: Optional[float] = None  # for performance analysis
+    timestamp: float | None = None  # for performance analysis
 
 
 @dataclass
@@ -216,7 +219,7 @@ class TimeEvent:
     phase: str  # "column_latch", "addition", "carry", "print", "stereo"
     component: str  # "column_0", "carry", "printer", "stereotyper"
     action: str  # "latch_open", "add_begin", "carry_execute", "strike", etc.
-    data: Dict = field(default_factory=dict)  # component-specific data
+    data: dict = field(default_factory=dict)  # component-specific data
 
 
 @dataclass
@@ -234,7 +237,7 @@ class CarryState:
 class ColumnSnapshot:
     """State of one digit column (Difference Engine No. 2)"""
     column_index: int                    # Which column (0-7)
-    digits: List[int]                    # 31 digit positions
+    digits: list[int]                    # 31 digit positions
     carry_in: bool                       # Incoming carry
     carry_out: bool                      # Outgoing carry
     is_latched: bool                     # Latch closed?
@@ -249,11 +252,11 @@ ColumnState = ColumnSnapshot
 @dataclass
 class PrinterSnapshot:
     """State of printer apparatus"""
-    type_wheels: List[int]  # 8 digit positions (0–9 each)
+    type_wheels: list[int]  # 8 digit positions (0–9 each)
     inking_engaged: bool  # inking roller active
     hammer_ready: bool  # hammer positioned
     platen_position: int  # line number
-    printed_lines: List[str] = field(default_factory=list)  # lines on page so far
+    printed_lines: list[str] = field(default_factory=list)  # lines on page so far
 
 
 @dataclass
@@ -261,8 +264,8 @@ class StereotyperSnapshot:
     """State of stereotype frame"""
     x_position: int  # 0–7 (digit positions)
     y_position: int  # 0–49 (line positions)
-    mold_image: Dict[Tuple[int, int], int] = field(default_factory=dict)  # (x,y) → raised (1) or flat (0)
-    completed_molds: List[Dict] = field(default_factory=list)
+    mold_image: dict[tuple[int, int], int] = field(default_factory=dict)  # (x,y) → raised (1) or flat (0)
+    completed_molds: list[dict] = field(default_factory=list)
 
 
 @dataclass
@@ -270,11 +273,11 @@ class OperationResult:
     """Result of one machine operation (e.g., one cycle)"""
     success: bool
     cycle_count: int
-    events: List[TimeEvent] = field(default_factory=list)
-    column_values: List[int] = field(default_factory=list)  # 8 column values after cycle
-    printed_lines: List[str] = field(default_factory=list)  # lines printed this cycle
-    extracted_mold: Optional[Dict] = None  # if mold was extracted
-    error: Optional[str] = None
+    events: list[TimeEvent] = field(default_factory=list)
+    column_values: list[int] = field(default_factory=list)  # 8 column values after cycle
+    printed_lines: list[str] = field(default_factory=list)  # lines printed this cycle
+    extracted_mold: dict | None = None  # if mold was extracted
+    error: str | None = None
     execution_time_ms: float = 0.0
 
 
@@ -282,7 +285,7 @@ class OperationResult:
 class TimingSpec:
     """Timing specification (from SMG Technical Description)"""
     # Phase timing (0–360° per cycle)
-    phase_map: Dict[Tuple[int, int], str] = field(default_factory=lambda: {
+    phase_map: dict[tuple[int, int], str] = field(default_factory=lambda: {
         (0, 30): "column_latch",
         (30, 60): "addition_begin",
         (60, 90): "carry_evaluation_1",
@@ -298,7 +301,7 @@ class TimingSpec:
     })
 
     # Events that fire at specific angles
-    event_angles: Dict[int, str] = field(default_factory=lambda: {
+    event_angles: dict[int, str] = field(default_factory=lambda: {
         0: "cycle_start / column_latch_open",
         30: "difference_addition_begins",
         60: "anticipating_carriage_evaluates_position_0",

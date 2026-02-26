@@ -2,15 +2,15 @@
 from __future__ import annotations
 
 import inspect
-from typing import Any, Optional
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
+from ..auth import UserResponse, get_current_user
 from ..database import get_db
 from ..models import CodeSubmission
-from ..auth import get_current_user, UserResponse
 from ..services.languages import (
     get_executor,
     language_status_summary,
@@ -27,7 +27,7 @@ class ExecutionRequest(BaseModel):
     language: str = Field(..., description="Language id or alias (for example: c, python, idris2)")
     code: str = Field(..., max_length=50000, description="Source code to execute")
     input_data: str = Field(default="", max_length=10000, description="Input data for program")
-    lesson_id: Optional[int] = Field(default=None, description="Associated lesson ID")
+    lesson_id: int | None = Field(default=None, description="Associated lesson ID")
 
 
 class ExecutionResponse(BaseModel):
@@ -36,7 +36,7 @@ class ExecutionResponse(BaseModel):
     status: str
     stdout: str
     stderr: str
-    compile_output: Optional[str] = None
+    compile_output: str | None = None
     execution_time: float
     memory_used: int = 0
 

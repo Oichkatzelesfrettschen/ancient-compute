@@ -6,26 +6,64 @@ Handles classes, methods, expressions, statements.
 """
 
 from __future__ import annotations
-from typing import List, Optional
-from backend.src.compilers.java_lexer import Token, TokenType, JavaLexer
+
 from backend.src.compilers.java_ast import (
-    Type, PrimitiveType, ReferenceType, ArrayType, TypeParameter, WildcardType,
-    Expr, Literal, Variable, FieldAccess, ArrayAccess, MethodCall, NewExpression,
-    ArrayCreation, BinaryOp, UnaryOp, ConditionalExpr, CastExpr, InstanceofExpr,
-    LambdaExpr, MethodReference,
-    Stmt, ExprStmt, BlockStmt, VarDeclStmt, IfStmt, WhileStmt, DoWhileStmt,
-    ForStmt, EnhancedForStmt, SwitchStmt, SwitchCase, BreakStmt, ContinueStmt,
-    ReturnStmt, ThrowStmt, TryStmt, CatchBlock, SynchronizedStmt, LabeledStmt,
-    Parameter, MethodDecl, FieldDecl, ConstructorDecl, ClassDecl, InterfaceDecl,
-    EnumDecl, EnumConstant, AnnotationDecl, AnnotationMember,
-    ImportDecl, PackageDecl, CompilationUnit
+    AnnotationDecl,
+    AnnotationMember,
+    ArrayAccess,
+    ArrayCreation,
+    ArrayType,
+    BinaryOp,
+    BlockStmt,
+    BreakStmt,
+    CatchBlock,
+    ClassDecl,
+    CompilationUnit,
+    ConditionalExpr,
+    ConstructorDecl,
+    ContinueStmt,
+    DoWhileStmt,
+    EnhancedForStmt,
+    EnumConstant,
+    EnumDecl,
+    Expr,
+    ExprStmt,
+    FieldAccess,
+    FieldDecl,
+    ForStmt,
+    IfStmt,
+    ImportDecl,
+    InstanceofExpr,
+    InterfaceDecl,
+    Literal,
+    MethodCall,
+    MethodDecl,
+    NewExpression,
+    PackageDecl,
+    Parameter,
+    PrimitiveType,
+    ReferenceType,
+    ReturnStmt,
+    Stmt,
+    SwitchCase,
+    SwitchStmt,
+    SynchronizedStmt,
+    ThrowStmt,
+    TryStmt,
+    Type,
+    TypeParameter,
+    UnaryOp,
+    VarDeclStmt,
+    Variable,
+    WhileStmt,
 )
+from backend.src.compilers.java_lexer import Token, TokenType
 
 
 class JavaParser:
     """Recursive descent parser for Java"""
 
-    def __init__(self, tokens: List[Token]) -> None:
+    def __init__(self, tokens: list[Token]) -> None:
         self.tokens = tokens
         self.pos = 0
         self.current_token = tokens[0] if tokens else Token(TokenType.EOF, '', 0, 0)
@@ -108,7 +146,7 @@ class JavaParser:
         elif self._match(TokenType.AT): return self._parse_annotation_decl(modifiers)
         else: raise SyntaxError(f"Expected type declaration, got {self.current_token.type}")
 
-    def _parse_class_decl(self, modifiers: List[str]) -> ClassDecl:
+    def _parse_class_decl(self, modifiers: list[str]) -> ClassDecl:
         self._expect(TokenType.CLASS)
         name = self._expect(TokenType.IDENTIFIER, TokenType.TYPE_NAME).value
         type_parameters = self._parse_type_parameters()
@@ -125,7 +163,7 @@ class JavaParser:
         self._expect(TokenType.RBRACE)
         return ClassDecl(name, type_parameters, superclass, interfaces, modifiers, members)
 
-    def _parse_interface_decl(self, modifiers: List[str]) -> InterfaceDecl:
+    def _parse_interface_decl(self, modifiers: list[str]) -> InterfaceDecl:
         self._expect(TokenType.INTERFACE)
         name = self._expect(TokenType.IDENTIFIER, TokenType.TYPE_NAME).value
         type_parameters = self._parse_type_parameters()
@@ -140,7 +178,7 @@ class JavaParser:
         self._expect(TokenType.RBRACE)
         return InterfaceDecl(name, type_parameters, extends, modifiers, members)
 
-    def _parse_enum_decl(self, modifiers: List[str]) -> EnumDecl:
+    def _parse_enum_decl(self, modifiers: list[str]) -> EnumDecl:
         self._expect(TokenType.ENUM)
         name = self._expect(TokenType.IDENTIFIER, TokenType.TYPE_NAME).value
         interfaces = []
@@ -162,7 +200,7 @@ class JavaParser:
         self._expect(TokenType.RBRACE)
         return EnumDecl(name, interfaces, modifiers, constants, members)
 
-    def _parse_annotation_decl(self, modifiers: List[str]) -> AnnotationDecl:
+    def _parse_annotation_decl(self, modifiers: list[str]) -> AnnotationDecl:
         self._expect(TokenType.AT); self._expect(TokenType.INTERFACE)
         name = self._expect(TokenType.IDENTIFIER).value
         self._expect(TokenType.LBRACE)
@@ -239,9 +277,7 @@ class JavaParser:
         elif self._match(TokenType.SYNCHRONIZED): return self._parse_synchronized_stmt()
         elif self._match(TokenType.IDENTIFIER, TokenType.TYPE_NAME):
             # Lookahead to distinguish decl from assignment
-            if self._peek(1).type in (TokenType.IDENTIFIER, TokenType.TYPE_NAME):
-                 return self._parse_var_decl_stmt()
-            elif self._peek(1).type == TokenType.LBRACKET and self._peek(2).type == TokenType.RBRACKET:
+            if self._peek(1).type in (TokenType.IDENTIFIER, TokenType.TYPE_NAME) or self._peek(1).type == TokenType.LBRACKET and self._peek(2).type == TokenType.RBRACKET:
                  return self._parse_var_decl_stmt()
             else:
                 expr = self._parse_expr(); self._expect(TokenType.SEMICOLON); return ExprStmt(expr)
@@ -525,7 +561,7 @@ class JavaParser:
             return ReferenceType(name, type_args)
         else: raise SyntaxError(f"Expected type, got {self.current_token.type}")
 
-    def _parse_type_parameters(self) -> List[TypeParameter]:
+    def _parse_type_parameters(self) -> list[TypeParameter]:
         params = []
         if self._match(TokenType.LESS):
             self._advance()
@@ -538,14 +574,14 @@ class JavaParser:
             self._expect(TokenType.GREATER)
         return params
 
-    def _parse_type_arguments_inline(self) -> List[Type]:
+    def _parse_type_arguments_inline(self) -> list[Type]:
         args = []; self._expect(TokenType.LESS)
         while self.current_token.type != TokenType.GREATER:
             args.append(self._parse_type())
             if not self._consume(TokenType.COMMA): break
         self._expect(TokenType.GREATER); return args
 
-    def _parse_modifiers(self) -> List[str]:
+    def _parse_modifiers(self) -> list[str]:
         mods = []
         while self._match(TokenType.PUBLIC, TokenType.PRIVATE, TokenType.PROTECTED,
                           TokenType.STATIC, TokenType.FINAL, TokenType.ABSTRACT,
@@ -554,7 +590,7 @@ class JavaParser:
             mods.append(self.current_token.value); self._advance()
         return mods
 
-    def _parse_parameters(self) -> List[Parameter]:
+    def _parse_parameters(self) -> list[Parameter]:
         params = []
         while self.current_token.type != TokenType.RPAREN:
             ptype = self._parse_type(); pname = self._expect(TokenType.IDENTIFIER, TokenType.TYPE_NAME).value
@@ -562,14 +598,14 @@ class JavaParser:
             if not self._consume(TokenType.COMMA): break
         return params
 
-    def _parse_arguments(self) -> List[Expr]:
+    def _parse_arguments(self) -> list[Expr]:
         self._expect(TokenType.LPAREN); args = []
         while self.current_token.type != TokenType.RPAREN:
             args.append(self._parse_expr())
             if not self._consume(TokenType.COMMA): break
         self._expect(TokenType.RPAREN); return args
 
-    def _parse_throws(self) -> List[Type]:
+    def _parse_throws(self) -> list[Type]:
         excs = []
         if self._consume(TokenType.THROWS):
             excs.append(self._parse_type())

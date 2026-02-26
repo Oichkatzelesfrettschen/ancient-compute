@@ -100,8 +100,8 @@ test-coverage:
 	cd backend && pytest --cov=src --cov-report=html --cov-report=term
 
 test-unit:
-	@echo "Running all unit tests..."
-	cd backend && pytest tests/unit/ -q
+	@echo "Running all unit tests (no DB required)..."
+	cd backend && pytest tests/unit/ -m "not db" -q
 
 test-physics:
 	@echo "Running physics/simulation tests..."

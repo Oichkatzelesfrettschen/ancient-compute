@@ -20,10 +20,8 @@ References:
   - Working DE2 hardware mechanical documentation
 """
 
-from typing import List, Dict, Optional, Callable
-from enum import Enum
+from collections.abc import Callable
 from dataclasses import dataclass
-
 
 # MechanicalPhase: canonical definition in types.py, re-imported here.
 from .types import MechanicalPhase
@@ -37,7 +35,7 @@ class TimingEvent:
     phase: MechanicalPhase                  # Current phase
     event_type: str                         # Event name
     timestamp: int                          # Cycle counter
-    payload: Optional[Dict] = None          # Additional data
+    payload: dict | None = None          # Additional data
 
 
 @dataclass
@@ -74,14 +72,14 @@ class TimingController:
       - Integration point for column operations and carry handling
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize TimingController."""
         self.angle = 0                      # Current shaft angle (0-360)
         self.rotation_count = 0             # Total rotations completed
         self.is_rotating = False            # Currently rotating
         self.phase = self._get_phase_at_angle(0)
-        self.events: List[TimingEvent] = []
-        self.event_callbacks: Dict[int, List[Callable]] = {}  # angle → handlers
+        self.events: list[TimingEvent] = []
+        self.event_callbacks: dict[int, list[Callable]] = {}  # angle → handlers
         self.total_events = 0
 
     def _get_phase_at_angle(self, angle: int) -> MechanicalPhase:
@@ -162,7 +160,7 @@ class TimingController:
             self.advance_angle(1)
         self.stop_rotation()
 
-        return self.total_events - initial_event_count
+        return int(self.total_events - initial_event_count)
 
     def _emit_phase_event(self, phase: MechanicalPhase) -> None:
         """Emit event for phase transition."""
@@ -208,7 +206,7 @@ class TimingController:
             self.event_callbacks[angle] = []
         self.event_callbacks[angle].append(callback)
 
-    def get_events_since(self, rotation: int) -> List[TimingEvent]:
+    def get_events_since(self, rotation: int) -> list[TimingEvent]:
         """
         Get all events since given rotation number.
 
@@ -226,15 +224,15 @@ class TimingController:
 
     def get_angle(self) -> int:
         """Get current shaft angle."""
-        return self.angle
+        return int(self.angle)
 
     def get_rotation_count(self) -> int:
         """Get total rotations completed."""
-        return self.rotation_count
+        return int(self.rotation_count)
 
     def is_in_phase(self, phase: MechanicalPhase) -> bool:
         """Check if currently in given phase."""
-        return self.phase == phase
+        return bool(self.phase == phase)
 
     def get_time_in_phase(self) -> int:
         """Get time (degrees) since phase started."""
@@ -248,7 +246,7 @@ class TimingController:
             MechanicalPhase.RESET: 270,
             MechanicalPhase.PAUSE: 315,
         }
-        return self.angle - phase_start.get(self.phase, 0)
+        return int(self.angle - phase_start.get(self.phase, 0))
 
     def reset(self) -> None:
         """Reset to initial state."""
@@ -295,7 +293,7 @@ class TimingSequence:
     def __init__(self, name: str):
         """Initialize timing sequence."""
         self.name = name
-        self.operations: Dict[MechanicalPhase, List[str]] = {}
+        self.operations: dict[MechanicalPhase, list[str]] = {}
         self.duration = 360  # Default one rotation
 
     def add_operation(
@@ -308,7 +306,7 @@ class TimingSequence:
 
     def get_operations_for_phase(
         self, phase: MechanicalPhase
-    ) -> List[str]:
+    ) -> list[str]:
         """Get operations for given phase."""
         return self.operations.get(phase, [])
 
@@ -368,7 +366,7 @@ class CarryPropagationModel:
 # ---------------------------------------------------------------------------
 
 # Mapping of barrel step counts to shaft degree allocations
-BARREL_TIMING_MAP = {
+BARREL_TIMING_MAP: dict[str, dict[str, int | list[str]]] = {
     "ADD": {"steps": 6, "degrees": 45, "phases": ["ADDITION", "CARRY"]},
     "SUB": {"steps": 6, "degrees": 45, "phases": ["ADDITION", "CARRY"]},
     "MULT": {"steps": 4, "degrees": 360, "phases": ["ADDITION", "CARRY"]},
@@ -391,9 +389,12 @@ class BarrelTimingBridge:
     def degrees_per_step(barrel_name: str) -> float:
         """Shaft degrees allocated per barrel step."""
         entry = BARREL_TIMING_MAP.get(barrel_name)
-        if entry is None or entry["steps"] <= 0:
+        if entry is None:
             return 0.0
-        return entry["degrees"] / entry["steps"]
+        steps = int(entry["steps"])  # type: ignore[arg-type]
+        if steps <= 0:
+            return 0.0
+        return float(int(entry["degrees"])) / steps  # type: ignore[arg-type]
 
     @staticmethod
     def total_degrees(barrel_name: str) -> float:
@@ -401,7 +402,7 @@ class BarrelTimingBridge:
         entry = BARREL_TIMING_MAP.get(barrel_name)
         if entry is None:
             return 0.0
-        return float(entry["degrees"])
+        return float(int(entry["degrees"]))  # type: ignore[arg-type]
 
     @staticmethod
     def rotations_required(barrel_name: str) -> float:
@@ -409,19 +410,22 @@ class BarrelTimingBridge:
         return BarrelTimingBridge.total_degrees(barrel_name) / 360.0
 
     @staticmethod
-    def uses_phases(barrel_name: str) -> list:
+    def uses_phases(barrel_name: str) -> list[str]:
         """Return list of mechanical phases used by this barrel."""
         entry = BARREL_TIMING_MAP.get(barrel_name)
         if entry is None:
             return []
-        return entry["phases"]
+        phases = entry["phases"]
+        if isinstance(phases, list):
+            return [str(p) for p in phases]
+        return []
 
 
 # ---------------------------------------------------------------------------
 # Opcode Timing Sequences
 # ---------------------------------------------------------------------------
 
-def build_opcode_timing_sequences() -> Dict[str, TimingSequence]:
+def build_opcode_timing_sequences() -> dict[str, TimingSequence]:
     """Build concrete TimingSequence for each supported opcode.
 
     These define which mechanical phases each opcode uses during execution.

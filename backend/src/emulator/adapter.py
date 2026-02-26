@@ -1,13 +1,15 @@
 """
 Ancient Compute - Machine Adapters for Debugger
 
-Provides a unified interface for the Debugger to interact with different 
+Provides a unified interface for the Debugger to interact with different
 mechanical and analytical engines (DE2, AE, Curta).
 """
 
 from abc import ABC, abstractmethod
-from typing import Dict, List, Any, Optional
+from typing import Any
+
 from .timing import MechanicalPhase
+
 
 class MachineAdapter(ABC):
     @abstractmethod
@@ -15,15 +17,15 @@ class MachineAdapter(ABC):
         pass
 
     @abstractmethod
-    def get_current_phase(self) -> Optional[MechanicalPhase]:
+    def get_current_phase(self) -> MechanicalPhase | None:
         pass
 
     @abstractmethod
-    def get_column_values(self) -> List[int]:
+    def get_column_values(self) -> list[int]:
         pass
 
     @abstractmethod
-    def get_register_values(self) -> Dict[str, Any]:
+    def get_register_values(self) -> dict[str, Any]:
         pass
 
     @abstractmethod
@@ -46,13 +48,13 @@ class DEMachineAdapter(MachineAdapter):
     def get_cycle_count(self) -> int:
         return self.machine.cycle_count
 
-    def get_current_phase(self) -> Optional[MechanicalPhase]:
+    def get_current_phase(self) -> MechanicalPhase | None:
         return self.machine.timing.phase
 
-    def get_column_values(self) -> List[int]:
+    def get_column_values(self) -> list[int]:
         return self.machine.get_column_values()
 
-    def get_register_values(self) -> Dict[str, Any]:
+    def get_register_values(self) -> dict[str, Any]:
         return {k: v.to_decimal() for k, v in self.machine.analytical_engine.registers.items()}
 
     def get_memory_value(self, address: int) -> Any:
@@ -69,17 +71,17 @@ class AEMachineAdapter(MachineAdapter):
         self.engine = engine
 
     def get_cycle_count(self) -> int:
-        return self.engine.clock_time 
+        return self.engine.clock_time
 
-    def get_current_phase(self) -> Optional[MechanicalPhase]:
+    def get_current_phase(self) -> MechanicalPhase | None:
         if self.engine.barrels.active_barrel:
-            return MechanicalPhase.ADDITION 
-        return None 
+            return MechanicalPhase.ADDITION
+        return None
 
-    def get_column_values(self) -> List[int]:
-        return [] 
+    def get_column_values(self) -> list[int]:
+        return []
 
-    def get_register_values(self) -> Dict[str, Any]:
+    def get_register_values(self) -> dict[str, Any]:
         return {k: v.to_decimal() for k, v in self.engine.registers.items()}
 
     def get_memory_value(self, address: int) -> Any:
@@ -111,13 +113,13 @@ class CurtaAdapter(MachineAdapter):
     def get_cycle_count(self) -> int:
         return self.turns
 
-    def get_current_phase(self) -> Optional[MechanicalPhase]:
+    def get_current_phase(self) -> MechanicalPhase | None:
         return None
 
-    def get_column_values(self) -> List[int]:
+    def get_column_values(self) -> list[int]:
         return self.curta.sliders
 
-    def get_register_values(self) -> Dict[str, Any]:
+    def get_register_values(self) -> dict[str, Any]:
         return {
             "Result": self.curta.result_dial,
             "Counter": self.curta.counter_dial,

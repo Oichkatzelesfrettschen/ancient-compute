@@ -1,6 +1,5 @@
 # Ancient Compute - IDRIS AST
 
-from typing import List, Optional, Tuple, Union
 
 
 # ---------------------------------------------------------------------------
@@ -59,7 +58,7 @@ class DependentType(Type):
 
 class TypeFamily(Type):
     """Type family application: F a1 a2 ... an."""
-    def __init__(self, name: str, args: List[Type]):
+    def __init__(self, name: str, args: list[Type]):
         self.name = name
         self.args = args
 
@@ -91,7 +90,7 @@ class Expr(ASTNode):
 
 
 class Module(ASTNode):
-    def __init__(self, name: str, body: List[ASTNode]):
+    def __init__(self, name: str, body: list[ASTNode]):
         self.name = name
         self.body = body
 
@@ -112,7 +111,7 @@ class TypeDeclaration(Declaration):
 
 
 class FunctionDeclaration(Declaration):
-    def __init__(self, name: str, args: List[str], body: ASTNode):
+    def __init__(self, name: str, args: list[str], body: ASTNode):
         self.name = name
         self.args = args
         self.body = body
@@ -146,7 +145,7 @@ class Literal(Expression):
 
 
 class FunctionApplication(Expression):
-    def __init__(self, func: Expression, args: List[Expression]):
+    def __init__(self, func: Expression, args: list[Expression]):
         self.func = func
         self.args = args
 
@@ -157,14 +156,14 @@ Application = FunctionApplication
 
 class Lambda(Expr):
     """Lambda expression."""
-    def __init__(self, param: str, param_type: Optional[Type], body: Expr):
+    def __init__(self, param: str, param_type: Type | None, body: Expr):
         self.param = param
         self.param_type = param_type
         self.body = body
 
 
 class Let(Expression):
-    def __init__(self, bindings: List[Declaration], body: Expression):
+    def __init__(self, bindings: list[Declaration], body: Expression):
         self.bindings = bindings
         self.body = body
 
@@ -174,7 +173,7 @@ LetExpr = Let
 
 
 class Case(Expression):
-    def __init__(self, expr: Expression, alternatives: List[ASTNode]):
+    def __init__(self, expr: Expression, alternatives: list[ASTNode]):
         self.expr = expr
         self.alternatives = alternatives
 
@@ -193,6 +192,6 @@ class IfExpr(Expr):
 
 class ProofExpr(Expr):
     """Proof term (refl, cong, etc.)."""
-    def __init__(self, name: str, args: List[Expr]):
+    def __init__(self, name: str, args: list[Expr]):
         self.name = name
         self.args = args

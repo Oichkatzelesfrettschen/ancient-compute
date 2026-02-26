@@ -7,7 +7,6 @@ from typing import Any
 
 import yaml
 
-
 REPO_ROOT = Path(__file__).resolve().parents[3]
 SIM_SCHEMA = REPO_ROOT / "docs/simulation/sim_schema.yaml"
 CITATIONS = REPO_ROOT / "docs/simulation/CITATIONS.md"

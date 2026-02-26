@@ -18,9 +18,9 @@ Token types:
 """
 
 from __future__ import annotations
-from enum import Enum
+
 from dataclasses import dataclass
-from typing import List, Optional
+from enum import Enum
 
 
 class TokenType(str, Enum):
@@ -110,9 +110,9 @@ class SystemFLexer:
         self.pos = 0
         self.line = 1
         self.column = 1
-        self.tokens: List[Token] = []
+        self.tokens: list[Token] = []
 
-    def tokenize(self) -> List[Token]:
+    def tokenize(self) -> list[Token]:
         """Tokenize entire source and return token list"""
         while self.pos < len(self.source):
             # Skip whitespace
@@ -215,13 +215,13 @@ class SystemFLexer:
         self._add_token(TokenType.EOF, '')
         return self.tokens
 
-    def current(self) -> Optional[str]:
+    def current(self) -> str | None:
         """Get current character"""
         if self.pos < len(self.source):
             return self.source[self.pos]
         return None
 
-    def peek(self, offset: int = 1) -> Optional[str]:
+    def peek(self, offset: int = 1) -> str | None:
         """Peek at character at current position + offset"""
         pos = self.pos + offset
         if pos < len(self.source):

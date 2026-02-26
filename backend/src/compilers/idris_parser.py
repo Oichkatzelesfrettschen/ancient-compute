@@ -1,12 +1,18 @@
 # Ancient Compute - IDRIS Parser
 
-import ply.yacc as yacc
-from typing import Any, Optional
 
-from .idris_lexer import tokens
+import ply.yacc as yacc
+
 from .idris_ast import (
-    Module, Import, TypeDeclaration, FunctionDeclaration, Identifier, Literal, FunctionApplication, Let, Case
+    FunctionApplication,
+    FunctionDeclaration,
+    Identifier,
+    Literal,
+    Module,
+    TypeDeclaration,
 )
+from .idris_lexer import tokens  # noqa: F401 -- PLY requires tokens in module scope
+
 
 def p_module(p):
     """module : KEYWORD IDENTIFIER body"""
@@ -80,7 +86,7 @@ class IdrisParser:
         result = parser.parse(self.source, lexer=ply_lexer)
         if result is None:
             # PLY parser returned None -- wrap as single-element list for compiler
-            from .idris_ast import TypeDeclaration, Identifier
+            from .idris_ast import Identifier, TypeDeclaration
             # Fallback: try to interpret as simple type annotation "name : type"
             parts = self.source.strip().split(':')
             if len(parts) == 2:

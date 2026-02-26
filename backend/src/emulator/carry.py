@@ -20,7 +20,6 @@ References:
   - Swade & Orrery: "Difference Engine: Charles Babbage and the Quest"
 """
 
-from typing import List, Dict, Optional
 from dataclasses import dataclass
 
 
@@ -29,8 +28,8 @@ class CarrySnapshot:
     """Snapshot of AnticipatingCarriage state for debugging."""
 
     phase: int                          # Current mechanical phase (0-7)
-    carry_signals: List[bool]           # Carry signals from 8 columns
-    anticipated_carries: List[bool]     # Carries to apply to next phase
+    carry_signals: list[bool]           # Carry signals from 8 columns
+    anticipated_carries: list[bool]     # Carries to apply to next phase
     is_active: bool                     # Carriage active in this cycle
 
 
@@ -59,16 +58,16 @@ class AnticipatingCarriage:
       affected columns, rather than waiting for ripple propagation.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize Anticipating Carriage."""
         self.phases = 8                              # 8 columns → 8 phases
         self.current_phase = 0                       # Current phase (0-7)
         self.carry_signals = [False] * 8             # Input carry signals
         self.anticipated_carries = [False] * 8       # Output carries
         self.is_active = False                       # Active in current cycle
-        self.history: List[CarrySnapshot] = []       # For tracing
+        self.history: list[CarrySnapshot] = []       # For tracing
 
-    def set_carry_signals(self, signals: List[bool]) -> None:
+    def set_carry_signals(self, signals: list[bool]) -> None:
         """
         Set carry signals from all 8 columns.
 
@@ -82,7 +81,7 @@ class AnticipatingCarriage:
             raise ValueError(f"Expected 8 carry signals, got {len(signals)}")
         self.carry_signals = signals.copy()
 
-    def anticipate_carries(self) -> List[bool]:
+    def anticipate_carries(self) -> list[bool]:
         """
         Compute anticipated carries for next phase.
 
@@ -127,7 +126,7 @@ class AnticipatingCarriage:
         """
         if not (0 <= column_index < 8):
             raise IndexError(f"Column index out of range: {column_index}")
-        return self.anticipated_carries[column_index]
+        return bool(self.anticipated_carries[column_index])
 
     def advance_phase(self) -> None:
         """Advance to next mechanical phase (0→7 cycle)."""
@@ -174,7 +173,7 @@ class AnticipatingCarriage:
         """Clear snapshot history."""
         self.history.clear()
 
-    def get_history(self, depth: int = 10) -> List[CarrySnapshot]:
+    def get_history(self, depth: int = 10) -> list[CarrySnapshot]:
         """
         Get recent history (last N snapshots).
 
@@ -219,10 +218,10 @@ class CarryPropagationUnit:
         if propagation_mode not in ("sequential", "lookahead", "parallel"):
             raise ValueError(f"Unknown propagation mode: {propagation_mode}")
         self.mode = propagation_mode
-        self.carry_chain: List[bool] = [False] * 8
+        self.carry_chain: list[bool] = [False] * 8
         self.step_count = 0
 
-    def propagate(self, input_carries: List[bool]) -> List[bool]:
+    def propagate(self, input_carries: list[bool]) -> list[bool]:
         """
         Propagate carries using selected strategy.
 
@@ -242,7 +241,7 @@ class CarryPropagationUnit:
         else:  # parallel
             return self._propagate_parallel(input_carries)
 
-    def _propagate_sequential(self, carries: List[bool]) -> List[bool]:
+    def _propagate_sequential(self, carries: list[bool]) -> list[bool]:
         """
         Sequential ripple carry (simulated).
 
@@ -256,7 +255,7 @@ class CarryPropagationUnit:
         self.step_count = 7  # Would take 7 ripple steps
         return result
 
-    def _propagate_lookahead(self, carries: List[bool]) -> List[bool]:
+    def _propagate_lookahead(self, carries: list[bool]) -> list[bool]:
         """
         Lookahead carry (Babbage's Anticipating Carriage approach).
 
@@ -269,7 +268,7 @@ class CarryPropagationUnit:
         self.step_count = 1  # Lookahead takes 1 step
         return result
 
-    def _propagate_parallel(self, carries: List[bool]) -> List[bool]:
+    def _propagate_parallel(self, carries: list[bool]) -> list[bool]:
         """
         Hypothetical parallel propagation (all carries at once).
 

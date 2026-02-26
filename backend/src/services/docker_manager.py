@@ -3,14 +3,11 @@ Ancient Compute - Docker Manager with Graceful Fallback
 Provides Docker execution with fallback to local restricted execution
 """
 import asyncio
-import subprocess
-import tempfile
-import os
 import platform
-from typing import Optional, Dict, Any
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
+from typing import Any
 
 
 class ExecutionBackend(Enum):
@@ -57,7 +54,7 @@ class DockerManager:
         self.backends = self._initialize_backends()
         self._initialized = True
 
-    def _initialize_backends(self) -> Dict[ExecutionBackend, BackendInfo]:
+    def _initialize_backends(self) -> dict[ExecutionBackend, BackendInfo]:
         """Initialize and check availability of execution backends"""
         backends = {}
 
@@ -249,7 +246,7 @@ class DockerManager:
 
         return False
 
-    def get_container_config(self, language: str, tmpdir: str) -> Dict[str, Any]:
+    def get_container_config(self, language: str, tmpdir: str) -> dict[str, Any]:
         """
         Get Docker container configuration with security settings
         Platform-aware configuration for Windows/Linux

@@ -18,25 +18,37 @@ Grammar:
 """
 
 from __future__ import annotations
-from typing import List, Optional
-from backend.src.compilers.systemf_lexer import Token, TokenType, SystemFLexer
+
 from backend.src.compilers.systemf_ast import (
-    Type, TypeVar, BaseType, FunctionType, UniversalType,
-    Expr, Var, Literal, Lambda, TypeAbstraction, Application, TypeApplication,
-    IfExpr, LetExpr, FixExpr, Annotation
+    Application,
+    BaseType,
+    Expr,
+    FixExpr,
+    FunctionType,
+    IfExpr,
+    Lambda,
+    LetExpr,
+    Literal,
+    Type,
+    TypeAbstraction,
+    TypeApplication,
+    TypeVar,
+    UniversalType,
+    Var,
 )
+from backend.src.compilers.systemf_lexer import Token, TokenType
 
 
 class SystemFParser:
     """Recursive descent parser for System F"""
 
-    def __init__(self, tokens: List[Token]) -> None:
+    def __init__(self, tokens: list[Token]) -> None:
         """Initialize parser with token list"""
         self.tokens = tokens
         self.pos = 0
         self.current_token = tokens[0] if tokens else Token(TokenType.EOF, '', 0, 0)
 
-    def parse(self) -> List[Expr]:
+    def parse(self) -> list[Expr]:
         """Parse entire source and return list of expressions"""
         expressions = []
 
@@ -85,7 +97,7 @@ class SystemFParser:
             return True
         return False
 
-    def _parse_expr(self) -> Optional[Expr]:
+    def _parse_expr(self) -> Expr | None:
         """Parse an expression"""
         # Lambda abstraction
         if self._match(TokenType.BACKSLASH):

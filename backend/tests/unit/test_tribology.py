@@ -9,25 +9,25 @@ Validates:
 """
 
 import math
+
 import pytest
 
 pytestmark = pytest.mark.physics
 
+from backend.src.emulator.materials import MaterialLibrary
 from backend.src.emulator.tribology import (
-    WearModel,
-    PVAnalysis,
+    ARCHARD_K_LUBRICATED_BRASS_ON_STEEL,
+    ARCHARD_K_LUBRICATED_BRONZE_ON_STEEL,
+    PERIOD_SURFACE_FINISHES,
+    PV_LIMIT_BRONZE_ON_STEEL_LUBRICATED,
     LubricationModel,
+    PVAnalysis,
     RunningInWear,
     SurfaceTextureEvolution,
-    WearClearanceFeedback,
     TimeToFailure,
-    SurfaceFinishSpec,
-    PERIOD_SURFACE_FINISHES,
-    ARCHARD_K_LUBRICATED_BRONZE_ON_STEEL,
-    ARCHARD_K_LUBRICATED_BRASS_ON_STEEL,
-    PV_LIMIT_BRONZE_ON_STEEL_LUBRICATED,
+    WearClearanceFeedback,
+    WearModel,
 )
-from backend.src.emulator.materials import MaterialLibrary
 
 
 @pytest.fixture
@@ -181,11 +181,11 @@ class TestLubricationSchedule:
 class TestRunningInWear:
     def test_K_at_zero_equals_initial(self):
         K = RunningInWear.wear_coefficient(0.0, 1e-5, 1e-6, 1e6)
-        assert K == pytest.approx(1e-5)
+        assert pytest.approx(1e-5) == K
 
     def test_K_converges_to_steady(self):
         K = RunningInWear.wear_coefficient(1e9, 1e-5, 1e-6, 1e6)
-        assert K == pytest.approx(1e-6, rel=0.01)
+        assert pytest.approx(1e-6, rel=0.01) == K
 
     def test_K_monotone_decreasing(self):
         K0 = RunningInWear.wear_coefficient(0.0, 1e-5, 1e-6, 1e6)

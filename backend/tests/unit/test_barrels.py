@@ -9,18 +9,12 @@ import pytest
 pytestmark = pytest.mark.physics
 
 from backend.src.emulator.barrels import (
-    Barrel,
     BarrelController,
-    BarrelRow,
     MicroOp,
 )
 from backend.src.emulator.timing import (
-    CarryPropagationModel,
     BarrelTimingBridge,
-    build_opcode_timing_sequences,
-    MechanicalPhase,
 )
-
 
 # ---------------------------------------------------------------------------
 # BarrelController construction

@@ -5,14 +5,13 @@ Comprehensive performance testing for execution speed, caching efficiency,
 and database query optimization.
 """
 
-import pytest
 import time
-from typing import List
 
-from src.services.execution_cache import ExecutionCache
-from src.services.query_cache import QueryCache
-from src.services.optimized_executor import OptimizedExecutor
+import pytest
 from src.services.base_executor import ExecutionResult, ExecutionStatus
+from src.services.execution_cache import ExecutionCache
+from src.services.optimized_executor import OptimizedExecutor
+from src.services.query_cache import QueryCache
 
 
 class TestExecutionCachePerformance:

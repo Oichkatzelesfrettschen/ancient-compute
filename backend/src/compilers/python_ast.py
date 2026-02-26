@@ -8,8 +8,9 @@ Provides AST node classes for representing Python syntax structures:
 """
 
 from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import List, Optional, Any
+from typing import Any
 
 
 @dataclass
@@ -37,7 +38,7 @@ class UnaryOp(Expr):
 class Call(Expr):
     """Function call: func(args)"""
     func: str  # function name
-    args: List[Expr]
+    args: list[Expr]
 
 
 @dataclass
@@ -82,22 +83,22 @@ class Assign(Stmt):
 @dataclass
 class Return(Stmt):
     """Return statement"""
-    value: Optional[Expr]
+    value: Expr | None
 
 
 @dataclass
 class If(Stmt):
     """If/elif/else statement"""
     test: Expr
-    body: List[Stmt]
-    orelse: List[Stmt]  # elif/else body
+    body: list[Stmt]
+    orelse: list[Stmt]  # elif/else body
 
 
 @dataclass
 class While(Stmt):
     """While loop"""
     test: Expr
-    body: List[Stmt]
+    body: list[Stmt]
 
 
 @dataclass
@@ -105,15 +106,15 @@ class For(Stmt):
     """For loop: for target in iter: body"""
     target: str
     iter: Expr
-    body: List[Stmt]
+    body: list[Stmt]
 
 
 @dataclass
 class FunctionDef(Stmt):
     """Function definition"""
     name: str
-    args: List[str]
-    body: List[Stmt]
+    args: list[str]
+    body: list[Stmt]
 
 
 @dataclass
@@ -143,4 +144,4 @@ class ExprStmt(Stmt):
 @dataclass
 class Module:
     """Top-level module"""
-    body: List[Stmt]
+    body: list[Stmt]

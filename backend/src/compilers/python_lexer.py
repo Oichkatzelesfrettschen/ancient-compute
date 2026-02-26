@@ -20,9 +20,9 @@ Token types:
 """
 
 from __future__ import annotations
-from enum import Enum
+
 from dataclasses import dataclass
-from typing import List, Optional
+from enum import Enum
 
 
 class TokenType(str, Enum):
@@ -129,11 +129,11 @@ class PythonLexer:
         self.pos = 0
         self.line = 1
         self.column = 1
-        self.tokens: List[Token] = []
-        self.indent_stack: List[int] = [0]  # Track indentation levels
+        self.tokens: list[Token] = []
+        self.indent_stack: list[int] = [0]  # Track indentation levels
         self.pending_dedents = 0  # DEDENT tokens to emit
 
-    def tokenize(self) -> List[Token]:
+    def tokenize(self) -> list[Token]:
         """Tokenize entire source and return token list"""
         while self.pos < len(self.source):
             self._skip_whitespace_except_indent()
@@ -325,7 +325,7 @@ class PythonLexer:
         token_type = self.KEYWORDS.get(value, TokenType.IDENTIFIER)
         return Token(token_type, value, start_line, start_col)
 
-    def _read_operator_or_delimiter(self) -> Optional[Token]:
+    def _read_operator_or_delimiter(self) -> Token | None:
         """Read operator or delimiter"""
         start_line = self.line
         start_col = self.column

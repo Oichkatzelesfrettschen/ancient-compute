@@ -10,14 +10,14 @@ import pytest
 pytestmark = pytest.mark.physics
 
 from backend.src.emulator.analytical_engine import (
-    Engine,
     BabbageNumber,
+    Engine,
     Instruction,
     MechanicalFailureError,
 )
-from backend.src.emulator.simulation.state import SimulationConfig
-from backend.src.emulator.simulation.engine import SimulationEngine
 from backend.src.emulator.simulation.bridge import SimulationBridge
+from backend.src.emulator.simulation.engine import SimulationEngine
+from backend.src.emulator.simulation.state import SimulationConfig
 
 
 def _make_physics_engine(config=None):

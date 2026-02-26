@@ -32,7 +32,7 @@ class LanguageCapability:
     execution_mode: str
     service_cls: type[Any]
 
-    def to_public_dict(self) -> Dict[str, Any]:
+    def to_public_dict(self) -> dict[str, Any]:
         """Convert to API-safe dictionary."""
         return {
             "id": self.id,
@@ -146,12 +146,12 @@ _LANGUAGE_CAPABILITIES: tuple[LanguageCapability, ...] = (
     ),
 )
 
-_CANONICAL_BY_ALIAS: Dict[str, str] = {
+_CANONICAL_BY_ALIAS: dict[str, str] = {
     alias: spec.id
     for spec in _LANGUAGE_CAPABILITIES
     for alias in spec.aliases
 }
-_CAPABILITY_BY_ID: Dict[str, LanguageCapability] = {
+_CAPABILITY_BY_ID: dict[str, LanguageCapability] = {
     spec.id: spec for spec in _LANGUAGE_CAPABILITIES
 }
 
@@ -172,14 +172,14 @@ __all__ = [
 ]
 
 
-def normalize_language_id(language: str) -> Optional[str]:
+def normalize_language_id(language: str) -> str | None:
     """Normalize user language input to a canonical language id."""
     if not language:
         return None
     return _CANONICAL_BY_ALIAS.get(language.strip().lower())
 
 
-def get_executor(language: str) -> Optional[Any]:
+def get_executor(language: str) -> Any | None:
     """Factory function returning an executor instance for a supported language."""
     canonical = normalize_language_id(language)
     if canonical is None:
@@ -187,14 +187,14 @@ def get_executor(language: str) -> Optional[Any]:
     return _CAPABILITY_BY_ID[canonical].service_cls()
 
 
-def list_language_capabilities() -> list[Dict[str, Any]]:
+def list_language_capabilities() -> list[dict[str, Any]]:
     """Return capability metadata in deterministic order."""
     return [spec.to_public_dict() for spec in _LANGUAGE_CAPABILITIES]
 
 
-def language_status_summary() -> Dict[str, Any]:
+def language_status_summary() -> dict[str, Any]:
     """Return aggregate language counts by implementation status."""
-    counts: Dict[str, int] = {"implemented": 0, "partial": 0, "stub": 0}
+    counts: dict[str, int] = {"implemented": 0, "partial": 0, "stub": 0}
     for spec in _LANGUAGE_CAPABILITIES:
         counts[spec.implementation_status] += 1
     return {

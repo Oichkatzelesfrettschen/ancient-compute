@@ -1,12 +1,25 @@
 # Ancient Compute - IDRIS Compiler
 
-from .idris_ast import (
-    Module, Import, TypeDeclaration, FunctionDeclaration, Identifier, Literal, FunctionApplication, Let, Case
-)
 from ..ir_types import (
-    IRBuilder, Program, Function, BasicBlock, Constant, ReturnTerminator,
-    IRType, VariableValue, BranchTerminator, BinaryOp, Assignment
+    BinaryOp,
+    BranchTerminator,
+    Constant,
+    IRBuilder,
+    IRType,
+    Program,
+    VariableValue,
 )
+from .idris_ast import (
+    Case,
+    FunctionApplication,
+    FunctionDeclaration,
+    Identifier,
+    Let,
+    Literal,
+    Module,
+    TypeDeclaration,
+)
+
 
 class IdrisCompiler:
     def __init__(self):
@@ -76,7 +89,7 @@ class IdrisCompiler:
                 val = self._compile_expression(binding.body)
                 self.builder.function.local_variables[binding.name] = IRType.DEC50
                 self.builder.emit_assignment(binding.name, val)
-        
+
         return self._compile_expression(let_expr.body)
 
     def _compile_case(self, case_expr: Case):

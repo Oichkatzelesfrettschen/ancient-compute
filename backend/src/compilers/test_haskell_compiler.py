@@ -12,17 +12,19 @@ Comprehensive tests for Haskell lexer, parser, type system, and compiler.
 """
 
 import pytest
-from backend.src.compilers.haskell_lexer import HaskellLexer, Token, TokenType
-from backend.src.compilers.haskell_parser import HaskellParser
-from backend.src.compilers.haskell_compiler import HaskellCompiler
-from backend.src.compilers.haskell_ast import (
-    Literal, Variable, BinOp, Lambda, Let, Case, IfThenElse,
-    FunctionDef, FunctionEquation, PatternLiteral, PatternVariable
-)
-from backend.src.compilers.haskell_types import (
-    HaskellType, HaskellTypeSystem, TypeEnvironment, BabbageTypeMapper
-)
 
+from backend.src.compilers.haskell_ast import (
+    FunctionDef,
+)
+from backend.src.compilers.haskell_compiler import HaskellCompiler
+from backend.src.compilers.haskell_lexer import HaskellLexer, TokenType
+from backend.src.compilers.haskell_parser import HaskellParser
+from backend.src.compilers.haskell_types import (
+    BabbageTypeMapper,
+    HaskellType,
+    HaskellTypeSystem,
+    TypeEnvironment,
+)
 
 # ============================================================================
 # Test Haskell Lexer

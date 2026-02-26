@@ -7,9 +7,9 @@ from collections import Counter
 
 class ClayTokensEmulator:
     def __init__(self) -> None:
-        self._tokens = Counter()
+        self._tokens: Counter[str] = Counter()
         self._sealed = False
-        self._impression = Counter()
+        self._impression: Counter[str] = Counter()
 
     def reset(self) -> None:
         self._tokens = Counter()

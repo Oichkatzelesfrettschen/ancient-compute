@@ -10,9 +10,9 @@ Supports:
 """
 
 from __future__ import annotations
-from typing import Dict, Optional, Set, Tuple, Any
-from dataclasses import dataclass
 
+from dataclasses import dataclass
+from typing import Any
 
 # ============================================================================
 # Type Representation
@@ -22,7 +22,7 @@ from dataclasses import dataclass
 class HaskellType:
     """Represents a Haskell type"""
 
-    def __init__(self, kind: str, args: Optional[list] = None) -> None:
+    def __init__(self, kind: str, args: list | None = None) -> None:
         """
         Create a Haskell type
 
@@ -120,7 +120,7 @@ class HaskellType:
         """Check if this is a list type"""
         return self.kind == 'List'
 
-    def apply_substitution(self, subst: Dict[str, HaskellType]) -> HaskellType:
+    def apply_substitution(self, subst: dict[str, HaskellType]) -> HaskellType:
         """Apply type variable substitution"""
         if self.is_var() and self.kind in subst:
             return subst[self.kind]
@@ -156,7 +156,7 @@ class HaskellTypeSystem:
 
     def __init__(self) -> None:
         """Initialize type system"""
-        self.substitution: Dict[str, HaskellType] = {}
+        self.substitution: dict[str, HaskellType] = {}
         TypeVariable.reset()
 
     def infer_literal_type(self, value: Any) -> HaskellType:
@@ -236,7 +236,7 @@ class HaskellTypeSystem:
         """Generalize type by applying current substitution"""
         return typ.apply_substitution(self.substitution)
 
-    def operation_type(self, op: str, left: HaskellType, right: Optional[HaskellType] = None) -> HaskellType:
+    def operation_type(self, op: str, left: HaskellType, right: HaskellType | None = None) -> HaskellType:
         """Determine result type of operation"""
         if right is None:
             # Unary operation
@@ -316,9 +316,7 @@ class BabbageTypeMapper:
             return 0.0
         elif typ.kind == 'bool':
             return False
-        elif typ.kind == 'char':
-            return ''
-        elif typ.kind == 'string':
+        elif typ.kind == 'char' or typ.kind == 'string':
             return ''
         elif typ.kind == 'List':
             return []
@@ -336,16 +334,16 @@ class BabbageTypeMapper:
 class TypeEnvironment:
     """Type inference environment (bindings from names to types)"""
 
-    def __init__(self, parent: Optional[TypeEnvironment] = None) -> None:
+    def __init__(self, parent: TypeEnvironment | None = None) -> None:
         """Initialize environment"""
-        self.bindings: Dict[str, HaskellType] = {}
+        self.bindings: dict[str, HaskellType] = {}
         self.parent = parent
 
     def bind(self, name: str, typ: HaskellType) -> None:
         """Bind name to type in current scope"""
         self.bindings[name] = typ
 
-    def lookup(self, name: str) -> Optional[HaskellType]:
+    def lookup(self, name: str) -> HaskellType | None:
         """Look up type, checking parent scopes"""
         if name in self.bindings:
             return self.bindings[name]

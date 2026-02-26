@@ -32,7 +32,6 @@ Integration Path:
 5. Verify final snapshot integrity
 """
 
-import pytest
 from backend.src.emulator.machine import DEMachine, DEMachineSnapshot
 from backend.src.emulator.timing import MechanicalPhase
 

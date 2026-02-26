@@ -13,16 +13,17 @@ Features:
 """
 
 from __future__ import annotations
-from typing import Dict, List, Optional, Any
+
+import asyncio
+import re
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from enum import Enum
-import asyncio
-from concurrent.futures import ThreadPoolExecutor
-import re
+from typing import Any
 
-from backend.src.compilers.c_compiler import CCompiler
-from backend.src.codegen.codegen import CodeGenerator
 from backend.src.assembler.assembler import Assembler
+from backend.src.codegen.codegen import CodeGenerator
+from backend.src.compilers.c_compiler import CCompiler
 
 
 class ExecutionStatus(str, Enum):
@@ -99,7 +100,7 @@ class CService:
             )
             return result
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             return CompilationResult(
                 status=ExecutionStatus.TIMEOUT,
                 stderr=f"Compilation timed out after {self.timeout_seconds} seconds"
@@ -244,7 +245,7 @@ class CService:
 
         return "\n".join(lines)
 
-    def _format_hex_dump(self, machine_code: List[int]) -> str:
+    def _format_hex_dump(self, machine_code: list[int]) -> str:
         """Format machine code as hex dump.
 
         Args:
@@ -264,7 +265,7 @@ class CService:
 
         return "\n".join(lines)
 
-    async def validate(self, code: str) -> Dict[str, Any]:
+    async def validate(self, code: str) -> dict[str, Any]:
         """Validate C code without full compilation.
 
         Args:
@@ -282,7 +283,7 @@ class CService:
             )
             return result
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             return {
                 "valid": False,
                 "error": f"Validation timed out after {self.timeout_seconds} seconds"
@@ -293,7 +294,7 @@ class CService:
                 "error": str(e)
             }
 
-    def _validate_code(self, code: str) -> Dict[str, Any]:
+    def _validate_code(self, code: str) -> dict[str, Any]:
         """Internal method: validate C code.
 
         Args:
@@ -316,7 +317,7 @@ class CService:
                 "error": str(e)
             }
 
-    async def get_capabilities(self) -> Dict[str, Any]:
+    async def get_capabilities(self) -> dict[str, Any]:
         """Get service capabilities and metadata.
 
         Returns:

@@ -15,14 +15,13 @@ Operation:
   - Processing: Turning the crank.
     - Down (Normal): Addition.
     - Up (Pulled): Subtraction (via reversing gear).
-  - Output: 
+  - Output:
     - Result Dial (11 digits, black).
     - Revolution Counter (6 digits, white).
 """
 
 from enum import Enum
-from dataclasses import dataclass
-from typing import List
+
 
 class CrankMode(Enum):
     ADD = "ADD"         # Normal position
@@ -33,18 +32,18 @@ class CurtaTypeI:
     Curta Type I Emulator.
     Capacity: 8 input, 6 counter, 11 result.
     """
-    def __init__(self):
+    def __init__(self) -> None:
         self.sliders = [0] * 8          # 8 input sliders
         self.result_dial = 0            # 11 digits
         self.counter_dial = 0           # 6 digits
         self.carriage_position = 0      # 0 to 5 (6 positions)
         self.crank_mode = CrankMode.ADD
-        
+
         # Physical limits
         self.MAX_RESULT = 10**11 - 1
         self.MAX_COUNTER = 10**6 - 1
 
-    def set_slider(self, index: int, value: int):
+    def set_slider(self, index: int, value: int) -> None:
         """Set a specific input slider (0-7)."""
         if not 0 <= index < 8:
             raise ValueError("Slider index must be 0-7")
@@ -52,7 +51,7 @@ class CurtaTypeI:
             raise ValueError("Slider value must be 0-9")
         self.sliders[index] = value
 
-    def set_input(self, number: int):
+    def set_input(self, number: int) -> None:
         """Set all sliders from an integer."""
         s = str(number).zfill(8)
         if len(s) > 8:
@@ -67,7 +66,7 @@ class CurtaTypeI:
             val += digit * (10 ** i)
         return val
 
-    def shift_carriage(self, steps: int):
+    def shift_carriage(self, steps: int) -> None:
         """Rotate carriage. Positive = increase multiplier."""
         new_pos = self.carriage_position + steps
         if 0 <= new_pos <= 5: # Type I has 6 positions typically
@@ -76,11 +75,11 @@ class CurtaTypeI:
             # Mechanical stop
             pass
 
-    def set_crank_mode(self, mode: CrankMode):
+    def set_crank_mode(self, mode: CrankMode) -> None:
         """Pull crank up (SUB) or push down (ADD)."""
         self.crank_mode = mode
 
-    def turn_crank(self):
+    def turn_crank(self) -> None:
         """
         Execute one turn of the crank.
         Adds/Subtracts input * 10^carriage to result.
@@ -105,32 +104,32 @@ class CurtaTypeI:
             # We will assume standard mode: Crank SUB -> Counter SUB (for correcting overshoots).
             self._sub_counter(count_val)
 
-    def _add_result(self, value: int):
+    def _add_result(self, value: int) -> None:
         self.result_dial += value
         # Handle wrap-around (tens bell)
         if self.result_dial > self.MAX_RESULT:
             self.result_dial %= (self.MAX_RESULT + 1)
 
-    def _sub_result(self, value: int):
+    def _sub_result(self, value: int) -> None:
         self.result_dial -= value
         if self.result_dial < 0:
             # Ten's complement wrap around
             self.result_dial += (self.MAX_RESULT + 1)
 
-    def _add_counter(self, value: int):
+    def _add_counter(self, value: int) -> None:
         self.counter_dial += value
         if self.counter_dial > self.MAX_COUNTER:
             self.counter_dial %= (self.MAX_COUNTER + 1)
 
-    def _sub_counter(self, value: int):
+    def _sub_counter(self, value: int) -> None:
         self.counter_dial -= value
         if self.counter_dial < 0:
             self.counter_dial += (self.MAX_COUNTER + 1)
 
-    def clear_result(self):
+    def clear_result(self) -> None:
         """Clear result dial (clearing lever)."""
         self.result_dial = 0
 
-    def clear_counter(self):
+    def clear_counter(self) -> None:
         """Clear revolution counter."""
         self.counter_dial = 0

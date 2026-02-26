@@ -9,7 +9,6 @@ import yaml
 
 from backend.src.assembler.assembler import Assembler
 
-
 FIXTURE_PATH = (
     Path(__file__).resolve().parents[1]
     / "fixtures"

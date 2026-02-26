@@ -5,8 +5,9 @@ Comprehensive tests for timeline content delivery endpoints and models.
 """
 
 import importlib
+
 import pytest
-from src.models import Era, Module, Exercise, ExerciseProgress, ExerciseSubmission, User
+from src.models import Era, Exercise, ExerciseProgress, ExerciseSubmission, Module, User
 
 
 def _db_available() -> bool:

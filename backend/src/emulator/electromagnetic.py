@@ -17,11 +17,7 @@ Galvanic series (SCE reference):
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Tuple
-
-from backend.src.emulator.materials import MaterialLibrary
-
+from dataclasses import dataclass
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -36,7 +32,7 @@ EARTH_B_FIELD_T = 50e-6       # Earth's magnetic field ~50 uT
 # ---------------------------------------------------------------------------
 
 # Electrode potentials vs Saturated Calomel Electrode (SCE)
-GALVANIC_POTENTIAL_SCE_V: Dict[str, float] = {
+GALVANIC_POTENTIAL_SCE_V: dict[str, float] = {
     "brass": -0.30,
     "steel": -0.60,
     "cast_iron": -0.55,
@@ -135,7 +131,7 @@ class GalvanicPair:
 class GalvanicCorrosionMatrix:
     """5x5 galvanic corrosion risk matrix for all material pairs."""
 
-    def __init__(self, potentials: Optional[Dict[str, float]] = None) -> None:
+    def __init__(self, potentials: dict[str, float] | None = None) -> None:
         self._potentials = potentials or GALVANIC_POTENTIAL_SCE_V
 
     def potential_difference_V(self, mat_a: str, mat_b: str) -> float:
@@ -182,7 +178,7 @@ class GalvanicCorrosionMatrix:
             mitigation=self.mitigation(mat_a, mat_b),
         )
 
-    def full_matrix(self) -> List[GalvanicPair]:
+    def full_matrix(self) -> list[GalvanicPair]:
         """Generate all unique pairs from the potential table."""
         names = sorted(self._potentials.keys())
         pairs = []

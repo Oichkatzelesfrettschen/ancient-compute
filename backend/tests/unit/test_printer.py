@@ -14,12 +14,13 @@ computed results from the Difference Engine No. 2.
 """
 
 import pytest
+
 from backend.src.emulator.printer import (
     Printer,
-    Stereotyper,
-    PrinterStereotyperSystem,
-    PrinterState,
     PrinterSnapshot,
+    PrinterState,
+    PrinterStereotyperSystem,
+    Stereotyper,
     StereotyperSnapshot,
 )
 

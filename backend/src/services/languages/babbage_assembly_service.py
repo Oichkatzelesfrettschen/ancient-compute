@@ -73,7 +73,7 @@ class BabbageAssemblyService:
                 exit_code=0,
             )
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             return ExecutionResult(
                 status=ExecutionStatus.TIMEOUT,
                 stdout="",

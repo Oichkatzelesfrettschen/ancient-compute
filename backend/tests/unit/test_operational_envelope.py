@@ -4,8 +4,8 @@ import pytest
 
 pytestmark = pytest.mark.physics
 
-from backend.src.emulator.simulation.state import SimulationConfig
 from backend.src.emulator.simulation.engine import SimulationEngine
+from backend.src.emulator.simulation.state import SimulationConfig
 
 
 class TestOperationalEnvelope:

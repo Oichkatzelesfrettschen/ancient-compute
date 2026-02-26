@@ -4,14 +4,13 @@ Ancient Compute - Caching Layer Tests
 Comprehensive tests for execution cache, query cache, and optimized executor.
 """
 
-import pytest
 import time
 from unittest.mock import Mock
 
-from src.services.execution_cache import ExecutionCache
-from src.services.query_cache import QueryCache
-from src.services.optimized_executor import OptimizedExecutor
 from src.services.base_executor import ExecutionResult, ExecutionStatus
+from src.services.execution_cache import ExecutionCache
+from src.services.optimized_executor import OptimizedExecutor
+from src.services.query_cache import QueryCache
 
 
 class TestExecutionCache:

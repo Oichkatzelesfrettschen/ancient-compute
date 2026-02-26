@@ -15,31 +15,51 @@ Key transformations:
 """
 
 from __future__ import annotations
-from typing import Dict, List, Optional, Any, Tuple
-from dataclasses import dataclass
-import time
 
+import time
+from dataclasses import dataclass
+
+from backend.src.compilers.haskell_ast import (
+    Application,
+    BinOp,
+    Case,
+    Constructor,
+    DataDecl,
+    Expr,
+    FunctionDef,
+    FunctionEquation,
+    IfThenElse,
+    Lambda,
+    Let,
+    Literal,
+    Module,
+    PatternLiteral,
+    TypeDecl,
+    UnaryOp,
+    Variable,
+)
+from backend.src.compilers.haskell_ast import List as HList
+from backend.src.compilers.haskell_ast import Tuple as HTuple
 from backend.src.compilers.haskell_lexer import HaskellLexer
 from backend.src.compilers.haskell_parser import HaskellParser
-from backend.src.compilers.haskell_ast import (
-    Expr, Stmt, Module, FunctionDef, FunctionEquation,
-    Literal, Variable, BinOp, UnaryOp, Lambda, Application,
-    Let, Case, CaseBranch, IfThenElse, List as HList, Tuple as HTuple,
-    Constructor,
-    Pattern, PatternLiteral, PatternVariable, PatternConstructor,
-    PatternTuple, PatternList, PatternWildcard,
-    TypeDecl, DataDecl, ClassDecl, InstanceDecl
-)
 from backend.src.compilers.haskell_types import (
-    HaskellType, HaskellTypeSystem, TypeEnvironment, BabbageTypeMapper
+    HaskellType,
+    HaskellTypeSystem,
+    TypeEnvironment,
 )
 from backend.src.ir_types import (
-    Program, Function, BasicBlock, Instruction,
-    Assignment, BinaryOp, Load, Store, Call as IRCall, Return as IRReturn,
-    BranchTerminator, JumpTerminator, ReturnTerminator,
-    VariableValue, Constant as IRConstant, MemoryValue,
-    IRBuilder
+    Assignment,
+    BasicBlock,
+    BinaryOp,
+    BranchTerminator,
+    Function,
+    IRBuilder,
+    Program,
+    ReturnTerminator,
+    VariableValue,
 )
+from backend.src.ir_types import Call as IRCall
+from backend.src.ir_types import Constant as IRConstant
 
 
 @dataclass
@@ -53,16 +73,16 @@ class Symbol:
 class SymbolTable:
     """Symbol table with scope management"""
 
-    def __init__(self, parent: Optional[SymbolTable] = None) -> None:
+    def __init__(self, parent: SymbolTable | None = None) -> None:
         """Initialize symbol table"""
-        self.symbols: Dict[str, Symbol] = {}
+        self.symbols: dict[str, Symbol] = {}
         self.parent = parent
 
     def define(self, name: str, htype: HaskellType, scope: str = 'local') -> None:
         """Define symbol in current scope"""
         self.symbols[name] = Symbol(name=name, htype=htype, scope=scope)
 
-    def lookup(self, name: str) -> Optional[Symbol]:
+    def lookup(self, name: str) -> Symbol | None:
         """Look up symbol, checking parent scopes"""
         if name in self.symbols:
             return self.symbols[name]
@@ -82,11 +102,11 @@ class HaskellCompiler:
         """Initialize compiler"""
         self.verbose = verbose
         self.type_system = HaskellTypeSystem()
-        self.symbol_table: Optional[SymbolTable] = None
-        self.builder: Optional[IRBuilder] = None
+        self.symbol_table: SymbolTable | None = None
+        self.builder: IRBuilder | None = None
         self.temp_counter = 0
         self.label_counter = 0
-        self.type_env: Optional[TypeEnvironment] = None
+        self.type_env: TypeEnvironment | None = None
 
     def compile(self, source: str) -> Program:
         """Compile Haskell source to Babbage IR"""
@@ -203,7 +223,7 @@ class HaskellCompiler:
 
         return self.builder.finalize()
 
-    def _compile_equation(self, equation: FunctionEquation, block: BasicBlock, param_names: List[str]) -> None:
+    def _compile_equation(self, equation: FunctionEquation, block: BasicBlock, param_names: list[str]) -> None:
         """Compile single function equation"""
         # Bind parameters
         for name, pattern in zip(param_names, equation.patterns):

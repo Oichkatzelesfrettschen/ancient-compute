@@ -9,9 +9,9 @@ Tests for:
 - Error handling
 """
 
+
 import pytest
 from fastapi.testclient import TestClient
-from typing import Dict, Any
 
 # Import the app
 from backend.src.main import app
@@ -524,11 +524,10 @@ class TestErrorHandling:
             json={"type": "INVALID_TYPE"}
         )
 
-        # Should return error
-        assert response.status_code in [200, 400]
-        if response.status_code == 200:
-            data = response.json()
-            assert data.get("success") is False
+        assert response.status_code == 200
+        data = response.json()
+        assert data["success"] is False
+        assert "Invalid breakpoint type" in data["error"]
 
     def test_empty_coefficient_array(self):
         """POST /api/execute should handle empty coefficients"""
