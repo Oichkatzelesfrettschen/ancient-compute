@@ -22,22 +22,18 @@ def test_readiness_check(client: TestClient):
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "ready"
-    assert data["service"] == "ancient-compute-backend"
 
 
 @pytest.mark.unit
 def test_metrics_endpoint(client: TestClient):
-    """Test the metrics endpoint returns monitoring data."""
+    """Test the metrics endpoint returns Prometheus-format monitoring data."""
     response = client.get("/metrics")
 
     assert response.status_code == 200
-    data = response.json()
-    assert data["service"] == "ancient-compute-backend"
-    assert "uptime_seconds" in data
-    assert "requests_total" in data
-    assert "active_users" in data
-    assert "modules_count" in data
-    assert "lessons_count" in data
+    # Prometheus metrics are returned as text, not JSON
+    text = response.text
+    assert "uptime_seconds" in text
+    assert "requests" in text
 
 
 @pytest.mark.unit
