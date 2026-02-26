@@ -103,6 +103,10 @@ Thumbs.db
 .cache/
 mydatabase.db
 
+# PLY parser cache
+parser.out
+parsetab.py
+
 # Generated indexes
 output/*.txt
 

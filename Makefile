@@ -65,7 +65,7 @@ dev:
 	@echo "Starting development servers..."
 	@echo "Backend: http://localhost:8000"
 	@echo "Frontend: http://localhost:3000"
-	docker-compose up
+	docker compose up
 
 dev-backend:
 	cd backend && uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
@@ -154,11 +154,11 @@ build-frontend:
 
 build-docker:
 	@echo "Building Docker images..."
-	docker-compose build
+	docker compose build
 
 # Docker operations
 docker-up:
-	docker-compose up -d
+	docker compose up -d
 	@echo "Docker services started"
 	@echo "Backend: http://localhost:8000"
 	@echo "Frontend: http://localhost:3000"
@@ -166,14 +166,14 @@ docker-up:
 	@echo "Redis: localhost:6379"
 
 docker-down:
-	docker-compose down
+	docker compose down
 	@echo "Docker services stopped"
 
 docker-logs:
-	docker-compose logs -f
+	docker compose logs -f
 
 docker-clean:
-	docker-compose down -v
+	docker compose down -v
 	docker system prune -f
 	@echo "Docker cleanup complete"
 
@@ -341,12 +341,6 @@ physics-validate:
 	@python3 scripts/validate_emulator_physics.py
 
 
-measure-emulator-clock:
-	@python3 scripts/measure_emulator_clock.py > output/emulator_clock.csv
-physics-validate:
-	@python3 scripts/validate_emulator_physics.py
-
-
 measurement-checklist:
 	@sed -n "1,120p" docs/history/MEASUREMENT_SPECIALIST_GUIDE.md | cat
 
@@ -357,15 +351,6 @@ measurement-agent:
 
 docs-index:
 	@python3 scripts/gen_doc_index.py > output/docs_index.txt
-
-
-# Docs & sim targets
-sources-index:
-	@awk "/^- id:/{print}" docs/sources/sources.yaml > output/sources_index.txt
-fetch-sources:
-	@bash scripts/fetch_sources.sh
-sim-validate:
-	@tools/simulation/simulate.py docs/simulation/sim_schema.yaml > output/sim_validation.txt
 
 
 # Docs & sim targets

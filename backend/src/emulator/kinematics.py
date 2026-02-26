@@ -389,3 +389,237 @@ def load_kinematic_chain(schema_path: Optional[str] = None) -> KinematicChain:
     chain.joint_count_half = 2
 
     return chain
+
+
+# ---------------------------------------------------------------------------
+# Gear Surface Fatigue / Hertzian Contact (Shigley Ch.14)
+# ---------------------------------------------------------------------------
+
+class HertzianContact:
+    """Hertzian contact stress and AGMA pitting resistance."""
+
+    @staticmethod
+    def elastic_coefficient(
+        E1_GPa: float, nu1: float,
+        E2_GPa: float, nu2: float,
+    ) -> float:
+        """AGMA elastic coefficient C_p (Shigley Eq.14-14).
+
+        C_p = sqrt(1 / (pi * ((1-nu1^2)/E1 + (1-nu2^2)/E2)))
+
+        Units: E in MPa -> C_p in sqrt(MPa).
+        """
+        E1 = E1_GPa * 1000.0  # GPa to MPa
+        E2 = E2_GPa * 1000.0
+        denom = math.pi * ((1.0 - nu1**2) / E1 + (1.0 - nu2**2) / E2)
+        if denom <= 0:
+            return 0.0
+        return math.sqrt(1.0 / denom)
+
+    @staticmethod
+    def contact_stress_MPa(
+        tangential_force_N: float,
+        Kv: float,
+        Ko: float,
+        face_width_mm: float,
+        pitch_diameter_mm: float,
+        geometry_factor_I: float,
+        Cp: float,
+    ) -> float:
+        """AGMA contact (Hertzian) stress (Shigley Eq.14-16).
+
+        sigma_H = C_p * sqrt(W_t * K_v * K_o / (b * d_p * I))
+
+        W_t: tangential force [N]
+        K_v: dynamic factor
+        K_o: overload factor (typically 1.0 for uniform loading)
+        b: face width [mm]
+        d_p: pitch diameter [mm]
+        I: geometry factor (typically 0.08-0.12 for spur gears)
+        C_p: elastic coefficient [sqrt(MPa)]
+        """
+        if face_width_mm <= 0 or pitch_diameter_mm <= 0 or geometry_factor_I <= 0:
+            return float("inf")
+        product = tangential_force_N * Kv * Ko / (
+            face_width_mm * pitch_diameter_mm * geometry_factor_I
+        )
+        if product < 0:
+            return 0.0
+        return Cp * math.sqrt(product)
+
+    @staticmethod
+    def geometry_factor_I(
+        tooth_count_pinion: int,
+        tooth_count_gear: int,
+        pressure_angle_deg: float = 20.0,
+    ) -> float:
+        """AGMA geometry factor I for external spur gears (Shigley Eq.14-23).
+
+        I = cos(phi)*sin(phi) / 2 * m_G/(m_G+1)
+
+        where m_G = N_G/N_P (gear ratio).
+        """
+        phi = math.radians(pressure_angle_deg)
+        if tooth_count_pinion <= 0:
+            return 0.0
+        m_G = tooth_count_gear / tooth_count_pinion
+        return math.cos(phi) * math.sin(phi) / 2.0 * m_G / (m_G + 1.0)
+
+    @staticmethod
+    def pitting_safety_factor(
+        allowable_contact_stress_MPa: float,
+        actual_contact_stress_MPa: float,
+    ) -> float:
+        """AGMA pitting resistance SF: SF = (S_H / sigma_H)^2."""
+        if actual_contact_stress_MPa <= 0:
+            return float("inf")
+        return (allowable_contact_stress_MPa / actual_contact_stress_MPa) ** 2
+
+
+# ---------------------------------------------------------------------------
+# Torsional Vibration (Shigley Ch.7)
+# ---------------------------------------------------------------------------
+
+class TorsionalVibration:
+    """Torsional natural frequency and vibration margin."""
+
+    @staticmethod
+    def natural_frequency_rad_s(
+        shear_modulus_GPa: float,
+        shaft_diameter_mm: float,
+        shaft_length_mm: float,
+        disk_inertia_kg_m2: float,
+    ) -> float:
+        """Torsional natural frequency (Shigley Ch.7).
+
+        omega_n = sqrt(G * J_p / (L * J_disk))
+
+        G: shear modulus [Pa]
+        J_p: polar moment of area [m^4] = pi*d^4/32
+        L: shaft length [m]
+        J_disk: disk moment of inertia [kg.m^2]
+        """
+        G_Pa = shear_modulus_GPa * 1e9
+        d_m = shaft_diameter_mm / 1000.0
+        L_m = shaft_length_mm / 1000.0
+        J_p = math.pi * d_m**4 / 32.0
+
+        if L_m <= 0 or disk_inertia_kg_m2 <= 0:
+            return float("inf")
+        return math.sqrt(G_Pa * J_p / (L_m * disk_inertia_kg_m2))
+
+    @staticmethod
+    def torsional_frequency_rpm(omega_n_rad_s: float) -> float:
+        """Convert torsional frequency to RPM."""
+        return omega_n_rad_s * 60.0 / (2.0 * math.pi)
+
+    @staticmethod
+    def vibration_margin(natural_rpm: float, operating_rpm: float) -> float:
+        """Torsional vibration margin (must be > 3)."""
+        if operating_rpm <= 0:
+            return float("inf")
+        return natural_rpm / operating_rpm
+
+
+# ---------------------------------------------------------------------------
+# Cam Torque Ripple
+# ---------------------------------------------------------------------------
+
+class CamTorqueRipple:
+    """Instantaneous cam torque and ripple analysis."""
+
+    @staticmethod
+    def instantaneous_torque_Nm(
+        follower_force_N: float,
+        dh_dtheta_mm_deg: float,
+        omega_rad_s: float,
+    ) -> float:
+        """Instantaneous cam torque (Shigley Ch.3).
+
+        T = F_follower * (dh/dtheta) / (omega * 1000)
+
+        dh/dtheta in mm/deg -> convert to m/rad.
+        """
+        if omega_rad_s <= 0:
+            return 0.0
+        # Convert mm/deg to m/rad: mm/deg * (1m/1000mm) * (180deg/pi rad)
+        dh_dtheta_m_rad = dh_dtheta_mm_deg / 1000.0 * 180.0 / math.pi
+        return follower_force_N * dh_dtheta_m_rad
+
+    @staticmethod
+    def torque_envelope(
+        cam: CamFollower,
+        omega_rad_s: float,
+        resolution_deg: float = 1.0,
+    ) -> Tuple[float, float, float]:
+        """Compute torque envelope over one cam cycle.
+
+        Returns (min_torque_Nm, max_torque_Nm, peak_to_peak_Nm).
+        """
+        total_angle = cam.rise_angle_deg + cam.dwell_angle_deg + cam.return_angle_deg
+        torques = []
+        theta = 0.0
+        while theta <= total_angle:
+            F = CamAnalysis.follower_force_N(cam, theta, omega_rad_s)
+            dh = CamAnalysis.velocity_mm_per_deg(cam, theta)
+            T = CamTorqueRipple.instantaneous_torque_Nm(F, dh, omega_rad_s)
+            torques.append(T)
+            theta += resolution_deg
+
+        if not torques:
+            return (0.0, 0.0, 0.0)
+        t_min = min(torques)
+        t_max = max(torques)
+        return (t_min, t_max, t_max - t_min)
+
+
+# ---------------------------------------------------------------------------
+# Shaft Lateral Dynamics
+# ---------------------------------------------------------------------------
+
+class ShaftLateralDynamics:
+    """Shaft lateral natural frequency and bearing reaction forces."""
+
+    @staticmethod
+    def lateral_natural_frequency_rad_s(
+        youngs_modulus_GPa: float,
+        diameter_mm: float,
+        span_mm: float,
+        density_kg_m3: float,
+    ) -> float:
+        """Lateral natural frequency (= critical speed).
+
+        Same as ShaftCriticalSpeed.first_critical_speed_rad_s but accessible
+        from the kinematics module.
+        """
+        d_m = diameter_mm / 1000.0
+        L_m = span_mm / 1000.0
+        E_Pa = youngs_modulus_GPa * 1e9
+        I = math.pi * d_m**4 / 64.0
+        A = math.pi * d_m**2 / 4.0
+        if L_m <= 0 or A <= 0 or density_kg_m3 <= 0:
+            return float("inf")
+        return (math.pi**2 / L_m**2) * math.sqrt(E_Pa * I / (density_kg_m3 * A))
+
+    @staticmethod
+    def bearing_reactions_N(
+        total_load_N: float,
+        bearing_count: int,
+    ) -> List[float]:
+        """Bearing reaction forces assuming uniform load distribution.
+
+        Returns list of reaction forces [N] for each bearing.
+        """
+        if bearing_count <= 0:
+            return []
+        load_per = total_load_N / bearing_count
+        return [load_per] * bearing_count
+
+    @staticmethod
+    def bearing_reactions_sum_check(
+        reactions: List[float],
+        total_load_N: float,
+        tolerance: float = 1e-6,
+    ) -> bool:
+        """Verify reactions sum to total load (equilibrium check)."""
+        return abs(sum(reactions) - total_load_N) < tolerance

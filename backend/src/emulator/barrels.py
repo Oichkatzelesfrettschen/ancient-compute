@@ -49,6 +49,14 @@ class MicroOp(Enum):
     INCREMENT_QUOTIENT_DIGIT = auto() # Increment a quotient digit
     RESET_REMAINDER = auto()    # Reset the remainder buffer
 
+    # MicroOps for SQRT (Newton-Raphson)
+    INIT_SQRT_GUESS = auto()    # Initialize x_0 = S/2 as first guess
+    DIVIDE_S_BY_X = auto()      # Compute S / x_n
+    ADD_X_AND_QUOTIENT = auto() # Compute x_n + S/x_n
+    HALVE_ACCUMULATOR = auto()  # Divide accumulator by 2: x_{n+1} = (x_n + S/x_n)/2
+    CHECK_SQRT_CONVERGENCE = auto() # Check if |x_{n+1} - x_n| < tolerance
+    STORE_SQRT_RESULT = auto()  # Store converged result
+
     # Control Ops
     JUMP_RELATIVE = auto()      # Relative jump in micro-program
     REPEAT_IF_COUNTER = auto()  # Jump back if mill_counter > 0
@@ -100,38 +108,78 @@ class BarrelController:
         self.barrels["SUB"] = sub
 
         # Multiplication Barrel (Simulated "Method of Repeated Addition")
+        # Handles single-digit multiplier via repeated addition.
+        # Multi-digit multiplication requires an outer loop (not modeled here).
         mul = Barrel("MULT")
-        # 0: Fetch Multiplicand (reg_dest) to Mill Accumulator
-        mul.add_step([MicroOp.LOAD_MILL_ACCUMULATOR])
-        # 1: Fetch Multiplier (operand_src) and extract units digit
-        mul.add_step([MicroOp.GET_MULTIPLIER_DIGIT]) 
-        # 2: Copy digit to counter for addition loop
-        # (In reality, the counter is mechanical)
-        # 3: Add Multiplicand to Result (repeated addition loop start)
+        # 0: Fetch Multiplier (operand_src) and extract units digit into counter
+        mul.add_step([MicroOp.GET_MULTIPLIER_DIGIT])
+        # 1: Add Multiplicand to product accumulator + decrement counter (loop body)
         mul.add_step([MicroOp.ADVANCE_MILL, MicroOp.DECREMENT_COUNTER])
-        # 4: Repeat if counter > 0
+        # 2: Repeat step 1 if counter > 0
         mul.add_step([MicroOp.REPEAT_IF_COUNTER])
-        # 5: Shift Multiplicand left for next place value
-        mul.add_step([MicroOp.SHIFT_MILL_LEFT])
-        # 6: Prepare next multiplier digit (simplified logic)
-        # In a real AE, this would involve shifting the multiplier register.
-        # mul.add_step([MicroOp.SHIFT_MULTIPLIER_RIGHT, MicroOp.GET_MULTIPLIER_DIGIT])
-        # mul.add_step([MicroOp.REPEAT_FOR_ALL_DIGITS])
+        # 3: Store result from accumulator back to register
+        mul.add_step([MicroOp.STORE_MILL_ACCUMULATOR])
         self.barrels["MULT"] = mul
 
-        # Division Barrel (Placeholder for now)
+        # Division Barrel (restoring division algorithm)
+        # Babbage's division proceeds digit-by-digit from most significant
+        # to least significant, analogous to long division.
+        #
+        # Algorithm:
+        #   1. Load dividend into mill accumulator, divisor into buffer
+        #   2. For each quotient digit (50 digits, MSB first):
+        #      a. Compare accumulator against shifted divisor
+        #      b. If accumulator >= divisor: subtract, increment quotient digit
+        #      c. Repeat until accumulator < divisor
+        #      d. Shift divisor right for next digit position
+        #   3. Store quotient and remainder
         div = Barrel("DIV")
-        div.add_step([MicroOp.FETCH_VAR_CARD, MicroOp.LIFT_STORE_AXIS]) # Get Dividend
+        # Step 0: Fetch dividend from store to mill accumulator
+        div.add_step([MicroOp.FETCH_VAR_CARD, MicroOp.LIFT_STORE_AXIS])
+        # Step 1: Transfer dividend to mill
+        div.add_step([MicroOp.CONNECT_STORE_TO_MILL, MicroOp.DROP_STORE_AXIS,
+                       MicroOp.LOAD_MILL_ACCUMULATOR])
+        # Step 2: Fetch divisor from store
+        div.add_step([MicroOp.FETCH_VAR_CARD, MicroOp.LIFT_STORE_AXIS])
+        # Step 3: Transfer divisor to mill buffer
         div.add_step([MicroOp.CONNECT_STORE_TO_MILL, MicroOp.DROP_STORE_AXIS])
-        div.add_step([MicroOp.FETCH_VAR_CARD, MicroOp.LIFT_STORE_AXIS]) # Get Divisor
-        div.add_step([MicroOp.CONNECT_STORE_TO_MILL, MicroOp.DROP_STORE_AXIS])
-        div.add_step([MicroOp.COMPARE_MILL_BUFFERS]) # Compare
-        div.add_step([MicroOp.REVERSE_MILL]) # Subtract (if possible)
-        div.add_step([MicroOp.INCREMENT_QUOTIENT_DIGIT]) # Increment quotient digit
-        div.add_step([MicroOp.SHIFT_MILL_DIVISOR]) # Shift divisor for next digit
-        div.add_step([MicroOp.LIFT_EGRESS]) # Store quotient
+        # Step 4: Compare accumulator vs divisor
+        div.add_step([MicroOp.COMPARE_MILL_BUFFERS])
+        # Step 5: Conditional subtract (if accumulator >= divisor)
+        div.add_step([MicroOp.REVERSE_MILL])
+        # Step 6: Increment quotient digit counter
+        div.add_step([MicroOp.INCREMENT_QUOTIENT_DIGIT])
+        # Step 7: Repeat subtraction while accumulator >= divisor
+        div.add_step([MicroOp.REPEAT_IF_COUNTER])
+        # Step 8: Shift divisor right for next quotient digit
+        div.add_step([MicroOp.SHIFT_MILL_DIVISOR])
+        # Step 9: Reset remainder tracking
+        div.add_step([MicroOp.RESET_REMAINDER])
+        # Step 10: Store quotient via egress
+        div.add_step([MicroOp.LIFT_EGRESS])
+        # Step 11: Transfer result to store
         div.add_step([MicroOp.CONNECT_MILL_TO_STORE, MicroOp.DROP_EGRESS])
+        # Step 12: Store remainder via egress
+        div.add_step([MicroOp.STORE_MILL_ACCUMULATOR])
         self.barrels["DIV"] = div
+
+        # SQRT Barrel (Newton-Raphson iteration)
+        # Algorithm: x_{n+1} = (x_n + S/x_n) / 2
+        # Converges quadratically; ~25 iterations for 50-digit precision.
+        sqrt = Barrel("SQRT")
+        # Step 0: Initialize guess x_0 = S/2
+        sqrt.add_step([MicroOp.INIT_SQRT_GUESS])
+        # Step 1: Compute S / x_n
+        sqrt.add_step([MicroOp.DIVIDE_S_BY_X])
+        # Step 2: Compute x_n + (S/x_n)
+        sqrt.add_step([MicroOp.ADD_X_AND_QUOTIENT])
+        # Step 3: Halve to get x_{n+1} = (x_n + S/x_n) / 2
+        sqrt.add_step([MicroOp.HALVE_ACCUMULATOR])
+        # Step 4: Check convergence (loops back to step 1 if not converged)
+        sqrt.add_step([MicroOp.CHECK_SQRT_CONVERGENCE])
+        # Step 5: Store final result
+        sqrt.add_step([MicroOp.STORE_SQRT_RESULT])
+        self.barrels["SQRT"] = sqrt
 
     def select_barrel(self, op_name: str):
         if op_name in self.barrels:

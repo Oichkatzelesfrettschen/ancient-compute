@@ -260,6 +260,174 @@ class SurfaceFinishSpec:
     notes: str = ""
 
 
+# ---------------------------------------------------------------------------
+# Running-In Wear Model (Rabinowicz, 1995)
+# ---------------------------------------------------------------------------
+
+class RunningInWear:
+    """Transient wear coefficient model during running-in period.
+
+    K(s) = K_steady + (K_init - K_steady) * exp(-s / s_0)
+
+    where s is accumulated sliding distance and s_0 is a characteristic
+    running-in distance (typically 10-100 km for bronze/steel).
+    """
+
+    @staticmethod
+    def wear_coefficient(
+        sliding_distance_mm: float,
+        K_initial: float,
+        K_steady: float,
+        s_0_mm: float,
+    ) -> float:
+        """Transient wear coefficient K(s) [dimensionless].
+
+        K_init: initial (high) wear coefficient during running-in
+        K_steady: steady-state wear coefficient after running-in
+        s_0: characteristic running-in distance [mm]
+        """
+        if s_0_mm <= 0:
+            return K_steady
+        return K_steady + (K_initial - K_steady) * math.exp(
+            -sliding_distance_mm / s_0_mm
+        )
+
+    @staticmethod
+    def cumulative_wear_volume_mm3(
+        normal_force_N: float,
+        hardness_MPa: float,
+        K_initial: float,
+        K_steady: float,
+        s_0_mm: float,
+        total_distance_mm: float,
+        n_steps: int = 100,
+    ) -> float:
+        """Cumulative wear volume integrating transient K(s) via trapezoidal rule.
+
+        V = integral_0^s [K(s') * F_N / H] ds'
+        """
+        if hardness_MPa <= 0 or n_steps <= 0:
+            return 0.0
+        ds = total_distance_mm / n_steps
+        V = 0.0
+        for i in range(n_steps):
+            s = i * ds
+            K = RunningInWear.wear_coefficient(s, K_initial, K_steady, s_0_mm)
+            V += K * normal_force_N / hardness_MPa * ds
+        return V
+
+
+# ---------------------------------------------------------------------------
+# Surface Texture Evolution
+# ---------------------------------------------------------------------------
+
+class SurfaceTextureEvolution:
+    """Surface roughness evolution during running-in.
+
+    Ra(h) = Ra_ss + (Ra_init - Ra_ss) * exp(-h / h_0)
+
+    where h is cumulative wear depth and h_0 ~ 2 * Ra_init.
+    """
+
+    @staticmethod
+    def roughness_um(
+        wear_depth_um: float,
+        Ra_initial_um: float,
+        Ra_steady_um: float,
+        h_0_um: float = 0.0,
+    ) -> float:
+        """Surface roughness at given cumulative wear depth.
+
+        h_0 defaults to 2 * Ra_initial if not specified.
+        """
+        if h_0_um <= 0:
+            h_0_um = 2.0 * Ra_initial_um
+        if h_0_um <= 0:
+            return Ra_steady_um
+        return Ra_steady_um + (Ra_initial_um - Ra_steady_um) * math.exp(
+            -wear_depth_um / h_0_um
+        )
+
+
+# ---------------------------------------------------------------------------
+# Wear-to-Clearance Feedback
+# ---------------------------------------------------------------------------
+
+class WearClearanceFeedback:
+    """Converts wear volume to bearing clearance and gear backlash changes."""
+
+    @staticmethod
+    def bearing_clearance_from_wear_mm(
+        wear_volume_mm3: float,
+        shaft_diameter_mm: float,
+        bearing_length_mm: float,
+        initial_clearance_mm: float,
+    ) -> float:
+        """New bearing clearance after wear.
+
+        h_wear = V_wear / (pi * d * L)
+        c_new = c_init + h_wear
+        """
+        if shaft_diameter_mm <= 0 or bearing_length_mm <= 0:
+            return initial_clearance_mm
+        h_wear = wear_volume_mm3 / (math.pi * shaft_diameter_mm * bearing_length_mm)
+        return initial_clearance_mm + h_wear
+
+    @staticmethod
+    def gear_backlash_from_wear_mm(
+        tooth_wear_depth_mm: float,
+        pressure_angle_deg: float = 20.0,
+    ) -> float:
+        """Gear backlash increase from tooth surface wear.
+
+        delta_backlash = 2 * delta_t * tan(phi)
+
+        where delta_t is wear depth on one tooth and phi is pressure angle.
+        """
+        phi = math.radians(pressure_angle_deg)
+        return 2.0 * tooth_wear_depth_mm * math.tan(phi)
+
+
+# ---------------------------------------------------------------------------
+# Time-to-Failure Prediction
+# ---------------------------------------------------------------------------
+
+class TimeToFailure:
+    """Predict component life from wear-based failure criteria."""
+
+    @staticmethod
+    def bearing_hours_to_clearance_limit(
+        clearance_limit_mm: float,
+        initial_clearance_mm: float,
+        shaft_diameter_mm: float,
+        bearing_length_mm: float,
+        K: float,
+        normal_force_N: float,
+        hardness_MPa: float,
+        rpm: float,
+    ) -> float:
+        """Hours until bearing clearance exceeds limit.
+
+        t = (c_max - c_init) * pi * d * L * H / (K * F * s_per_hour)
+        """
+        if K <= 0 or normal_force_N <= 0 or hardness_MPa <= 0:
+            return float("inf")
+        s_per_hour = WearModel.sliding_distance_per_hour_mm(shaft_diameter_mm, rpm)
+        if s_per_hour <= 0:
+            return float("inf")
+        delta_c = clearance_limit_mm - initial_clearance_mm
+        if delta_c <= 0:
+            return 0.0
+        wear_rate_per_hour = K * normal_force_N * s_per_hour / hardness_MPa
+        # h_wear per hour = wear_rate / (pi * d * L)
+        h_per_hour = wear_rate_per_hour / (
+            math.pi * shaft_diameter_mm * bearing_length_mm
+        )
+        if h_per_hour <= 0:
+            return float("inf")
+        return delta_c / h_per_hour
+
+
 # 19th-century achievable finishes
 PERIOD_SURFACE_FINISHES = [
     SurfaceFinishSpec("shaft_journal", 0.8, "turning + polishing",

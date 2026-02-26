@@ -15,11 +15,15 @@ import pytest
 from backend.src.emulator.kinematics import (
     CamAnalysis,
     CamFollower,
+    CamTorqueRipple,
     DOFAnalysis,
     GearAnalysis,
     GearPair,
+    HertzianContact,
     KinematicChain,
     MainShaftModel,
+    ShaftLateralDynamics,
+    TorsionalVibration,
     load_kinematic_chain,
 )
 from backend.src.emulator.materials import MaterialLibrary
@@ -319,3 +323,112 @@ class TestKinematicChainIntegration:
                 f"{gp.name}: Lewis stress {sigma:.1f} MPa >= yield"
             )
             rpm = GearAnalysis.output_rpm(gp, rpm)
+
+
+# -- Phase IV: Hertzian Contact / Gear Surface Fatigue --
+
+class TestHertzianContact:
+    def test_elastic_coefficient_positive(self):
+        Cp = HertzianContact.elastic_coefficient(200.0, 0.3, 97.0, 0.34)
+        assert Cp > 0
+
+    def test_geometry_factor_positive(self):
+        I = HertzianContact.geometry_factor_I(20, 60)
+        assert I > 0
+
+    def test_contact_stress_positive(self):
+        Cp = HertzianContact.elastic_coefficient(97.0, 0.34, 97.0, 0.34)
+        I = HertzianContact.geometry_factor_I(20, 60)
+        sigma = HertzianContact.contact_stress_MPa(
+            100.0, 1.05, 1.0, 15.0, 50.0, I, Cp,
+        )
+        assert sigma > 0
+
+    def test_contact_stress_proportional_to_sqrt_force(self):
+        Cp = HertzianContact.elastic_coefficient(97.0, 0.34, 97.0, 0.34)
+        I = HertzianContact.geometry_factor_I(20, 60)
+        s1 = HertzianContact.contact_stress_MPa(100.0, 1.0, 1.0, 15.0, 50.0, I, Cp)
+        s2 = HertzianContact.contact_stress_MPa(400.0, 1.0, 1.0, 15.0, 50.0, I, Cp)
+        assert s2 == pytest.approx(2.0 * s1, rel=0.01)
+
+    def test_pitting_sf_infinite_for_zero_stress(self):
+        sf = HertzianContact.pitting_safety_factor(500.0, 0.0)
+        assert sf == float("inf")
+
+
+# -- Phase IV: Torsional Vibration --
+
+class TestTorsionalVibration:
+    def test_frequency_positive(self):
+        omega = TorsionalVibration.natural_frequency_rad_s(
+            80.0, 50.0, 500.0, 0.5,
+        )
+        assert omega > 0
+
+    def test_frequency_scales_with_sqrt_G(self):
+        o1 = TorsionalVibration.natural_frequency_rad_s(40.0, 50.0, 500.0, 0.5)
+        o2 = TorsionalVibration.natural_frequency_rad_s(80.0, 50.0, 500.0, 0.5)
+        assert o2 == pytest.approx(o1 * math.sqrt(2.0), rel=0.01)
+
+    def test_frequency_inversely_with_L(self):
+        o1 = TorsionalVibration.natural_frequency_rad_s(80.0, 50.0, 500.0, 0.5)
+        o2 = TorsionalVibration.natural_frequency_rad_s(80.0, 50.0, 2000.0, 0.5)
+        assert o2 == pytest.approx(o1 / 2.0, rel=0.01)
+
+    def test_vibration_margin_above_3(self):
+        omega = TorsionalVibration.natural_frequency_rad_s(80.0, 50.0, 500.0, 0.5)
+        nat_rpm = TorsionalVibration.torsional_frequency_rpm(omega)
+        margin = TorsionalVibration.vibration_margin(nat_rpm, 30.0)
+        assert margin > 3.0
+
+
+# -- Phase IV: Cam Torque Ripple --
+
+class TestCamTorqueRipple:
+    @pytest.fixture
+    def cam(self):
+        return CamFollower(
+            name="test_cam",
+            rise_angle_deg=60.0,
+            dwell_angle_deg=120.0,
+            return_angle_deg=60.0,
+            total_lift_mm=5.0,
+            follower_mass_kg=0.2,
+            spring_rate_N_mm=50.0,
+        )
+
+    def test_torque_zero_at_dwell(self, cam):
+        dh = CamAnalysis.velocity_mm_per_deg(cam, 120.0)
+        assert abs(dh) < 0.01
+
+    def test_torque_envelope_positive_range(self, cam):
+        omega = 2.0 * math.pi * 30.0 / 60.0
+        t_min, t_max, ptp = CamTorqueRipple.torque_envelope(cam, omega)
+        assert ptp >= 0
+
+    def test_ripple_ratio_reasonable(self, cam):
+        omega = 2.0 * math.pi * 30.0 / 60.0
+        t_min, t_max, ptp = CamTorqueRipple.torque_envelope(cam, omega)
+        if t_max > 0:
+            ratio = ptp / abs(t_max)
+            assert ratio < 20.0
+
+
+# -- Phase IV: Shaft Lateral Dynamics --
+
+class TestShaftLateralDynamics:
+    def test_lateral_frequency_positive(self):
+        omega = ShaftLateralDynamics.lateral_natural_frequency_rad_s(
+            200.0, 50.0, 500.0, 7850.0,
+        )
+        assert omega > 0
+
+    def test_bearing_reactions_sum_to_load(self):
+        reactions = ShaftLateralDynamics.bearing_reactions_N(1000.0, 4)
+        assert len(reactions) == 4
+        assert ShaftLateralDynamics.bearing_reactions_sum_check(reactions, 1000.0)
+
+    def test_bearing_reactions_uniform(self):
+        reactions = ShaftLateralDynamics.bearing_reactions_N(400.0, 4)
+        for r in reactions:
+            assert r == pytest.approx(100.0)

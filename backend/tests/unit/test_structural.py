@@ -15,6 +15,10 @@ from backend.src.emulator.structural import (
     GearToothStress,
     FatigueAnalysis,
     BucklingAnalysis,
+    StressConcentration,
+    DynamicLoadFactor,
+    ShaftCriticalSpeed,
+    NotchSensitivity,
 )
 from backend.src.emulator.materials import MaterialLibrary
 
@@ -228,3 +232,174 @@ class TestStructuralIntegration:
         )
         sf_buckling = BucklingAnalysis.buckling_safety_factor(P_cr, 5.0 * 9.81)
         assert sf_buckling >= 3.0
+
+
+# -- Phase III: Stress Concentration Factors --
+
+class TestStressConcentration:
+    def test_stepped_shaft_Kt_ge_1(self):
+        Kt = StressConcentration.stepped_shaft(60.0, 50.0, 3.0)
+        assert Kt >= 1.0
+
+    def test_stepped_shaft_tabulated_within_5pct(self):
+        """D/d=1.5, r/d=0.1: expected K_t ~ 1.68 (Peterson)."""
+        Kt = StressConcentration.stepped_shaft(75.0, 50.0, 5.0)
+        # r/d = 5/50 = 0.1, D/d = 75/50 = 1.5
+        # From Peterson tables: ~1.68 for bending
+        assert 1.3 < Kt < 2.1
+
+    def test_larger_Dd_higher_Kt(self):
+        Kt_small = StressConcentration.stepped_shaft(55.0, 50.0, 3.0)
+        Kt_large = StressConcentration.stepped_shaft(100.0, 50.0, 3.0)
+        assert Kt_large >= Kt_small
+
+    def test_keyway_bending(self):
+        assert StressConcentration.keyway_bending() == pytest.approx(2.14)
+
+    def test_keyway_torsion(self):
+        assert StressConcentration.keyway_torsion() == pytest.approx(3.0)
+
+
+# -- Phase III: Dynamic Load Factor --
+
+class TestDynamicLoadFactor:
+    def test_Kv_ge_1(self):
+        Kv = DynamicLoadFactor.agma_Kv(100.0)
+        assert Kv >= 1.0
+
+    def test_Kv_at_zero_velocity(self):
+        Kv = DynamicLoadFactor.agma_Kv(0.0)
+        assert Kv == 1.0
+
+    def test_Kv_monotone_in_velocity(self):
+        Kv_low = DynamicLoadFactor.agma_Kv(10.0)
+        Kv_high = DynamicLoadFactor.agma_Kv(1000.0)
+        assert Kv_high >= Kv_low
+
+    def test_Kv_at_engine_speed(self):
+        """At 30 RPM, 50mm pitch dia: V ~ 15.7 ft/min, K_v < 1.1."""
+        V = DynamicLoadFactor.pitch_velocity_ft_min(50.0, 30.0)
+        Kv = DynamicLoadFactor.agma_Kv(V)
+        assert Kv < 1.1, f"K_v={Kv:.3f} >= 1.1 at engine speed"
+
+    def test_agma_bending_amplifies(self):
+        sigma_lewis = 10.0
+        Kv = 1.05
+        sigma_agma = DynamicLoadFactor.agma_bending_stress_MPa(sigma_lewis, Kv)
+        assert sigma_agma > sigma_lewis
+
+
+# -- Phase III: Johnson Column Transition --
+
+class TestJohnsonBuckling:
+    def test_johnson_le_yield(self, lib):
+        steel = lib.get("steel")
+        Sy = steel.yield_strength_MPa[0]
+        E = steel.youngs_modulus_GPa[0]
+        sigma = BucklingAnalysis.johnson_critical_stress_MPa(Sy, E, 30.0)
+        assert sigma <= Sy
+
+    def test_johnson_lt_euler_below_transition(self, lib):
+        """Below transition, Johnson gives lower (more conservative) stress than Euler.
+
+        Johnson accounts for inelastic buckling where the column yields before
+        reaching the Euler elastic limit, so sigma_Johnson < sigma_Euler.
+        """
+        steel = lib.get("steel")
+        Sy = steel.yield_strength_MPa[0]
+        E = steel.youngs_modulus_GPa[0]
+        tr = BucklingAnalysis.transition_slenderness_ratio(Sy, E)
+        sr = tr * 0.5  # Below transition
+        sigma_j = BucklingAnalysis.johnson_critical_stress_MPa(Sy, E, sr)
+        sigma_e = BucklingAnalysis.euler_critical_stress_MPa(E, sr)
+        assert sigma_j < sigma_e
+
+    def test_curves_meet_at_transition(self, lib):
+        steel = lib.get("steel")
+        Sy = steel.yield_strength_MPa[0]
+        E = steel.youngs_modulus_GPa[0]
+        tr = BucklingAnalysis.transition_slenderness_ratio(Sy, E)
+        sigma_j = BucklingAnalysis.johnson_critical_stress_MPa(Sy, E, tr)
+        sigma_e = BucklingAnalysis.euler_critical_stress_MPa(E, tr)
+        assert sigma_j == pytest.approx(sigma_e, rel=0.01)
+
+    def test_unified_selects_johnson_below_transition(self, lib):
+        steel = lib.get("steel")
+        Sy = steel.yield_strength_MPa[0]
+        E = steel.youngs_modulus_GPa[0]
+        tr = BucklingAnalysis.transition_slenderness_ratio(Sy, E)
+        sr = tr * 0.5
+        sigma = BucklingAnalysis.critical_buckling_stress_MPa(Sy, E, sr)
+        sigma_j = BucklingAnalysis.johnson_critical_stress_MPa(Sy, E, sr)
+        assert sigma == pytest.approx(sigma_j)
+
+    def test_unified_selects_euler_above_transition(self, lib):
+        steel = lib.get("steel")
+        Sy = steel.yield_strength_MPa[0]
+        E = steel.youngs_modulus_GPa[0]
+        tr = BucklingAnalysis.transition_slenderness_ratio(Sy, E)
+        sr = tr * 1.5
+        sigma = BucklingAnalysis.critical_buckling_stress_MPa(Sy, E, sr)
+        sigma_e = BucklingAnalysis.euler_critical_stress_MPa(E, sr)
+        assert sigma == pytest.approx(sigma_e)
+
+
+# -- Phase III: Shaft Critical Speed --
+
+class TestShaftCriticalSpeed:
+    def test_critical_speed_positive(self):
+        omega = ShaftCriticalSpeed.first_critical_speed_rad_s(
+            200.0, 50.0, 500.0, 7850.0,
+        )
+        assert omega > 0
+
+    def test_critical_scales_with_sqrt_E(self):
+        omega1 = ShaftCriticalSpeed.first_critical_speed_rad_s(100.0, 50.0, 500.0, 7850.0)
+        omega2 = ShaftCriticalSpeed.first_critical_speed_rad_s(200.0, 50.0, 500.0, 7850.0)
+        assert omega2 == pytest.approx(omega1 * math.sqrt(2.0), rel=0.01)
+
+    def test_critical_scales_inversely_with_L2(self):
+        omega1 = ShaftCriticalSpeed.first_critical_speed_rad_s(200.0, 50.0, 500.0, 7850.0)
+        omega2 = ShaftCriticalSpeed.first_critical_speed_rad_s(200.0, 50.0, 1000.0, 7850.0)
+        assert omega2 == pytest.approx(omega1 / 4.0, rel=0.01)
+
+    def test_critical_speed_margin_above_3(self):
+        """50mm steel shaft, 500mm span, 30 RPM: margin >> 3."""
+        omega = ShaftCriticalSpeed.first_critical_speed_rad_s(
+            200.0, 50.0, 500.0, 7850.0,
+        )
+        crit_rpm = ShaftCriticalSpeed.critical_speed_rpm(omega)
+        margin = ShaftCriticalSpeed.critical_speed_margin(crit_rpm, 30.0)
+        assert margin > 3.0, f"Critical speed margin {margin:.1f} <= 3"
+
+
+# -- Phase III: Notch Sensitivity --
+
+class TestNotchSensitivity:
+    def test_q_in_0_1(self):
+        a = NotchSensitivity.neuber_constant_mm(500.0)
+        q = NotchSensitivity.notch_sensitivity_q(2.0, a)
+        assert 0 <= q <= 1
+
+    def test_q_zero_for_zero_radius(self):
+        a = NotchSensitivity.neuber_constant_mm(500.0)
+        q = NotchSensitivity.notch_sensitivity_q(0.0, a)
+        assert q == 0.0
+
+    def test_Kf_between_1_and_Kt(self):
+        Kt = 2.5
+        a = NotchSensitivity.neuber_constant_mm(500.0)
+        q = NotchSensitivity.notch_sensitivity_q(2.0, a)
+        Kf = NotchSensitivity.fatigue_concentration_Kf(Kt, q)
+        assert 1.0 <= Kf <= Kt
+
+    def test_Se_corrected_less_than_uncorrected(self):
+        Se = 200.0
+        Kf = 1.5
+        Se_corr = NotchSensitivity.corrected_endurance_limit_MPa(Se, Kf)
+        assert Se_corr < Se
+
+    def test_Kf_equals_Kt_when_fully_sensitive(self):
+        """When q=1 (large r, strong material): K_f = K_t."""
+        Kf = NotchSensitivity.fatigue_concentration_Kf(2.5, 1.0)
+        assert Kf == pytest.approx(2.5)

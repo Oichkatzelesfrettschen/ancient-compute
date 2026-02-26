@@ -276,3 +276,216 @@ def compute_engine_thermal_model(
     )
 
     return envelope
+
+
+# ---------------------------------------------------------------------------
+# Radiation Heat Loss (Stefan-Boltzmann)
+# ---------------------------------------------------------------------------
+
+class RadiationHeatModel:
+    """Stefan-Boltzmann radiation heat transfer.
+
+    Q_rad = epsilon * sigma * A * (T_s^4 - T_amb^4)
+
+    sigma = 5.67e-8 W/(m^2.K^4) (Stefan-Boltzmann constant).
+    """
+
+    STEFAN_BOLTZMANN = 5.67e-8  # W/(m^2.K^4)
+
+    @staticmethod
+    def radiation_heat_W(
+        emissivity: float,
+        surface_area_m2: float,
+        surface_T_K: float,
+        ambient_T_K: float,
+    ) -> float:
+        """Radiation heat loss [W]."""
+        sigma = RadiationHeatModel.STEFAN_BOLTZMANN
+        return emissivity * sigma * surface_area_m2 * (
+            surface_T_K**4 - ambient_T_K**4
+        )
+
+    @staticmethod
+    def linearized_h_rad_W_m2K(
+        emissivity: float,
+        surface_T_K: float,
+        ambient_T_K: float,
+    ) -> float:
+        """Linearized radiation heat transfer coefficient [W/(m^2.K)].
+
+        h_rad = epsilon * sigma * (T_s^2 + T_amb^2) * (T_s + T_amb)
+
+        Useful for combining with convective h in total heat transfer.
+        """
+        sigma = RadiationHeatModel.STEFAN_BOLTZMANN
+        return emissivity * sigma * (
+            surface_T_K**2 + ambient_T_K**2
+        ) * (surface_T_K + ambient_T_K)
+
+
+# ---------------------------------------------------------------------------
+# Transient Thermal PDE Solver
+# ---------------------------------------------------------------------------
+
+class TransientThermalSolver:
+    """Lumped-parameter transient thermal model.
+
+    dT/dt = [Q_in - h_total * A * (T - T_amb)] / (m * c_p)
+
+    where h_total = h_conv + h_rad.
+    """
+
+    @staticmethod
+    def forward_euler_step(
+        T_current_C: float,
+        Q_in_W: float,
+        h_total_W_m2K: float,
+        surface_area_m2: float,
+        mass_kg: float,
+        specific_heat_J_kgK: float,
+        ambient_T_C: float,
+        dt_s: float,
+    ) -> float:
+        """Single Forward Euler time step for temperature [C].
+
+        T(t+dt) = T(t) + dt * [Q_in - h*A*(T - T_amb)] / (m*c_p)
+        """
+        if mass_kg <= 0 or specific_heat_J_kgK <= 0:
+            return T_current_C
+        dTdt = (
+            Q_in_W - h_total_W_m2K * surface_area_m2 * (T_current_C - ambient_T_C)
+        ) / (mass_kg * specific_heat_J_kgK)
+        return T_current_C + dt_s * dTdt
+
+    @staticmethod
+    def crank_nicolson_step(
+        T_current_C: float,
+        Q_in_W: float,
+        h_total_W_m2K: float,
+        surface_area_m2: float,
+        mass_kg: float,
+        specific_heat_J_kgK: float,
+        ambient_T_C: float,
+        dt_s: float,
+    ) -> float:
+        """Single Crank-Nicolson (implicit trapezoidal) time step [C].
+
+        Unconditionally stable implicit averaging:
+        T^{n+1} = [T^n*(1 - alpha*dt/2) + beta*dt] / (1 + alpha*dt/2)
+
+        where alpha = h*A/(m*c_p), beta = (Q_in + h*A*T_amb)/(m*c_p).
+        """
+        if mass_kg <= 0 or specific_heat_J_kgK <= 0:
+            return T_current_C
+        mc = mass_kg * specific_heat_J_kgK
+        hA = h_total_W_m2K * surface_area_m2
+        alpha = hA / mc
+        beta = (Q_in_W + hA * ambient_T_C) / mc
+        numerator = T_current_C * (1.0 - alpha * dt_s / 2.0) + beta * dt_s
+        denominator = 1.0 + alpha * dt_s / 2.0
+        if denominator == 0:
+            return T_current_C
+        return numerator / denominator
+
+    @staticmethod
+    def warmup_curve(
+        Q_in_W: float,
+        h_total_W_m2K: float,
+        surface_area_m2: float,
+        mass_kg: float,
+        specific_heat_J_kgK: float,
+        ambient_T_C: float,
+        duration_s: float,
+        dt_s: float = 1.0,
+        method: str = "crank_nicolson",
+    ) -> List[Tuple[float, float]]:
+        """Compute temperature vs time from cold start.
+
+        Returns list of (time_s, temperature_C) tuples.
+        """
+        T = ambient_T_C
+        history = [(0.0, T)]
+        t = 0.0
+        step_fn = (
+            TransientThermalSolver.crank_nicolson_step
+            if method == "crank_nicolson"
+            else TransientThermalSolver.forward_euler_step
+        )
+        while t < duration_s:
+            T = step_fn(
+                T, Q_in_W, h_total_W_m2K, surface_area_m2,
+                mass_kg, specific_heat_J_kgK, ambient_T_C, dt_s,
+            )
+            t += dt_s
+            history.append((t, T))
+        return history
+
+    @staticmethod
+    def steady_state_T_C(
+        Q_in_W: float,
+        h_total_W_m2K: float,
+        surface_area_m2: float,
+        ambient_T_C: float,
+    ) -> float:
+        """Analytical steady-state temperature [C].
+
+        T_ss = T_amb + Q_in / (h * A)
+        """
+        hA = h_total_W_m2K * surface_area_m2
+        if hA <= 0:
+            return float("inf")
+        return ambient_T_C + Q_in_W / hA
+
+    @staticmethod
+    def time_constant_s(
+        mass_kg: float,
+        specific_heat_J_kgK: float,
+        h_total_W_m2K: float,
+        surface_area_m2: float,
+    ) -> float:
+        """Thermal time constant tau = m*c_p / (h*A) [s]."""
+        hA = h_total_W_m2K * surface_area_m2
+        if hA <= 0:
+            return float("inf")
+        return mass_kg * specific_heat_J_kgK / hA
+
+
+# ---------------------------------------------------------------------------
+# Thermal-Clearance Feedback
+# ---------------------------------------------------------------------------
+
+class ThermalClearanceFeedback:
+    """Combined thermal + wear clearance evolution."""
+
+    @staticmethod
+    def thermal_clearance_mm(
+        alpha_bushing_per_K: float,
+        alpha_shaft_per_K: float,
+        bore_diameter_mm: float,
+        T_current_C: float,
+        T_ref_C: float = 20.0,
+    ) -> float:
+        """Clearance change from differential thermal expansion [mm].
+
+        c(T) = (alpha_bushing - alpha_shaft) * d * (T - T_ref)
+        """
+        return (alpha_bushing_per_K - alpha_shaft_per_K) * bore_diameter_mm * (
+            T_current_C - T_ref_C
+        )
+
+    @staticmethod
+    def combined_clearance_mm(
+        initial_clearance_mm: float,
+        thermal_delta_mm: float,
+        wear_delta_mm: float,
+    ) -> float:
+        """Total clearance combining initial, thermal, and wear contributions.
+
+        c(t) = c_init + delta_c_thermal + delta_c_wear
+        """
+        return initial_clearance_mm + thermal_delta_mm + wear_delta_mm
+
+    @staticmethod
+    def is_seized(clearance_mm: float) -> bool:
+        """Check if clearance has closed to seizure (c <= 0)."""
+        return clearance_mm <= 0.0

@@ -24,17 +24,8 @@ from enum import Enum
 from dataclasses import dataclass
 
 
-class MechanicalPhase(Enum):
-    """Mechanical phases during DE2 rotation (0-360°)."""
-
-    IDLE = "idle"                          # 0°: No operation
-    INPUT = "input"                        # 45°: Load difference values
-    ADDITION = "addition"                  # 90°: Add columns
-    CARRY = "carry"                        # 135°: Propagate carries
-    OUTPUT = "output"                      # 180°: Prepare output
-    ADVANCE = "advance"                    # 225°: Advance to next row
-    RESET = "reset"                        # 270°: Reset mechanical state
-    PAUSE = "pause"                        # 315°: Pause before cycle repeat
+# MechanicalPhase: canonical definition in types.py, re-imported here.
+from backend.src.emulator.types import MechanicalPhase
 
 
 @dataclass
@@ -323,3 +314,173 @@ class TimingSequence:
     def __repr__(self) -> str:
         """String representation."""
         return f"TimingSequence({self.name}, phases={len(self.operations)})"
+
+
+# ---------------------------------------------------------------------------
+# Carry Propagation Timing Model
+# ---------------------------------------------------------------------------
+
+class CarryPropagationModel:
+    """Models carry propagation timing in the Anticipating Carriage.
+
+    Each digit position requires ~1 degree of shaft rotation for carry
+    propagation. The 2-position look-ahead reduces worst-case propagation.
+    All carry events must fit within the CARRY phase (135-180 degrees).
+    """
+
+    DEGREES_PER_DIGIT = 1.0       # Carry propagation rate
+    LOOKAHEAD_POSITIONS = 2       # Anticipating carriage look-ahead
+    CARRY_PHASE_START = 135       # Degrees
+    CARRY_PHASE_END = 180         # Degrees
+    CARRY_PHASE_WIDTH = 45        # Degrees available
+
+    @staticmethod
+    def carry_propagation_degrees(
+        digit_count: int,
+        lookahead: int = 2,
+    ) -> float:
+        """Degrees of shaft rotation needed for carry propagation.
+
+        With look-ahead, effective propagation distance is reduced:
+        degrees = ceil(digit_count / (1 + lookahead)) * DEGREES_PER_DIGIT
+        """
+        if digit_count <= 0:
+            return 0.0
+        effective = digit_count / (1 + lookahead)
+        return CarryPropagationModel.DEGREES_PER_DIGIT * effective
+
+    @staticmethod
+    def worst_case_degrees(digit_count: int = 50) -> float:
+        """Worst-case carry chain: all digits ripple."""
+        return CarryPropagationModel.carry_propagation_degrees(
+            digit_count, CarryPropagationModel.LOOKAHEAD_POSITIONS,
+        )
+
+    @staticmethod
+    def fits_within_phase(carry_degrees: float) -> bool:
+        """Check if carry propagation fits within the CARRY phase."""
+        return carry_degrees <= CarryPropagationModel.CARRY_PHASE_WIDTH
+
+
+# ---------------------------------------------------------------------------
+# Barrel-Timing Bridge
+# ---------------------------------------------------------------------------
+
+# Mapping of barrel step counts to shaft degree allocations
+BARREL_TIMING_MAP = {
+    "ADD": {"steps": 6, "degrees": 45, "phases": ["ADDITION", "CARRY"]},
+    "SUB": {"steps": 6, "degrees": 45, "phases": ["ADDITION", "CARRY"]},
+    "MULT": {"steps": 4, "degrees": 360, "phases": ["ADDITION", "CARRY"]},
+    "DIV": {"steps": 13, "degrees": 360, "phases": ["ADDITION", "CARRY"]},
+    "SQRT": {"steps": 6, "degrees": 360, "phases": ["ADDITION", "CARRY"]},
+    "LOAD": {"steps": 3, "degrees": 45, "phases": ["INPUT"]},
+    "STOR": {"steps": 3, "degrees": 45, "phases": ["OUTPUT"]},
+}
+
+
+class BarrelTimingBridge:
+    """Maps barrel micro-op steps to shaft angle allocations.
+
+    Each barrel operation is allocated a number of shaft degrees.
+    For simple ops (ADD, SUB, LOAD, STOR) this fits within one rotation.
+    For complex ops (MULT, DIV, SQRT) this may span multiple rotations.
+    """
+
+    @staticmethod
+    def degrees_per_step(barrel_name: str) -> float:
+        """Shaft degrees allocated per barrel step."""
+        entry = BARREL_TIMING_MAP.get(barrel_name)
+        if entry is None or entry["steps"] <= 0:
+            return 0.0
+        return entry["degrees"] / entry["steps"]
+
+    @staticmethod
+    def total_degrees(barrel_name: str) -> float:
+        """Total shaft degrees for a complete barrel execution."""
+        entry = BARREL_TIMING_MAP.get(barrel_name)
+        if entry is None:
+            return 0.0
+        return float(entry["degrees"])
+
+    @staticmethod
+    def rotations_required(barrel_name: str) -> float:
+        """Number of full shaft rotations required."""
+        return BarrelTimingBridge.total_degrees(barrel_name) / 360.0
+
+    @staticmethod
+    def uses_phases(barrel_name: str) -> list:
+        """Return list of mechanical phases used by this barrel."""
+        entry = BARREL_TIMING_MAP.get(barrel_name)
+        if entry is None:
+            return []
+        return entry["phases"]
+
+
+# ---------------------------------------------------------------------------
+# Opcode Timing Sequences
+# ---------------------------------------------------------------------------
+
+def build_opcode_timing_sequences() -> Dict[str, TimingSequence]:
+    """Build concrete TimingSequence for each supported opcode.
+
+    These define which mechanical phases each opcode uses during execution.
+    """
+    sequences = {}
+
+    # ADD: uses ADDITION + CARRY phases within one rotation
+    add_seq = TimingSequence("ADD")
+    add_seq.add_operation(MechanicalPhase.INPUT, "fetch_operand")
+    add_seq.add_operation(MechanicalPhase.ADDITION, "add_to_accumulator")
+    add_seq.add_operation(MechanicalPhase.CARRY, "propagate_carry")
+    add_seq.add_operation(MechanicalPhase.OUTPUT, "store_result")
+    add_seq.duration = 360
+    sequences["ADD"] = add_seq
+
+    # SUB: same timing as ADD
+    sub_seq = TimingSequence("SUB")
+    sub_seq.add_operation(MechanicalPhase.INPUT, "fetch_operand")
+    sub_seq.add_operation(MechanicalPhase.ADDITION, "subtract_from_accumulator")
+    sub_seq.add_operation(MechanicalPhase.CARRY, "propagate_borrow")
+    sub_seq.add_operation(MechanicalPhase.OUTPUT, "store_result")
+    sub_seq.duration = 360
+    sequences["SUB"] = sub_seq
+
+    # MULT: spans multiple rotations (repeated addition per digit)
+    mult_seq = TimingSequence("MULT")
+    mult_seq.add_operation(MechanicalPhase.INPUT, "fetch_multiplier_digit")
+    mult_seq.add_operation(MechanicalPhase.ADDITION, "repeated_addition")
+    mult_seq.add_operation(MechanicalPhase.CARRY, "propagate_carry")
+    mult_seq.add_operation(MechanicalPhase.ADVANCE, "shift_accumulator")
+    mult_seq.duration = 360 * 50  # Up to 50 digit positions
+    sequences["MULT"] = mult_seq
+
+    # DIV: spans multiple rotations (repeated subtraction per digit)
+    div_seq = TimingSequence("DIV")
+    div_seq.add_operation(MechanicalPhase.INPUT, "fetch_dividend_divisor")
+    div_seq.add_operation(MechanicalPhase.ADDITION, "trial_subtraction")
+    div_seq.add_operation(MechanicalPhase.CARRY, "propagate_borrow")
+    div_seq.add_operation(MechanicalPhase.ADVANCE, "shift_divisor")
+    div_seq.duration = 360 * 50
+    sequences["DIV"] = div_seq
+
+    # SQRT: Newton-Raphson iterations (~25 for 50 digits)
+    sqrt_seq = TimingSequence("SQRT")
+    sqrt_seq.add_operation(MechanicalPhase.INPUT, "load_operand")
+    sqrt_seq.add_operation(MechanicalPhase.ADDITION, "newton_raphson_step")
+    sqrt_seq.add_operation(MechanicalPhase.CARRY, "propagate_carry")
+    sqrt_seq.duration = 360 * 25  # ~25 iterations
+    sequences["SQRT"] = sqrt_seq
+
+    # LOAD: single rotation, INPUT phase only
+    load_seq = TimingSequence("LOAD")
+    load_seq.add_operation(MechanicalPhase.INPUT, "transfer_store_to_mill")
+    load_seq.duration = 360
+    sequences["LOAD"] = load_seq
+
+    # STOR: single rotation, OUTPUT phase only
+    stor_seq = TimingSequence("STOR")
+    stor_seq.add_operation(MechanicalPhase.OUTPUT, "transfer_mill_to_store")
+    stor_seq.duration = 360
+    sequences["STOR"] = stor_seq
+
+    return sequences

@@ -15,6 +15,10 @@ from backend.src.emulator.tribology import (
     WearModel,
     PVAnalysis,
     LubricationModel,
+    RunningInWear,
+    SurfaceTextureEvolution,
+    WearClearanceFeedback,
+    TimeToFailure,
     SurfaceFinishSpec,
     PERIOD_SURFACE_FINISHES,
     ARCHARD_K_LUBRICATED_BRONZE_ON_STEEL,
@@ -168,3 +172,116 @@ class TestLubricationSchedule:
         area_mm2 = math.pi * 50.0 * 60.0  # bearing contact area
         depth_mm = v_160h / area_mm2
         assert depth_mm < 0.01, f"Wear depth {depth_mm:.4f} mm over 160h too high"
+
+
+# -- Phase V: Running-In Wear Model --
+
+class TestRunningInWear:
+    def test_K_at_zero_equals_initial(self):
+        K = RunningInWear.wear_coefficient(0.0, 1e-5, 1e-6, 1e6)
+        assert K == pytest.approx(1e-5)
+
+    def test_K_converges_to_steady(self):
+        K = RunningInWear.wear_coefficient(1e9, 1e-5, 1e-6, 1e6)
+        assert K == pytest.approx(1e-6, rel=0.01)
+
+    def test_K_monotone_decreasing(self):
+        K0 = RunningInWear.wear_coefficient(0.0, 1e-5, 1e-6, 1e6)
+        K1 = RunningInWear.wear_coefficient(5e5, 1e-5, 1e-6, 1e6)
+        K2 = RunningInWear.wear_coefficient(1e6, 1e-5, 1e-6, 1e6)
+        assert K0 >= K1 >= K2
+
+    def test_cumulative_wear_positive(self):
+        V = RunningInWear.cumulative_wear_volume_mm3(
+            normal_force_N=100.0,
+            hardness_MPa=500.0,
+            K_initial=1e-5,
+            K_steady=1e-6,
+            s_0_mm=1e6,
+            total_distance_mm=1e7,
+        )
+        assert V > 0
+
+
+# -- Phase V: Surface Texture Evolution --
+
+class TestSurfaceTextureEvolution:
+    def test_Ra_initial_at_zero_depth(self):
+        Ra = SurfaceTextureEvolution.roughness_um(0.0, 1.6, 0.4)
+        assert Ra == pytest.approx(1.6)
+
+    def test_Ra_approaches_steady(self):
+        Ra = SurfaceTextureEvolution.roughness_um(100.0, 1.6, 0.4)
+        assert Ra == pytest.approx(0.4, abs=0.01)
+
+    def test_Ra_decreases_during_running_in(self):
+        Ra0 = SurfaceTextureEvolution.roughness_um(0.0, 1.6, 0.4)
+        Ra1 = SurfaceTextureEvolution.roughness_um(1.0, 1.6, 0.4)
+        Ra2 = SurfaceTextureEvolution.roughness_um(5.0, 1.6, 0.4)
+        assert Ra0 >= Ra1 >= Ra2
+
+
+# -- Phase V: Wear-to-Clearance Feedback --
+
+class TestWearClearanceFeedback:
+    def test_clearance_increases_monotonically(self):
+        c0 = WearClearanceFeedback.bearing_clearance_from_wear_mm(0.0, 50.0, 60.0, 0.05)
+        c1 = WearClearanceFeedback.bearing_clearance_from_wear_mm(1.0, 50.0, 60.0, 0.05)
+        c2 = WearClearanceFeedback.bearing_clearance_from_wear_mm(5.0, 50.0, 60.0, 0.05)
+        assert c0 <= c1 <= c2
+
+    def test_backlash_from_wear_positive(self):
+        bl = WearClearanceFeedback.gear_backlash_from_wear_mm(0.001)
+        assert bl > 0
+
+    def test_backlash_small_after_1000h(self, lib):
+        """Backlash from gear wear at 30 RPM, 1000 hours should be < 0.01 mm."""
+        brass = lib.get("brass")
+        # Gear wear per hour
+        v_per_hr = WearModel.gear_wear_volume_per_hour_mm3(
+            K=5e-6,
+            tangential_force_N=100.0,
+            pitch_diameter_mm=50.0,
+            rpm=30.0,
+            tooth_count=20,
+            hardness_HB=brass.hardness_HB[0],
+        )
+        v_1000h = v_per_hr * 1000.0
+        # Approximate wear depth on tooth face
+        tooth_area = 15.0 * 2.5  # face_width * module
+        depth = v_1000h / (tooth_area * 20)  # distributed over 20 teeth
+        bl = WearClearanceFeedback.gear_backlash_from_wear_mm(depth)
+        assert bl < 0.01, f"Backlash {bl:.6f} mm >= 0.01 mm after 1000h"
+
+
+# -- Phase V: Time-to-Failure Prediction --
+
+class TestTimeToFailure:
+    def test_bearing_life_above_100h(self, lib):
+        pb = lib.get("phosphor_bronze")
+        t = TimeToFailure.bearing_hours_to_clearance_limit(
+            clearance_limit_mm=0.15,
+            initial_clearance_mm=0.05,
+            shaft_diameter_mm=50.0,
+            bearing_length_mm=60.0,
+            K=ARCHARD_K_LUBRICATED_BRONZE_ON_STEEL,
+            normal_force_N=500 * 9.81 / 4,
+            hardness_MPa=WearModel.hardness_HB_to_MPa(pb.hardness_HB[0]),
+            rpm=30.0,
+        )
+        assert t > 100.0, f"Bearing life {t:.0f}h < 100h"
+
+    def test_life_inversely_proportional_to_load(self, lib):
+        pb = lib.get("phosphor_bronze")
+        base_load = 500.0
+        t1 = TimeToFailure.bearing_hours_to_clearance_limit(
+            0.15, 0.05, 50.0, 60.0,
+            ARCHARD_K_LUBRICATED_BRONZE_ON_STEEL,
+            base_load, WearModel.hardness_HB_to_MPa(pb.hardness_HB[0]), 30.0,
+        )
+        t2 = TimeToFailure.bearing_hours_to_clearance_limit(
+            0.15, 0.05, 50.0, 60.0,
+            ARCHARD_K_LUBRICATED_BRONZE_ON_STEEL,
+            2 * base_load, WearModel.hardness_HB_to_MPa(pb.hardness_HB[0]), 30.0,
+        )
+        assert t2 == pytest.approx(t1 / 2.0, rel=0.01)

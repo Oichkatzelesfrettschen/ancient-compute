@@ -31,12 +31,9 @@ class CardType(Enum):
     VARIABLE = "Variable"
     COMBINATORIAL = "Combinatorial"
 
-@dataclass
-class BabbageNumber:
-    value: int
-    
-    def to_decimal(self):
-        return self.value / (10**40)
+# BabbageNumber: canonical definition in analytical_engine.py
+# Re-exported here for backward compatibility.
+from backend.src.emulator.analytical_engine import BabbageNumber
 
 # --- Analytical Engine Types ---
 
@@ -126,15 +123,9 @@ class ColumnSnapshot:
     is_advancing: bool  # whether column is shifting to next row
     phase: str  # current mechanical phase for this column
 
-@dataclass
-class ColumnState:
-    """State of one digit column (Deprecated alias for ColumnSnapshot compatibility)"""
-    column_index: int
-    digits: List[int]
-    carry_state: bool
-    is_latched: bool
-    is_advancing: bool
-    phase: str 
+# ColumnState is a deprecated alias for ColumnSnapshot.
+# Kept for backward compatibility; new code should use ColumnSnapshot.
+ColumnState = ColumnSnapshot
 
 
 @dataclass

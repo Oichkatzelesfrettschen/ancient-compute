@@ -279,6 +279,73 @@ class BucklingAnalysis:
         return width_mm * height_mm
 
     @staticmethod
+    def euler_critical_stress_MPa(
+        youngs_modulus_GPa: float,
+        slenderness_ratio: float,
+    ) -> float:
+        """Euler critical stress: sigma_cr = pi^2 * E / (KL/r)^2 [MPa].
+
+        E in GPa -> convert to MPa.
+        """
+        E_MPa = youngs_modulus_GPa * 1000.0
+        if slenderness_ratio <= 0:
+            return float("inf")
+        return math.pi**2 * E_MPa / slenderness_ratio**2
+
+    @staticmethod
+    def johnson_critical_stress_MPa(
+        yield_strength_MPa: float,
+        youngs_modulus_GPa: float,
+        slenderness_ratio: float,
+    ) -> float:
+        """Johnson parabolic critical stress (Shigley Eq.4-43).
+
+        sigma_cr = S_y - (S_y^2 / (4 * pi^2 * E)) * (KL/r)^2
+
+        Valid for slenderness ratios below the transition point.
+        """
+        E_MPa = youngs_modulus_GPa * 1000.0
+        return yield_strength_MPa - (
+            yield_strength_MPa**2
+            / (4.0 * math.pi**2 * E_MPa)
+        ) * slenderness_ratio**2
+
+    @staticmethod
+    def transition_slenderness_ratio(
+        yield_strength_MPa: float,
+        youngs_modulus_GPa: float,
+    ) -> float:
+        """Euler-Johnson transition slenderness (Shigley Eq.4-44).
+
+        (KL/r)_tr = sqrt(2 * pi^2 * E / S_y)
+        """
+        E_MPa = youngs_modulus_GPa * 1000.0
+        if yield_strength_MPa <= 0:
+            return float("inf")
+        return math.sqrt(2.0 * math.pi**2 * E_MPa / yield_strength_MPa)
+
+    @staticmethod
+    def critical_buckling_stress_MPa(
+        yield_strength_MPa: float,
+        youngs_modulus_GPa: float,
+        slenderness_ratio: float,
+    ) -> float:
+        """Unified buckling stress: auto-selects Euler or Johnson.
+
+        Uses Johnson for slenderness < transition, Euler for >= transition.
+        """
+        transition = BucklingAnalysis.transition_slenderness_ratio(
+            yield_strength_MPa, youngs_modulus_GPa,
+        )
+        if slenderness_ratio < transition:
+            return BucklingAnalysis.johnson_critical_stress_MPa(
+                yield_strength_MPa, youngs_modulus_GPa, slenderness_ratio,
+            )
+        return BucklingAnalysis.euler_critical_stress_MPa(
+            youngs_modulus_GPa, slenderness_ratio,
+        )
+
+    @staticmethod
     def buckling_safety_factor(
         critical_load_N: float,
         applied_load_N: float,
@@ -287,3 +354,221 @@ class BucklingAnalysis:
         if applied_load_N <= 0:
             return float("inf")
         return critical_load_N / applied_load_N
+
+
+# ---------------------------------------------------------------------------
+# Stress Concentration Factors (Peterson/Shigley)
+# ---------------------------------------------------------------------------
+
+class StressConcentration:
+    """Stress concentration factor K_t for geometric discontinuities."""
+
+    @staticmethod
+    def stepped_shaft(D_mm: float, d_mm: float, r_mm: float) -> float:
+        """K_t for a stepped shaft in bending (Peterson/Shigley Fig. A-15-8).
+
+        Uses the Neuber/Peterson curve-fit for round bar with shoulder fillet:
+        K_t = A * (r/d)^b
+
+        where A, b depend on D/d. This formulation is more robust than the
+        polynomial form for the range of interest.
+
+        Valid for 1.01 <= D/d <= 6.0, 0.005 <= r/d <= 0.30.
+        """
+        if d_mm <= 0 or r_mm <= 0 or D_mm <= d_mm:
+            return 1.0
+
+        ratio_Dd = D_mm / d_mm
+        ratio_rd = r_mm / d_mm
+
+        # Clamp to valid ranges
+        ratio_Dd = max(1.01, min(6.0, ratio_Dd))
+        ratio_rd = max(0.005, min(0.30, ratio_rd))
+
+        # Peterson power-law fit: K_t = A * (r/d)^b
+        # where A and b depend on D/d (interpolated from tabulated data).
+        # Reference: Peterson's Stress Concentration Factors, 3rd ed., Chart 3.4
+        if ratio_Dd <= 1.1:
+            A_coeff, b_exp = 0.94, -0.30
+        elif ratio_Dd <= 1.5:
+            A_coeff, b_exp = 0.98, -0.29
+        elif ratio_Dd <= 2.0:
+            A_coeff, b_exp = 1.01, -0.28
+        elif ratio_Dd <= 3.0:
+            A_coeff, b_exp = 1.03, -0.27
+        else:
+            A_coeff, b_exp = 1.04, -0.26
+
+        K_t = A_coeff * ratio_rd ** b_exp
+        return max(1.0, K_t)
+
+    @staticmethod
+    def keyway_bending() -> float:
+        """K_t for keyway in bending (Shigley Table 7-1): K_t = 2.14."""
+        return 2.14
+
+    @staticmethod
+    def keyway_torsion() -> float:
+        """K_t for keyway in torsion (Shigley Table 7-1): K_t = 3.0."""
+        return 3.0
+
+
+# ---------------------------------------------------------------------------
+# Dynamic Load Factor (AGMA, Shigley Ch.14)
+# ---------------------------------------------------------------------------
+
+class DynamicLoadFactor:
+    """AGMA dynamic factor K_v for gear tooth bending stress."""
+
+    @staticmethod
+    def agma_Kv(pitch_line_velocity_ft_min: float, quality_number: int = 6) -> float:
+        """AGMA dynamic factor K_v (Shigley Eq.14-27).
+
+        K_v = ((A + sqrt(V)) / A)^B
+
+        where A = 50 + 56*(1 - B), B = 0.25*(12 - Q_v)^(2/3).
+        V in ft/min.
+
+        At 30 RPM, 50mm pitch dia: V ~ 15.5 ft/min, K_v < 1.1.
+        """
+        Q_v = max(3, min(12, quality_number))
+        B = 0.25 * (12 - Q_v) ** (2.0 / 3.0)
+        A = 50.0 + 56.0 * (1.0 - B)
+
+        V = max(0.0, pitch_line_velocity_ft_min)
+        if V == 0.0:
+            return 1.0
+
+        K_v = ((A + math.sqrt(V)) / A) ** B
+        return max(1.0, K_v)
+
+    @staticmethod
+    def pitch_velocity_ft_min(pitch_diameter_mm: float, rpm: float) -> float:
+        """Convert metric pitch parameters to ft/min.
+
+        V = pi * d * n / 12  (d in feet, n in rpm)
+        """
+        d_ft = pitch_diameter_mm / 304.8
+        return math.pi * d_ft * rpm
+
+    @staticmethod
+    def agma_bending_stress_MPa(
+        lewis_stress_MPa: float,
+        Kv: float,
+    ) -> float:
+        """AGMA bending stress: sigma_AGMA = sigma_Lewis * K_v."""
+        return lewis_stress_MPa * Kv
+
+
+# ---------------------------------------------------------------------------
+# Shaft Critical Speed (Rayleigh-Ritz)
+# ---------------------------------------------------------------------------
+
+class ShaftCriticalSpeed:
+    """First critical speed of a rotating shaft (Shigley Ch.7)."""
+
+    @staticmethod
+    def first_critical_speed_rad_s(
+        youngs_modulus_GPa: float,
+        diameter_mm: float,
+        length_mm: float,
+        density_kg_m3: float,
+    ) -> float:
+        """Rayleigh-Ritz first critical speed (Shigley Eq.7-22).
+
+        omega_n = (pi^2 / L^2) * sqrt(E*I / (rho*A))
+
+        For a simply supported uniform shaft between two bearings.
+        """
+        d_m = diameter_mm / 1000.0
+        L_m = length_mm / 1000.0
+        E_Pa = youngs_modulus_GPa * 1e9
+        I = math.pi * d_m**4 / 64.0
+        A = math.pi * d_m**2 / 4.0
+
+        if L_m <= 0 or A <= 0 or density_kg_m3 <= 0:
+            return float("inf")
+
+        return (math.pi**2 / L_m**2) * math.sqrt(E_Pa * I / (density_kg_m3 * A))
+
+    @staticmethod
+    def critical_speed_rpm(omega_n_rad_s: float) -> float:
+        """Convert critical speed from rad/s to RPM."""
+        return omega_n_rad_s * 60.0 / (2.0 * math.pi)
+
+    @staticmethod
+    def critical_speed_margin(critical_rpm: float, operating_rpm: float) -> float:
+        """Safety margin: ratio of critical speed to operating speed.
+
+        Should be > 3 for safe operation.
+        """
+        if operating_rpm <= 0:
+            return float("inf")
+        return critical_rpm / operating_rpm
+
+
+# ---------------------------------------------------------------------------
+# Notch Sensitivity (Neuber, Shigley Ch.6)
+# ---------------------------------------------------------------------------
+
+class NotchSensitivity:
+    """Neuber notch sensitivity for fatigue concentration factors."""
+
+    @staticmethod
+    def neuber_constant_mm(ultimate_strength_MPa: float) -> float:
+        """Neuber material constant 'a' in mm (Shigley Eq.6-35a).
+
+        Empirical fit for steel: a = 0.246 - 3.08e-3*Su + 1.51e-5*Su^2 - 2.67e-8*Su^3
+        Su in MPa, result in mm. Valid for 345 < Su < 1725 MPa.
+        For cast iron/bronze, use larger a (less notch-sensitive).
+        """
+        Su = max(345.0, min(1725.0, ultimate_strength_MPa))
+        a = (
+            0.246
+            - 3.08e-3 * Su
+            + 1.51e-5 * Su**2
+            - 2.67e-8 * Su**3
+        )
+        return max(0.001, a)
+
+    @staticmethod
+    def notch_sensitivity_q(
+        notch_radius_mm: float,
+        neuber_a_mm: float,
+    ) -> float:
+        """Neuber notch sensitivity q (Shigley Eq.6-33).
+
+        q = 1 / (1 + a/r)
+
+        where a is Neuber material constant and r is notch radius.
+        q in [0, 1]: 0 = not sensitive, 1 = fully sensitive.
+        """
+        if notch_radius_mm <= 0:
+            return 0.0
+        return 1.0 / (1.0 + neuber_a_mm / notch_radius_mm)
+
+    @staticmethod
+    def fatigue_concentration_Kf(
+        Kt: float,
+        q: float,
+    ) -> float:
+        """Fatigue stress concentration factor (Shigley Eq.6-30).
+
+        K_f = 1 + q * (K_t - 1)
+
+        where q is notch sensitivity and K_t is theoretical SCF.
+        """
+        return 1.0 + q * (Kt - 1.0)
+
+    @staticmethod
+    def corrected_endurance_limit_MPa(
+        Se_uncorrected_MPa: float,
+        Kf: float,
+    ) -> float:
+        """Endurance limit corrected for fatigue concentration.
+
+        Se_corrected = Se / K_f
+        """
+        if Kf <= 0:
+            return 0.0
+        return Se_uncorrected_MPa / Kf
