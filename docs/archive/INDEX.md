@@ -54,6 +54,31 @@ Classification note: these totals are generated from deterministic filename heur
 | `docs/archive/WEEK_3_TASK_1_FILE_MIGRATION_AUDIT.md` | `migration_or_audit_artifact` | `docs/general/PLANNING_CANONICAL_MAP.md`, `docs/archive/INDEX.md` | yes | `docs/general/PLANNING_CANONICAL_MAP.md` |
 | `docs/archive/WEEK_3_TASK_3_LINK_MAPPING_AND_UPDATE_PLAN.md` | `migration_or_audit_artifact` | `docs/general/PLANNING_CANONICAL_MAP.md`, `docs/archive/INDEX.md` | yes | `docs/general/PLANNING_CANONICAL_MAP.md` |
 
+## Archived From docs/general/ (Phase 9 cleanup, 2026-02-26)
+
+| File | Reason | Canonical Successor |
+|---|---|---|
+| `docs/archive/BUILDOUT_DOC_MAP.md` | `phase_completed_snapshot` | `docs/general/MASTER_ROADMAP.md` |
+| `docs/archive/DEBT_AND_PHYSICS_SYNTHESIS_ROADMAP.md` | `phase_completed_snapshot` | `docs/general/MASTER_ROADMAP.md`, `docs/general/TODO_TRACKER.md` |
+| `docs/archive/DOCUMENTATION_SYNTHESIS_AND_REORGANIZATION_PLAN.md` | `phase_completed_snapshot` | `docs/general/INDEX.md`, `docs/archive/INDEX.md` |
+| `docs/archive/EXECUTION_RESCOPED_PLAN_2026-02.md` | `superseded_by_newer_canonical` | `docs/general/MASTER_ROADMAP.md`, `docs/general/TODO_TRACKER.md` |
+| `docs/archive/HYPERGRANULAR_ROADMAP.md` | `phase_completed_snapshot` | `docs/general/MASTER_ROADMAP.md` |
+| `docs/archive/LOGIC_COMPUTATION_HISTORIAN_AGENT_FULL.md` | `agent_instructions_archived` | `docs/general/AGENTS.md` |
+| `docs/archive/LOGIC_COMPUTATION_HISTORIAN_AGENT_INSTRUCTIONS.md` | `agent_instructions_archived` | `docs/general/AGENTS.md` |
+| `docs/archive/LOGIC_COMPUTATION_HISTORIAN_PLAN.md` | `phase_completed_snapshot` | `docs/general/AGENTS.md` |
+| `docs/archive/MULTI_AGENT_SYNTHESIS.md` | `phase_completed_snapshot` | `docs/general/AGENTS.md` |
+| `docs/archive/PLANNING_CANONICAL_MAP.md` | `superseded_by_newer_canonical` | `docs/archive/INDEX.md` |
+| `docs/archive/ROADMAP_RECONCILIATION_JAN_2026.md` | `superseded_by_newer_canonical` | `docs/general/MASTER_ROADMAP.md` |
+| `docs/archive/DOCS_TAXONOMY.md` | `superseded_by_newer_canonical` | `docs/general/INDEX.md` |
+| `docs/archive/ANCIENT_COMPUTE_WHITEPAPER_SCOPE.md` | `superseded_by_newer_canonical` | `docs/whitepaper/` |
+| `docs/archive/CONTENT_SCHEMA_DESIGN.md` | `superseded_by_newer_canonical` | `docs/general/ARCHITECTURE.md` |
+| `docs/archive/DOCUMENT_FINDER.md` | `superseded_by_newer_canonical` | `docs/general/INDEX.md`, `docs/general/DOCUMENT_INDEX.md` |
+| `docs/archive/FILE_TYPE_REFERENCE.md` | `superseded_by_newer_canonical` | `docs/general/INDEX.md` |
+| `docs/archive/LOGIC_COMPUTATION_HISTORIAN.md` | `agent_instructions_archived` | `docs/general/AGENTS.md` |
+| `docs/archive/SITE_MAP.md` | `superseded_by_newer_canonical` | `docs/general/INDEX.md` |
+| `docs/archive/TIMELINE_VISUALIZATION_CONSOLIDATED.md` | `phase_completed_snapshot` | `docs/general/MASTER_ROADMAP.md` |
+| `docs/archive/examples_factorial.txt` | `misplaced_content_file` | `content/modules/` |
+
 ## Notes
 
 1. Archive retention is intentional: evidence and historical context are preserved.
