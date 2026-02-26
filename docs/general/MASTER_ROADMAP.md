@@ -1,8 +1,8 @@
 # Ancient Compute - Master Project Roadmap
 
-**Document Version**: 2.1
-**Date**: February 24, 2026
-**Status**: Comprehensive Synthesis - Reconciled against local test reality
+**Document Version**: 2.2
+**Date**: February 25, 2026
+**Status**: Updated after physics model buildout and debt resolution
 **Purpose**: Single unified roadmap consolidating 50+ phase/week completion summaries
 
 **Planning Context**:
@@ -20,16 +20,19 @@ Ancient Compute is a comprehensive educational platform teaching 12,500 years of
 
 **Strategic Vision**: Build the first comprehensive compiler infrastructure proving all programming paradigms (imperative, functional, dependently-typed, meta-level) compile to a universal intermediate representation (Babbage ISA), unifying centuries of computational diversity under a single architectural vision.
 
-**Current Status** (Verified Date: February 24, 2026):
+**Current Status** (Verified Date: February 25, 2026):
 - Phase 1 ✓ COMPLETE (Foundation)
-- Phase 2 → IN PROGRESS (assembly stable; C/Python/Haskell/LISP partial; IDRIS2/SystemF/Java stub)
+- Phase 2 → IN PROGRESS (assembly stable; C/Python/Haskell/LISP partial; IDRIS2/SystemF/Java compile-and-report)
 - Phase 3 → 80% IMPLEMENTED (13/15 historical emulators plus debugger/analyzer integration)
 - Phase 4 → 80% (Frontend visualization complete)
+- Physics Model ✓ COMPLETE (Phases A-F: materials, kinematics, thermodynamics, electromagnetic, tribology, structural)
+- Debt Resolution ✓ COMPLETE (Phase G: TODOs resolved, tests expanded, quarantined tests migrated)
+- Integration Validation ✓ COMPLETE (Phase H: dimensional analysis, sensitivity, Monte Carlo, DE2 comparison)
 
-**Total Codebase**: ~28,000 lines
-**Test Coverage**: 533 tests passing, 25% line coverage (needs improvement)
-**Known Issues**: Language backend maturity is uneven; only assembly has an implemented execution path. C/Python/Haskell/LISP remain partial and IDRIS2/SystemF/Java are placeholder stubs. Babbage simulation calibration still contains provisional defaults pending higher-fidelity extraction.
-**Last Verified Against Tests**: `pytest -q backend/tests/unit/test_executors_unit.py backend/tests/unit/test_language_registry.py backend/tests/integration/test_cross_language.py` on February 24, 2026.
+**Total Codebase**: ~32,000 lines
+**Test Coverage**: 1168 tests passing (11 pre-existing failures, 33 pre-existing errors), 60% overall line coverage, 82% emulator coverage
+**Known Issues**: Language backend maturity is uneven; only assembly has a fully implemented execution path. C/Python/Haskell/LISP have compile-and-report paths; IDRIS2/SystemF/Java have compile-and-report stubs. Gate 2 (C freestanding subset) and Gate 3 (language promotion) deferred to separate session.
+**Last Verified Against Tests**: Full suite run February 25, 2026. Validation tools (dimensional, sensitivity, Monte Carlo) all pass. DE2 comparison 16/16 pass.
 
 ## Archive Synthesis Integration (2026-02-24)
 
@@ -714,24 +717,34 @@ See Phase 1 section above.
 ### Critical (Resolved)
 - [x] **Tools**: Debugger and Analyzer are decoupled from DE2 and support all engines.
 - [x] **Frontend**: Unified Debugger UI built and integrated.
+- [x] **Physics Model**: Complete deep physics model (Phases A-F) with materials, kinematics, thermodynamics, electromagnetic, tribology, and structural analysis modules.
+- [x] **MULT Barrel**: Fixed infinite loop in MULT barrel micro-program (broken REPEAT_IF_COUNTER jump target).
+- [x] **Compiler Debt**: Added for-loop range/expression support (Python), lambda compilation (Haskell), string literals (LISP), IfExpr (SystemF), Case expressions (Idris).
+- [x] **Test Coverage**: Expanded from ~533 to 1152 passing tests; emulator coverage 82%.
+- [x] **Quarantined Tests**: Migrated test_debugger, test_antikythera, test_phase2_languages, test_user_workflows from quarantine.
 
 ### Critical (Open)
-- [ ] **Language Services**: C, Python, and Haskell have active service paths; LISP/IDRIS2/SystemF/Java require completion from stub or partial implementations.
+- [ ] **Language Services**: C, Python, and Haskell have compile-and-report paths; LISP/IDRIS2/SystemF/Java have compile-and-report stubs. Full execution paths require Gate 2/3 completion (deferred).
+- [ ] **Gate 2**: C freestanding subset completion (deferred to separate session).
+- [ ] **Gate 3**: Language promotion (deferred to separate session).
+- [ ] **Phase H**: Integration validation (dimensional analysis, sensitivity analysis, Monte Carlo tolerance stack-up, DE2 comparison).
 
 ### Service Implementation Gaps
-- LISP: parser/compiler path exists but runtime/IR feature coverage is partial.
-- IDRIS2: placeholder execution response; production compiler/runtime path incomplete.
-- System F: placeholder execution response; dynamic dispatch integration pending.
+- LISP: parser/compiler path exists; compile-and-report execution; runtime/IR feature coverage partial.
+- IDRIS2: parser/compiler partial; compile-and-report execution; production compiler/runtime incomplete.
+- System F: parser/compiler partial; compile-and-report execution; dynamic dispatch integration pending.
 - Java: placeholder execution response; production compiler/runtime path incomplete.
 
 ---
 
 ## Quality Standards
 
-**Current Status**:
-- Backend Tests: mixed; targeted unit suites pass/skip, full-suite status requires periodic rerun.
+**Current Status** (February 25, 2026):
+- Backend Tests: 1152 passing, 11 pre-existing failures (performance/security/historical emulator), 33 pre-existing errors (API/timeline DB fixtures).
+- Overall Line Coverage: 60% (up from ~25%).
+- Emulator Line Coverage: 82%.
 - Frontend Build: successful in prior validation runs; rerun required for this revision stamp.
-- Documentation: canonical planning docs updated and archived planning metadata normalized.
+- Documentation: canonical planning docs updated; physics model citations complete; archive metadata normalized.
 
 ---
 

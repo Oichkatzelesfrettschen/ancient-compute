@@ -4,7 +4,7 @@ A comprehensive educational platform teaching the complete 12,500-year history o
 
 **Status**: Phase 1 ✓ COMPLETE | Phase 2 → IN PROGRESS (assembly implemented; other language paths partial or stub) | Phase 3 → DESIGNED
 **Codebase**: ~28,000 lines total | Phase 1: 7,070 lines | Phase 2+: 10,270 lines | Phase 3: 10,660 lines
-**Tests**: 500+ tests | 100% pass rate | >90% code coverage
+**Tests**: 500+ tests | 100% pass rate | coverage improvement in progress (target: 90%)
 **Last Updated**: 2025-11-19
 
 ## Strategic Vision

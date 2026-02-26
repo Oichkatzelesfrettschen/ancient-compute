@@ -70,4 +70,5 @@ Classification note: these totals are generated from deterministic filename heur
 - Canonical Successor: docs/general/PLANNING_CANONICAL_MAP.md, docs/archive/INDEX.md
 - Novel Content Integrated: yes
 - Merged Into: docs/general/PLANNING_CANONICAL_MAP.md
-- Last Validated: 2026-02-24
+- Last Validated: 2026-02-25
+- Physics Model Session: Phases A-F complete (2026-02-25); physics modules in backend/src/emulator/{materials,kinematics,thermodynamics,electromagnetic,tribology,structural}.py; citations in docs/simulation/CITATIONS.md

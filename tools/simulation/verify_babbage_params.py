@@ -28,6 +28,34 @@ REQUIRED_PATHS = [
     ("lubrication", "schedule_cycles_max"),
     ("mechanisms", "card_feed", "feed_rate_cards_per_min"),
     ("mechanisms", "card_feed", "jam_rate_per_1k"),
+    ("mechanisms", "main_shaft", "diameter_mm"),
+    ("mechanisms", "main_shaft", "length_mm"),
+    ("mechanisms", "bearings", "bore_diameter_mm"),
+    ("mechanisms", "bearings", "pv_limit_MPa_m_s"),
+    ("structural", "machine_mass_kg"),
+]
+
+# Material names that must be present in the materials list
+REQUIRED_MATERIALS = ["brass", "steel", "cast_iron", "phosphor_bronze", "spring_steel"]
+
+# Fields required on every material entry
+REQUIRED_MATERIAL_FIELDS = [
+    "density_kg_m3",
+    "friction_coeff",
+    "youngs_modulus_GPa",
+    "poissons_ratio",
+    "yield_strength_MPa",
+    "ultimate_tensile_strength_MPa",
+    "endurance_limit_MPa",
+    "thermal_expansion_coeff_per_K",
+    "specific_heat_J_kgK",
+    "thermal_conductivity_W_mK",
+    "hardness_HB",
+    "electrical_resistivity_ohm_m",
+    "magnetic_permeability_relative",
+    "creep_threshold_C",
+    "temperature_range_C",
+    "source",
 ]
 
 REQUIRED_CITATION_KEYS = [
@@ -44,6 +72,11 @@ REQUIRED_CITATION_KEYS = [
     "schedule_cycles_max",
     "feed_rate_cards_per_min",
     "jam_rate_per_1k",
+    "brass_properties",
+    "steel_properties",
+    "cast_iron_properties",
+    "phosphor_bronze_properties",
+    "spring_steel_properties",
 ]
 
 
@@ -102,6 +135,21 @@ def main() -> int:
         if _is_placeholder(value):
             failures.append(f"Missing or placeholder schema value at {'.'.join(path)}")
 
+    # Validate materials list
+    materials_list = schema.get("materials", [])
+    if not isinstance(materials_list, list):
+        failures.append("'materials' must be a YAML list")
+    else:
+        mat_by_name = {m["name"]: m for m in materials_list if isinstance(m, dict) and "name" in m}
+        for mat_name in REQUIRED_MATERIALS:
+            if mat_name not in mat_by_name:
+                failures.append(f"Missing required material: {mat_name}")
+            else:
+                entry = mat_by_name[mat_name]
+                for field in REQUIRED_MATERIAL_FIELDS:
+                    if field not in entry or _is_placeholder(entry[field]):
+                        failures.append(f"Material '{mat_name}' missing or placeholder field: {field}")
+
     for key in REQUIRED_CITATION_KEYS:
         citation = citation_lines.get(key)
         if citation is None:
@@ -117,8 +165,11 @@ def main() -> int:
             print(f"- {failure}")
         return 1
 
+    material_count = len(materials_list) if isinstance(materials_list, list) else 0
+    field_checks = material_count * len(REQUIRED_MATERIAL_FIELDS)
     print("Babbage simulation parameter verification PASSED")
     print(f"- Checked required schema paths: {len(REQUIRED_PATHS)}")
+    print(f"- Checked required materials: {len(REQUIRED_MATERIALS)} ({field_checks} fields)")
     print(f"- Checked required citation keys: {len(REQUIRED_CITATION_KEYS)}")
     return 0
 
