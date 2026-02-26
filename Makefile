@@ -314,3 +314,8 @@ physics-report:
 	@tools/simulation/extract_params.py
 	@cat docs/simulation/extracted.yaml || true
 
+physics-envelope:
+	@echo "Running operational envelope sweep (RPM 10-120, 100h max)..."
+	@PYTHONPATH=. python3 tools/simulation/operational_envelope.py --max-hours 100 > output/operational_envelope.csv
+	@echo "Output: output/operational_envelope.csv"
+
