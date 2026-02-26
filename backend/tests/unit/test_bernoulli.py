@@ -8,10 +8,11 @@ def test_bernoulli_b1_convention_is_negative_half():
 
 
 def test_ada_lovelace_series_first_four():
+    """Ada's B1,B3,B5,B7 = modern B2,B4,B6,B8."""
     assert ada_lovelace_bernoulli_series(4) == [
-        Fraction(-1, 2),
         Fraction(1, 6),
         Fraction(-1, 30),
         Fraction(1, 42),
+        Fraction(-1, 30),
     ]
 

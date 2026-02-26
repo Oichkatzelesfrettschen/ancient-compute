@@ -17,6 +17,15 @@ TIMING_TABLE = {
     'RET':      4,
     'PUSH':     4,
     'POP':      4,
+    'SHL':      8,
+    'SHR':      8,
+    'AND':     20,
+    'OR':      20,
+    'XOR':     20,
+    'CHKS':     5,
+    'HALT':     1,
+    'PLAY':    50,
+    'SETMODE':  5,
 }
 
 class BabbageNumber:
@@ -24,6 +33,7 @@ class BabbageNumber:
     
     def __init__(self, value):
         self._overflow_flag = False # Initialize overflow flag
+        self._error_flag = False    # For checksum failures
         # Ensure value is an integer before scaling
         if isinstance(value, BabbageNumber):
             self.value = value.value
@@ -38,6 +48,12 @@ class BabbageNumber:
         """Convert to punch card 50-digit format"""
         # 50 digit positions on Hollerith card
         return str(self.value).zfill(50) # Simple string representation for now
+
+    def get_checksum(self):
+        """Calculate checksum digit: (sum of all 50 digits) mod 10"""
+        s = str(abs(self.value)).zfill(50)
+        digit_sum = sum(int(d) for d in s)
+        return digit_sum % 10
 
     def _check_overflow(self):
         max_value = (10**50) - 1
@@ -145,6 +161,7 @@ class Engine:
         self.trace_enabled = False # For debugger
         self.paused = False # For debugger
         self.interactive_mode = False # For debugger
+        self.mode = 'numeric' # Default execution mode: 'numeric' or 'symbolic'
 
         # Define opcode handlers after all _execute_ methods are defined
         self._opcode_handlers = {
@@ -171,6 +188,15 @@ class Engine:
             'RDCRD': self._execute_RDCRD,
             'WRPCH': self._execute_WRPCH,
             'WRPRN': self._execute_WRPRN,
+            'SHL': self._execute_SHL,
+            'SHR': self._execute_SHR,
+            'AND': self._execute_AND,
+            'OR': self._execute_OR,
+            'XOR': self._execute_XOR,
+            'CHKS': self._execute_CHKS,
+            'HALT': self._execute_HALT,
+            'PLAY': self._execute_PLAY,
+            'SETMODE': self._execute_SETMODE,
         }
 
     def _get_register_value(self, reg_name):
@@ -571,6 +597,129 @@ class Engine:
         print(f"WRPRN: {value.to_decimal()}")
         return False # WRPRN does not modify PC
 
+    def _execute_SHL(self, reg_dest, n_str):
+        """Shift left by n decimal places (multiply by 10^n)"""
+        val = self._get_register_value(reg_dest)
+        n = int(n_str)
+        result = BabbageNumber(0)
+        result.value = val.value * (10**n)
+        if result._check_overflow():
+            self.flags['OVERFLOW'] = True
+        self._set_register_value(reg_dest, result)
+        self._update_flags(result)
+        return False
+
+    def _execute_SHR(self, reg_dest, n_str):
+        """Shift right by n decimal places (divide by 10^n)"""
+        val = self._get_register_value(reg_dest)
+        n = int(n_str)
+        result = BabbageNumber(0)
+        result.value = val.value // (10**n)
+        self._set_register_value(reg_dest, result)
+        self._update_flags(result)
+        return False
+
+    def _execute_AND(self, reg_dest, operand):
+        """Digit-wise AND on operands (result_digit = d1 & d2)"""
+        val1 = self._get_register_value(reg_dest)
+        val2 = self._get_operand_value(operand)
+        
+        # Format as strings of 50 digits
+        s1 = str(abs(val1.value)).zfill(50)
+        s2 = str(abs(val2.value)).zfill(50)
+        
+        res_digits = []
+        for d1, d2 in zip(s1, s2):
+            res_digits.append(str(int(d1) & int(d2)))
+        
+        result = BabbageNumber(0)
+        result.value = int("".join(res_digits))
+        if val1.value < 0 or val2.value < 0:
+            result.value = -result.value # Simplified sign handling
+        
+        self._set_register_value(reg_dest, result)
+        self._update_flags(result)
+        return False
+
+    def _execute_OR(self, reg_dest, operand):
+        """Digit-wise OR on operands"""
+        val1 = self._get_register_value(reg_dest)
+        val2 = self._get_operand_value(operand)
+        
+        s1 = str(abs(val1.value)).zfill(50)
+        s2 = str(abs(val2.value)).zfill(50)
+        
+        res_digits = []
+        for d1, d2 in zip(s1, s2):
+            res_digits.append(str(int(d1) | int(d2)))
+        
+        result = BabbageNumber(0)
+        result.value = int("".join(res_digits))
+        if val1.value < 0 or val2.value < 0:
+            result.value = -result.value
+            
+        self._set_register_value(reg_dest, result)
+        self._update_flags(result)
+        return False
+
+    def _execute_XOR(self, reg_dest, operand):
+        """Digit-wise XOR on operands"""
+        val1 = self._get_register_value(reg_dest)
+        val2 = self._get_operand_value(operand)
+        
+        s1 = str(abs(val1.value)).zfill(50)
+        s2 = str(abs(val2.value)).zfill(50)
+        
+        res_digits = []
+        for d1, d2 in zip(s1, s2):
+            res_digits.append(str(int(d1) ^ int(d2)))
+        
+        result = BabbageNumber(0)
+        result.value = int("".join(res_digits))
+        if val1.value < 0 or val2.value < 0:
+            result.value = -result.value
+            
+        self._set_register_value(reg_dest, result)
+        self._update_flags(result)
+        return False
+
+    def _execute_CHKS(self, reg_source):
+        """Verify checksum (sum of all 50 digits) mod 10 should be 0 if the 50th digit is included in the sum."""
+        val = self._get_register_value(reg_source)
+        
+        # Calculate checksum: (sum of all 50 digits) mod 10
+        computed_checksum = val.get_checksum()
+        
+        # In a real system, the sum of all digits (including the checksum digit) 
+        # should be 0 mod 10 if the checksum digit was calculated correctly.
+        # But for our test, we'll assume the LSB is the checksum and verify it matches the sum of the top 49 digits.
+        stored_checksum = val.value % 10
+        s = str(abs(val.value // 10)).zfill(49)
+        computed_c = sum(int(d) for d in s) % 10
+        
+        if stored_checksum != computed_c:
+             self.flags['ERROR'] = True
+             print(f"CHECKSUM ERROR in {reg_source}: Expected {computed_c}, found {stored_checksum}")
+        else:
+             self.flags['ERROR'] = False
+             print(f"CHECKSUM OK in {reg_source}")
+        
+        return False
+
+    def _execute_HALT(self):
+        self.running = False
+        return False
+
+    def _execute_PLAY(self, note_str, duration_str):
+        """Lovelace Extension: Play a musical note (simulated)"""
+        print(f"LOVELACE MUSIC ENGINE: Playing note {note_str} for {duration_str} cycles")
+        return False
+
+    def _execute_SETMODE(self, mode_str):
+        """Lovelace Extension: Switch between numeric and symbolic mode"""
+        self.mode = mode_str
+        print(f"ENGINE MODE: Switched to {mode_str} mode")
+        return False
 
     def execute_instruction(self, instruction):
         """Execute single instruction, update clock"""
@@ -744,7 +893,7 @@ class Engine:
 
     def dump_state(self):
         """Returns a string representation of the current emulator state."""
-        state = """
+        state = f"""
 --- EMULATOR STATE ---
 PC: {self.PC}
 Clock: {self.clock_time}s
@@ -766,3 +915,75 @@ Memory (first 10 words):
         # This would require collecting trace information during execution
         # For now, we'll just print a message.
         print(f"Trace saving not fully implemented. Would save to {filename}")
+
+def _run_deck_runner(n_target):
+    """Execute Note G deck runner and print Bernoulli numbers."""
+    # Import from the backend package
+    from pathlib import Path
+    import sys
+    backend_root = str(Path(__file__).resolve().parents[1])
+    if backend_root not in sys.path:
+        sys.path.insert(0, backend_root)
+    from backend.src.emulator.note_g_deck import run_note_g_exact
+    from backend.src.emulator.bernoulli import ada_lovelace_bernoulli_series
+
+    print(f"Note G Deck Runner -- computing B_1 through B_{2*n_target-1}")
+    print(f"(Ada's convention: B_{{2k-1}} = modern B_{{2k}})")
+    print()
+
+    results = run_note_g_exact(n_target)
+    oracle = ada_lovelace_bernoulli_series(n_target)
+
+    all_match = True
+    for i, (deck, expected) in enumerate(zip(results, oracle)):
+        label = f"B_{2*i+1}"
+        match = "ok" if deck == expected else "MISMATCH"
+        if deck != expected:
+            all_match = False
+        print(f"  {label:>4s} = {str(deck):>10s}  ({float(deck):+.10f})  [{match}]")
+
+    print()
+    if all_match:
+        print(f"All {n_target} Bernoulli numbers correct.")
+    else:
+        print("ERRORS detected -- see MISMATCH above.")
+
+
+if __name__ == "__main__":
+    import sys
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Babbage Analytical Engine Emulator")
+    subparsers = parser.add_subparsers(dest="command")
+
+    # Default: run a .ae program
+    parser.add_argument("program", nargs="?", help="Path to Babbage assembly file (.ae)")
+    parser.add_argument("--trace", action="store_true", help="Enable instruction tracing")
+    parser.add_argument("--dump", action="store_true", help="Dump final engine state")
+
+    # Deck runner subcommand
+    deck_parser = subparsers.add_parser("deck-runner", help="Run Note G deck (Bernoulli numbers)")
+    deck_parser.add_argument("-n", type=int, default=5, help="Number of Bernoulli numbers to compute (default: 5)")
+
+    args = parser.parse_args()
+
+    if args.command == "deck-runner":
+        _run_deck_runner(args.n)
+    elif args.program:
+        engine = Engine()
+        engine.trace_enabled = args.trace
+
+        try:
+            engine.load_program(args.program)
+            print(f"Loaded {len(engine.instruction_cards)} instructions from {args.program}")
+            engine.run()
+            print(f"Execution finished in {engine.clock_time} simulated seconds.")
+
+            if args.dump:
+                print(engine.dump_state())
+
+        except Exception as e:
+            print(f"Error: {e}")
+    else:
+        parser.print_help()
+        sys.exit(1)

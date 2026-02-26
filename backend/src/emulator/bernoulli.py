@@ -50,16 +50,17 @@ def bernoulli_odd_series(n_max: int) -> List[Fraction]:
 def ada_lovelace_bernoulli_series(n_max: int) -> List[Fraction]:
     """Return [B1, B3, B5, ...] as used in Ada's Note G diagram.
 
-    The diagram labels outputs as B1, B3, B5, ... but the computed sequence
-    corresponds to modern Bernoulli numbers [B1, B2, B4, B6, ...] (i.e., the
-    non-zero terms after B1), using the B1=-1/2 convention.
+    Ada's odd-index labelling maps to modern even-index Bernoulli numbers:
+        Ada B_{2k-1} = modern B_{2k}
+    So: Ada B1 = B_2 = 1/6, Ada B3 = B_4 = -1/30, etc.
+
+    The recurrence from equation (9) in Menabrea/Lovelace:
+        0 = A0 + A1*B1 + A3*B3 + ... + B_{2n-1}
+    where A0 = -(1/2)*(2n-1)/(2n+1), solved for B_{2n-1}.
     """
     if n_max < 1:
         raise ValueError("n_max must be >= 1")
 
-    # Need up to B_{2n_max-2} to serve B_{2}, B_{4}, ...
-    bs = bernoulli_numbers(max(1, 2 * n_max - 2))
-    out: List[Fraction] = [bs[1]]
-    for k in range(2, n_max + 1):
-        out.append(bs[2 * k - 2])
-    return out
+    # Ada B_{2k-1} = modern B_{2k}, so we need B_2, B_4, ..., B_{2*n_max}
+    bs = bernoulli_numbers(2 * n_max)
+    return [bs[2 * k] for k in range(1, n_max + 1)]

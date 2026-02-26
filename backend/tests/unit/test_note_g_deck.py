@@ -10,14 +10,12 @@ def test_note_g_deck_loads():
     assert deck[0]["op"] == 1
 
 
-def test_note_g_bernoulli_odd_series_matches_modern_convention():
+def test_note_g_bernoulli_series_matches_ada_convention():
+    """Oracle series uses Ada's convention: B_{2k-1} = modern B_{2k}."""
     results = run_series(4)
-    assert [r.to_decimal() for r in results] == [
-        -0.5,  # B1
-        1 / 6,  # B3
-        -1 / 30,  # B5
-        1 / 42,  # B7
-    ]
+    expected = [1 / 6, -1 / 30, 1 / 42, -1 / 30]
+    for r, e in zip(results, expected):
+        assert abs(r.to_decimal() - e) < 1e-10, f"{r.to_decimal()} != {e}"
 
 
 def test_note_g_table_a2_runs_for_n4():

@@ -19,8 +19,8 @@ deck:
     expr: "2n + 1"
   - op: 4
     opcode: div
-    lhs: V5
-    rhs: V4
+    lhs: V4
+    rhs: V5
     out: [V11]
     expr: "(2n - 1) / (2n + 1)"
   - op: 5
@@ -138,11 +138,11 @@ deck:
     out: [V10]
     expr: "n - 3"
   - op: 24
-    opcode: add
-    lhs: V13
-    rhs: V24
+    opcode: sub
+    lhs: V24
+    rhs: V13
     out: [V24]
-    expr: "B7 (output column)"
+    expr: "B_{2n-1} = -(A0 + B1*A1 + ... ) (output column)"
   - op: 25
     opcode: add
     lhs: V1
