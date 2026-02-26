@@ -7,25 +7,36 @@ Provides REST API for the emulator frontend:
 - State inspection and management
 """
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Tuple, Dict, Any, Optional
-import sys
-import os
-
-# Add backend to path for imports
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 
 from backend.src.emulator.machine import DEMachine
 from backend.src.emulator.debugger import Debugger, BreakpointType
 from backend.src.emulator.timing import MechanicalPhase
 
 # Router
-router = APIRouter(prefix="/api", tags=["emulator"])
+router = APIRouter(prefix="/emulator", tags=["emulator"])
 
-# Global emulator state (in production, this should be session-based or in a database)
-emulator_instance: Optional[DEMachine] = None
-debugger_instance: Optional[Debugger] = None
+
+class EmulatorState:
+    """Holds the emulator and debugger instances for DI.
+
+    In production this would be per-session or per-user; for now a single
+    shared instance is sufficient and avoids bare module-level globals.
+    """
+
+    def __init__(self) -> None:
+        self.emulator: Optional[DEMachine] = None
+        self.debugger: Optional[Debugger] = None
+
+
+_state = EmulatorState()
+
+
+def get_emulator_state() -> EmulatorState:
+    """FastAPI dependency returning the shared EmulatorState."""
+    return _state
 
 
 # ============================================================================
@@ -102,74 +113,55 @@ class StateResponse(BaseModel):
 
 
 @router.post("/initialize")
-async def initialize_emulator():
+async def initialize_emulator(
+    state: EmulatorState = Depends(get_emulator_state),
+):
     """Initialize a new emulator instance"""
-    global emulator_instance, debugger_instance
-
     try:
-        emulator_instance = DEMachine()
-        debugger_instance = Debugger(emulator_instance)
+        state.emulator = DEMachine()
+        state.debugger = Debugger(state.emulator)
         return {
             "success": True,
-            "message": "Emulator initialized successfully"
+            "message": "Emulator initialized successfully",
         }
     except Exception as e:
-        return {
-            "success": False,
-            "error": str(e)
-        }
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/reset")
-async def reset_emulator():
+async def reset_emulator(
+    state: EmulatorState = Depends(get_emulator_state),
+):
     """Reset emulator to initial state"""
-    global emulator_instance, debugger_instance
-
     try:
-        if emulator_instance is None:
-            emulator_instance = DEMachine()
-        else:
-            emulator_instance = DEMachine()
-
-        if debugger_instance is None:
-            debugger_instance = Debugger(emulator_instance)
-        else:
-            debugger_instance.reset()
-
+        state.emulator = DEMachine()
+        state.debugger = Debugger(state.emulator)
         return {"success": True}
     except Exception as e:
-        return {
-            "success": False,
-            "error": str(e)
-        }
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/state")
-async def get_state():
+async def get_state(
+    state: EmulatorState = Depends(get_emulator_state),
+):
     """Get current emulator state"""
-    global emulator_instance
-
-    if emulator_instance is None:
+    if state.emulator is None:
         raise HTTPException(status_code=400, detail="Emulator not initialized")
 
-    try:
-        return {
-            "success": True,
-            "state": {
-                "cycle": emulator_instance.cycle_count,
-                "phase": emulator_instance.timing.phase.value,
-                "angle": emulator_instance.timing.angle,
-                "columns": emulator_instance.column_bank.get_all_values(),
-                "carrySignals": emulator_instance.carriage.carry_signals.copy(),
-                "accumulator": int(emulator_instance.analytical_engine.registers.get('A', 0)),
-                "totalOperations": emulator_instance.total_operations
-            }
-        }
-    except Exception as e:
-        return {
-            "success": False,
-            "error": str(e)
-        }
+    emu = state.emulator
+    return {
+        "success": True,
+        "state": {
+            "cycle": emu.cycle_count,
+            "phase": emu.timing.phase.value,
+            "angle": emu.timing.angle,
+            "columns": emu.column_bank.get_all_values(),
+            "carrySignals": emu.carriage.carry_signals.copy(),
+            "accumulator": int(emu.analytical_engine.registers.get("A", 0)),
+            "totalOperations": emu.total_operations,
+        },
+    }
 
 
 # ============================================================================
@@ -178,64 +170,47 @@ async def get_state():
 
 
 @router.post("/execute")
-async def execute_polynomial(request: ExecuteRequest):
-    """
-    Execute polynomial evaluation
+async def execute_polynomial(
+    request: ExecuteRequest,
+    state: EmulatorState = Depends(get_emulator_state),
+):
+    """Execute polynomial evaluation. Returns results as they are computed."""
+    # Initialize if needed
+    if state.emulator is None:
+        state.emulator = DEMachine()
 
-    Returns results as they are computed
-    """
-    global emulator_instance
+    if request.x_range[0] < 0 or request.x_range[1] < 0:
+        raise HTTPException(status_code=422, detail="X range values must be non-negative")
+    if request.x_range[0] > request.x_range[1]:
+        raise HTTPException(
+            status_code=422,
+            detail="X start must be less than or equal to X end",
+        )
 
     try:
-        # Initialize if needed
-        if emulator_instance is None:
-            emulator_instance = DEMachine()
-
-        # Validate input
-        if request.x_range[0] < 0 or request.x_range[1] < 0:
-            raise ValueError("X range values must be non-negative")
-        if request.x_range[0] > request.x_range[1]:
-            raise ValueError("X start must be less than or equal to X end")
-
-        # Execute polynomial evaluation
-        try:
-            results_data = emulator_instance.evaluate_polynomial(
-                request.coefficients,
-                request.x_range
-            )
-        except Exception as e:
-            raise ValueError(f"Polynomial evaluation failed: {str(e)}")
-
-        # Build results array
         results = []
-        emulator_instance_temp = DEMachine()  # Fresh instance for evaluation
+        temp_emu = DEMachine()
         for x in range(request.x_range[0], request.x_range[1] + 1):
-            # Evaluate single polynomial value
-            temp_results = emulator_instance_temp.evaluate_polynomial(
-                request.coefficients,
-                (x, x)
+            temp_results = temp_emu.evaluate_polynomial(
+                request.coefficients, (x, x)
             )
             result = temp_results[0] if temp_results else 0
-
             results.append(
                 ExecutionResultItem(
                     x=x,
                     result=result,
-                    cycle=emulator_instance_temp.cycle_count,
-                    phase=emulator_instance_temp.timing.phase.value
+                    cycle=temp_emu.cycle_count,
+                    phase=temp_emu.timing.phase.value,
                 )
             )
 
         return ExecuteResponse(
             success=True,
             results=results,
-            totalCycles=emulator_instance_temp.cycle_count
+            totalCycles=temp_emu.cycle_count,
         )
-
-    except ValueError as e:
-        return ExecuteResponse(success=False, error=str(e))
     except Exception as e:
-        return ExecuteResponse(success=False, error=f"Internal error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Polynomial evaluation failed: {e}")
 
 
 @router.get("/results")
@@ -253,193 +228,129 @@ async def get_results():
 # ============================================================================
 
 
-@router.post("/debug/step")
-async def debug_step():
-    """Step through one mechanical cycle with debugger"""
-    global emulator_instance, debugger_instance
-
-    if emulator_instance is None or debugger_instance is None:
+def _require_initialized(state: EmulatorState) -> tuple:
+    """Raise 400 if emulator/debugger not initialized. Returns (emu, dbg)."""
+    if state.emulator is None or state.debugger is None:
         raise HTTPException(status_code=400, detail="Emulator not initialized")
+    return state.emulator, state.debugger
 
-    try:
-        triggered_breakpoints = debugger_instance.step_cycle()
 
-        state = {
-            "cycle": emulator_instance.cycle_count,
-            "phase": emulator_instance.timing.phase.value,
-            "angle": emulator_instance.timing.angle,
-            "columns": emulator_instance.column_bank.get_all_values(),
-            "carrySignals": emulator_instance.carriage.carry_signals.copy(),
-            "accumulator": int(emulator_instance.analytical_engine.registers.get('A', 0)),
-            "totalOperations": emulator_instance.total_operations
-        }
+def _machine_state_dict(emu: DEMachine) -> dict:
+    """Build the standard machine state response dict."""
+    return {
+        "cycle": emu.cycle_count,
+        "phase": emu.timing.phase.value,
+        "angle": emu.timing.angle,
+        "columns": emu.column_bank.get_all_values(),
+        "carrySignals": emu.carriage.carry_signals.copy(),
+        "accumulator": int(emu.analytical_engine.registers.get("A", 0)),
+        "totalOperations": emu.total_operations,
+    }
 
-        return {
-            "success": True,
-            "state": state,
-            "breakpointsHit": triggered_breakpoints if triggered_breakpoints else []
-        }
 
-    except Exception as e:
-        return {
-            "success": False,
-            "error": str(e)
-        }
+@router.post("/debug/step")
+async def debug_step(
+    state: EmulatorState = Depends(get_emulator_state),
+):
+    """Step through one mechanical cycle with debugger"""
+    emu, dbg = _require_initialized(state)
+    triggered = dbg.step_cycle()
+    return {
+        "success": True,
+        "state": _machine_state_dict(emu),
+        "breakpointsHit": triggered if triggered else [],
+    }
 
 
 @router.post("/debug/continue")
-async def debug_continue(max_cycles: Optional[int] = None):
+async def debug_continue(
+    max_cycles: Optional[int] = 1000,
+    state: EmulatorState = Depends(get_emulator_state),
+):
     """Continue execution until breakpoint or max cycles"""
-    global emulator_instance, debugger_instance
-
-    if emulator_instance is None or debugger_instance is None:
-        raise HTTPException(status_code=400, detail="Emulator not initialized")
-
-    try:
-        result = debugger_instance.continue_execution(max_cycles=max_cycles)
-
-        state = {
-            "cycle": emulator_instance.cycle_count,
-            "phase": emulator_instance.timing.phase.value,
-            "angle": emulator_instance.timing.angle,
-            "columns": emulator_instance.column_bank.get_all_values(),
-            "carrySignals": emulator_instance.carriage.carry_signals.copy(),
-            "accumulator": int(emulator_instance.analytical_engine.registers.get('A', 0)),
-            "totalOperations": emulator_instance.total_operations
-        }
-
-        return {
-            "success": True,
-            "cyclesRun": result.get("cycles_run", 0),
-            "state": state,
-            "breakpointHit": result.get("breakpoint_hit")
-        }
-
-    except Exception as e:
-        return {
-            "success": False,
-            "error": str(e)
-        }
+    emu, dbg = _require_initialized(state)
+    result = dbg.continue_execution(max_cycles=max_cycles or 1000)
+    return {
+        "success": True,
+        "cyclesRun": result.get("cycles_run", 0),
+        "state": _machine_state_dict(emu),
+        "breakpointHit": result.get("breakpoint_hit"),
+    }
 
 
 @router.post("/debug/breakpoint")
-async def set_breakpoint(request: BreakpointRequest):
+async def set_breakpoint(
+    request: BreakpointRequest,
+    state: EmulatorState = Depends(get_emulator_state),
+):
     """Set a new breakpoint"""
-    global debugger_instance
+    _, dbg = _require_initialized(state)
 
-    if debugger_instance is None:
-        raise HTTPException(status_code=400, detail="Emulator not initialized")
+    breakpoint_type = BreakpointType[request.type]
+    kwargs: Dict[str, Any] = {}
 
-    try:
-        breakpoint_type = BreakpointType[request.type]
-        kwargs = {}
+    if request.type == "CYCLE" and request.cycle_target is not None:
+        kwargs["cycle_target"] = request.cycle_target
+    elif request.type == "PHASE" and request.phase_target is not None:
+        kwargs["phase_target"] = MechanicalPhase[request.phase_target]
+    elif request.type == "VALUE_CHANGE" and request.variable_name is not None:
+        kwargs["variable_name"] = request.variable_name
 
-        if request.type == "CYCLE" and request.cycle_target is not None:
-            kwargs["cycle_target"] = request.cycle_target
-        elif request.type == "PHASE" and request.phase_target is not None:
-            kwargs["phase_target"] = MechanicalPhase[request.phase_target]
-        elif request.type == "VALUE_CHANGE" and request.variable_name is not None:
-            kwargs["variable_name"] = request.variable_name
-
-        bp_id = debugger_instance.breakpoint_manager.set_breakpoint(breakpoint_type, **kwargs)
-
-        return {
-            "success": True,
-            "breakpointId": bp_id
-        }
-
-    except Exception as e:
-        return {
-            "success": False,
-            "error": str(e)
-        }
+    bp_id = dbg.breakpoint_manager.set_breakpoint(breakpoint_type, **kwargs)
+    return {"success": True, "breakpointId": bp_id}
 
 
 @router.post("/debug/breakpoint/{breakpoint_id}/enable")
-async def enable_breakpoint(breakpoint_id: int):
+async def enable_breakpoint(
+    breakpoint_id: int,
+    state: EmulatorState = Depends(get_emulator_state),
+):
     """Enable a breakpoint"""
-    global debugger_instance
-
-    if debugger_instance is None:
-        raise HTTPException(status_code=400, detail="Emulator not initialized")
-
-    try:
-        debugger_instance.enable_breakpoint(breakpoint_id)
-        return {"success": True}
-    except Exception as e:
-        return {
-            "success": False,
-            "error": str(e)
-        }
+    _, dbg = _require_initialized(state)
+    dbg.enable_breakpoint(breakpoint_id)
+    return {"success": True}
 
 
 @router.post("/debug/breakpoint/{breakpoint_id}/disable")
-async def disable_breakpoint(breakpoint_id: int):
+async def disable_breakpoint(
+    breakpoint_id: int,
+    state: EmulatorState = Depends(get_emulator_state),
+):
     """Disable a breakpoint"""
-    global debugger_instance
-
-    if debugger_instance is None:
-        raise HTTPException(status_code=400, detail="Emulator not initialized")
-
-    try:
-        debugger_instance.disable_breakpoint(breakpoint_id)
-        return {"success": True}
-    except Exception as e:
-        return {
-            "success": False,
-            "error": str(e)
-        }
+    _, dbg = _require_initialized(state)
+    dbg.disable_breakpoint(breakpoint_id)
+    return {"success": True}
 
 
 @router.delete("/debug/breakpoint/{breakpoint_id}")
-async def remove_breakpoint(breakpoint_id: int):
+async def remove_breakpoint(
+    breakpoint_id: int,
+    state: EmulatorState = Depends(get_emulator_state),
+):
     """Remove a breakpoint"""
-    global debugger_instance
-
-    if debugger_instance is None:
-        raise HTTPException(status_code=400, detail="Emulator not initialized")
-
-    try:
-        debugger_instance.remove_breakpoint(breakpoint_id)
-        return {"success": True}
-    except Exception as e:
-        return {
-            "success": False,
-            "error": str(e)
-        }
+    _, dbg = _require_initialized(state)
+    dbg.remove_breakpoint(breakpoint_id)
+    return {"success": True}
 
 
 @router.post("/debug/variable")
-async def define_variable(request: VariableRequest):
+async def define_variable(
+    request: VariableRequest,
+    state: EmulatorState = Depends(get_emulator_state),
+):
     """Define a debugger variable"""
-    global debugger_instance
-
-    if debugger_instance is None:
-        raise HTTPException(status_code=400, detail="Emulator not initialized")
-
-    try:
-        debugger_instance.define_variable(request.name, request.value)
-        return {"success": True}
-    except Exception as e:
-        return {
-            "success": False,
-            "error": str(e)
-        }
+    _, dbg = _require_initialized(state)
+    dbg.define_variable(request.name, request.value)
+    return {"success": True}
 
 
 @router.put("/debug/variable/{name}")
-async def set_variable(name: str, request: VariableRequest):
+async def set_variable(
+    name: str,
+    request: VariableRequest,
+    state: EmulatorState = Depends(get_emulator_state),
+):
     """Update a debugger variable value"""
-    global debugger_instance
-
-    if debugger_instance is None:
-        raise HTTPException(status_code=400, detail="Emulator not initialized")
-
-    try:
-        debugger_instance.set_variable(name, request.value)
-        return {"success": True}
-    except Exception as e:
-        return {
-            "success": False,
-            "error": str(e)
-        }
+    _, dbg = _require_initialized(state)
+    dbg.set_variable(name, request.value)
+    return {"success": True}

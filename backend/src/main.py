@@ -93,6 +93,16 @@ async def count_requests(request: Request, call_next):
     response = await call_next(request)
     return response
 
+
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(request: Request, exc: Exception):
+    """Return structured JSON for unhandled exceptions instead of bare 500."""
+    logger.exception("Unhandled exception on %s %s", request.method, request.url.path)
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Internal server error", "type": type(exc).__name__},
+    )
+
 # Include API routers
 app.include_router(api_router, prefix="/api/v1")
 app.include_router(tools_router, prefix="/api/v1/tools", tags=["tools"])
