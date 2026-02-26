@@ -1,0 +1,170 @@
+# Valve Timing Provisional Parameters
+# Date: 2026-02-26
+#
+# All parameters marked provisional require primary-source measurement
+# from the Science Museum DE2 (Difference Engine No. 2) or Babbage's
+# mechanical notation notebooks.
+#
+# Reference: docs/sources/cache/02_ScienceMuseum_DE2_Technical_Online.txt
+# (lines 8920-8931)
+
+valve_gear:
+  type: stephenson_link
+  description: >
+    Stephenson link motion maps crankshaft rotation to valve slide position.
+    Lap determines dead-band before port opens; lead determines pre-admission
+    before dead center; cutoff determines expansion phase fraction.
+
+  parameters:
+    lap_mm:
+      value: 3.0
+      unit: mm
+      provisional: true
+      source: "DE2 Technical Online description (lines 8920-8931)"
+      notes: >
+        Lap is the overlap between valve face and port edge at mid-travel.
+        Controls dead-band before steam admission begins. 3 mm is a
+        conservative estimate for a ~200 mm stroke piston.
+
+    lead_mm:
+      value: 1.0
+      unit: mm
+      provisional: true
+      source: "DE2 Technical Online description (lines 8920-8931)"
+      notes: >
+        Lead is the amount the valve is already open at dead center.
+        Pre-admits steam before the piston reverses direction. 1 mm
+        is typical for slow-speed engines (~30 RPM).
+
+    cutoff_pct:
+      value: 60.0
+      unit: percent
+      provisional: true
+      source: "DE2 Technical Online description (lines 8920-8931)"
+      notes: >
+        Cutoff is the fraction of stroke at which steam admission ends
+        and expansion begins. 60% cutoff is moderate efficiency; period
+        engines ranged 25-75% depending on load and speed.
+
+mechanical_phases:
+  description: >
+    Main shaft rotation is divided into 8 phases of 45 degrees each.
+    Phase boundaries are fixed by the barrel cam mechanism.
+
+  parameters:
+    phase_width_deg:
+      value: 45
+      provisional: false
+      source: "Bromley 1990, Analytical Engine design"
+      notes: "8 equal phases per revolution, mechanically fixed."
+
+    carry_phase_start_deg:
+      value: 135
+      provisional: false
+      source: "Babbage mechanical notation, anticipating carriage"
+      notes: "Carry propagation begins after addition phase."
+
+    carry_phase_end_deg:
+      value: 180
+      provisional: false
+      source: "Babbage mechanical notation, anticipating carriage"
+      notes: "Carry must complete before output phase."
+
+    degrees_per_digit:
+      value: 1.0
+      provisional: true
+      source: "Estimated from 50-digit carry chain within 45-degree window"
+      notes: >
+        Carry propagation rate. With 2-position look-ahead, effective
+        propagation is ~17 degrees for a 50-digit chain.
+
+    lookahead_positions:
+      value: 2
+      provisional: false
+      source: "Babbage anticipating carriage design"
+      notes: "Two-position look-ahead reduces worst-case carry time."
+
+steam_drive:
+  type: steam_piston
+  description: >
+    Single-cylinder reciprocating steam engine driving the main shaft.
+    Stephenson valve gear controls steam distribution.
+
+  parameters:
+    stroke_m:
+      value: 0.2
+      unit: m
+      provisional: true
+      source: "Estimated from DE2 scale drawings"
+      notes: "Piston stroke length. Actual DE2 was hand-cranked."
+
+    nominal_rpm:
+      value: 30
+      unit: rpm
+      provisional: false
+      source: "Babbage correspondence, target operating speed"
+      notes: "Babbage targeted ~30 RPM for the Analytical Engine."
+
+    pressure_bar:
+      value: 6
+      unit: bar
+      provisional: true
+      source: "Typical 1840s low-pressure steam"
+      notes: "6 bar is conservative for period technology."
+
+    thermal_efficiency_pct:
+      value: 8
+      unit: percent
+      provisional: true
+      source: "Rankine cycle estimate for 1840s technology"
+      notes: "~8% practical efficiency, consistent with period engines."
+
+    estimated_power_W:
+      value: 500
+      unit: W
+      provisional: true
+      source: "Derived from pressure, stroke, RPM"
+      notes: "Back-of-envelope estimate. Actual power depends on valve timing."
+
+barrel_timing:
+  description: >
+    Each opcode is allocated shaft degrees based on mechanical complexity.
+    Simple ops fit within one rotation; complex ops span multiple.
+
+  parameters:
+    ADD_degrees:
+      value: 45
+      provisional: false
+      source: "One mechanical phase (addition + carry)"
+    SUB_degrees:
+      value: 45
+      provisional: false
+      source: "Same as ADD (reversed mill direction)"
+    MULT_degrees:
+      value: 360
+      provisional: false
+      source: "Full rotation per multiplier digit"
+    DIV_degrees:
+      value: 360
+      provisional: false
+      source: "Full rotation per quotient digit (restoring division)"
+    SQRT_degrees:
+      value: 360
+      provisional: false
+      source: "Full rotation per Newton-Raphson iteration"
+    LOAD_degrees:
+      value: 45
+      provisional: false
+      source: "One input phase"
+    STOR_degrees:
+      value: 45
+      provisional: false
+      source: "One output phase"
+
+# Provenance summary:
+# provisional=true:  lap_mm, lead_mm, cutoff_pct, degrees_per_digit,
+#                    stroke_m, pressure_bar, thermal_efficiency_pct,
+#                    estimated_power_W
+# provisional=false: phase_width_deg, carry_phase_start_deg,
+#                    carry_phase_end_deg, lookahead_positions,
+#                    nominal_rpm, all barrel timing values

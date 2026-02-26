@@ -56,9 +56,11 @@ class SimulationState:
     # Forces at current shaft angle
     cam_torque_Nm: float = 0.0
     total_torque_Nm: float = 0.0
+    energy_consumed_J: float = 0.0
 
-    # Accumulated sliding distance for running-in model
+    # accumulated sliding distance for running-in model
     total_sliding_distance_mm: float = 0.0
+    galvanic_risk_accumulator: float = 0.0
 
     def copy(self) -> SimulationState:
         """Return a deep copy of this state."""
@@ -85,6 +87,7 @@ class SimulationState:
             cam_torque_Nm=self.cam_torque_Nm,
             total_torque_Nm=self.total_torque_Nm,
             total_sliding_distance_mm=self.total_sliding_distance_mm,
+            galvanic_risk_accumulator=self.galvanic_risk_accumulator,
         )
 
 
@@ -134,6 +137,40 @@ class SimulationConfig:
     clearance_limit_mm: float = 0.15
     backlash_limit_mm: float = 0.10
     temperature_limit_C: float = 60.0
+
+    # Valve gear (Stephenson link) -- provisional values
+    valve_lap_mm: float = 3.0
+    valve_lead_mm: float = 1.0
+    valve_cutoff_pct: float = 60.0
+
+    # Steam drive -- provisional values
+    steam_pressure_bar: float = 6.0
+    piston_stroke_m: float = 0.2
+    thermal_efficiency_pct: float = 8.0
+
+    def randomize_tolerances(self, seed: Optional[int] = None) -> None:
+        """Inject Monte Carlo variance based on historical manufacturing precision.
+        
+        Babbage Era (1840s) achievable precision was ~0.002 inches (0.05 mm).
+        This method applies a Gaussian perturbation to key geometric parameters.
+        """
+        import random
+        if seed is not None:
+            random.seed(seed)
+            
+        # 0.05mm is the 3-sigma target based on historical sources (Doron Swade)
+        sigma = 0.05 / 3.0
+        
+        self.initial_clearance_mm += random.gauss(0, sigma)
+        self.initial_gear_backlash_mm += random.gauss(0, sigma)
+        
+        # Gear module also subject to manufacturing variance
+        self.gear_module_mm += random.gauss(0, sigma / 10.0) # Module variance is typically smaller
+        
+        # Clamp to ensure physical sanity
+        self.initial_clearance_mm = max(0.001, self.initial_clearance_mm)
+        self.initial_gear_backlash_mm = max(0.001, self.initial_gear_backlash_mm)
+        self.gear_module_mm = max(0.1, self.gear_module_mm)
 
     @property
     def omega_rad_s(self) -> float:
