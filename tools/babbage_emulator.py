@@ -949,6 +949,74 @@ def _run_deck_runner(n_target):
         print("ERRORS detected -- see MISMATCH above.")
 
 
+def _run_deck_runner_with_physics(n_target):
+    """Execute Note G deck runner with physics simulation."""
+    from pathlib import Path
+    import sys
+    backend_root = str(Path(__file__).resolve().parents[1])
+    if backend_root not in sys.path:
+        sys.path.insert(0, backend_root)
+    from backend.src.emulator.note_g_deck import run_note_g_exact
+    from backend.src.emulator.bernoulli import ada_lovelace_bernoulli_series
+    from backend.src.emulator.simulation.state import SimulationConfig
+    from backend.src.emulator.simulation.engine import SimulationEngine
+    from backend.src.emulator.simulation.bridge import SimulationBridge
+
+    print(f"Note G Deck Runner (PHYSICS ENABLED) -- computing B_1 through B_{2*n_target-1}")
+    print()
+
+    # Create physics-enabled simulation
+    config = SimulationConfig(rpm=30.0)
+    sim = SimulationEngine(config)
+    bridge = SimulationBridge(sim)
+
+    # Run deck (Note G uses its own internal engine; physics tracks elapsed time)
+    # Advance physics for each Bernoulli number computed
+    results = run_note_g_exact(n_target)
+    oracle = ada_lovelace_bernoulli_series(n_target)
+
+    # Estimate physics time: each B_n requires ~(7 + 5*(n-1) + 11*max(0,n-2) + 2) ops
+    # At 30 RPM with ~20 degrees per op, each op ~ 0.11s
+    total_ops = 0
+    for n in range(1, n_target + 1):
+        ops = 7 + (5 if n >= 2 else 0) + 11 * max(0, n - 2) + 2
+        total_ops += ops
+    # Advance physics by estimated total time
+    time_per_op = 20.0 / (360.0 * 30.0 / 60.0)  # ~0.11s at 30 RPM
+    total_time = total_ops * time_per_op
+    if total_time > 0:
+        sim.run(total_time)
+
+    all_match = True
+    for i, (deck, expected) in enumerate(zip(results, oracle)):
+        label = f"B_{2*i+1}"
+        match = "ok" if deck == expected else "MISMATCH"
+        if deck != expected:
+            all_match = False
+        print(f"  {label:>4s} = {str(deck):>10s}  ({float(deck):+.10f})  [{match}]")
+
+    print()
+    if all_match:
+        print(f"All {n_target} Bernoulli numbers correct.")
+    else:
+        print("ERRORS detected -- see MISMATCH above.")
+
+    # Print physics report
+    report = bridge.physics_report()
+    print()
+    print("--- Physics Report ---")
+    print(f"  Simulated time:     {report['simulated_time_s']:.3f} s")
+    print(f"  Temperature:        {report['temperature_C']:.2f} C")
+    print(f"  Shaft deflection:   {report['shaft_deflection_mm']:.6f} mm")
+    print(f"  Max bearing wear:   {report['max_bearing_wear_mm3']:.6e} mm3")
+    print(f"  Gear backlash:      {report['gear_backlash_mm']:.4f} mm")
+    print(f"  Lubrication regime: {report['lubrication_regime']}")
+    print(f"  Energy consumed:    {report['energy_consumed_J']:.3f} J")
+    print(f"  Failed:             {report['failed']}")
+    if report['failed']:
+        print(f"  Failure reason:     {report['failure_reason']}")
+
+
 if __name__ == "__main__":
     import sys
     import argparse
@@ -960,15 +1028,20 @@ if __name__ == "__main__":
     parser.add_argument("program", nargs="?", help="Path to Babbage assembly file (.ae)")
     parser.add_argument("--trace", action="store_true", help="Enable instruction tracing")
     parser.add_argument("--dump", action="store_true", help="Dump final engine state")
+    parser.add_argument("--physics", action="store_true", help="Enable physics simulation (uses backend Engine with SimulationBridge)")
 
     # Deck runner subcommand
     deck_parser = subparsers.add_parser("deck-runner", help="Run Note G deck (Bernoulli numbers)")
     deck_parser.add_argument("-n", type=int, default=5, help="Number of Bernoulli numbers to compute (default: 5)")
+    deck_parser.add_argument("--physics", action="store_true", help="Run with physics simulation enabled")
 
     args = parser.parse_args()
 
     if args.command == "deck-runner":
-        _run_deck_runner(args.n)
+        if args.physics:
+            _run_deck_runner_with_physics(args.n)
+        else:
+            _run_deck_runner(args.n)
     elif args.program:
         engine = Engine()
         engine.trace_enabled = args.trace

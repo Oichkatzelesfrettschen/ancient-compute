@@ -43,8 +43,13 @@ References:
   - SMG Technical Description (DE2 comparison)
 """
 
-from typing import Optional, Any
+from typing import Optional, Any, Dict, List
 from .barrels import BarrelController, MicroOp
+from .types import BabbageNumber
+
+class MechanicalFailureError(Exception):
+    """Raised when the engine suffers a physical breakdown (seizure, breakage, etc.)"""
+    pass
 
 TIMING_TABLE = {
     "NOP": 0,
@@ -65,33 +70,12 @@ TIMING_TABLE = {
     "RET": 4,
     "PUSH": 4,
     "POP": 4,
+    "OIL": 100,
 }
 
 
-class BabbageNumber:
-    """
-    50-digit decimal fixed-point number representation.
-
-    Internal representation: value x 10^-40 where value is an integer.
-    This provides 50 decimal digits total with 40 fractional digits.
-
-    Maximum magnitude: +/-(10^50 - 1)
-    Minimum non-zero: +/-10^-40
-
-    Supports full arithmetic operations with overflow detection.
-    """
-
-    def __init__(self, value):
-        """Initialize BabbageNumber from Python number."""
-        self._overflow_flag = False
-        if isinstance(value, BabbageNumber):
-            self.value = value.value
-        else:
-            self.value = int(value * (10**40))  # Scale to 50 digits
-
-    def to_decimal(self):
-        """Convert to Python float (for display and testing)."""
-        return self.value / (10**40)
+class Instruction:
+    """Analytical Engine instruction card."""
 
     def to_card_format(self):
         """
@@ -214,8 +198,9 @@ class Engine:
     - Punch card I/O simulation
     """
 
-    def __init__(self):
+    def __init__(self, physical_engine=None):
         """Initialize empty engine."""
+        self.physical_engine = physical_engine
         # Memory: Store of 2,000 50-digit decimal numbers
         self.memory = [BabbageNumber(0) for _ in range(2000)]
 
@@ -247,6 +232,7 @@ class Engine:
         # I/O: Punch cards and results
         self.instruction_cards = []  # Loaded program
         self.result_cards = []  # Output results
+        self.execution_trace = []  # Detailed execution trace
 
         # Flags: Condition codes from operations
         self.flags = {
@@ -296,6 +282,16 @@ class Engine:
             "RDCRD": self._execute_RDCRD,
             "WRPCH": self._execute_WRPCH,
             "WRPRN": self._execute_WRPRN,
+            "SHL": self._execute_SHL_micro,
+            "SHR": self._execute_SHR_micro,
+            "AND": self._execute_AND_micro,
+            "OR": self._execute_OR_micro,
+            "XOR": self._execute_XOR_micro,
+            "CHKS": self._execute_CHKS_micro,
+            "HALT": self._execute_HALT,
+            "PLAY": self._execute_PLAY_micro,
+            "SETMODE": self._execute_SETMODE_micro,
+            "OIL": self._execute_OIL,
         }
 
     def _get_register_value(self, reg_name):
@@ -392,7 +388,10 @@ class Engine:
 
         elif op == MicroOp.CONNECT_STORE_TO_MILL:
             if self.active_store_address is not None:
-                self.mill_operand_buffer = self.memory[self.active_store_address]
+                if 0 <= self.active_store_address < len(self.memory):
+                    self.mill_operand_buffer = self.memory[self.active_store_address]
+                else:
+                    raise IndexError(f"Memory address out of bounds: {self.active_store_address}")
             else:  # This path is for immediate values or other non-memory sources for now.
                 # For example, if the operand_src itself is an immediate number (e.g., '10')
                 self.mill_operand_buffer = self._get_operand_value(operand_src)
@@ -408,13 +407,23 @@ class Engine:
                 # Let's adjust: In MULT, ADVANCE_MILL adds operand to product_accumulator
                 self.mill_product_accumulator += self.mill_operand_buffer
                 self.mill_result_buffer = self.mill_product_accumulator
+            elif self.barrels.active_barrel == "LOAD":
+                # Pure transfer from Ingress Axis to Egress Axis
+                self.mill_result_buffer = self.mill_operand_buffer
             else:
                 # Perform addition in the mill
                 self.mill_result_buffer = current_mill_value + self.mill_operand_buffer
 
         elif op == MicroOp.REVERSE_MILL:
             current_mill_value = self.registers[reg_dest]
-            self.mill_result_buffer = current_mill_value - self.mill_operand_buffer
+            if self.barrels.active_barrel == "DIV":
+                # Only subtract if GREATER or EQUAL (set by COMPARE_MILL_BUFFERS)
+                if self.flags["GREATER"] or self.flags["EQUAL"]:
+                    self.mill_remainder_buffer = (
+                        self.mill_remainder_buffer - self.mill_operand_buffer
+                    )
+            else:
+                self.mill_result_buffer = current_mill_value - self.mill_operand_buffer
 
         elif op == MicroOp.RUN_CARRY:
             # Simulate the anticipating carriage for the mill
@@ -475,7 +484,10 @@ class Engine:
 
         elif op == MicroOp.INCREMENT_QUOTIENT_DIGIT:
             # Increment the current digit of the quotient being built
-            self.mill_quotient_buffer += BabbageNumber(1)
+            # For multi-digit division, we add the current position value (e.g. 10^k)
+            inc_val = getattr(self, "mill_quotient_digit_value", BabbageNumber(1))
+            self.mill_quotient_buffer += inc_val
+
 
         elif op == MicroOp.RESET_REMAINDER:
             self.mill_remainder_buffer = BabbageNumber(0)
@@ -488,14 +500,114 @@ class Engine:
 
         elif op == MicroOp.REPEAT_IF_COUNTER:
             if self.mill_counter > 0:
-                # Jump back to the loop body row (ADVANCE_MILL + DECREMENT_COUNTER).
-                # step() already incremented step_index past the REPEAT row, so
-                # step_index is now 2 past the target. Set to target directly.
-                # In the MULT barrel, loop body is at row index 1.
+                # Jump back to the loop body row
                 self.barrels.step_index = self.barrels.step_index - 2
             else:
-                # Loop terminated, proceed to next step
                 pass
+
+        elif op == MicroOp.REPEAT_IF_GE:
+            if self.flags["GREATER"] or self.flags["EQUAL"]:
+                # Jump back to STEP 4 (COMPARE_MILL_BUFFERS)
+                self.barrels.step_index = 4
+            else:
+                pass
+
+        elif op == MicroOp.JUMP_IF_LT:
+            if self.flags["LESS"]:
+                # Jump forward to STEP 9 (SHIFT_MILL_DIVISOR)
+                # Current step_index is 6 (after step 5). We want to go to 9.
+                self.barrels.step_index = 9
+            else:
+                pass
+
+
+
+        elif op == MicroOp.INIT_SQRT_GUESS:
+            # First guess: x_0 = S / 2 (conceptual)
+            val = self.registers[reg_dest]
+            self.mill_product_accumulator = val / BabbageNumber(2)
+            self.mill_operand_buffer = val # Keep original S in operand buffer
+
+        elif op == MicroOp.DIVIDE_S_BY_X:
+            # mill_result_buffer = S / x_n
+            # S is in mill_operand_buffer, x_n is in mill_product_accumulator
+            if self.mill_product_accumulator == BabbageNumber(0):
+                self.mill_result_buffer = BabbageNumber(0)
+            else:
+                self.mill_result_buffer = self.mill_operand_buffer / self.mill_product_accumulator
+
+        elif op == MicroOp.ADD_X_AND_QUOTIENT:
+            # x_n = x_n + (S / x_n)
+            # x_n is in mill_product_accumulator, S/x_n is in mill_result_buffer
+            self.mill_product_accumulator = self.mill_product_accumulator + self.mill_result_buffer
+
+        elif op == MicroOp.HALVE_ACCUMULATOR:
+            # x_{n+1} = accumulator / 2
+            self.mill_product_accumulator = self.mill_product_accumulator / BabbageNumber(2)
+
+        elif op == MicroOp.CHECK_SQRT_CONVERGENCE:
+            # Symbolic convergence check: for now, fixed 25 iterations or < epsilon
+            # In a real AE, this might be a mechanical detector or just fixed iterations.
+            # We'll use a counter for iterations.
+            if not hasattr(self, "mill_sqrt_iterations"):
+                self.mill_sqrt_iterations = 0
+            self.mill_sqrt_iterations += 1
+            if self.mill_sqrt_iterations < 25:
+                # Jump back to step 1 (DIVIDE_S_BY_X)
+                self.barrels.step_index = 1
+            else:
+                self.mill_sqrt_iterations = 0 # Reset for next SQRT
+
+        elif op == MicroOp.STORE_SQRT_RESULT:
+            self.registers[reg_dest] = self.mill_product_accumulator
+
+        elif op == MicroOp.BITWISE_AND:
+            val1 = self.registers[reg_dest]
+            val2 = self._get_operand_value(operand_src)
+            s1 = str(abs(val1.value)).zfill(50)
+            s2 = str(abs(val2.value)).zfill(50)
+            res = int("".join(str(int(d1) & int(d2)) for d1, d2 in zip(s1, s2)))
+            self.mill_result_buffer = BabbageNumber(0)
+            self.mill_result_buffer.value = res if val1.value >= 0 else -res
+
+        elif op == MicroOp.BITWISE_OR:
+            val1 = self.registers[reg_dest]
+            val2 = self._get_operand_value(operand_src)
+            s1 = str(abs(val1.value)).zfill(50)
+            s2 = str(abs(val2.value)).zfill(50)
+            res = int("".join(str(int(d1) | int(d2)) for d1, d2 in zip(s1, s2)))
+            self.mill_result_buffer = BabbageNumber(0)
+            self.mill_result_buffer.value = res if val1.value >= 0 else -res
+
+        elif op == MicroOp.BITWISE_XOR:
+            val1 = self.registers[reg_dest]
+            val2 = self._get_operand_value(operand_src)
+            s1 = str(abs(val1.value)).zfill(50)
+            s2 = str(abs(val2.value)).zfill(50)
+            res = int("".join(str(int(d1) ^ int(d2)) for d1, d2 in zip(s1, s2)))
+            self.mill_result_buffer = BabbageNumber(0)
+            self.mill_result_buffer.value = res if val1.value >= 0 else -res
+
+        elif op == MicroOp.COMPUTE_CHECKSUM:
+            val = self.registers[reg_dest]
+            stored_checksum = val.value % 10
+            s = str(abs(val.value // 10)).zfill(49)
+            computed_c = sum(int(d) for d in s) % 10
+            if stored_checksum != computed_c:
+                self.flags["ERROR"] = True
+                print(f"CHECKSUM ERROR: Expected {computed_c}, found {stored_checksum}")
+            else:
+                self.flags["ERROR"] = False
+
+        elif op == MicroOp.PLAY_NOTE:
+            note = getattr(self, "mill_note_buffer", "C4")
+            duration = getattr(self, "mill_duration_buffer", "8")
+            print(f"LOVELACE MUSIC ENGINE: Playing {note} for {duration} cycles")
+
+        elif op == MicroOp.SET_MODE_SYMBOLIC:
+            mode = getattr(self, "mill_mode_buffer", "numeric")
+            self.mode = mode
+            print(f"ENGINE MODE: {mode}")
 
         # Other MicroOps (Fetch, etc.) can be implemented here as needed
         # For now, FETCH_VAR_CARD is a symbolic trigger.
@@ -524,10 +636,6 @@ class Engine:
     def _execute_DIV_micro(self, reg_dest: str, operand_src: Any):
         """
         Execute DIV using micro-ops, leveraging repeated subtractions and shifts.
-
-        This simulates the core principle of mechanical division as
-        repeated subtraction and shifting, orchestrated at a higher level
-        by Python for now, but using low-level mill state.
         """
         dividend = self._get_operand_value(reg_dest)
         divisor = self._get_operand_value(operand_src)
@@ -538,49 +646,176 @@ class Engine:
         self.mill_remainder_buffer = dividend
         self.mill_quotient_buffer = BabbageNumber(0)
 
-        # Determine initial alignment - shift divisor until it's just smaller than dividend
-        dividend_int = int(dividend.to_decimal())
-        divisor_int = int(divisor.to_decimal())
-
-        if divisor_int == 0:
-            raise ZeroDivisionError("Division by zero")
+        # Determine initial alignment
+        dividend_int = int(abs(dividend.to_decimal()))
+        divisor_int = int(abs(divisor.to_decimal()))
 
         initial_shift = 0
         if dividend_int != 0 and divisor_int != 0:
-            initial_shift = len(str(abs(dividend_int))) - len(str(abs(divisor_int)))
-            # Adjust if dividend is smaller than divisor after initial alignment
-            if initial_shift > 0 and dividend_int < (divisor_int * (10 ** (initial_shift))):
+            initial_shift = len(str(dividend_int)) - len(str(divisor_int))
+            if initial_shift > 0 and dividend < (divisor * BabbageNumber(10**initial_shift)):
                 initial_shift -= 1
+        elif dividend_int == 0:
+            initial_shift = 0
 
-        scaled_divisor = divisor * BabbageNumber(10**initial_shift)
-        current_quotient_position_value = BabbageNumber(10**initial_shift)
+        # Outer loop for each quotient digit
+        for k in range(initial_shift, -1, -1): # Integer division only
+            if k < 0: break
+            
+            self.mill_operand_buffer = divisor * BabbageNumber(10**k)
+            self.mill_quotient_digit_value = BabbageNumber(10**k)
+            
+            self.barrels.select_barrel("DIV")
+            # We skip the first 4 steps of the DIV barrel (setup) because we did it in Python
+            self.barrels.step_index = 4 
 
-        for _ in range(initial_shift + 1):  # Iterate for each possible quotient digit
-            while self.mill_remainder_buffer >= scaled_divisor:
-                self.mill_remainder_buffer -= scaled_divisor
-                self.mill_quotient_buffer += current_quotient_position_value
+            # Micro-op execution loop for ONE digit position
+            while self.barrels.active_barrel:
+                ops = self.barrels.step()
+                if not ops: break
+                for op in ops:
+                    self._execute_micro_op(op, reg_dest, operand_src)
+                # If we hit step 9 (SHIFT_MILL_DIVISOR), we are done with this digit
+                if self.barrels.step_index >= 9:
+                    self.barrels.active_barrel = None
 
-            # Shift divisor right for next digit position
-            scaled_divisor /= BabbageNumber(10)
-            current_quotient_position_value /= BabbageNumber(10)
-
-        # Store the final quotient (and remainder if needed)
+        # Final storage
         self.registers[reg_dest] = self.mill_quotient_buffer
-        self._set_register_value("D", self.mill_remainder_buffer)  # Store remainder in D
-
+        self._set_register_value("D", self.mill_remainder_buffer)
         self._update_flags(self.mill_quotient_buffer)
 
     def _execute_SQRT_micro(self, reg_dest):
-        """Execute SQRT using micro-ops (calls high-level for now)."""
-        self._execute_SQRT(reg_dest)
+        """Execute SQRT using micro-ops (Newton-Raphson)."""
+        val = self.registers[reg_dest]
+        if val.value < 0:
+            raise ValueError("Cannot take square root of negative number")
+
+        self.barrels.select_barrel("SQRT")
+
+        # Micro-op execution loop
+        while self.barrels.active_barrel:
+            ops = self.barrels.step()
+            for op in ops:
+                self._execute_micro_op(op, reg_dest, None)
+
+        self._update_flags(self.registers[reg_dest])
 
     def _execute_LOAD_micro(self, reg_dest, address_src):
-        """Execute LOAD using micro-ops (calls high-level for now)."""
-        self._execute_LOAD(reg_dest, address_src)
+        """Execute LOAD using micro-ops."""
+        self.barrels.select_barrel("LOAD")
+
+        # Micro-op execution loop
+        while self.barrels.active_barrel:
+            ops = self.barrels.step()
+            for op in ops:
+                self._execute_micro_op(op, reg_dest, address_src)
+
+        # Final result transfer if not fully handled by micro-ops
+        # In our simplified LOAD micro-op sequence, we still need to store in reg_dest
+        # unless ADVANCE_MILL handled it.
+        # Let's assume mill_result_buffer has it.
+        self.registers[reg_dest] = self.mill_result_buffer
+        self._update_flags(self.registers[reg_dest])
 
     def _execute_STOR_micro(self, reg_source, address_dest):
-        """Execute STOR using micro-ops (calls high-level for now)."""
-        self._execute_STOR(reg_source, address_dest)
+        """Execute STOR using micro-ops."""
+        if not (isinstance(address_dest, str) and address_dest.startswith("[") and address_dest.endswith("]")):
+            raise ValueError(f"Invalid address for STOR instruction: {address_dest}")
+
+        self.barrels.select_barrel("STOR")
+
+        # Setup: source register into egress (conceptual)
+        self.mill_result_buffer = self.registers[reg_source]
+
+        # Micro-op execution loop
+        while self.barrels.active_barrel:
+            ops = self.barrels.step()
+            for op in ops:
+                self._execute_micro_op(op, reg_source, address_dest)
+
+    def _execute_SHL_micro(self, reg_dest, n_str):
+        n = int(n_str)
+        self.mill_product_accumulator = self.registers[reg_dest]
+        for _ in range(n):
+            self.barrels.select_barrel("SHL")
+            while self.barrels.active_barrel:
+                for op in self.barrels.step():
+                    self._execute_micro_op(op, reg_dest, None)
+        self.registers[reg_dest] = self.mill_product_accumulator
+        self._update_flags(self.registers[reg_dest])
+
+    def _execute_SHR_micro(self, reg_dest, n_str):
+        n = int(n_str)
+        self.mill_product_accumulator = self.registers[reg_dest]
+        for _ in range(n):
+            self.barrels.select_barrel("SHR")
+            while self.barrels.active_barrel:
+                for op in self.barrels.step():
+                    self._execute_micro_op(op, reg_dest, None)
+        self.registers[reg_dest] = self.mill_product_accumulator
+        self._update_flags(self.registers[reg_dest])
+
+    def _execute_AND_micro(self, reg_dest, operand_src):
+        self.barrels.select_barrel("AND")
+        while self.barrels.active_barrel:
+            for op in self.barrels.step():
+                self._execute_micro_op(op, reg_dest, operand_src)
+        self.registers[reg_dest] = self.mill_result_buffer
+        self._update_flags(self.registers[reg_dest])
+
+    def _execute_OR_micro(self, reg_dest, operand_src):
+        self.barrels.select_barrel("OR")
+        while self.barrels.active_barrel:
+            for op in self.barrels.step():
+                self._execute_micro_op(op, reg_dest, operand_src)
+        self.registers[reg_dest] = self.mill_result_buffer
+        self._update_flags(self.registers[reg_dest])
+
+    def _execute_XOR_micro(self, reg_dest, operand_src):
+        self.barrels.select_barrel("XOR")
+        while self.barrels.active_barrel:
+            for op in self.barrels.step():
+                self._execute_micro_op(op, reg_dest, operand_src)
+        self.registers[reg_dest] = self.mill_result_buffer
+        self._update_flags(self.registers[reg_dest])
+
+    def _execute_CHKS_micro(self, reg_source):
+        self.barrels.select_barrel("CHKS")
+        while self.barrels.active_barrel:
+            for op in self.barrels.step():
+                self._execute_micro_op(op, reg_source, None)
+
+    def _execute_PLAY_micro(self, note, duration):
+        self.barrels.select_barrel("PLAY")
+        # Store params for micro-op to consume
+        self.mill_note_buffer = note
+        self.mill_duration_buffer = duration
+        while self.barrels.active_barrel:
+            for op in self.barrels.step():
+                self._execute_micro_op(op, None, None)
+
+    def _execute_SETMODE_micro(self, mode):
+        self.barrels.select_barrel("SETMODE")
+        self.mill_mode_buffer = mode
+        while self.barrels.active_barrel:
+            for op in self.barrels.step():
+                self._execute_micro_op(op, None, None)
+
+    def _execute_HALT(self):
+        self.running = False
+        return False
+
+    def _execute_OIL(self):
+        """Perform maintenance: reset wear and friction states if physics is linked."""
+        if self.physical_engine:
+            # Reset wear volumes and reduce friction
+            st = self.physical_engine.state
+            st.bearing_wear_volumes_mm3 = [0.0] * len(st.bearing_wear_volumes_mm3)
+            st.gear_wear_volume_mm3 = 0.0
+            print("MAINTENANCE: Engine oiled, wear volumes reset.")
+        else:
+            print("MAINTENANCE: Engine oiled (no physical effect, physics not linked).")
+        return False
 
     def _execute_MULT(self, reg_dest, operand):
         """
@@ -886,9 +1121,36 @@ class Engine:
         else:
             raise NotImplementedError(f"Opcode {opcode_name} not implemented")
 
-        # Update clock time based on instruction cost
-        time_cost = TIMING_TABLE.get(opcode_name, 0)
+        # Update clock time based on instruction cost (dynamic RPM/physics coupling)
+        base_cycles = TIMING_TABLE.get(opcode_name, 0)
+        
+        if self.physical_engine:
+            # Dynamic timing model:
+            # time [s] = cycles / (rotations/sec) * lag
+            # lag increases with shaft deflection (simulating mechanical resistance)
+            rpm = self.physical_engine.config.rpm
+            deflection = self.physical_engine.state.shaft_deflection_mm
+            
+            # 5% time penalty per mm of shaft deflection
+            lag_factor = 1.0 + (0.05 * deflection)
+            time_cost = (base_cycles / (rpm / 60.0)) * lag_factor
+            
+            # Synchronize physical engine state to match logic engine instruction step
+            self.physical_engine.run(self.physical_engine.state.time_s + time_cost)
+        else:
+            time_cost = base_cycles
+
         self.clock_time += time_cost
+
+        # Record execution trace entry
+        self.execution_trace.append({
+            "pc": self.PC,
+            "opcode": opcode_name,
+            "operands": operands,
+            "clock_time": self.clock_time,
+            "registers": {k: v.to_decimal() for k, v in self.registers.items()},
+            "flags": dict(self.flags)
+        })
 
         # Log if tracing enabled
         if self.trace_enabled:
@@ -971,10 +1233,15 @@ class Engine:
                 self.step_one_instruction()
 
     def step_one_instruction(self):
-        """Execute a single instruction with breakpoint checking."""
+        """Execute a single instruction with breakpoint and physical failure checking."""
         if self.PC >= len(self.instruction_cards):
             self.running = False
             return
+
+        # Check for mechanical failure if physical engine is linked
+        if self.physical_engine and self.physical_engine.failed:
+            reason = self.physical_engine.failure_reason
+            raise MechanicalFailureError(f"Mechanical failure: {reason}")
 
         instruction = self.instruction_cards[self.PC]
         self.check_breakpoints()
@@ -1061,6 +1328,12 @@ Memory (first 10 words):
                 f.write(f"# Timestamp: Clock {clock_time}s\n")
                 f.write(f"\n{value.to_card_format()}\n\n")
 
+    def physics_report(self) -> dict:
+        """Return physics simulation summary, or empty dict if no physics."""
+        if self.physical_engine and hasattr(self.physical_engine, "physics_report"):
+            return self.physical_engine.physics_report()
+        return {}
+
     def save_trace(self, filename):
         """Save execution trace to JSON file.
 
@@ -1069,22 +1342,13 @@ Memory (first 10 words):
         """
         import json
 
-        trace_entries = []
-        for card in self.result_cards:
-            trace_entries.append({
-                "opcode": card.get("opcode", ""),
-                "operands": card.get("operands", []),
-                "clock_time": card.get("clock_time", 0),
-                "value_decimal": card["value"].to_decimal() if "value" in card else None,
-            })
-
         state_snapshot = {
             "pc": self.PC,
             "clock_time": self.clock_time,
             "registers": {k: v.to_decimal() for k, v in self.registers.items()},
             "flags": dict(self.flags),
             "result_card_count": len(self.result_cards),
-            "trace": trace_entries,
+            "trace": self.execution_trace,
         }
 
         with open(filename, "w", encoding="utf-8") as f:
