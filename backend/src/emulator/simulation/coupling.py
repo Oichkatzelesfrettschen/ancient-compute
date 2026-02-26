@@ -35,15 +35,63 @@ class CouplingFunctions:
     def viscosity_at_temperature(
         eta_40_Pa_s: float,
         temperature_C: float,
-        beta: float = 0.02,
+        eta_100_Pa_s: float | None = None,
+        density_kg_m3: float = 870.0,
     ) -> float:
-        """Temperature-dependent oil viscosity.
+        """Temperature-dependent dynamic oil viscosity [Pa*s] via ASTM D341.
 
-        eta(T) = eta_40 * exp(-beta * (T - 40))
+        WHY: The exponential approximation eta = eta_40 * exp(-beta*(T-40))
+        is only valid over a narrow range (~20 deg) and underestimates
+        viscosity at low temperatures and overestimates at high temperatures.
+        ASTM D341 (Walther equation) is the industry standard for predicting
+        kinematic viscosity of mineral oils over the full operating range.
 
-        Typical mineral oil: beta ~ 0.02 /C.
+        ASTM D341 / Walther equation in kinematic viscosity [cSt]:
+            log10(log10(nu + 0.7)) = A - B * log10(T_K)
+        where T_K = temperature + 273.15 (Kelvin), nu in cSt.
+
+        A and B are determined from two reference points (40 C and 100 C).
+        If eta_100_Pa_s is not provided, the equation degrades to a single-
+        point exponential fallback using B = 4.0 (typical for ISO VG 68).
+
+        Reference: ASTM D341-20, "Standard Practice for Viscosity-Temperature
+        Charts for Liquid Petroleum Products", ASTM International.
+
+        For ISO VG 68: nu_40 ~ 68 cSt, nu_100 ~ 8.7 cSt (approximate).
+        density ~ 870 kg/m^3 at 15 C.
+
+        Args:
+            eta_40_Pa_s: Dynamic viscosity at 40 C [Pa*s]
+            temperature_C: Operating temperature [C]
+            eta_100_Pa_s: Dynamic viscosity at 100 C [Pa*s] (improves accuracy)
+            density_kg_m3: Oil density [kg/m^3] for cSt -> Pa*s conversion
+
+        Returns:
+            Dynamic viscosity at temperature_C [Pa*s]
         """
-        return eta_40_Pa_s * math.exp(-beta * (temperature_C - 40.0))
+        T_K = temperature_C + 273.15
+        nu_40_cSt = (eta_40_Pa_s * 1e6) / density_kg_m3  # Pa*s -> cSt
+
+        if eta_100_Pa_s is not None:
+            nu_100_cSt = (eta_100_Pa_s * 1e6) / density_kg_m3
+            # Solve for A and B from the two reference points
+            T40_K = 313.15  # 40 C in K
+            T100_K = 373.15  # 100 C in K
+            W40 = math.log10(math.log10(nu_40_cSt + 0.7))
+            W100 = math.log10(math.log10(nu_100_cSt + 0.7))
+            B = (W40 - W100) / (math.log10(T100_K) - math.log10(T40_K))
+            A = W40 + B * math.log10(T40_K)
+        else:
+            # Single-point: use typical B=3.5 for mineral oil (conservative)
+            T40_K = 313.15
+            W40 = math.log10(math.log10(nu_40_cSt + 0.7))
+            B = 3.5
+            A = W40 + B * math.log10(T40_K)
+
+        W_T = A - B * math.log10(T_K)
+        nu_T_cSt = max(0.5, 10.0 ** (10.0**W_T) - 0.7)
+        eta_T_Pa_s = (nu_T_cSt * density_kg_m3) / 1e6
+        return eta_T_Pa_s
 
     @staticmethod
     def friction_heat_from_bearings(

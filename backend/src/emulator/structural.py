@@ -167,19 +167,49 @@ class FatigueAnalysis:
             return 0.6
 
     @staticmethod
+    def temperature_factor_kd(temperature_C: float) -> float:
+        """Marin temperature factor kd (Shigley Eq.6-23).
+
+        WHY: For T <= 250 C, kd = 1.0 (endurance limit unaffected).
+        For 250 < T <= 600 C, the Seshia-Noll polynomial applies:
+            kd = 0.9877 + 1.0403e-3*T - 1.8723e-5*T^2 + 2.0046e-7*T^3
+               - 8.9088e-10*T^4   (T in Celsius)
+        Reference: Shigley's Mechanical Engineering Design, Eq.6-23,
+        Table 6-4 (9th/10th edition).
+
+        For the Babbage DE2 operating at ~30 C ambient with max bearing
+        temperature ~80 C, kd = 1.0 is the correct value.
+        """
+        if temperature_C <= 250.0:
+            return 1.0
+        # Seshia-Noll polynomial (Shigley Eq.6-23) for 250 < T <= 600 C
+        T = temperature_C
+        return float(
+            0.9877
+            + 1.0403e-3 * T
+            - 1.8723e-5 * T**2
+            + 2.0046e-7 * T**3
+            - 8.9088e-10 * T**4
+        )
+
+    @staticmethod
     def corrected_endurance_limit_MPa(
         Se_prime_MPa: float,
         Su_MPa: float,
         diameter_mm: float,
         finish: str = "machined",
         reliability_factor: float = 0.897,  # 90% reliability
-        temperature_factor: float = 1.0,
+        temperature_C: float = 30.0,
     ) -> float:
-        """Corrected endurance limit Se = ka*kb*kc*kd*Se' [MPa]."""
+        """Corrected endurance limit Se = ka*kb*kc*kd*Se' [MPa].
+
+        Uses temperature_factor_kd() to compute kd from operating temperature.
+        For DE2 operating conditions (~30 C), kd = 1.0 per Shigley Eq.6-23.
+        """
         ka = FatigueAnalysis.surface_factor_ka(Su_MPa, finish)
         kb = FatigueAnalysis.size_factor_kb(diameter_mm)
         kc = reliability_factor
-        kd = temperature_factor
+        kd = FatigueAnalysis.temperature_factor_kd(temperature_C)
         return ka * kb * kc * kd * Se_prime_MPa
 
     @staticmethod

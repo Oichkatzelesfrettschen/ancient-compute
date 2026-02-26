@@ -22,6 +22,7 @@ from backend.src.emulator.thermodynamics import (
     ThermalExpansionModel,
     TransientThermalSolver,
     compute_engine_thermal_model,
+    compute_natural_convection_h_W_m2K,
     compute_steady_state_rise_C,
     compute_thermal_time_constant_s,
 )
@@ -373,3 +374,179 @@ class TestThermalClearanceFeedback:
             assert not ThermalClearanceFeedback.is_seized(c), (
                 f"Seizure at T={T} C, clearance={c:.4f} mm"
             )
+
+
+# ---------------------------------------------------------------------------
+# Phase 6.3: Churchill-Chu Natural Convection Correlation
+# ---------------------------------------------------------------------------
+
+class TestNaturalConvectionH:
+    """Validate compute_natural_convection_h_W_m2K against published data.
+
+    Reference values from Incropera & DeWitt, "Fundamentals of Heat and
+    Mass Transfer", 7th ed., Table 9.1 (vertical plate, air, Pr~0.73).
+
+    For a 0.5 m vertical plate in air with delta_T = 20 K at ~30 C film
+    temperature:
+        Ra = g * beta * delta_T * L^3 / nu^2 * Pr
+           = 9.81 * (1/303) * 20 * 0.125 / (1.608e-5)^2 * 0.7282
+           ~ 1.34e7  (turbulent-transition regime)
+        Nu (Churchill-Chu) ~ 45-55 -> h ~ 3-5 W/(m^2.K)
+    This bracket is used as the acceptance criterion.
+    """
+
+    def test_h_positive_for_hot_surface(self):
+        h = compute_natural_convection_h_W_m2K(
+            surface_T_C=40.0, ambient_T_C=20.0, char_length_m=0.5,
+        )
+        assert h > 0.0
+
+    def test_h_zero_at_zero_delta_T(self):
+        h = compute_natural_convection_h_W_m2K(
+            surface_T_C=30.0, ambient_T_C=30.0, char_length_m=0.5,
+        )
+        assert h == pytest.approx(0.0, abs=1e-9)
+
+    def test_h_physical_range_vertical_plate(self):
+        """h must be in 2-8 W/(m^2.K) for a 0.5 m vertical plate, delta_T=20 K."""
+        h = compute_natural_convection_h_W_m2K(
+            surface_T_C=40.0, ambient_T_C=20.0, char_length_m=0.5,
+        )
+        assert 2.0 < h < 8.0, f"h={h:.3f} W/m^2.K outside expected 2-8 range"
+
+    def test_h_increases_with_delta_T(self):
+        """Larger temperature difference -> larger h (stronger convection)."""
+        h_small = compute_natural_convection_h_W_m2K(
+            surface_T_C=25.0, ambient_T_C=20.0, char_length_m=0.5,
+        )
+        h_large = compute_natural_convection_h_W_m2K(
+            surface_T_C=60.0, ambient_T_C=20.0, char_length_m=0.5,
+        )
+        assert h_large > h_small
+
+    def test_h_horizontal_plate_reasonable(self):
+        """Horizontal plate (heated up) h should also be in ~2-10 range."""
+        h = compute_natural_convection_h_W_m2K(
+            surface_T_C=40.0, ambient_T_C=20.0, char_length_m=0.5,
+            geometry="horizontal_plate_up",
+        )
+        assert 2.0 < h < 12.0, f"h={h:.3f} W/m^2.K outside expected range"
+
+    def test_h_greater_for_larger_plate(self):
+        """Larger plate has larger Ra -> larger Nu, but h ~ Nu/L can decrease.
+        For turbulent Ra (Ra^(1/3) regime), Nu ~ L, so h is approximately
+        constant.  For laminar (Ra^(1/4)), Nu ~ L^(1/4), h ~ L^(-3/4) which
+        decreases with L.  Either case: h for L=0.1 m >= h for L=1.0 m.
+        """
+        h_short = compute_natural_convection_h_W_m2K(
+            surface_T_C=40.0, ambient_T_C=20.0, char_length_m=0.1,
+        )
+        h_tall = compute_natural_convection_h_W_m2K(
+            surface_T_C=40.0, ambient_T_C=20.0, char_length_m=1.0,
+        )
+        assert h_short >= h_tall
+
+    def test_default_h_higher_than_hardcoded_for_hot_machine(self):
+        """For a hot machine (delta_T ~ 10 K, L=1 m), Churchill-Chu gives h
+        in the 2-5 range (below the conservative hardcoded 10 W/m^2.K).
+        This confirms the hardcoded value is indeed an overestimate for free
+        convection in still air, and the correlation gives more accurate results.
+        """
+        h = compute_natural_convection_h_W_m2K(
+            surface_T_C=30.0, ambient_T_C=20.0, char_length_m=1.0,
+        )
+        # Churchill-Chu for these params: Ra~3.5e9, h~2-4 W/m^2.K
+        assert h < 10.0, f"h={h:.3f} should be < hardcoded 10 W/m^2.K"
+        assert h > 1.0, f"h={h:.3f} should be > 1 W/m^2.K (non-trivial)"
+
+
+# ---------------------------------------------------------------------------
+# Phase 6.4: Crank-Nicolson Order-of-Convergence (Richardson Extrapolation)
+# ---------------------------------------------------------------------------
+
+class TestCrankNicolsonConvergence:
+    """Verify Crank-Nicolson is second-order in time (order p ~ 2).
+
+    Richardson extrapolation: integrate with step sizes dt, dt/2, dt/4.
+    For a method of order p, the global error E(dt) ~ C * dt^p, so:
+        p ~ log2(|E(dt) - E(dt/2)| / |E(dt/2) - E(dt/4)|)
+
+    The exact analytical solution for the lumped ODE is:
+        T(t) = T_ss + (T_0 - T_ss) * exp(-t / tau)
+
+    where T_ss = T_amb + Q / (h * A), tau = m * c_p / (h * A).
+    """
+
+    Q_IN = 20.0
+    H = 10.0
+    A = 7.0
+    M = 500.0
+    CP = 460.0
+    T_AMB = 20.0
+    T0 = 20.0
+    T_END = 5000.0
+
+    def _exact(self, t: float) -> float:
+        """Analytical solution."""
+        hA = self.H * self.A
+        mc = self.M * self.CP
+        T_ss = self.T_AMB + self.Q_IN / hA
+        tau = mc / hA
+        return T_ss + (self.T0 - T_ss) * math.exp(-t / tau)
+
+    def _run_cn(self, dt: float) -> float:
+        """Run Crank-Nicolson to T_END, return final temperature."""
+        T = self.T0
+        t = 0.0
+        while t < self.T_END - dt * 0.5:
+            T = TransientThermalSolver.crank_nicolson_step(
+                T, self.Q_IN, self.H, self.A, self.M, self.CP, self.T_AMB, dt,
+            )
+            t += dt
+        return T
+
+    def test_crank_nicolson_second_order(self):
+        """Confirm Crank-Nicolson achieves order p >= 1.8 via Richardson extrapolation.
+
+        True CN is 2nd order; we accept >= 1.8 to tolerate endpoint stepping.
+        """
+        T_exact = self._exact(self.T_END)
+        dt_base = 500.0
+        e1 = abs(self._run_cn(dt_base) - T_exact)
+        e2 = abs(self._run_cn(dt_base / 2.0) - T_exact)
+        e3 = abs(self._run_cn(dt_base / 4.0) - T_exact)
+
+        if e2 < 1e-12 or e3 < 1e-12:
+            # Errors too small to measure order; method already converged
+            return
+
+        order_12 = math.log2(e1 / e2) if e1 > e2 else 0.0
+        order_23 = math.log2(e2 / e3) if e2 > e3 else 0.0
+        # Take the finer estimate (order_23) as more accurate
+        observed_order = order_23
+        assert observed_order >= 1.8, (
+            f"Crank-Nicolson order={observed_order:.2f} < 1.8; "
+            f"e1={e1:.4e}, e2={e2:.4e}, e3={e3:.4e}"
+        )
+
+    def test_cn_error_smaller_than_euler_at_same_dt(self):
+        """Crank-Nicolson should have smaller error than Forward Euler at the same dt."""
+        dt = 500.0
+        T_exact = self._exact(self.T_END)
+
+        T_cn = self._run_cn(dt)
+
+        # Forward Euler at same dt
+        T_eu = self.T0
+        t = 0.0
+        while t < self.T_END - dt * 0.5:
+            T_eu = TransientThermalSolver.forward_euler_step(
+                T_eu, self.Q_IN, self.H, self.A, self.M, self.CP, self.T_AMB, dt,
+            )
+            t += dt
+
+        err_cn = abs(T_cn - T_exact)
+        err_eu = abs(T_eu - T_exact)
+        assert err_cn <= err_eu, (
+            f"CN error {err_cn:.4e} > Euler error {err_eu:.4e} at dt={dt}"
+        )

@@ -158,6 +158,93 @@ class OperatingEnvelope:
         return self.thermal_time_constant_s / 60.0
 
 
+def compute_natural_convection_h_W_m2K(
+    surface_T_C: float,
+    ambient_T_C: float,
+    char_length_m: float,
+    geometry: str = "vertical_plate",
+) -> float:
+    """Natural convection heat transfer coefficient via Churchill-Chu correlation [W/(m^2.K)].
+
+    WHY: The hardcoded h_conv = 10 W/m^2.K is a mid-range guess.  The
+    Churchill-Chu correlation computes h from first principles using the
+    Rayleigh number (Ra = Gr * Pr), which captures the geometry and
+    temperature difference explicitly.  This eliminates an empirical
+    constant that is wrong by up to a factor of two at temperature
+    extremes and for the actual machine geometry.
+
+    Air properties evaluated at film temperature T_f = (T_s + T_amb) / 2.
+    For the expected operating range (~20-60 C film temperature), the
+    following values are used (interpolated from standard tables):
+
+        k   ~ 0.02625 W/(m.K)   (thermal conductivity at 30 C)
+        nu  ~ 1.608e-5 m^2/s    (kinematic viscosity at 30 C)
+        Pr  ~ 0.7282             (Prandtl number at 30 C)
+        beta = 1 / T_f_K        (ideal-gas expansion coefficient)
+
+    Churchill-Chu correlation (Churchill & Chu, Int. J. Heat Mass Transfer, 1975):
+
+      For a vertical plate (all Ra):
+        Nu = {0.825 + 0.387 * [Ra / (1 + (0.492/Pr)^(9/16))^(16/9)]^(1/6)}^2
+
+      For a horizontal plate, heated surface facing up (10^4 <= Ra <= 10^7):
+        Nu = 0.54 * Ra^(1/4)
+
+      For a horizontal plate, heated surface facing up (10^7 <= Ra <= 10^11):
+        Nu = 0.15 * Ra^(1/3)
+
+    h = Nu * k / L_char
+
+    Reference: Churchill, S.W. and Chu, H.H.S., "Correlating equations for
+    laminar and turbulent free convection from a vertical plate", Int. J.
+    Heat Mass Transfer, 18:1323-1329, 1975.
+
+    Args:
+        surface_T_C: Surface temperature [C]
+        ambient_T_C: Ambient (far-field) temperature [C]
+        char_length_m: Characteristic length [m] (height for vertical plate,
+                       length/width for horizontal plate)
+        geometry: "vertical_plate" or "horizontal_plate_up"
+
+    Returns:
+        Natural convection heat transfer coefficient h [W/(m^2.K)]
+    """
+    delta_T = surface_T_C - ambient_T_C
+    if abs(delta_T) < 1e-6 or char_length_m <= 0:
+        return 0.0
+
+    T_film_K = (surface_T_C + ambient_T_C) / 2.0 + 273.15
+
+    # Air properties at film temperature (interpolated from standard tables).
+    # Linear interpolation between 20 C (293 K) and 60 C (333 K) reference values.
+    # At 20 C: k=0.02514, nu=1.516e-5, Pr=0.7309
+    # At 60 C: k=0.02808, nu=1.896e-5, Pr=0.7202
+    # Slope per Kelvin:
+    T_ref_K = 293.15
+    frac = max(0.0, min(1.0, (T_film_K - T_ref_K) / 40.0))
+    k_air = 0.02514 + frac * (0.02808 - 0.02514)
+    nu_air = 1.516e-5 + frac * (1.896e-5 - 1.516e-5)
+    Pr_air = 0.7309 + frac * (0.7202 - 0.7309)
+    beta = 1.0 / T_film_K  # Ideal-gas expansion coefficient [1/K]
+
+    g = 9.81  # m/s^2
+    Ra = g * beta * abs(delta_T) * char_length_m**3 / (nu_air**2) * Pr_air
+
+    if geometry == "horizontal_plate_up":
+        if Ra < 1e4:
+            Nu = 0.54 * Ra**0.25
+        elif Ra < 1e7:
+            Nu = 0.54 * Ra**0.25
+        else:
+            Nu = 0.15 * Ra ** (1.0 / 3.0)
+    else:
+        # Default: vertical plate (Churchill & Chu 1975, all Ra)
+        Pr_factor = (1.0 + (0.492 / Pr_air) ** (9.0 / 16.0)) ** (16.0 / 9.0)
+        Nu = (0.825 + 0.387 * (Ra / Pr_factor) ** (1.0 / 6.0)) ** 2
+
+    return Nu * k_air / char_length_m
+
+
 def compute_thermal_time_constant_s(
     mass_kg: float,
     specific_heat_J_kgK: float,
@@ -166,8 +253,9 @@ def compute_thermal_time_constant_s(
 ) -> float:
     """Thermal time constant tau = m * c_p / (h * A) [s].
 
-    h_conv: natural convection coefficient (~5-15 W/m2K for free
-    convection in still air; 10 is a reasonable mid-range).
+    h_conv: natural convection coefficient [W/(m^2.K)].  If the default
+    value of 10 is acceptable for quick estimates, pass it explicitly.
+    For physics-accurate results, compute h via compute_natural_convection_h_W_m2K().
     """
     if surface_area_m2 <= 0 or h_conv_W_m2K <= 0:
         return float("inf")
@@ -179,7 +267,10 @@ def compute_steady_state_rise_C(
     surface_area_m2: float,
     h_conv_W_m2K: float = 10.0,
 ) -> float:
-    """Steady-state temperature rise delta_T = Q / (h * A) [K or C]."""
+    """Steady-state temperature rise delta_T = Q / (h * A) [K or C].
+
+    For physics-accurate results, compute h via compute_natural_convection_h_W_m2K().
+    """
     if surface_area_m2 <= 0 or h_conv_W_m2K <= 0:
         return float("inf")
     return total_heat_W / (h_conv_W_m2K * surface_area_m2)
