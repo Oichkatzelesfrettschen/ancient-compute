@@ -87,8 +87,11 @@ class LispCompiler:
         elif isinstance(expr, SExpression):
             return self._compile_sexpression(expr)
         elif isinstance(expr, String):
-            # STUB: Strings not fully supported in IR yet as values
-            return Constant(0) 
+            # Babbage engine operates on 50-digit decimals; encode strings
+            # as integer hash values (the engine has no native string type).
+            # Truncate to 50-digit capacity (10^50 - 1).
+            str_hash = abs(hash(expr.value)) % (10**50)
+            return Constant(str_hash)
 
     def _compile_if(self, sexp: SExpression):
         # (if cond then else)

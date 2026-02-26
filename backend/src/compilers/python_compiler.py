@@ -30,7 +30,7 @@ from backend.src.ir_types import (
     Program, Function, BasicBlock, Instruction,
     Assignment, BinaryOp, Load, Store, Call as IRCall, Return as IRReturn,
     BranchTerminator, JumpTerminator, ReturnTerminator,
-    VariableValue, Constant as IRConstant, MemoryValue,
+    VariableValue, Constant as IRConstant,
     IRBuilder
 )
 
@@ -309,16 +309,28 @@ class PythonCompiler:
         self.builder.current_block = self.builder.new_block(end_label)
 
     def _compile_for(self, stmt: For, block: BasicBlock) -> None:
-        """Compile for loop (simple: for i in range(n))"""
-        # For now, only support range(n) iteration
+        """Compile for loop: for i in range(n), range(start, stop), range(start, stop, step)"""
         if not isinstance(stmt.iter, Call) or stmt.iter.func != 'range':
-            raise NotImplementedError("Only 'for x in range(n)' is supported")
+            raise NotImplementedError("Only 'for x in range(...)' is supported")
 
-        if len(stmt.iter.args) != 1:
-            raise ValueError("range() expects exactly 1 argument")
-
-        # range(n) generates 0 to n-1
-        n_operand = self._compile_expression(stmt.iter.args[0], block)
+        argc = len(stmt.iter.args)
+        if argc == 1:
+            # range(n): start=0, stop=n, step=1
+            start_operand = IRConstant(0)
+            n_operand = self._compile_expression(stmt.iter.args[0], block)
+            step_operand = IRConstant(1)
+        elif argc == 2:
+            # range(start, stop): step=1
+            start_operand = self._compile_expression(stmt.iter.args[0], block)
+            n_operand = self._compile_expression(stmt.iter.args[1], block)
+            step_operand = IRConstant(1)
+        elif argc == 3:
+            # range(start, stop, step)
+            start_operand = self._compile_expression(stmt.iter.args[0], block)
+            n_operand = self._compile_expression(stmt.iter.args[1], block)
+            step_operand = self._compile_expression(stmt.iter.args[2], block)
+        else:
+            raise ValueError("range() expects 1, 2, or 3 arguments")
 
         loop_label = self._gen_label("for_loop")
         body_label = self._gen_label("for_body")
@@ -327,7 +339,7 @@ class PythonCompiler:
         # Initialize loop counter
         counter_temp = self._gen_temp("for_counter")
         self.builder.current_block.instructions.append(
-            Assignment(target=counter_temp, source=IRConstant(0))
+            Assignment(target=counter_temp, source=start_operand)
         )
 
         self.symbol_table.define(stmt.target, PythonType.int(), scope='local')
@@ -370,7 +382,7 @@ class PythonCompiler:
         self.break_labels.pop()
         self.continue_labels.pop()
 
-        # Increment counter
+        # Increment counter by step
         if not body_block.terminator:
             increment_temp = self._gen_temp("for_inc")
             body_block.instructions.append(
@@ -378,7 +390,7 @@ class PythonCompiler:
                     target=increment_temp,
                     op='+',
                     operand1=VariableValue(counter_temp),
-                    operand2=IRConstant(1)
+                    operand2=step_operand
                 )
             )
             body_block.instructions.append(
@@ -410,6 +422,12 @@ class PythonCompiler:
 
         elif isinstance(expr, Call):
             return self._compile_call(expr, block)
+
+        elif isinstance(expr, Subscript):
+            return self._compile_subscript(expr, block)
+
+        elif isinstance(expr, Attribute):
+            return self._compile_attribute(expr, block)
 
         else:
             raise NotImplementedError(f"Expression type not supported: {type(expr).__name__}")
@@ -475,6 +493,38 @@ class PythonCompiler:
             IRCall(target=temp, function_name=expr.func, arguments=args)
         )
 
+        return VariableValue(temp)
+
+    def _compile_subscript(self, expr: Subscript, block: BasicBlock):
+        """Compile array subscript: base[index] -> load(base + index)"""
+        base_operand = self._compile_expression(expr.value, block)
+        index_operand = self._compile_expression(expr.index, block)
+
+        addr_temp = self._gen_temp("sub_addr")
+        block.instructions.append(
+            BinaryOp(target=addr_temp, op='add', operand1=base_operand, operand2=index_operand)
+        )
+
+        temp = self._gen_temp("subscript")
+        block.instructions.append(
+            Load(target=temp, address=VariableValue(addr_temp))
+        )
+        return VariableValue(temp)
+
+    def _compile_attribute(self, expr: Attribute, block: BasicBlock):
+        """Compile attribute access: value.attr -> load(value + field_offset)"""
+        base_operand = self._compile_expression(expr.value, block)
+        field_offset = IRConstant(hash(expr.attr) % 2000)
+
+        addr_temp = self._gen_temp("attr_addr")
+        block.instructions.append(
+            BinaryOp(target=addr_temp, op='add', operand1=base_operand, operand2=field_offset)
+        )
+
+        temp = self._gen_temp("attr")
+        block.instructions.append(
+            Load(target=temp, address=VariableValue(addr_temp))
+        )
         return VariableValue(temp)
 
     def _gen_temp(self, prefix: str = "temp") -> str:

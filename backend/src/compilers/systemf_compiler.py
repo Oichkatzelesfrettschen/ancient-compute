@@ -7,7 +7,7 @@ from typing import Dict, Optional, List
 
 from backend.src.ir_types import (
     IRType, Value, Constant, VariableValue, UndefValue,
-    BasicBlock, Function, Program, IRBuilder
+    BasicBlock, Function, Program, IRBuilder, BranchTerminator
 )
 from backend.src.compilers.systemf_lexer import SystemFLexer
 from backend.src.compilers.systemf_parser import SystemFParser
@@ -113,27 +113,38 @@ class SystemFCompiler:
             return self._compile_expr(expr.expr)
 
         if isinstance(expr, IfExpr):
-            # Simplified if
             cond_val = self._compile_expr(expr.condition)
-            
-            then_block = self.ir_builder.new_block(self._new_tmp("then"))
-            else_block = self.ir_builder.new_block(self._new_tmp("else"))
-            merge_block = self.ir_builder.new_block(self._new_tmp("merge"))
-            
-            # Current block is entry
-            # ... wait, new_block advances current_block.
-            # I need to be careful with IRBuilder state.
-            
-            # Actually, let's use a fixed result var
+
             result_var = self._new_tmp("if_res")
             self.ir_builder.function.local_variables[result_var] = IRType.DEC50
-            
-            # Go back to previous block to emit branch
-            # This is why IRBuilder needs better block management
-            # For now, let's assume it works like this:
-            
-            # ... implementation omitted for brevity, focusing on core erasure
-            return self._compile_expr(expr.then_expr) # STUB
+
+            then_label = self._new_tmp("then")
+            else_label = self._new_tmp("else")
+            merge_label = self._new_tmp("merge")
+
+            # Save current block to emit branch from it
+            cond_block = self.ir_builder.current_block
+
+            # Build then block
+            then_block = self.ir_builder.new_block(then_label)
+            then_val = self._compile_expr(expr.then_expr)
+            self.ir_builder.emit_assignment(result_var, then_val)
+            self.ir_builder.emit_jump(merge_label)
+
+            # Build else block
+            else_block = self.ir_builder.new_block(else_label)
+            else_val = self._compile_expr(expr.else_expr)
+            self.ir_builder.emit_assignment(result_var, else_val)
+            self.ir_builder.emit_jump(merge_label)
+
+            # Emit branch on condition block
+            cond_block.terminator = BranchTerminator(
+                "ne", cond_val, Constant(0), then_label, else_label
+            )
+
+            # Merge block
+            self.ir_builder.new_block(merge_label)
+            return VariableValue(result_var)
 
         if isinstance(expr, LetExpr):
             val = self._compile_expr(expr.value_expr)

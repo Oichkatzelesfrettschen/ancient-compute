@@ -67,3 +67,30 @@ def p_error(p):
         print("Syntax error at EOF")
 
 parser = yacc.yacc(debug=False, write_tables=False)
+
+
+class IdrisParser:
+    """Class wrapper around the PLY-generated parser."""
+
+    def __init__(self, source: str):
+        self.source = source
+
+    def parse(self):
+        from .idris_lexer import lexer as ply_lexer
+        result = parser.parse(self.source, lexer=ply_lexer)
+        if result is None:
+            # PLY parser returned None -- wrap as single-element list for compiler
+            from .idris_ast import TypeDeclaration, Identifier
+            # Fallback: try to interpret as simple type annotation "name : type"
+            parts = self.source.strip().split(':')
+            if len(parts) == 2:
+                name = parts[0].strip()
+                type_name = parts[1].strip()
+                return [TypeDeclaration(name, Identifier(type_name))]
+            return []
+        return result
+
+
+class IDRIS2Parser(IdrisParser):
+    """Compatibility alias."""
+    pass

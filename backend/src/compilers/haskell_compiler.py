@@ -329,14 +329,33 @@ class HaskellCompiler:
         return VariableValue(temp)
 
     def _compile_lambda(self, expr: Lambda, block: BasicBlock):
-        """Compile lambda expression to closure"""
-        # For MVP, represent lambda as a function reference
-        # Real implementation would create closure object
-        temp = self._gen_temp("lambda")
-        block.instructions.append(
-            Assignment(target=temp, source=IRConstant(0))  # Placeholder
-        )
-        return VariableValue(temp)
+        """Compile lambda expression by lifting to a global function"""
+        func_name = self._gen_temp("lambda")
+        params = list(expr.params) if hasattr(expr, 'params') else [expr.param] if hasattr(expr, 'param') else []
+
+        # Save current builder state
+        old_builder = self.builder
+        old_table = self.symbol_table
+
+        self.builder = IRBuilder(func_name, params)
+        entry_block = self.builder.new_block("entry")
+        self.symbol_table = SymbolTable(parent=old_table)
+
+        for param in params:
+            self.symbol_table.define(param, HaskellType.var('a'), scope='parameter')
+
+        body_operand = self._compile_expression(expr.body, entry_block)
+        self.builder.emit_return(body_operand)
+
+        # Finalize lifted function (stored externally by builder)
+        self.builder.finalize()
+
+        # Restore builder state
+        self.builder = old_builder
+        self.symbol_table = old_table
+
+        # Return function reference as constant
+        return IRConstant(func_name)
 
     def _compile_application(self, expr: Application, block: BasicBlock):
         """Compile function application"""
