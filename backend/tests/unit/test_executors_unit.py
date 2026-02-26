@@ -42,19 +42,31 @@ def test_get_executor_is_case_insensitive_and_rejects_unknown() -> None:
 
 
 @pytest.mark.asyncio
-async def test_stub_services_return_placeholder_success() -> None:
-    """Stub services should return deterministic success placeholders for now."""
-    expected = {
-        "java": "not yet implemented",
-        "idris2": "not yet implemented",
-        "systemf": "not yet implemented",
-    }
+async def test_java_stub_returns_placeholder_success() -> None:
+    """Java (only remaining stub) should return a placeholder message."""
+    executor = get_executor("java")
+    result = await executor.execute("main = 0")
+    assert result.status == BaseExecutionStatus.SUCCESS
+    assert "not yet implemented" in result.stdout.lower()
 
-    for language, snippet in expected.items():
-        executor = get_executor(language)
-        result = await executor.execute("main = 0")
-        assert result.status == BaseExecutionStatus.SUCCESS
-        assert snippet in result.stdout.lower()
+
+@pytest.mark.asyncio
+async def test_idris_service_compiles_source() -> None:
+    """IDRIS service should invoke compiler and return compilation result."""
+    executor = get_executor("idris2")
+    result = await executor.execute("main = 0")
+    # May succeed or fail depending on parser, but should not be a placeholder
+    assert result.status in (BaseExecutionStatus.SUCCESS, BaseExecutionStatus.COMPILE_ERROR)
+    assert "not yet implemented" not in result.stdout.lower()
+
+
+@pytest.mark.asyncio
+async def test_systemf_service_compiles_source() -> None:
+    """SystemF service should invoke compiler and return compilation result."""
+    executor = get_executor("systemf")
+    result = await executor.execute("42")
+    assert result.status in (BaseExecutionStatus.SUCCESS, BaseExecutionStatus.COMPILE_ERROR)
+    assert "not yet implemented" not in result.stdout.lower()
 
 
 @pytest.mark.asyncio
