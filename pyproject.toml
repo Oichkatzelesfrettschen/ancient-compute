@@ -81,6 +81,17 @@ warn_unused_configs = true
 disallow_untyped_defs = true
 ignore_missing_imports = true
 
+# Python version policy:
+#   Target runtime: Python 3.11 (minimum tested and supported version).
+#   The project venv may use a newer interpreter (e.g. 3.12, 3.13); this is
+#   acceptable as long as the target-version constraints above are respected.
+#   Lock files: backend/requirements.lock and backend/requirements-dev.lock
+#   are generated with pip-compile (pip-tools).  Regenerate with:
+#     pip-compile backend/requirements.txt -o backend/requirements.lock --no-header
+#     pip-compile backend/requirements-dev.txt -o backend/requirements-dev.lock --no-header
+#   Install from lock files for reproducible environments:
+#     pip install -r backend/requirements.lock -r backend/requirements-dev.lock
+
 [tool.bandit]
 exclude_dirs = ["tests", "*/tests/*"]
 skips = ["B101", "B601"]
