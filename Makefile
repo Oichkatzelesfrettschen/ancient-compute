@@ -1,7 +1,7 @@
 # Ancient Compute - Makefile
 # Common development tasks for cross-platform development
 
-.PHONY: help setup dev test build clean install-hooks lint format docker-up docker-down test-active verify-simulation links-check links-check-full archive-audit
+.PHONY: help setup dev test build clean install-hooks lint format docker-up docker-down test-active test-unit test-physics verify-simulation links-check links-check-full archive-audit
 
 # Default target
 help:
@@ -19,6 +19,8 @@ help:
 	@echo "Testing:"
 	@echo "  make test            - Run all tests"
 	@echo "  make test-backend    - Run backend tests"
+	@echo "  make test-unit       - Run backend unit tests only"
+	@echo "  make test-physics    - Run physics/simulation tests (requires @physics marker)"
 	@echo "  make test-frontend   - Run frontend tests"
 	@echo "  make test-coverage   - Run tests with coverage report"
 	@echo ""
@@ -90,6 +92,14 @@ test-frontend:
 test-coverage:
 	@echo "Running tests with coverage..."
 	cd backend && pytest --cov=src --cov-report=html --cov-report=term
+
+test-unit:
+	@echo "Running all unit tests..."
+	cd backend && pytest tests/unit/ -q
+
+test-physics:
+	@echo "Running physics/simulation tests..."
+	cd backend && pytest -m physics -q
 
 test-active:
 	@echo "Running active-contract test gate (Tier A)..."
@@ -231,143 +241,74 @@ bazel-test:
 bazel-clean:
 	bazel clean --expunge
 
-# Historian targets
-curriculum-index:
-	@echo Generating curriculum index...
-	@find content/modules -maxdepth 2 -type f -name README.md | sort > output/curriculum_index.txt
-verify-history:
-	@echo Verifying history claims...
-	@grep -n "Status" docs/history/verification.md | cat
-
-
-# Historian index build
+# --- Historian & Content ---
 historian-index:
-	@echo Building historian index...
-	@echo Historic sources: docs/history/sources.md > output/historian_index.txt
-	@echo Timeline: docs/history/timeline.md >> output/historian_index.txt
-	@echo Lacunae: docs/history/lacunae.md >> output/historian_index.txt
-	@find content/modules -maxdepth 2 -name README.md | sort >> output/historian_index.txt
-
-
-verify-history-ci:
-	@grep -q "pending" docs/history/verification.md && echo Pending claims exist || echo All claims verified
-
-
-modules-list:
+	@echo "Building historian index and curriculum manifest..."
+	@echo "Historic sources: docs/history/sources.md" > output/historian_index.txt
+	@echo "Timeline: docs/history/timeline.md" >> output/historian_index.txt
+	@echo "Lacunae: docs/history/lacunae.md" >> output/historian_index.txt
+	@find content/modules -maxdepth 2 -type f -name README.md | sort >> output/historian_index.txt
 	@find content/modules -maxdepth 1 -type d | sort > output/modules_list.txt
 
-
-docs-check:
-	@echo Checking docs structure...
-	@test -d docs/history && test -d docs/speculative && echo OK || echo Missing dirs
-
-
-verify-history-copilot:
-	@echo Reviewer: Copilot
+verify-history:
+	@echo "Verifying history claims and lacunae..."
 	@grep -n "Status" docs/history/verification.md | cat
+	@grep -q "pending" docs/history/verification.md && echo "Pending claims exist" || echo "All claims verified"
+
+historian-release: historian-index verify-history
+	@echo "Preparing historian release v1..."
+	@echo "Sources: docs/history/sources.md"
+	@echo "Scans: docs/history/SCAN_LINKS.md"
+	@echo "Roadmap: docs/history/HISTORIAN_ROADMAP.md"
+
+# --- Documentation ---
+docs-validate:
+	@echo "Validating documentation YAML, links, and structure..."
+	@python3 -c "import yaml;yaml.safe_load(open('docs/agents.yaml'))" && echo "YAML OK" || echo "YAML ERR"
+	@python3 scripts/VALIDATE_LINKS.py --scope active
+	@python3 scripts/gen_doc_index.py > output/docs_index.txt
+	@test -d docs/history && test -d docs/speculative && echo "Structure OK" || echo "Missing directories"
 
 
-modules-check:
-	@echo Checking modules...
-	@for m in content/modules/module{0..7}; do test -d $$m || echo Missing $$m; done
 
-
-historian-release:
-	@echo Building historian release v1...
-	@echo Sources: docs/history/sources.md
-	@echo Scans: docs/history/SCAN_LINKS.md
-	@echo Verification: docs/history/verification.md
-	@echo Status: docs/history/STATUS.md
-	@echo Roadmap: docs/history/HISTORIAN_ROADMAP.md
-
-
-# Measurement targets
-measure-emulator:
+# --- Measurement & Metrics ---
+measure-all:
+	@echo "Running all metrics collections..."
 	@python3 scripts/measure_emulator.py > output/emulator_metrics.csv
-measure-backend:
-	@bash scripts/measure_backend.sh > output/backend_metrics.csv
-measure-frontend:
-	@bash scripts/measure_frontend.sh > output/frontend_metrics.csv
-measure-all: measure-emulator measure-backend measure-frontend
-
-
-measure-emulator-real:
 	@python3 scripts/measure_emulator_real.py > output/emulator_metrics_real.csv
-
-
-regression-check:
-	@echo Emulator real metrics summary:
-	@python3 scripts/analyze_csv.py output/emulator_metrics_real.csv avg || true
-	@echo Backend metrics summary:
-	@python3 scripts/analyze_csv.py output/backend_metrics.csv latency_s || true
-	@echo Frontend metrics summary:
-	@python3 scripts/analyze_csv.py output/frontend_metrics.csv value || true
-
-
-measure-emulator-res:
 	@python3 scripts/measure_emulator_resources.py
-benchmark-emulator-programs:
-	@python3 scripts/benchmark_emulator_programs.py
-measure-backend-res:
+	@python3 scripts/measure_emulator_throughput.py > output/emulator_throughput.csv
+	@python3 scripts/measure_emulator_clock.py > output/emulator_clock.csv
+	@python3 scripts/measure_longrun.py
+	@bash scripts/measure_backend.sh > output/backend_metrics.csv
 	@python3 scripts/measure_backend_resources.py
-analyze-all:
+	@bash scripts/measure_frontend.sh > output/frontend_metrics.csv
+	@python3 scripts/benchmark_emulator_programs.py
 	@bash scripts/analyze_all.sh
 
+regression-check:
+	@echo "Comparing current metrics against baselines..."
+	@python3 scripts/analyze_csv.py output/emulator_metrics_real.csv avg || true
+	@python3 scripts/analyze_csv.py output/backend_metrics.csv latency_s || true
+	@python3 scripts/analyze_csv.py output/frontend_metrics.csv value || true
+	@python3 scripts/regression_alert.py || true
+
+metrics-snapshot: env-fingerprint measure-all regression-check
+	@bash scripts/snapshot_metrics.sh
+	@gnuplot scripts/plot_csv.gp || echo "gnuplot not available for plotting"
 
 env-fingerprint:
 	@bash scripts/env_fingerprint.sh > output/env_fingerprint.csv
-regression-alert:
-	@bash -c "make analyze-all >/dev/null 2>&1 || true"
-	@python3 scripts/regression_alert.py || true
 
-
-snapshot:
-	@bash scripts/snapshot_metrics.sh
-plots:
-	@gnuplot scripts/plot_csv.gp || echo gnuplot not available
-measure-schedule:
-	@make env-fingerprint measure-emulator-real measure-emulator-res benchmark-emulator-programs measure-backend-res measure-frontend analyze-all regression-alert snapshot
-
-
-measure-throughput:
-	@python3 scripts/measure_emulator_throughput.py > output/emulator_throughput.csv
-measure-longrun:
-	@python3 scripts/measure_longrun.py
-
-
-measure-emulator-clock:
-	@python3 scripts/measure_emulator_clock.py > output/emulator_clock.csv
+# --- Physics & Simulation ---
 physics-validate:
+	@echo "Validating Babbage simulation parameter contract and physics..."
+	@python3 tools/simulation/verify_babbage_params.py
 	@python3 scripts/validate_emulator_physics.py
-
-
-measurement-checklist:
-	@sed -n "1,120p" docs/history/MEASUREMENT_SPECIALIST_GUIDE.md | cat
-
-
-measurement-agent:
-	@sed -n "1,200p" docs/history/MEASUREMENT_SPECIALIST_AGENT.md | cat
-
-
-docs-index:
-	@python3 scripts/gen_doc_index.py > output/docs_index.txt
-
-
-# Docs & sim targets
-sources-index:
-	@awk "/^- id:/{print}" docs/sources/sources.yaml > output/sources_index.txt
-fetch-sources:
-	@bash scripts/fetch_sources.sh
-sim-validate:
 	@tools/simulation/simulate.py docs/simulation/sim_schema.yaml > output/sim_validation.txt
 
-
-sim-extract:
+physics-report:
+	@echo "Extracting and reporting simulation parameters..."
 	@tools/simulation/extract_params.py
-sim-report:
-	@echo Extracted params: && cat docs/simulation/extracted.yaml || true
+	@cat docs/simulation/extracted.yaml || true
 
-docs-validate:
-	@echo Validating YAML and links...
-	@python3 -c "import yaml;yaml.safe_load(open('docs/agents.yaml'))" && echo YAML OK || echo YAML ERR
-	@grep -R "^http" docs | head -n 20 >/dev/null || true

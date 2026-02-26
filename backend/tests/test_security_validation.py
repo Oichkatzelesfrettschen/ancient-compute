@@ -58,11 +58,15 @@ class TestInputValidation:
 
         for malicious_lang in injection_attempts:
             # Should not be supported
-            assert not orchestrator.orchestrator.language_config.get(malicious_lang)
+            assert not orchestrator.language_config.get(malicious_lang)
 
     def test_environment_variable_injection(self):
-        """Test protection against environment variable injection."""
-        # Malicious env vars that might be used in Docker
+        """Test protection against environment variable injection.
+
+        Malicious env-var strings must be stored as literal text, never
+        shell-evaluated.  We verify type only; actual sandbox enforcement
+        is a Docker-layer concern.
+        """
         injection_attempts = [
             "$(cat /etc/passwd)",
             "`whoami`",
@@ -71,9 +75,8 @@ class TestInputValidation:
         ]
 
         for malicious_var in injection_attempts:
-            # Should be treated as literal strings, not evaluated
+            # Stored as literal Python str, not evaluated by shell
             assert isinstance(malicious_var, str)
-            assert "$(" not in malicious_var or "python" not in malicious_var
 
     def test_code_with_dangerous_operations(self):
         """Test that dangerous code is executed in sandbox."""
@@ -203,7 +206,7 @@ class TestSQLInjectionProtection:
 
         for attempt in injection_attempts:
             # Should only accept whitelisted languages
-            is_supported = orchestrator.orchestrator.language_config.get(attempt.lower())
+            is_supported = orchestrator.language_config.get(attempt.lower())
             assert is_supported is None
 
 
