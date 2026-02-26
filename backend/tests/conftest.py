@@ -7,6 +7,42 @@ def pytest_configure(config):
     config.addinivalue_line("markers", "physics: physics/simulation tests")
 
 
+# ---------------------------------------------------------------------------
+# Shared emulator fixtures
+# ---------------------------------------------------------------------------
+
+@pytest.fixture
+def analytical_engine():
+    """Fresh Analytical Engine instance (no physics)."""
+    from backend.src.emulator.analytical_engine import Engine
+    return Engine()
+
+
+@pytest.fixture
+def babbage_number():
+    """Factory fixture for BabbageNumber values."""
+    from backend.src.emulator.columns import BabbageNumber
+
+    def _make(value):
+        return BabbageNumber(value)
+
+    return _make
+
+
+@pytest.fixture
+def simulation_config():
+    """Default SimulationConfig at 30 RPM."""
+    from backend.src.emulator.simulation.state import SimulationConfig
+    return SimulationConfig(rpm=30.0)
+
+
+@pytest.fixture
+def simulation_engine(simulation_config):
+    """SimulationEngine wired to default config."""
+    from backend.src.emulator.simulation.engine import SimulationEngine
+    return SimulationEngine(simulation_config)
+
+
 # Conditional imports for API testing (optional)
 # Guard with importorskip so pytest reports a clear skip reason
 # rather than silently swallowing import errors.

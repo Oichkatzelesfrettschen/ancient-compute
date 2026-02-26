@@ -1,17 +1,11 @@
 """
 Pytest configuration for Phase 2 integration tests
 
-Provides fixtures and configuration for cross-language testing
+Provides fixtures and configuration for cross-language testing.
+pytest.ini pythonpath=. handles import resolution; no sys.path hacks needed.
 """
 
 import pytest
-import sys
-from pathlib import Path
-
-# Ensure backend modules are importable
-backend_path = Path(__file__).parent.parent.parent
-if str(backend_path) not in sys.path:
-    sys.path.insert(0, str(backend_path))
 
 
 @pytest.fixture
