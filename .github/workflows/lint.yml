@@ -75,6 +75,9 @@ jobs:
         # Fail on import order issues
 
       - name: Run flake8 (style + errors)
+        # NOTE: flake8 and pylint overlap significantly. A future PR should
+        # consolidate both into ruff (faster, single-tool replacement).
+        # See: https://docs.astral.sh/ruff/faq/#is-ruff-compatible-with-flake8
         run: |
           cd backend
           flake8 src/ tests/ --count --show-source --statistics \
@@ -108,7 +111,9 @@ jobs:
           cd backend
           safety check --json
         continue-on-error: true
-        # Don't fail on dependency issues (informational)
+        # INFORMATIONAL: Dependency vulnerability reports are advisory.
+        # Upstream packages may lag on patches; failing CI here would
+        # block unrelated work. Review safety output manually.
 
   # TypeScript/JavaScript Frontend
   lint-typescript:
@@ -250,7 +255,7 @@ jobs:
         with:
           dockerfile: frontend/Dockerfile
           failure-threshold: warning
-        continue-on-error: true
+        # Gating: Dockerfile lint failures must be fixed before merge.
 
   # YAML Files
   lint-yaml:
@@ -274,9 +279,11 @@ jobs:
             yamllint -s -d "{extends: default, rules: {line-length: {max: 120}}}" \
               docker-compose.yml
           else
-            echo "⚠️  docker-compose.yml not found - skipping"
+            echo "docker-compose.yml not found - skipping"
           fi
         continue-on-error: true
+        # INFORMATIONAL: docker-compose.yml is optional infrastructure;
+        # yamllint failures here should not block code changes.
 
   # Markdown Documentation
   lint-markdown:
@@ -297,6 +304,9 @@ jobs:
         run: |
           markdownlint '**/*.md' --ignore node_modules --config .markdownlint.json
         continue-on-error: true
+        # INFORMATIONAL: Markdown style is advisory. The project has 100+
+        # docs; enforcing strict markdownlint would require a large cleanup
+        # pass. Gate when the backlog is resolved.
 
   # JSON Files
   lint-json:

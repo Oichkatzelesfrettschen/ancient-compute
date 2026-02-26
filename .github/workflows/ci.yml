@@ -157,7 +157,8 @@ jobs:
 
       - name: Run tests
         run: cd frontend && pnpm test
-        continue-on-error: true
+        # Frontend tests are gating. Known-broken tests should be
+        # skipped via test config, not via continue-on-error.
 
   build-backend:
     name: Build Backend

@@ -23,27 +23,7 @@ References:
 
 from typing import List, Tuple, Dict, Optional
 from dataclasses import dataclass, field
-
-
-@dataclass
-class ColumnSnapshot:
-    """
-    Snapshot of DigitColumn state for debugging.
-
-    Captures all relevant state at a moment in time:
-    - Digit positions (0-30)
-    - Carry state
-    - Mechanical state (latch, advancing)
-    - Phase information
-    """
-
-    column_index: int                    # Which column (0-7)
-    digits: List[int]                    # 31 digit positions
-    carry_in: bool                       # Incoming carry
-    carry_out: bool                      # Outgoing carry
-    is_latched: bool                     # Latch closed?
-    is_advancing: bool                   # Advancing to next row?
-    phase: str                           # Current mechanical phase
+from .types import ColumnSnapshot
 
 
 class DigitColumn:

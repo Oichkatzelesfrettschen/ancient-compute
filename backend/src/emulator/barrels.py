@@ -57,9 +57,20 @@ class MicroOp(Enum):
     CHECK_SQRT_CONVERGENCE = auto() # Check if |x_{n+1} - x_n| < tolerance
     STORE_SQRT_RESULT = auto()  # Store converged result
 
+    # Tier B/C and Lovelace Extensions
+    BITWISE_AND = auto()        # Digit-wise AND
+    BITWISE_OR = auto()         # Digit-wise OR
+    BITWISE_XOR = auto()        # Digit-wise XOR
+    COMPUTE_CHECKSUM = auto()   # Verify modulo-10 checksum
+    SET_MODE_SYMBOLIC = auto()  # Switch to symbolic processing
+    SET_MODE_NUMERIC = auto()   # Switch to numeric processing
+    PLAY_NOTE = auto()          # Simulate playing a musical note
+
     # Control Ops
     JUMP_RELATIVE = auto()      # Relative jump in micro-program
     REPEAT_IF_COUNTER = auto()  # Jump back if mill_counter > 0
+    REPEAT_IF_GE = auto()       # Jump back if GREATER or EQUAL flag is set
+    JUMP_IF_LT = auto()         # Jump forward if LESS flag is set
     FETCH_OP_CARD = auto()
     FETCH_VAR_CARD = auto()
 
@@ -87,14 +98,14 @@ class BarrelController:
         self._init_standard_barrels()
         
     def _init_standard_barrels(self):
-        # Addition Barrel (Simplified sequence based on general principles)
+        # Addition Barrel
         add = Barrel("ADD")
-        add.add_step([MicroOp.FETCH_VAR_CARD, MicroOp.LIFT_STORE_AXIS]) # Get first operand from Store
-        add.add_step([MicroOp.CONNECT_STORE_TO_MILL, MicroOp.DROP_STORE_AXIS]) # Transfer to Ingress
-        add.add_step([MicroOp.LIFT_INGRESS]) # Ingress to Mill input
-        add.add_step([MicroOp.ADVANCE_MILL]) # Perform addition (Ingress + Mill Primary)
-        add.add_step([MicroOp.RUN_CARRY]) # Propagate carries
-        add.add_step([MicroOp.DROP_INGRESS, MicroOp.LIFT_EGRESS]) # Egress gets result
+        add.add_step([MicroOp.FETCH_VAR_CARD, MicroOp.LIFT_STORE_AXIS])
+        add.add_step([MicroOp.CONNECT_STORE_TO_MILL, MicroOp.DROP_STORE_AXIS])
+        add.add_step([MicroOp.LIFT_INGRESS])
+        add.add_step([MicroOp.ADVANCE_MILL])
+        add.add_step([MicroOp.RUN_CARRY])
+        add.add_step([MicroOp.DROP_INGRESS, MicroOp.LIFT_EGRESS])
         self.barrels["ADD"] = add
 
         # Subtraction Barrel
@@ -102,84 +113,102 @@ class BarrelController:
         sub.add_step([MicroOp.FETCH_VAR_CARD, MicroOp.LIFT_STORE_AXIS])
         sub.add_step([MicroOp.CONNECT_STORE_TO_MILL, MicroOp.DROP_STORE_AXIS])
         sub.add_step([MicroOp.LIFT_INGRESS])
-        sub.add_step([MicroOp.REVERSE_MILL]) # Perform subtraction
+        sub.add_step([MicroOp.REVERSE_MILL])
         sub.add_step([MicroOp.RUN_CARRY])
         sub.add_step([MicroOp.DROP_INGRESS, MicroOp.LIFT_EGRESS])
         self.barrels["SUB"] = sub
 
-        # Multiplication Barrel (Simulated "Method of Repeated Addition")
-        # Handles single-digit multiplier via repeated addition.
-        # Multi-digit multiplication requires an outer loop (not modeled here).
+        # Multiplication Barrel
         mul = Barrel("MULT")
-        # 0: Fetch Multiplier (operand_src) and extract units digit into counter
         mul.add_step([MicroOp.GET_MULTIPLIER_DIGIT])
-        # 1: Add Multiplicand to product accumulator + decrement counter (loop body)
         mul.add_step([MicroOp.ADVANCE_MILL, MicroOp.DECREMENT_COUNTER])
-        # 2: Repeat step 1 if counter > 0
         mul.add_step([MicroOp.REPEAT_IF_COUNTER])
-        # 3: Store result from accumulator back to register
         mul.add_step([MicroOp.STORE_MILL_ACCUMULATOR])
         self.barrels["MULT"] = mul
 
-        # Division Barrel (restoring division algorithm)
-        # Babbage's division proceeds digit-by-digit from most significant
-        # to least significant, analogous to long division.
-        #
-        # Algorithm:
-        #   1. Load dividend into mill accumulator, divisor into buffer
-        #   2. For each quotient digit (50 digits, MSB first):
-        #      a. Compare accumulator against shifted divisor
-        #      b. If accumulator >= divisor: subtract, increment quotient digit
-        #      c. Repeat until accumulator < divisor
-        #      d. Shift divisor right for next digit position
-        #   3. Store quotient and remainder
+        # Division Barrel
         div = Barrel("DIV")
-        # Step 0: Fetch dividend from store to mill accumulator
         div.add_step([MicroOp.FETCH_VAR_CARD, MicroOp.LIFT_STORE_AXIS])
-        # Step 1: Transfer dividend to mill
         div.add_step([MicroOp.CONNECT_STORE_TO_MILL, MicroOp.DROP_STORE_AXIS,
                        MicroOp.LOAD_MILL_ACCUMULATOR])
-        # Step 2: Fetch divisor from store
         div.add_step([MicroOp.FETCH_VAR_CARD, MicroOp.LIFT_STORE_AXIS])
-        # Step 3: Transfer divisor to mill buffer
         div.add_step([MicroOp.CONNECT_STORE_TO_MILL, MicroOp.DROP_STORE_AXIS])
-        # Step 4: Compare accumulator vs divisor
+        # Inner loop for one digit position
         div.add_step([MicroOp.COMPARE_MILL_BUFFERS])
-        # Step 5: Conditional subtract (if accumulator >= divisor)
+        div.add_step([MicroOp.JUMP_IF_LT]) # Skip if remainder < divisor
         div.add_step([MicroOp.REVERSE_MILL])
-        # Step 6: Increment quotient digit counter
         div.add_step([MicroOp.INCREMENT_QUOTIENT_DIGIT])
-        # Step 7: Repeat subtraction while accumulator >= divisor
-        div.add_step([MicroOp.REPEAT_IF_COUNTER])
-        # Step 8: Shift divisor right for next quotient digit
+        div.add_step([MicroOp.REPEAT_IF_GE]) # Repeat subtract while GE
+        # Next digit
         div.add_step([MicroOp.SHIFT_MILL_DIVISOR])
-        # Step 9: Reset remainder tracking
         div.add_step([MicroOp.RESET_REMAINDER])
-        # Step 10: Store quotient via egress
         div.add_step([MicroOp.LIFT_EGRESS])
-        # Step 11: Transfer result to store
-        div.add_step([MicroOp.CONNECT_MILL_TO_STORE, MicroOp.DROP_EGRESS])
-        # Step 12: Store remainder via egress
-        div.add_step([MicroOp.STORE_MILL_ACCUMULATOR])
+        div.add_step([MicroOp.CONNECT_MILL_TO_STORE])
+        div.add_step([MicroOp.DROP_EGRESS])
         self.barrels["DIV"] = div
 
-        # SQRT Barrel (Newton-Raphson iteration)
-        # Algorithm: x_{n+1} = (x_n + S/x_n) / 2
-        # Converges quadratically; ~25 iterations for 50-digit precision.
+        # SQRT Barrel
         sqrt = Barrel("SQRT")
-        # Step 0: Initialize guess x_0 = S/2
         sqrt.add_step([MicroOp.INIT_SQRT_GUESS])
-        # Step 1: Compute S / x_n
         sqrt.add_step([MicroOp.DIVIDE_S_BY_X])
-        # Step 2: Compute x_n + (S/x_n)
         sqrt.add_step([MicroOp.ADD_X_AND_QUOTIENT])
-        # Step 3: Halve to get x_{n+1} = (x_n + S/x_n) / 2
         sqrt.add_step([MicroOp.HALVE_ACCUMULATOR])
-        # Step 4: Check convergence (loops back to step 1 if not converged)
         sqrt.add_step([MicroOp.CHECK_SQRT_CONVERGENCE])
-        # Step 5: Store final result
         sqrt.add_step([MicroOp.STORE_SQRT_RESULT])
         self.barrels["SQRT"] = sqrt
+
+        # LOAD Barrel
+        load = Barrel("LOAD")
+        load.add_step([MicroOp.FETCH_VAR_CARD, MicroOp.LIFT_STORE_AXIS])
+        load.add_step([MicroOp.CONNECT_STORE_TO_MILL, MicroOp.DROP_STORE_AXIS])
+        load.add_step([MicroOp.LIFT_INGRESS])
+        load.add_step([MicroOp.ADVANCE_MILL])
+        load.add_step([MicroOp.DROP_INGRESS, MicroOp.LIFT_EGRESS])
+        self.barrels["LOAD"] = load
+
+        # STOR Barrel
+        stor = Barrel("STOR")
+        stor.add_step([MicroOp.LIFT_EGRESS])
+        stor.add_step([MicroOp.FETCH_VAR_CARD, MicroOp.LIFT_STORE_AXIS])
+        stor.add_step([MicroOp.CONNECT_MILL_TO_STORE])
+        stor.add_step([MicroOp.DROP_STORE_AXIS, MicroOp.DROP_EGRESS])
+        self.barrels["STOR"] = stor
+
+        # SHL/SHR Barrels
+        shl = Barrel("SHL")
+        shl.add_step([MicroOp.SHIFT_MILL_LEFT])
+        self.barrels["SHL"] = shl
+        
+        shr = Barrel("SHR")
+        shr.add_step([MicroOp.SHIFT_MILL_RIGHT])
+        self.barrels["SHR"] = shr
+
+        # Bitwise Barrels
+        and_b = Barrel("AND")
+        and_b.add_step([MicroOp.BITWISE_AND])
+        self.barrels["AND"] = and_b
+        
+        or_b = Barrel("OR")
+        or_b.add_step([MicroOp.BITWISE_OR])
+        self.barrels["OR"] = or_b
+        
+        xor_b = Barrel("XOR")
+        xor_b.add_step([MicroOp.BITWISE_XOR])
+        self.barrels["XOR"] = xor_b
+
+        # Checksum Barrel
+        chks = Barrel("CHKS")
+        chks.add_step([MicroOp.COMPUTE_CHECKSUM])
+        self.barrels["CHKS"] = chks
+
+        # Lovelace Extension Barrels
+        play = Barrel("PLAY")
+        play.add_step([MicroOp.PLAY_NOTE])
+        self.barrels["PLAY"] = play
+        
+        setmode = Barrel("SETMODE")
+        setmode.add_step([MicroOp.SET_MODE_SYMBOLIC]) # Simplified: assume SETMODE handles toggle or param
+        self.barrels["SETMODE"] = setmode
 
     def select_barrel(self, op_name: str):
         if op_name in self.barrels:
@@ -196,7 +225,7 @@ class BarrelController:
         barrel = self.barrels[self.active_barrel]
         if self.step_index >= len(barrel.rows):
             print(f"Barrel {self.active_barrel} finished.")
-            self.active_barrel = None # Sequence complete
+            self.active_barrel = None 
             return []
             
         ops = list(barrel.rows[self.step_index].studs)

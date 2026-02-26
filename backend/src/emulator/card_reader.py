@@ -36,14 +36,46 @@ from dataclasses import dataclass, field
 from enum import Enum
 
 
-class CardOperation(Enum):
-    """Operation codes for punch cards."""
+class CardClass(Enum):
+    """Card class per Menabrea/Lovelace (SOURCE:MENABREA-1842).
 
+    The Analytical Engine uses three card classes:
+    - OPERATION: specifies arithmetic or control opcode
+    - VARIABLE: specifies store column address and direction
+    - NUMBER: loads a literal constant
+    """
+    OPERATION = "Operation"
+    VARIABLE = "Variable"
+    NUMBER = "Number"
+
+
+class CardOperation(Enum):
+    """Operation codes for punch cards.
+
+    Codes 0x0-0xB per OPCODES.yaml (docs/hardware/OPCODES.yaml).
+    Legacy DE2 codes (LOAD_COEFF, SET_X_RANGE) retained for backward
+    compatibility with existing test code.
+    """
+
+    # --- Analytical Engine opcodes (v0.1 card grammar) ---
+    ADD = "ADD"                        # 0x0: Add ingress to egress
+    SUB = "SUB"                        # 0x1: Subtract
+    MUL = "MUL"                        # 0x2: Multiply (barrel)
+    DIV = "DIV"                        # 0x3: Divide (barrel)
+    MOV = "MOV"                        # 0x4: Copy value
+    CLR = "CLR"                        # 0x5: Clear to zero
+    CMPZ = "CMPZ"                      # 0x6: Compare with zero
+    BR = "BR"                          # 0x7: Branch
+    STEP = "STEP"                      # 0x8: Advance card drum
+    HALT = "HALT"                      # 0x9: Stop execution
+    PRINT = "PRINT"                    # 0xA: Output to printer
+    NOP = "NOP"                        # 0xB: No operation
+
+    # --- Legacy DE2 codes (backward compatibility) ---
     LOAD_COEFF = "LOAD_COEFF"          # Load polynomial coefficient
     SET_X_RANGE = "SET_X_RANGE"        # Set x-value range (start, end)
     PRINT_RESULT = "PRINT_RESULT"      # Print current result
     RESET_ENGINE = "RESET_ENGINE"      # Reset all registers
-    HALT = "HALT"                      # Stop execution
 
 
 @dataclass

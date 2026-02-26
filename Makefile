@@ -1,7 +1,7 @@
 # Ancient Compute - Makefile
 # Common development tasks for cross-platform development
 
-.PHONY: help setup dev test build clean install-hooks lint format docker-up docker-down test-active test-unit test-physics verify-simulation links-check links-check-full archive-audit db-init db-migrate db-rollback db-reset
+.PHONY: help setup dev test build clean install-hooks lint format docker-up docker-down test-active test-unit test-physics verify-simulation links-check links-check-full archive-audit db-init db-migrate db-rollback db-reset verify status twin-verify bom-validate
 
 # Default target
 help:
@@ -40,6 +40,12 @@ help:
 	@echo "  make docker-down     - Stop all Docker services"
 	@echo "  make docker-logs     - View Docker logs"
 	@echo "  make docker-clean    - Remove Docker containers and volumes"
+	@echo ""
+	@echo "Verification:"
+	@echo "  make verify          - Reproduce CI checks locally (format + tests + shellcheck)"
+	@echo "  make status          - Generate project status dashboard"
+	@echo "  make twin-verify     - Run hardware twin golden trace tests"
+	@echo "  make bom-validate    - Validate Bill of Materials"
 	@echo ""
 	@echo "Utilities:"
 	@echo "  make clean           - Clean build artifacts"
@@ -323,4 +329,38 @@ physics-envelope:
 	@echo "Running operational envelope sweep (RPM 10-120, 100h max)..."
 	@PYTHONPATH=. python3 tools/simulation/operational_envelope.py --max-hours 100 > output/operational_envelope.csv
 	@echo "Output: output/operational_envelope.csv"
+
+# --- Verification (local CI reproduction) ---
+verify:
+	@echo "=== Local CI Verification ==="
+	@echo ""
+	@echo "[1/4] Backend formatting (black)..."
+	@cd backend && python3 -m black --check --diff src/ tests/ 2>&1 || (echo "FAIL: black"; exit 1)
+	@echo "[2/4] Backend import order (isort)..."
+	@cd backend && python3 -m isort --check-only --diff src/ tests/ 2>&1 || (echo "FAIL: isort"; exit 1)
+	@echo "[3/4] Backend tests..."
+	@cd backend && python3 -m pytest tests/unit/ -q \
+	  --ignore=backend/tests/integration/test_cross_language.py \
+	  --ignore=backend/tests/integration/test_phase4_w1_api.py \
+	  2>&1 || (echo "FAIL: pytest"; exit 1)
+	@echo "[4/4] Shell scripts (shellcheck)..."
+	@find . -name "*.sh" -not -path "./.git/*" -not -path "./venv/*" \
+	  -exec shellcheck --severity=warning {} + 2>&1 || (echo "WARN: shellcheck issues"; true)
+	@echo ""
+	@echo "=== Verification PASSED ==="
+
+# --- Status Dashboard ---
+status:
+	@echo "Generating status dashboard..."
+	@PYTHONPATH=. python3 scripts/generate_status.py
+
+# --- Hardware Twin ---
+twin-verify:
+	@echo "Running hardware twin golden trace verification..."
+	@PYTHONPATH=. python3 -m pytest hardware_twin/tests/ -q
+
+# --- BOM Validation ---
+bom-validate:
+	@echo "Validating Bill of Materials..."
+	@PYTHONPATH=. python3 tools/validate_bom.py
 

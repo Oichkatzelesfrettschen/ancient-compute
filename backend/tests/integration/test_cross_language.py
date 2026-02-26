@@ -12,6 +12,7 @@ import pytest_asyncio
 from fastapi import FastAPI
 
 from backend.src.api.code_execution import router as code_execution_router
+from backend.src.auth import get_current_user
 
 
 @pytest.fixture(scope="module")
@@ -19,6 +20,10 @@ def execution_app() -> FastAPI:
     """Minimal app wiring only code-execution routes for integration tests."""
     app = FastAPI()
     app.include_router(code_execution_router, prefix="/api/v1")
+    
+    # Mock authentication
+    app.dependency_overrides[get_current_user] = lambda: {"id": 1, "email": "test@example.com"}
+    
     return app
 
 

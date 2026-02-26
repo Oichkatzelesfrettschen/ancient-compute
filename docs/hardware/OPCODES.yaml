@@ -1,0 +1,89 @@
+# Opcode Table v0.1 -- Analytical Engine Card Grammar
+# Date: 2026-02-26
+# Charter ref: S-3
+# See: docs/hardware/CARD_STANDARD.md
+
+opcodes:
+  - code: 0x0
+    mnemonic: ADD
+    description: Add mill ingress register to egress register
+    card_class: operation
+    cycles: 1
+    source: BROMLEY-1982
+
+  - code: 0x1
+    mnemonic: SUB
+    description: Subtract mill ingress register from egress register
+    card_class: operation
+    cycles: 1
+    source: BROMLEY-1982
+
+  - code: 0x2
+    mnemonic: MUL
+    description: Multiply via barrel micro-program (multi-cycle)
+    card_class: operation
+    cycles: variable
+    source: BROMLEY-1982
+
+  - code: 0x3
+    mnemonic: DIV
+    description: Divide via barrel micro-program (multi-cycle)
+    card_class: operation
+    cycles: variable
+    source: BROMLEY-1982
+
+  - code: 0x4
+    mnemonic: MOV
+    description: Copy value between mill registers or store columns
+    card_class: operation
+    cycles: 1
+    source: MENABREA-1842
+
+  - code: 0x5
+    mnemonic: CLR
+    description: Clear specified register or store column to zero
+    card_class: operation
+    cycles: 1
+    source: MENABREA-1842
+
+  - code: 0x6
+    mnemonic: CMPZ
+    description: Compare value with zero, set run-up lever condition flag
+    card_class: operation
+    cycles: 1
+    source: BROMLEY-1982
+
+  - code: 0x7
+    mnemonic: BR
+    description: Branch (conditional on run-up lever, or unconditional)
+    card_class: operation
+    cycles: 1
+    source: MENABREA-1842
+
+  - code: 0x8
+    mnemonic: STEP
+    description: Advance card drum one position (loop control)
+    card_class: operation
+    cycles: 1
+    source: BROMLEY-1982
+
+  - code: 0x9
+    mnemonic: HALT
+    description: Stop execution, ring bell
+    card_class: operation
+    cycles: 1
+    source: MENABREA-1842
+
+  - code: 0xA
+    mnemonic: PRINT
+    description: Output current egress value to printer apparatus
+    card_class: operation
+    cycles: 1
+    source: SMG-DE2-MANUAL
+
+  - code: 0xB
+    mnemonic: NOP
+    description: No operation (timing pad for mechanical synchronization)
+    card_class: operation
+    cycles: 1
+    source: ASSUMPTION

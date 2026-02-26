@@ -1,0 +1,26 @@
+part_id,subsystem,component,material,quantity,mass_kg,spec_ref,process,inspection,acceptance,notes
+SHAFT-001,Power train,Main shaft,steel,1,12.500,SOURCE:SWADE-2001,turn,dial_indicator,runout < 0.05mm,EN8/080M40
+BEAR-001,Power train,Journal bearing,bronze,4,0.800,ASSUMPTION,bore,micrometer,clearance 0.02-0.05mm,Plain journal
+BEAR-002,Power train,Bearing bush,brass,4,0.200,ASSUMPTION,bore,micrometer,ID tolerance +0.02mm,
+FLY-001,Power train,Flywheel,cast_iron,1,25.000,ASSUMPTION,cast+turn,dial_indicator,runout < 0.1mm,600mm diameter
+CRANK-001,Power train,Crank handle,steel,1,1.200,ASSUMPTION,forge+turn,visual,no cracks,200mm radius
+GEAR-001,Power train,Spur gear,steel,8,0.450,ASSUMPTION,hobbing,optical_comparator,AGMA class 8,Module 2.5 20T
+COL-001,Store,Column axis,steel,8,0.120,ASSUMPTION,turn,micrometer,diameter 8mm +/-0.01mm,
+WHEEL-001,Store,Figure wheel,brass,248,0.015,SOURCE:SMG-DE2-TECH,turn+engrave,optical_comparator,10 detent positions,31 per column x 8 columns
+CARRY-001,Store,Carry lever,steel,248,0.008,SOURCE:BROMLEY-1990,mill,visual,spring return verified,1 per digit position
+SPRING-001,Store,Detent spring,spring_steel,248,0.002,ASSUMPTION,form,force_gauge,0.5N per position,
+CAM-001,Timing,Conjugate cam pair,cast_iron,8,2.500,SOURCE:SWADE-2001,profile_grind,optical_comparator,profile +/-0.05mm,
+CAM-002,Timing,Cam follower roller,steel,8,0.080,ASSUMPTION,turn,micrometer,OD tolerance +/-0.01mm,
+BARREL-001,Timing,Micro-program barrel,brass,1,3.500,SOURCE:BROMLEY-1982,turn+drill,visual,50 stud positions,
+CARD-001,Card system,Card reader frame,cast_iron,1,5.000,ASSUMPTION,cast+mill,dial_indicator,alignment < 0.1mm,
+CARD-002,Card system,Card guide rails,brass,2,0.300,ASSUMPTION,mill,micrometer,parallelism < 0.05mm,
+CARD-003,Card system,Feed pawl,steel,1,0.050,ASSUMPTION,mill,visual,engages card holes cleanly,
+PRINT-001,Printer,Type wheel,brass,8,0.100,SOURCE:SMG-DE2-MANUAL,turn+engrave,optical_comparator,10 digit faces,
+PRINT-002,Printer,Print hammer,steel,1,0.500,SOURCE:SMG-DE2-MANUAL,forge+grind,force_gauge,strike force 5-10N,
+PRINT-003,Printer,Ink roller,rubber_brass,1,0.200,ASSUMPTION,assemble,visual,even ink coverage,
+PRINT-004,Printer,Platen assembly,steel,1,2.000,ASSUMPTION,mill,dial_indicator,flatness < 0.05mm,
+STEREO-001,Stereotyper,Mold frame,steel,1,1.500,ASSUMPTION,mill,micrometer,X/Y positioning < 0.1mm,
+STEREO-002,Stereotyper,Digit punches,tool_steel,10,0.030,ASSUMPTION,EDM+grind,optical_comparator,character height 3mm,0-9
+FRAME-001,Frame,Main frame,cast_iron,1,150.000,SOURCE:SWADE-2001,cast+mill,dial_indicator,flatness < 0.2mm,Estimated 60% of total mass
+FRAME-002,Frame,Side plates,cast_iron,2,15.000,ASSUMPTION,cast+mill,visual,parallel within 0.5mm,
+FRAME-003,Frame,Base plate,cast_iron,1,30.000,ASSUMPTION,cast+surface_grind,dial_indicator,flatness < 0.1mm,

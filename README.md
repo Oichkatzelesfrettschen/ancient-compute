@@ -58,22 +58,29 @@ Canonical bring-up sequencing is documented in
 
 ## Quick Start
 
+### Platform Support
+
+| Platform | Status | Notes |
+|----------|--------|-------|
+| Linux (Arch/CachyOS, Debian, Ubuntu) | Supported | Primary development platform |
+| macOS (Apple Silicon, Intel) | Supported | Docker Desktop required for containers |
+| Windows 11 + WSL2 | Supported | Use WSL2 with Debian or Ubuntu |
+| Windows (native) | Limited | PowerShell setup script available; Docker required |
+
 ### Prerequisites
 
-- Windows 11 with WSL2 or Debian Linux
-- Docker Desktop (with gVisor runtime)
-- Bazel 6.4.0+
 - Python 3.11+
 - Node.js 20+ with pnpm
+- Docker (with optional gVisor runtime for sandbox isolation)
 - Git
-- make (GNU Make)
+- GNU Make
 
 ### Installation
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/ancient_compute.git
-cd ancient_compute
+git clone https://github.com/eirikr-io/ancient-compute.git
+cd ancient-compute
 
 # Windows setup (PowerShell)
 .\scripts\setup-windows.ps1
@@ -371,5 +378,9 @@ Every line of code participates in humanity's ancient dialogue between mind and 
 For questions or feedback, please open an issue on GitHub.
 
 ---
+
+**Naming convention**: The GitHub repository is `ancient-compute` (hyphenated).
+The Python package root is `ancient_compute` (underscored, per PEP 8).
+Both names refer to the same project.
 
 ANSI/ASCII only - No Unicode (per project requirements)

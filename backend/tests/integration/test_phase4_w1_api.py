@@ -24,7 +24,7 @@ class TestEmulatorInitialization:
 
     def test_initialize_emulator(self):
         """POST /api/initialize should create new emulator instance"""
-        response = client.post("/api/initialize")
+        response = client.post("/api/v1/emulator/initialize")
         assert response.status_code == 200
         data = response.json()
         assert data["success"] is True
@@ -33,9 +33,9 @@ class TestEmulatorInitialization:
     def test_reset_emulator(self):
         """POST /api/reset should reset emulator to initial state"""
         # First initialize
-        client.post("/api/initialize")
+        client.post("/api/v1/emulator/initialize")
         # Then reset
-        response = client.post("/api/reset")
+        response = client.post("/api/v1/emulator/reset")
         assert response.status_code == 200
         data = response.json()
         assert data["success"] is True
@@ -43,15 +43,15 @@ class TestEmulatorInitialization:
     def test_get_state_requires_initialization(self):
         """GET /api/state should return error if emulator not initialized"""
         # Clear any existing state by starting fresh
-        response = client.get("/api/state")
+        response = client.get("/api/v1/emulator/state")
         # Should either work (if initialized) or fail gracefully
         if response.status_code == 400:
             assert "Emulator not initialized" in response.json()["detail"]
 
     def test_get_initial_state_after_init(self):
         """GET /api/state should return valid state after initialization"""
-        client.post("/api/initialize")
-        response = client.get("/api/state")
+        client.post("/api/v1/emulator/initialize")
+        response = client.get("/api/v1/emulator/state")
         assert response.status_code == 200
         data = response.json()
         assert data["success"] is True
@@ -77,10 +77,10 @@ class TestPolynomialExecution:
 
     def test_execute_linear_polynomial(self):
         """POST /api/execute should evaluate linear polynomial f(x) = 2x + 1"""
-        client.post("/api/initialize")
+        client.post("/api/v1/emulator/initialize")
 
         response = client.post(
-            "/api/execute",
+            "/api/v1/emulator/execute",
             json={
                 "coefficients": [1, 2],
                 "x_range": [1, 5],
@@ -103,10 +103,10 @@ class TestPolynomialExecution:
 
     def test_execute_quadratic_polynomial(self):
         """POST /api/execute should evaluate quadratic polynomial f(x) = x² + 1"""
-        client.post("/api/initialize")
+        client.post("/api/v1/emulator/initialize")
 
         response = client.post(
-            "/api/execute",
+            "/api/v1/emulator/execute",
             json={
                 "coefficients": [1, 0, 1],
                 "x_range": [1, 5],
@@ -126,10 +126,10 @@ class TestPolynomialExecution:
 
     def test_execute_cubic_polynomial(self):
         """POST /api/execute should evaluate cubic polynomial f(x) = x³"""
-        client.post("/api/initialize")
+        client.post("/api/v1/emulator/initialize")
 
         response = client.post(
-            "/api/execute",
+            "/api/v1/emulator/execute",
             json={
                 "coefficients": [0, 0, 0, 1],
                 "x_range": [1, 5],
@@ -149,10 +149,10 @@ class TestPolynomialExecution:
 
     def test_execute_single_value(self):
         """POST /api/execute should handle single x value (x_start == x_end)"""
-        client.post("/api/initialize")
+        client.post("/api/v1/emulator/initialize")
 
         response = client.post(
-            "/api/execute",
+            "/api/v1/emulator/execute",
             json={
                 "coefficients": [1, 2],
                 "x_range": [3, 3],
@@ -169,10 +169,10 @@ class TestPolynomialExecution:
 
     def test_execute_invalid_x_range_negative(self):
         """POST /api/execute should reject negative x values"""
-        client.post("/api/initialize")
+        client.post("/api/v1/emulator/initialize")
 
         response = client.post(
-            "/api/execute",
+            "/api/v1/emulator/execute",
             json={
                 "coefficients": [1, 2],
                 "x_range": [-5, 5],
@@ -187,10 +187,10 @@ class TestPolynomialExecution:
 
     def test_execute_invalid_x_range_reversed(self):
         """POST /api/execute should reject x_start > x_end"""
-        client.post("/api/initialize")
+        client.post("/api/v1/emulator/initialize")
 
         response = client.post(
-            "/api/execute",
+            "/api/v1/emulator/execute",
             json={
                 "coefficients": [1, 2],
                 "x_range": [10, 5],
@@ -205,10 +205,10 @@ class TestPolynomialExecution:
 
     def test_execute_includes_phase_info(self):
         """POST /api/execute should include mechanical phase in results"""
-        client.post("/api/initialize")
+        client.post("/api/v1/emulator/initialize")
 
         response = client.post(
-            "/api/execute",
+            "/api/v1/emulator/execute",
             json={
                 "coefficients": [1, 2],
                 "x_range": [1, 2],
@@ -222,13 +222,13 @@ class TestPolynomialExecution:
 
         for result in data["results"]:
             assert "phase" in result
-            assert result["phase"] in ["IDLE", "ADDITION", "CARRY", "TABLE", "OUTPUT"]
+            assert result["phase"] in ["idle", "addition", "carry", "table", "output", "advance", "reset", "pause"]
 
     def test_get_results_endpoint(self):
         """GET /api/results should return execution history"""
-        client.post("/api/initialize")
+        client.post("/api/v1/emulator/initialize")
         client.post(
-            "/api/execute",
+            "/api/v1/emulator/execute",
             json={
                 "coefficients": [1, 2],
                 "x_range": [1, 5],
@@ -236,7 +236,7 @@ class TestPolynomialExecution:
             }
         )
 
-        response = client.get("/api/results")
+        response = client.get("/api/v1/emulator/results")
         assert response.status_code == 200
         data = response.json()
         assert data["success"] is True
@@ -248,14 +248,14 @@ class TestDebugger:
 
     def test_debug_step_single_cycle(self):
         """POST /api/debug/step should advance one mechanical cycle"""
-        client.post("/api/initialize")
+        client.post("/api/v1/emulator/initialize")
 
         # Get initial state
-        response1 = client.get("/api/state")
+        response1 = client.get("/api/v1/emulator/state")
         initial_cycle = response1.json()["state"]["cycle"]
 
         # Step once
-        response2 = client.post("/api/debug/step")
+        response2 = client.post("/api/v1/emulator/debug/step")
         assert response2.status_code == 200
         data = response2.json()
         assert data["success"] is True
@@ -264,10 +264,10 @@ class TestDebugger:
 
     def test_set_cycle_breakpoint(self):
         """POST /api/debug/breakpoint should create cycle breakpoint"""
-        client.post("/api/initialize")
+        client.post("/api/v1/emulator/initialize")
 
         response = client.post(
-            "/api/debug/breakpoint",
+            "/api/v1/emulator/debug/breakpoint",
             json={
                 "type": "CYCLE",
                 "cycle_target": 100
@@ -282,10 +282,10 @@ class TestDebugger:
 
     def test_set_phase_breakpoint(self):
         """POST /api/debug/breakpoint should create phase breakpoint"""
-        client.post("/api/initialize")
+        client.post("/api/v1/emulator/initialize")
 
         response = client.post(
-            "/api/debug/breakpoint",
+            "/api/v1/emulator/debug/breakpoint",
             json={
                 "type": "PHASE",
                 "phase_target": "CARRY"
@@ -299,10 +299,10 @@ class TestDebugger:
 
     def test_set_value_change_breakpoint(self):
         """POST /api/debug/breakpoint should create value change breakpoint"""
-        client.post("/api/initialize")
+        client.post("/api/v1/emulator/initialize")
 
         response = client.post(
-            "/api/debug/breakpoint",
+            "/api/v1/emulator/debug/breakpoint",
             json={
                 "type": "VALUE_CHANGE",
                 "variable_name": "accumulator"
@@ -316,61 +316,61 @@ class TestDebugger:
 
     def test_enable_breakpoint(self):
         """POST /api/debug/breakpoint/{id}/enable should enable breakpoint"""
-        client.post("/api/initialize")
+        client.post("/api/v1/emulator/initialize")
 
         # Create breakpoint
         bp_response = client.post(
-            "/api/debug/breakpoint",
+            "/api/v1/emulator/debug/breakpoint",
             json={"type": "CYCLE", "cycle_target": 50}
         )
         bp_id = bp_response.json()["breakpointId"]
 
         # Enable it
-        response = client.post(f"/api/debug/breakpoint/{bp_id}/enable")
+        response = client.post(f"/api/v1/emulator/debug/breakpoint/{bp_id}/enable")
         assert response.status_code == 200
         data = response.json()
         assert data["success"] is True
 
     def test_disable_breakpoint(self):
         """POST /api/debug/breakpoint/{id}/disable should disable breakpoint"""
-        client.post("/api/initialize")
+        client.post("/api/v1/emulator/initialize")
 
         # Create breakpoint
         bp_response = client.post(
-            "/api/debug/breakpoint",
+            "/api/v1/emulator/debug/breakpoint",
             json={"type": "CYCLE", "cycle_target": 50}
         )
         bp_id = bp_response.json()["breakpointId"]
 
         # Disable it
-        response = client.post(f"/api/debug/breakpoint/{bp_id}/disable")
+        response = client.post(f"/api/v1/emulator/debug/breakpoint/{bp_id}/disable")
         assert response.status_code == 200
         data = response.json()
         assert data["success"] is True
 
     def test_delete_breakpoint(self):
         """DELETE /api/debug/breakpoint/{id} should remove breakpoint"""
-        client.post("/api/initialize")
+        client.post("/api/v1/emulator/initialize")
 
         # Create breakpoint
         bp_response = client.post(
-            "/api/debug/breakpoint",
+            "/api/v1/emulator/debug/breakpoint",
             json={"type": "CYCLE", "cycle_target": 50}
         )
         bp_id = bp_response.json()["breakpointId"]
 
         # Delete it
-        response = client.delete(f"/api/debug/breakpoint/{bp_id}")
+        response = client.delete(f"/api/v1/emulator/debug/breakpoint/{bp_id}")
         assert response.status_code == 200
         data = response.json()
         assert data["success"] is True
 
     def test_define_variable(self):
         """POST /api/debug/variable should define debugger variable"""
-        client.post("/api/initialize")
+        client.post("/api/v1/emulator/initialize")
 
         response = client.post(
-            "/api/debug/variable",
+            "/api/v1/emulator/debug/variable",
             json={
                 "name": "myvar",
                 "value": 42
@@ -383,17 +383,17 @@ class TestDebugger:
 
     def test_set_variable_value(self):
         """PUT /api/debug/variable/{name} should update variable"""
-        client.post("/api/initialize")
+        client.post("/api/v1/emulator/initialize")
 
         # Define variable
         client.post(
-            "/api/debug/variable",
+            "/api/v1/emulator/debug/variable",
             json={"name": "myvar", "value": 42}
         )
 
         # Update it
         response = client.put(
-            "/api/debug/variable/myvar",
+            "/api/v1/emulator/debug/variable/myvar",
             json={"name": "myvar", "value": 100}
         )
 
@@ -403,10 +403,10 @@ class TestDebugger:
 
     def test_debug_continue_execution(self):
         """POST /api/debug/continue should run until breakpoint"""
-        client.post("/api/initialize")
+        client.post("/api/v1/emulator/initialize")
 
         response = client.post(
-            "/api/debug/continue",
+            "/api/v1/emulator/debug/continue",
             json={"max_cycles": 50}
         )
 
@@ -422,11 +422,11 @@ class TestStateConsistency:
 
     def test_state_persists_after_execution(self):
         """Emulator state should persist after polynomial execution"""
-        client.post("/api/initialize")
+        client.post("/api/v1/emulator/initialize")
 
         # Execute polynomial
         client.post(
-            "/api/execute",
+            "/api/v1/emulator/execute",
             json={
                 "coefficients": [1, 2],
                 "x_range": [1, 3],
@@ -435,7 +435,7 @@ class TestStateConsistency:
         )
 
         # Get state
-        response = client.get("/api/state")
+        response = client.get("/api/v1/emulator/state")
         data = response.json()
         assert data["success"] is True
         state = data["state"]
@@ -445,11 +445,11 @@ class TestStateConsistency:
 
     def test_reset_clears_state(self):
         """POST /api/reset should clear execution state"""
-        client.post("/api/initialize")
+        client.post("/api/v1/emulator/initialize")
 
         # Execute polynomial
         client.post(
-            "/api/execute",
+            "/api/v1/emulator/execute",
             json={
                 "coefficients": [1, 2],
                 "x_range": [1, 5],
@@ -458,32 +458,32 @@ class TestStateConsistency:
         )
 
         # Get state before reset
-        response1 = client.get("/api/state")
+        response1 = client.get("/api/v1/emulator/state")
         cycle_before = response1.json()["state"]["cycle"]
         assert cycle_before > 0
 
         # Reset
-        client.post("/api/reset")
+        client.post("/api/v1/emulator/reset")
 
         # Get state after reset
-        response2 = client.get("/api/state")
+        response2 = client.get("/api/v1/emulator/state")
         cycle_after = response2.json()["state"]["cycle"]
         assert cycle_after == 0
 
     def test_step_increments_cycle(self):
         """POST /api/debug/step should increment cycle counter"""
-        client.post("/api/initialize")
+        client.post("/api/v1/emulator/initialize")
 
         # Get initial cycle
-        response1 = client.get("/api/state")
+        response1 = client.get("/api/v1/emulator/state")
         initial_cycle = response1.json()["state"]["cycle"]
 
         # Step 5 times
         for _ in range(5):
-            client.post("/api/debug/step")
+            client.post("/api/v1/emulator/debug/step")
 
         # Get final cycle
-        response2 = client.get("/api/state")
+        response2 = client.get("/api/v1/emulator/state")
         final_cycle = response2.json()["state"]["cycle"]
 
         assert final_cycle == initial_cycle + 5
@@ -496,7 +496,7 @@ class TestErrorHandling:
         """POST /api/execute should handle uninitialized emulator gracefully"""
         # This test depends on whether endpoint auto-initializes
         response = client.post(
-            "/api/execute",
+            "/api/v1/emulator/execute",
             json={
                 "coefficients": [1, 2],
                 "x_range": [1, 5],
@@ -509,7 +509,7 @@ class TestErrorHandling:
     def test_breakpoint_on_uninitialized_emulator(self):
         """POST /api/debug/breakpoint should handle uninitialized emulator"""
         response = client.post(
-            "/api/debug/breakpoint",
+            "/api/v1/emulator/debug/breakpoint",
             json={"type": "CYCLE", "cycle_target": 50}
         )
         # Should either work or fail gracefully
@@ -517,10 +517,10 @@ class TestErrorHandling:
 
     def test_invalid_breakpoint_type(self):
         """POST /api/debug/breakpoint should reject invalid type"""
-        client.post("/api/initialize")
+        client.post("/api/v1/emulator/initialize")
 
         response = client.post(
-            "/api/debug/breakpoint",
+            "/api/v1/emulator/debug/breakpoint",
             json={"type": "INVALID_TYPE"}
         )
 
@@ -532,10 +532,10 @@ class TestErrorHandling:
 
     def test_empty_coefficient_array(self):
         """POST /api/execute should handle empty coefficients"""
-        client.post("/api/initialize")
+        client.post("/api/v1/emulator/initialize")
 
         response = client.post(
-            "/api/execute",
+            "/api/v1/emulator/execute",
             json={
                 "coefficients": [],
                 "x_range": [1, 5],
@@ -548,10 +548,10 @@ class TestErrorHandling:
 
     def test_large_coefficient_values(self):
         """POST /api/execute should handle large coefficients"""
-        client.post("/api/initialize")
+        client.post("/api/v1/emulator/initialize")
 
         response = client.post(
-            "/api/execute",
+            "/api/v1/emulator/execute",
             json={
                 "coefficients": [1000000, 999999],
                 "x_range": [1, 2],
@@ -564,10 +564,10 @@ class TestErrorHandling:
 
     def test_large_x_range(self):
         """POST /api/execute should handle large x ranges"""
-        client.post("/api/initialize")
+        client.post("/api/v1/emulator/initialize")
 
         response = client.post(
-            "/api/execute",
+            "/api/v1/emulator/execute",
             json={
                 "coefficients": [1, 2],
                 "x_range": [1, 1000],

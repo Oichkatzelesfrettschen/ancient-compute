@@ -12,19 +12,21 @@ Tier A: Historical (documented in Babbage/Lovelace)
 - Card I/O: operation cards, variable cards, number cards; read/punch/print
 - Program control via barrel (looping via peg patterns)
 
-Tier B: Plausible 1910s mechanical extensions
+Tier B: Plausible 1910s mechanical extensions (IMPLEMENTED)
 - CALL/RET (subroutine sequencing by barrel position stack)
 - PUSH/POP (data stack in store)
 - SHL/SHR (decimal digit shifts via gear train)
 - CHECKSUMS (simple error detection using arithmetic)
 - CLEAR/NEG/ABS/MOD (basic arithmetic convenience ops)
 
-Tier C: Speculative / anachronistic
-- Bitwise logic ops (AND/OR/XOR) as built-in instructions
-- Unix-like processes, scheduling, and context switching
-- Pipes and IPC mechanisms
-- Filesystem abstraction, file metadata table, and syscalls
-- Signals/interrupts, device drivers
+Tier C: Speculative / anachronistic (PARTIALLY IMPLEMENTED)
+- Bitwise logic ops (AND/OR/XOR) as built-in instructions (IMPLEMENTED)
+- Lovelace Music Engine (PLAY) (IMPLEMENTED)
+- Symbolic Mode (SETMODE) (IMPLEMENTED)
+- Unix-like processes, scheduling, and context switching (PLANNED)
+- Pipes and IPC mechanisms (PLANNED)
+- Filesystem abstraction, file metadata table, and syscalls (PLANNED)
+- Signals/interrupts, device drivers (PLANNED)
 
 -------------------------------------------------------------------------------
 

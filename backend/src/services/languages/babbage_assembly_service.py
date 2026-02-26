@@ -227,6 +227,27 @@ if __name__ == "__main__":
         print(f"Status: {result4.status.value}")
         print(f"Output:\n{result4.stdout}")
         print(f"Execution time: {result4.execution_time:.3f}s")
+        print()
+
+        # Test 5: New opcodes (AND, OR, XOR, CHKS, HALT)
+        print("=" * 70)
+        print("Test 5: New Opcodes (Bitwise and Extensions)")
+        print("=" * 70)
+        code5 = """
+        .global extension_test
+        .text
+        extension_test:
+            AND A, B
+            OR A, C
+            XOR A, D
+            SHL A, 2
+            CHKS A
+            HALT
+        """
+        result5 = await service.execute(code5)
+        print(f"Status: {result5.status.value}")
+        print(f"Output:\n{result5.stdout}")
+        print(f"Execution time: {result5.execution_time:.3f}s")
 
     # Run tests
     asyncio.run(test_assembly())

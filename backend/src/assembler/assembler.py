@@ -92,7 +92,7 @@ class Lexer:
         "JMP", "JZ", "JNZ", "JLT", "JGT", "JLE", "JGE", "CMP",
         "CALL", "RET", "PUSH", "POP",
         "RDCRD", "WRPCH", "WRPRN",
-        "SHL", "SHR",
+        "SHL", "SHR", "AND", "OR", "XOR", "CHKS", "HALT", "OIL",
     }
 
     REGISTERS = {"A", "B", "C", "D"}
@@ -270,6 +270,8 @@ class InstructionEncoder:
         "CALL": 0x10, "RET": 0x11, "PUSH": 0x12, "POP": 0x13,
         "RDCRD": 0x14, "WRPCH": 0x15, "WRPRN": 0x16, "MOV": 0x17,
         "NEG": 0x18, "ABS": 0x19, "SHL": 0x1A, "SHR": 0x1B,
+        "AND": 0x1C, "OR": 0x1D, "XOR": 0x1E, "CHKS": 0x1F,
+        "HALT": 0x20, "OIL": 0x21,
     }
 
     REGISTER_MAP = {"A": 0, "B": 1, "C": 2, "D": 3}

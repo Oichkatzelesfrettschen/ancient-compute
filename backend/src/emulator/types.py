@@ -20,10 +20,130 @@ class MechanicalPhase(Enum):
     INPUT = "input"
     ADDITION = "addition"
     CARRY = "carry"
+    TABLE = "table"
     OUTPUT = "output"
     ADVANCE = "advance"
     RESET = "reset"
     PAUSE = "pause"
+
+class BabbageNumber:
+    """
+    50-digit decimal fixed-point number representation.
+
+    Internal representation: value x 10^-40 where value is an integer.
+    This provides 50 decimal digits total with 40 fractional digits.
+
+    Maximum magnitude: +/-(10^50 - 1)
+    Minimum non-zero: +/-10^-40
+
+    Supports full arithmetic operations with overflow detection.
+    """
+
+    def __init__(self, value):
+        """Initialize BabbageNumber from Python number."""
+        self._overflow_flag = False
+        if isinstance(value, BabbageNumber):
+            self.value = value.value
+        else:
+            self.value = int(value * (10**40))  # Scale to 50 digits
+
+    def to_decimal(self):
+        """Convert to Python float (for display and testing)."""
+        return self.value / (10**40)
+
+    def to_card_format(self):
+        """
+        Convert to punch card 50-digit format.
+
+        Hollerith cards had 50 columns for digit punching.
+        This formats the number as a 50-character string.
+        """
+        return str(self.value).zfill(50)
+
+    def _check_overflow(self):
+        """
+        Check if value exceeds 50-digit bounds.
+
+        Returns:
+            True if overflow occurred, False otherwise
+            Sets internal overflow flag for later inspection
+        """
+        # Adjusted for scaled value
+        max_internal_value = (10**50 - 1) * (10**40)
+        min_internal_value = -(10**50 - 1) * (10**40)
+
+        if self.value > max_internal_value or self.value < min_internal_value:
+            self._overflow_flag = True
+            # For now, let's keep the flag and not modify value on overflow here.
+            return True
+        return False
+
+    def __add__(self, other):
+        """Addition with overflow check."""
+        result = BabbageNumber(0)
+        other_babbage = BabbageNumber(other)
+        result.value = self.value + other_babbage.value
+        result._check_overflow()
+        return result
+
+    def __sub__(self, other):
+        """Subtraction with overflow check."""
+        result = BabbageNumber(0)
+        other_babbage = BabbageNumber(other)
+        result.value = self.value - other_babbage.value
+        result._check_overflow()
+        return result
+
+    def __mul__(self, other):
+        """Multiplication with overflow check."""
+        result = BabbageNumber(0)
+        # Multiply scaled integer values, then scale back by 10^40
+        result.value = (self.value * BabbageNumber(other).value) // (10**40)
+        result._check_overflow()
+        return result
+
+    def __truediv__(self, other):
+        """Fixed-point division."""
+        if BabbageNumber(other).value == 0:
+            raise ZeroDivisionError("Division by zero")
+        result = BabbageNumber(0)
+        # Fixed-point division: scale numerator by 10^40 before dividing
+        result.value = (self.value * (10**40)) // BabbageNumber(other).value
+        result._check_overflow()
+        return result
+
+    def __eq__(self, other):
+        """Equality comparison."""
+        return self.value == BabbageNumber(other).value
+
+    def __lt__(self, other):
+        """Less-than comparison."""
+        return self.value < BabbageNumber(other).value
+
+    def __gt__(self, other):
+        """Greater-than comparison."""
+        return self.value > BabbageNumber(other).value
+
+    def __le__(self, other):
+        """Less-than-or-equal comparison."""
+        return self.value <= BabbageNumber(other).value
+
+    def __ge__(self, other):
+        """Greater-than-or-equal comparison."""
+        return self.value >= BabbageNumber(other).value
+
+    def __ne__(self, other):
+        """Not-equal comparison."""
+        return self.value != BabbageNumber(other).value
+
+    def __int__(self):
+        """Convert to integer."""
+        return self.value
+
+    def __repr__(self):
+        """String representation."""
+        return f"BabbageNumber({self.to_decimal()})"
+
 
 class CardType(Enum):
     NUMBER = "Number"
@@ -31,9 +151,6 @@ class CardType(Enum):
     VARIABLE = "Variable"
     COMBINATORIAL = "Combinatorial"
 
-# BabbageNumber: canonical definition in analytical_engine.py
-# Re-exported here for backward compatibility.
-from backend.src.emulator.analytical_engine import BabbageNumber
 
 # --- Analytical Engine Types ---
 
@@ -115,13 +232,14 @@ class CarryState:
 
 @dataclass
 class ColumnSnapshot:
-    """State of one digit column"""
-    column_index: int  # 0–7
-    digits: List[int]  # 31 decimal digits
-    carry_state: bool  # current carry flag
-    is_latched: bool  # whether column latch is closed
-    is_advancing: bool  # whether column is shifting to next row
-    phase: str  # current mechanical phase for this column
+    """State of one digit column (Difference Engine No. 2)"""
+    column_index: int                    # Which column (0-7)
+    digits: List[int]                    # 31 digit positions
+    carry_in: bool                       # Incoming carry
+    carry_out: bool                      # Outgoing carry
+    is_latched: bool                     # Latch closed?
+    is_advancing: bool                   # Advancing to next row?
+    phase: str                           # Current mechanical phase
 
 # ColumnState is a deprecated alias for ColumnSnapshot.
 # Kept for backward compatibility; new code should use ColumnSnapshot.

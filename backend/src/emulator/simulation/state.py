@@ -138,15 +138,15 @@ class SimulationConfig:
     backlash_limit_mm: float = 0.10
     temperature_limit_C: float = 60.0
 
-    # Valve gear (Stephenson link) -- provisional values
-    valve_lap_mm: float = 3.0
-    valve_lead_mm: float = 1.0
-    valve_cutoff_pct: float = 60.0
+    # Valve gear (Stephenson link)
+    valve_lap_mm: float = 3.0  # ASSUMPTION: No primary-source measurement from physical DE2
+    valve_lead_mm: float = 1.0  # ASSUMPTION: No primary-source measurement from physical DE2
+    valve_cutoff_pct: float = 60.0  # ASSUMPTION: No primary-source measurement from physical DE2
 
-    # Steam drive -- provisional values
-    steam_pressure_bar: float = 6.0
-    piston_stroke_m: float = 0.2
-    thermal_efficiency_pct: float = 8.0
+    # Steam drive
+    steam_pressure_bar: float = 6.0  # ASSUMPTION: Typical 1840s low-pressure estimate
+    piston_stroke_m: float = 0.2  # ASSUMPTION: Estimated from Babbage drawings
+    thermal_efficiency_pct: float = 8.0  # ASSUMPTION: Typical 1840s steam engine range
 
     def randomize_tolerances(self, seed: Optional[int] = None) -> None:
         """Inject Monte Carlo variance based on historical manufacturing precision.
@@ -158,7 +158,7 @@ class SimulationConfig:
         if seed is not None:
             random.seed(seed)
             
-        # 0.05mm is the 3-sigma target based on historical sources (Doron Swade)
+        # SOURCE:SWADE-2001 -- achievable precision ~0.002 inches (0.05 mm) at 3-sigma
         sigma = 0.05 / 3.0
         
         self.initial_clearance_mm += random.gauss(0, sigma)

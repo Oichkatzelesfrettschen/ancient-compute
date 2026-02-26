@@ -5,5 +5,6 @@ from backend.src.emulator.leibniz_reckoner import LeibnizReckonerEmulator
 
 def test_leibniz_add_and_shift():
     emu = LeibnizReckonerEmulator()
-    assert emu.add_cycle(123) == 123
-    assert emu.shift_carriage(1) == 1
+    assert emu.add_value(123) == 123
+    emu.shift_carriage(1)
+    assert emu.carriage_position == 1

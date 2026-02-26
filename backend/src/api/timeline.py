@@ -83,6 +83,7 @@ async def get_era_detail(era_id: int, db: Session = Depends(get_db)):
         "modules": [
             {
                 "id": module.id,
+                "slug": module.slug,
                 "title": module.title,
                 "description": module.description,
                 "order": module.sequence_order,
@@ -110,6 +111,7 @@ async def list_modules(db: Session = Depends(get_db)):
         "modules": [
             {
                 "id": module.id,
+                "slug": module.slug,
                 "eraId": module.era_id,
                 "title": module.title,
                 "description": module.description,
@@ -141,6 +143,7 @@ async def get_module_detail(module_id: int, db: Session = Depends(get_db)):
 
     return {
         "id": module.id,
+        "slug": module.slug,
         "eraId": module.era_id,
         "title": module.title,
         "description": module.description,
@@ -288,6 +291,7 @@ async def get_full_timeline(db: Session = Depends(get_db)):
                 "modules": [
                     {
                         "id": module.id,
+                        "slug": module.slug,
                         "eraId": era.id,
                         "title": module.title,
                         "description": module.description,

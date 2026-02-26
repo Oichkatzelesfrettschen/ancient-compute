@@ -9,7 +9,8 @@ sequence of events: input, addition, carry, output, advance.
 
 Architecture:
   - Main shaft angle tracking (0-360°, 1° resolution)
-  - Phase markers at 45° intervals (8 phases × 45° = 360°)
+  - Phase markers at 45deg intervals (8 phases x 45deg = 360deg)
+    ASSUMPTION: 45-degree equal intervals approximate the SMG timing appendix
   - Event generation based on angle thresholds
   - Integration with AnticipatingCarriage and column operations
 
@@ -25,7 +26,7 @@ from dataclasses import dataclass
 
 
 # MechanicalPhase: canonical definition in types.py, re-imported here.
-from backend.src.emulator.types import MechanicalPhase
+from .types import MechanicalPhase
 
 
 @dataclass

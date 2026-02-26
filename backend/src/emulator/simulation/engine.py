@@ -28,6 +28,7 @@ from backend.src.emulator.tribology import (
     LubricationModel,
     PVAnalysis,
 )
+from backend.src.emulator.electromagnetic import EddyCurrentModel, GalvanicCorrosionMatrix
 from backend.src.emulator.structural import ShaftAnalysis, ShaftCriticalSpeed
 from backend.src.emulator.kinematics import CamTorqueRipple, CamFollower, CamAnalysis
 from backend.src.emulator.simulation.state import SimulationState, SimulationConfig
@@ -142,8 +143,38 @@ class SimulationEngine:
             cfg.transmitted_power_W, 0.98,
         )
 
-        Q_total = Q_bearing + Q_gear
+        # 4.1 Electromagnetic losses (Eddy currents)
+        rho_shaft = self.lib.get(cfg.shaft_material).electrical_resistivity_ohm_m
+        Q_eddy = EddyCurrentModel.shaft_eddy_loss_W(
+            cfg.shaft_diameter_mm, cfg.shaft_length_mm, cfg.rpm, rho_shaft
+        )
+
+        Q_total = Q_bearing + Q_gear + Q_eddy
         st.total_heat_generation_W = Q_total
+
+        # 4.2 Galvanic corrosion risk accumulation
+        # Risk factor = sum of potential differences between contacting materials
+        # Multiplied by dt and a "humidity factor" (simulated as 1.0 for now)
+        galvanic = GalvanicCorrosionMatrix()
+        # Contacting pairs: shaft-bearing, gear-shaft
+        dv1 = galvanic.potential_difference_V(cfg.shaft_material, cfg.bearing_material)
+        dv2 = galvanic.potential_difference_V(cfg.gear_material, cfg.shaft_material)
+        st.galvanic_risk_accumulator += (dv1 + dv2) * dt
+
+        # 4.5 Energy consumption tracking
+        # Work = Torque * Delta_Theta
+        d_theta_rad = (angle_advance_deg * math.pi / 180.0)
+        # Total torque from bearings and gears (approximate from heat)
+        # Power = Torque * omega -> Torque = Power / omega
+        torque_Nm = Q_total / cfg.omega_rad_s if cfg.omega_rad_s > 0 else 0.0
+        st.total_torque_Nm = torque_Nm
+        st.energy_consumed_J += torque_Nm * d_theta_rad
+
+        # 4.6 Ambient temperature fluctuation (Day/Night cycle)
+        # T_amb = T_base + Amplitude * sin(2*pi * t / Period)
+        # 24-hour period = 86400s
+        amplitude = 5.0 # +/- 5 degrees
+        st.ambient_temperature_C = cfg.ambient_temperature_C + amplitude * math.sin(2 * math.pi * st.time_s / 86400.0)
 
         # 5. Temperature step (Crank-Nicolson via coupling)
         st.temperature_C = CouplingFunctions.thermal_step(st, cfg, Q_total)
