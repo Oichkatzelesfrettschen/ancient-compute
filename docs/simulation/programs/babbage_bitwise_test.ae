@@ -1,0 +1,60 @@
+# Babbage Analytical Engine Bitwise and Extension Test
+# Tier B and C capabilities
+
+# Main program
+START:
+    LOAD A 12345
+    LOAD B 67890
+    
+    # Test SHL (Shift Left)
+    LOAD C 5
+    SHL A 2         # A = 1234500
+    WRPRN A
+    
+    # Test SHR (Shift Right)
+    SHR A 2         # A = 12345
+    WRPRN A
+    
+    # Test bitwise AND
+    LOAD A 3        # binary 0011
+    LOAD B 5        # binary 0101
+    AND A B         # 3 & 5 = 1
+    WRPRN A
+    
+    # Test bitwise OR
+    LOAD A 3
+    LOAD B 5
+    OR A B          # 3 | 5 = 7
+    WRPRN A
+    
+    # Test bitwise XOR
+    LOAD A 3
+    LOAD B 5
+    XOR A B         # 3 ^ 5 = 6
+    WRPRN A
+    
+    # Test Subroutine CALL/RET
+    LOAD A 10
+    CALL DOUBLE_A
+    WRPRN A         # Should be 20
+    
+    # Test Checksum
+    LOAD A 123450   # If checksum is sum mod 10, checksum of 12345 is 15%10=5.
+                    # So 123455 should have valid checksum if stored in lsb.
+    LOAD A 123455
+    CHKS A
+    # If error flag is set, it will be in the dump (not printed by WRPRN)
+    
+    # Test Lovelace Extensions
+    SETMODE symbolic
+    PLAY C4 8
+    PLAY E4 8
+    PLAY G4 16
+    SETMODE numeric
+    
+    HALT
+
+# Subroutine to double register A
+DOUBLE_A:
+    ADD A A
+    RET

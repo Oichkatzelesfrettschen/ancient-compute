@@ -110,7 +110,9 @@ parsetab.py
 # Generated indexes
 output/*.txt
 
-
 # Measurement outputs
 output/*_metrics.csv
+
+# Claude plans (transient session artifacts)
+.claude_plans_tmp/
 
