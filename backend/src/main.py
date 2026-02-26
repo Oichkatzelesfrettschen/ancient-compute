@@ -1,11 +1,12 @@
 import logging
 import time
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import Response, JSONResponse
-from prometheus_client import Counter, Gauge, generate_latest, CONTENT_TYPE_LATEST
+from prometheus_client import Counter, Gauge, generate_latest, CONTENT_TYPE_LATEST, CollectorRegistry, REGISTRY
 import redis
 
 from .api.router import api_router
@@ -21,10 +22,31 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-# Prometheus Metrics
-REQUEST_COUNT = Counter("requests_total", "Total number of requests")
-UPTIME = Gauge("uptime_seconds", "Time the service has been running")
+# Prometheus Metrics (idempotent: reuse existing collectors if already registered)
+def _get_or_create_counter(name: str, doc: str) -> Counter:
+    try:
+        return Counter(name, doc)
+    except ValueError:
+        return REGISTRY._names_to_collectors.get(name + "_total") or REGISTRY._names_to_collectors[name]
+
+def _get_or_create_gauge(name: str, doc: str) -> Gauge:
+    try:
+        return Gauge(name, doc)
+    except ValueError:
+        return REGISTRY._names_to_collectors[name]
+
+REQUEST_COUNT = _get_or_create_counter("requests", "Total number of requests")
+UPTIME = _get_or_create_gauge("uptime_seconds", "Time the service has been running")
 START_TIME = time.time()
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info("Ancient Compute Backend starting...")
+    UPTIME.set(0)
+    yield
+    logger.info("Ancient Compute Backend shutting down...")
+
 
 # Create FastAPI application
 app = FastAPI(
@@ -33,6 +55,7 @@ app = FastAPI(
     version="0.1.0",
     docs_url="/docs" if settings.DEBUG else None,
     redoc_url="/redoc" if settings.DEBUG else None,
+    lifespan=lifespan,
 )
 
 # Middleware configuration (TrustedHost, CORS, Security Headers, RateLimit, Request Count)
@@ -101,11 +124,3 @@ async def root():
         "environment": settings.ENVIRONMENT,
     }
 
-@app.on_event("startup")
-async def startup_event():
-    logger.info("Ancient Compute Backend starting...")
-    UPTIME.set(0)
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    logger.info("Ancient Compute Backend shutting down...")

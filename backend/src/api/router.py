@@ -1,11 +1,15 @@
 # Ancient Compute Backend - Main API Router
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
 
 from .code_execution import router as code_execution_router
 from .emulator import router as emulator_router
 from .timeline import router as timeline_router
 from .execution import router as exercise_execution_router
+from ..database import get_db
+from ..models import Module, Era
+
 import os
 import json
 from pathlib import Path
@@ -34,21 +38,27 @@ async def get_status():
 
 
 @api_router.get("/modules")
-async def list_modules():
-    """List all educational modules"""
-    # Placeholder - will be implemented with actual database queries
+async def list_modules(db: Session = Depends(get_db)):
+    """List all published educational modules ordered chronologically."""
+    modules = (
+        db.query(Module)
+        .filter(Module.is_published == True)
+        .order_by(Module.sequence_order)
+        .all()
+    )
     return {
         "modules": [
             {
-                "id": "module-0",
-                "title": "Prehistory of Counting (20,000 BC - 3000 BC)",
-                "description": "Ishango bone, clay tokens, one-to-one correspondence",
-            },
-            {
-                "id": "module-1",
-                "title": "Ancient Foundations (3000 BC - 500 AD)",
-                "description": "Babylonian algorithms, Greek logic, Panini's grammar",
-            },
+                "id": m.slug,
+                "title": m.title,
+                "description": m.description,
+                "era": m.era_enum.value if m.era_enum else None,
+                "start_year": m.start_year,
+                "end_year": m.end_year,
+                "estimated_hours": m.estimated_hours,
+                "difficulty_level": m.difficulty_level,
+            }
+            for m in modules
         ]
     }
 
@@ -152,20 +162,25 @@ async def get_minix_run_resource(run_id: str, arch: str = "i386"):
 
 
 @api_router.get("/timeline")
-async def get_timeline():
-    """Get historical timeline events"""
-    # Placeholder - will be implemented with actual database queries
+async def get_timeline(db: Session = Depends(get_db)):
+    """Get historical timeline eras with their modules."""
+    eras = (
+        db.query(Era)
+        .filter(Era.is_published == True)
+        .order_by(Era.order)
+        .all()
+    )
     return {
         "timeline": [
             {
-                "year": -20000,
-                "title": "Ishango Bone",
-                "description": "Earliest evidence of mathematical thinking",
-            },
-            {
-                "year": -3000,
-                "title": "Babylonian Cuneiform",
-                "description": "Development of sexagesimal number system",
-            },
+                "year": era.start_year,
+                "end_year": era.end_year,
+                "title": era.full_name,
+                "label": era.label,
+                "description": era.description,
+                "color": era.color,
+                "module_count": len(era.modules) if era.modules else 0,
+            }
+            for era in eras
         ]
     }

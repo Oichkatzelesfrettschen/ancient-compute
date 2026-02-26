@@ -20,6 +20,7 @@ from ..models import (
     Module,
 )
 from ..services.execution_orchestrator import ExecutionOrchestrator
+from ..auth import get_current_user, UserResponse
 
 router = APIRouter(prefix="/exercises", tags=["execution"])
 
@@ -90,6 +91,7 @@ async def submit_exercise_code(
     exercise_id: int,
     request: CodeSubmissionRequest,
     db: Session = Depends(get_db),
+    current_user: UserResponse = Depends(get_current_user),
 ) -> ExerciseSubmissionResponse:
     """
     Submit code for evaluation against exercise test cases.
@@ -137,8 +139,7 @@ async def submit_exercise_code(
     score_percentage = (passed_tests // total_tests * 100) if total_tests > 0 else 0
     is_successful = passed_tests == total_tests
 
-    # Placeholder for current user
-    current_user_id = 1
+    current_user_id = current_user.id
 
     # Create submission record
     submission = ExerciseSubmission(
@@ -282,6 +283,7 @@ async def validate_exercise_code(
 async def get_exercise_submissions(
     exercise_id: int,
     db: Session = Depends(get_db),
+    current_user: UserResponse = Depends(get_current_user),
 ):
     """
     Get user's submission history for an exercise.
@@ -299,14 +301,13 @@ async def get_exercise_submissions(
     if not exercise:
         raise HTTPException(status_code=404, detail="Exercise not found")
 
-    # Placeholder for current user
-    current_user_id = 1
+    current_user_id = current_user.id
 
     submissions = (
         db.query(ExerciseSubmission)
         .filter(
             ExerciseSubmission.exercise_id == exercise_id,
-            ExerciseSubmission.user_id == current_user_id,  # Use placeholder
+            ExerciseSubmission.user_id == current_user_id,
         )
         .order_by(ExerciseSubmission.submitted_at.desc())
         .limit(20)
@@ -339,6 +340,7 @@ async def get_exercise_submissions(
 async def get_exercise_progress(
     exercise_id: int,
     db: Session = Depends(get_db),
+    current_user: UserResponse = Depends(get_current_user),
 ):
     """
     Get user's progress tracking for an exercise.
@@ -356,14 +358,13 @@ async def get_exercise_progress(
     if not exercise:
         raise HTTPException(status_code=404, detail="Exercise not found")
 
-    # Placeholder for current user
-    current_user_id = 1
+    current_user_id = current_user.id
 
     progress = (
         db.query(ExerciseProgress)
         .filter(
             ExerciseProgress.exercise_id == exercise_id,
-            ExerciseProgress.user_id == current_user_id,  # Use placeholder
+            ExerciseProgress.user_id == current_user_id,
         )
         .first()
     )

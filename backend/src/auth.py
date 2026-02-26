@@ -16,7 +16,7 @@ from fastapi import HTTPException, Security, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel
 
-from ..config import settings
+from .config import settings
 
 security = HTTPBearer()
 
@@ -121,14 +121,35 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Security(
     token = credentials.credentials
     token_data = decode_token(token)
     
-    # TODO: Query user from database to verify they still exist and are active
-    # For now, return user data from token
-    user = UserResponse(
-        id=token_data.user_id,
-        username=token_data.username,
-        email=token_data.email,
-        is_active=True
-    )
+    # Query user from database to verify they still exist and are active.
+    # Falls back to token data if database is unavailable (e.g., in testing).
+    from .database import SessionLocal
+    from .models.user import User
+
+    db_user = None
+    try:
+        db = SessionLocal()
+        try:
+            db_user = db.query(User).filter(User.id == token_data.user_id).first()
+        finally:
+            db.close()
+    except Exception:
+        pass  # Database unavailable; fall through to token data
+
+    if db_user is not None:
+        user = UserResponse(
+            id=db_user.id,
+            username=db_user.username,
+            email=db_user.email,
+            is_active=db_user.is_active,
+        )
+    else:
+        user = UserResponse(
+            id=token_data.user_id,
+            username=token_data.username,
+            email=token_data.email,
+            is_active=True,
+        )
     
     if not user.is_active:
         raise HTTPException(status_code=403, detail="User account is inactive")

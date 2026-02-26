@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 
 from ..database import get_db
 from ..models import CodeSubmission
+from ..auth import get_current_user, UserResponse
 from ..services.languages import (
     get_executor,
     language_status_summary,
@@ -89,7 +90,11 @@ async def _execute_with_compatible_signature(
 
 
 @router.post("/run", response_model=ExecutionResponse)
-async def execute_code(request: ExecutionRequest, db: Session = Depends(get_db)):
+async def execute_code(
+    request: ExecutionRequest,
+    db: Session = Depends(get_db),
+    current_user: UserResponse = Depends(get_current_user),
+):
     """
     Execute code in a sandboxed environment.
 
@@ -127,8 +132,7 @@ async def execute_code(request: ExecutionRequest, db: Session = Depends(get_db))
 
     # Save submission to database if lesson_id provided
     if request.lesson_id:
-        # Placeholder for current user
-        current_user_id = 1
+        current_user_id = current_user.id
         submission = CodeSubmission(
             user_id=current_user_id,
             lesson_id=request.lesson_id,
