@@ -1,7 +1,7 @@
 # Ancient Compute - Makefile
 # Common development tasks for cross-platform development
 
-.PHONY: help setup dev test build clean install-hooks lint format docker-up docker-down test-active test-unit test-physics verify-simulation links-check links-check-full archive-audit
+.PHONY: help setup dev test build clean install-hooks lint format docker-up docker-down test-active test-unit test-physics verify-simulation links-check links-check-full archive-audit db-init db-migrate db-rollback db-reset
 
 # Default target
 help:
@@ -189,6 +189,11 @@ docker-clean:
 	@echo "Docker cleanup complete"
 
 # Database operations
+db-init:
+	@echo "Initializing local SQLite database..."
+	cd backend && DATABASE_URL=sqlite:///dev.db alembic upgrade head
+	@echo "Database created at backend/dev.db"
+
 db-migrate:
 	cd backend && alembic upgrade head
 

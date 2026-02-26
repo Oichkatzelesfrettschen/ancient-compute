@@ -1,25 +1,35 @@
 # Ancient Compute - Alembic Environment Configuration
-import sys
+import os
 from logging.config import fileConfig
-from pathlib import Path
 
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
-# Add parent directory to path for imports
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-
 from src.config import settings
 from src.database import Base
-from src.models import CodeSubmission, Lesson, LessonProgress, Module, ModuleProgress, User
+
+# Import all models so Base.metadata reflects the full schema.
+from src.models import (  # noqa: F401
+    CodeSubmission,
+    Era,
+    Exercise,
+    ExerciseProgress,
+    ExerciseSubmission,
+    Lesson,
+    LessonProgress,
+    Module,
+    ModuleProgress,
+    User,
+)
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
 
-# Override sqlalchemy.url from settings if available
-if settings.DATABASE_URL:
-    config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
+# Override sqlalchemy.url: prefer DATABASE_URL env var, then settings.
+db_url = os.environ.get("DATABASE_URL") or settings.DATABASE_URL
+if db_url:
+    config.set_main_option("sqlalchemy.url", db_url)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
