@@ -156,7 +156,8 @@ build: build-backend build-frontend
 
 build-backend:
 	@echo "Building backend..."
-	bazel build //backend:all
+	# TODO: Bazel not configured yet; add BUILD files to enable
+	@echo "Bazel build not configured. Use 'pip install -r requirements.txt' for now."
 
 build-frontend:
 	@echo "Building frontend..."
@@ -231,15 +232,16 @@ minix-install:
 	@[ -n "$$ISO" ] || (echo "Usage: make minix-install ISO=/path/to/minix.iso [ARCH=i386] [VNC=5900]" && exit 2)
 	ARCH=$${ARCH:-i386} VNC=$${VNC:-5900} ./scripts/minix_install_interactive.sh --iso "$$ISO" --arch "$$ARCH" --vnc-port "$$VNC"
 
-# Bazel operations
+# Bazel operations (not yet configured -- no BUILD/WORKSPACE files)
+# TODO: Add BUILD files to enable Bazel-based hermetic builds
 bazel-build:
-	bazel build //...
+	@echo "Bazel not configured. Add BUILD files first."
 
 bazel-test:
-	bazel test //...
+	@echo "Bazel not configured. Use 'make test' instead."
 
 bazel-clean:
-	bazel clean --expunge
+	@echo "Bazel not configured."
 
 # --- Historian & Content ---
 historian-index:
