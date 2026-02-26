@@ -75,6 +75,21 @@ PARAMS = {
     "column_height_mm":     600.0,
     "column_width_mm":      25.0,
     "column_youngs_GPa":    205.0,     # steel
+
+    # Phase III: Stress concentration / critical speed
+    "fillet_radius_mm":     2.0,
+    "shaft_density_kg_m3":  7850.0,    # steel
+
+    # Phase V: Running-in wear
+    "running_in_K_init":    1e-5,
+    "running_in_K_steady":  1e-6,
+    "running_in_s0_mm":     1e7,
+
+    # Phase VI: Radiation / thermal coupling
+    "emissivity":           0.8,
+    "surface_area_m2":      7.2,
+    "h_convection_W_m2K":   10.0,
+    "machine_mass_kg":      500.0,
 }
 
 
@@ -152,6 +167,69 @@ def euler_buckling(p: dict) -> float:
     return math.pi**2 * E_Pa * I / (K * L_m)**2
 
 
+# --- Phase III: Stress concentration ---
+
+def stress_concentration_stepped(p: dict) -> float:
+    """Peterson power-law K_t for stepped shaft."""
+    r = p["fillet_radius_mm"]
+    d = p["shaft_diameter_mm"]
+    # Power-law: K_t = 0.9 * (r/d)^(-0.33) for D/d ~ 1.5
+    rd = r / d
+    if rd <= 0:
+        return 3.0
+    return 0.9 * rd**(-0.33)
+
+
+def critical_speed_margin(p: dict) -> float:
+    """Critical speed margin: omega_n / omega_op."""
+    d_m = p["shaft_diameter_mm"] / 1000.0
+    L_m = p["shaft_span_mm"] / 1000.0
+    E_Pa = p["shaft_youngs_GPa"] * 1e9
+    rho = p["shaft_density_kg_m3"]
+    I = math.pi * d_m**4 / 64.0
+    A = math.pi * d_m**2 / 4.0
+    if L_m <= 0 or A <= 0 or rho <= 0:
+        return float("inf")
+    omega_n = (math.pi**2 / L_m**2) * math.sqrt(E_Pa * I / (rho * A))
+    crit_rpm = omega_n * 60.0 / (2.0 * math.pi)
+    return crit_rpm / p["shaft_rpm"] if p["shaft_rpm"] > 0 else float("inf")
+
+
+# --- Phase V: Running-in wear ---
+
+def running_in_wear_coeff(p: dict) -> float:
+    """Running-in wear coefficient at 50% of s_0."""
+    s = p["running_in_s0_mm"] * 0.5  # halfway through running-in
+    K_ss = p["running_in_K_steady"]
+    K_init = p["running_in_K_init"]
+    s0 = p["running_in_s0_mm"]
+    return K_ss + (K_init - K_ss) * math.exp(-s / s0)
+
+
+# --- Phase VI: Steady-state temperature ---
+
+def steady_state_temperature(p: dict) -> float:
+    """Steady-state temperature rise: dT = Q_gen / (h * A) [C]."""
+    # Bearing heat as proxy for Q_gen
+    omega = 2 * math.pi * p["shaft_rpm"] / 60
+    d_m = p["shaft_diameter_mm"] / 1000.0
+    Q = 0.5 * p["bearing_friction"] * p["bearing_load_N"] * d_m * omega * 4  # 4 bearings
+    Q_gear = 500.0 * 0.02  # gear mesh loss
+    Q_total = Q + Q_gear
+
+    # Include linearized radiation
+    T_amb = 20.0
+    sigma = 5.67e-8
+    T_s_K = T_amb + 273.15 + 5.0  # estimate ~5C rise
+    T_amb_K = T_amb + 273.15
+    h_rad = p["emissivity"] * sigma * (T_s_K**2 + T_amb_K**2) * (T_s_K + T_amb_K)
+    h_total = p["h_convection_W_m2K"] + h_rad
+
+    if h_total * p["surface_area_m2"] <= 0:
+        return 0.0
+    return Q_total / (h_total * p["surface_area_m2"])
+
+
 # ---------------------------------------------------------------------------
 # Sensitivity calculation
 # ---------------------------------------------------------------------------
@@ -226,6 +304,20 @@ OUTPUT_FUNCTIONS = [
     ]),
     ("Euler buckling [N]", euler_buckling, [
         "column_youngs_GPa", "column_width_mm", "column_height_mm",
+    ]),
+    ("Stress concentration K_t", stress_concentration_stepped, [
+        "fillet_radius_mm", "shaft_diameter_mm",
+    ]),
+    ("Critical speed margin", critical_speed_margin, [
+        "shaft_diameter_mm", "shaft_span_mm", "shaft_youngs_GPa",
+        "shaft_density_kg_m3", "shaft_rpm",
+    ]),
+    ("Running-in K(s) at 50% s_0", running_in_wear_coeff, [
+        "running_in_K_init", "running_in_K_steady", "running_in_s0_mm",
+    ]),
+    ("Steady-state dT [C]", steady_state_temperature, [
+        "bearing_friction", "bearing_load_N", "shaft_diameter_mm",
+        "shaft_rpm", "emissivity", "surface_area_m2", "h_convection_W_m2K",
     ]),
 ]
 

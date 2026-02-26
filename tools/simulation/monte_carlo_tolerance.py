@@ -246,6 +246,157 @@ def check_shaft_deflection(rng: random.Random, n: int) -> MCResult:
     )
 
 
+# --- Phase III: Fatigue with stress concentration ---
+
+def check_fatigue_with_Kt(rng: random.Random, n: int) -> MCResult:
+    """Check probability that fatigue safety factor < 1.5 including K_t."""
+    failures = 0
+    margins: List[float] = []
+
+    for _ in range(n):
+        # Varied parameters
+        yield_mpa = STEEL_YIELD.sample(rng)
+        load_n = SHAFT_LOAD.sample(rng)
+        fillet_r = rng.gauss(2.0, 0.3)    # fillet radius +/- 0.3mm
+        diameter = rng.gauss(50.0, 0.025 / 3.0)
+
+        # Stress concentration (Peterson power-law)
+        rd = fillet_r / diameter if diameter > 0 else 0.01
+        if rd <= 0:
+            rd = 0.01
+        Kt = 0.9 * rd**(-0.33)
+        Kt = max(Kt, 1.0)
+
+        # Neuber notch sensitivity (steel, r ~ 2mm)
+        a = 0.025  # Neuber constant for steel ~0.025 mm^(1/2)
+        q = 1.0 / (1.0 + a / math.sqrt(max(fillet_r, 0.01)))
+        Kf = 1.0 + q * (Kt - 1.0)
+
+        # Endurance limit corrected
+        Se = yield_mpa * 0.5 / Kf  # Se ~ 0.5*Sy / Kf
+
+        # Bending stress from shaft load
+        d_m = diameter / 1000.0
+        L_m = 0.375  # bearing span
+        M_Nm = load_n * L_m / 4.0  # max moment for simply-supported
+        c = d_m / 2.0
+        I = math.pi * d_m**4 / 64.0
+        sigma_a = (M_Nm * c / I) / 1e6  # MPa
+
+        sf = Se / sigma_a if sigma_a > 0 else float("inf")
+        margin = sf - 1.5
+        margins.append(margin)
+        if sf < 1.5:
+            failures += 1
+
+    margins.sort()
+    return MCResult(
+        name="Fatigue SF with K_t < 1.5",
+        n_iterations=n,
+        n_failures=failures,
+        failure_probability=failures / n,
+        mean_margin=sum(margins) / n,
+        min_margin=margins[0],
+        p99_margin=margins[int(0.01 * n)],
+    )
+
+
+# --- Phase V+VI: Combined thermal + wear clearance ---
+
+def check_thermal_wear_clearance(rng: random.Random, n: int) -> MCResult:
+    """Check combined thermal + wear clearance after 100 hours at 30 RPM."""
+    failures = 0
+    margins: List[float] = []
+
+    for _ in range(n):
+        bore = BEARING_BORE.sample(rng)
+        shaft = SHAFT_DIAMETER.sample(rng)
+        steel_alpha = STEEL_ALPHA.sample(rng)
+        brass_alpha = BRASS_ALPHA.sample(rng)
+        temp = rng.gauss(25.0, 3.0)  # operating temperature
+
+        cold_clearance = bore - shaft
+        delta_T = temp - 20.0
+
+        # Thermal clearance change
+        shaft_growth = steel_alpha * shaft * delta_T
+        bearing_growth = brass_alpha * bore * delta_T
+        thermal_clearance = cold_clearance + (bearing_growth - shaft_growth)
+
+        # Wear clearance change after 100h at 30 RPM
+        archard_K = rng.gauss(1e-6, 2e-7)  # steady-state K
+        load = rng.gauss(125.0, 10.0)  # per bearing
+        s_per_hour = math.pi * shaft * 30.0 * 60.0  # mm/hr
+        hardness_MPa = rng.gauss(120.0 * 9.81, 50.0)
+        hours = 100.0
+        V_wear = archard_K * load * s_per_hour * hours / hardness_MPa
+        bearing_length = rng.gauss(60.0, 1.0)
+        h_wear = V_wear / (math.pi * shaft * bearing_length) if shaft * bearing_length > 0 else 0
+
+        final_clearance = thermal_clearance + h_wear
+        clearance_limit = 0.15  # mm
+
+        margin = clearance_limit - final_clearance
+        margins.append(margin)
+        if final_clearance >= clearance_limit or final_clearance <= 0:
+            failures += 1
+
+    margins.sort()
+    return MCResult(
+        name="Thermal+wear clearance limit (100h)",
+        n_iterations=n,
+        n_failures=failures,
+        failure_probability=failures / n,
+        mean_margin=sum(margins) / n,
+        min_margin=margins[0],
+        p99_margin=margins[int(0.01 * n)],
+    )
+
+
+# --- Phase III: Torsional vibration margin ---
+
+def check_torsional_margin(rng: random.Random, n: int) -> MCResult:
+    """Check probability of torsional vibration margin < 3."""
+    failures = 0
+    margins: List[float] = []
+
+    for _ in range(n):
+        # Shaft properties (steel)
+        G_GPa = rng.gauss(79.0, 2.0)  # shear modulus
+        diameter = rng.gauss(50.0, 0.025 / 3.0)
+        length = rng.gauss(375.0, 5.0)  # bearing span
+        disk_mass = rng.gauss(5.0, 0.5)  # effective rotor mass at midspan
+
+        d_m = diameter / 1000.0
+        L_m = length / 1000.0
+        G_Pa = G_GPa * 1e9
+        J_p = math.pi * d_m**4 / 32.0  # polar moment
+        J_disk = disk_mass * (d_m / 2.0)**2  # disk mass moment of inertia
+
+        if L_m <= 0 or J_disk <= 0:
+            margins.append(100.0)
+            continue
+
+        omega_n = math.sqrt(G_Pa * J_p / (L_m * J_disk))
+        omega_op = 2 * math.pi * 30.0 / 60.0  # 30 RPM
+        margin_ratio = omega_n / omega_op
+
+        margins.append(margin_ratio - 3.0)
+        if margin_ratio < 3.0:
+            failures += 1
+
+    margins.sort()
+    return MCResult(
+        name="Torsional vibration margin < 3",
+        n_iterations=n,
+        n_failures=failures,
+        failure_probability=failures / n,
+        mean_margin=sum(margins) / n,
+        min_margin=margins[0],
+        p99_margin=margins[int(0.01 * n)],
+    )
+
+
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
@@ -265,6 +416,9 @@ def main() -> int:
         check_bearing_clearance(rng, n),
         check_structural_safety(rng, n),
         check_shaft_deflection(rng, n),
+        check_fatigue_with_Kt(rng, n),
+        check_thermal_wear_clearance(rng, n),
+        check_torsional_margin(rng, n),
     ]
 
     any_failed = False

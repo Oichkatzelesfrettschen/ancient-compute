@@ -296,3 +296,119 @@ class TestDE2OperationalNotes:
         hours = schema["lubrication"]["schedule_hours"]
         # 160 hours between services is typical for 19th century machinery
         assert 50 <= hours <= 500
+
+
+# ---------------------------------------------------------------------------
+# Phase IX: Extended timing, phase angle, and carry comparisons
+# ---------------------------------------------------------------------------
+
+class TestDE2TimingComparison:
+    """Compare simulation timing model with DE2 mechanical constraints."""
+
+    def test_carry_propagation_within_phase(self):
+        """31-digit carry (DE2) must fit within the CARRY phase (45 degrees).
+
+        DE2 uses 31 digits with 2-position look-ahead anticipating carriage.
+        """
+        from backend.src.emulator.timing import CarryPropagationModel
+        degrees = CarryPropagationModel.worst_case_degrees(31)
+        assert CarryPropagationModel.fits_within_phase(degrees), (
+            f"31-digit carry needs {degrees:.1f} degrees, exceeds 45 degree phase"
+        )
+
+    def test_add_completes_in_one_rotation(self):
+        """ADD operation should fit within one shaft rotation (360 degrees).
+
+        DE2 performs one addition per crank turn.
+        """
+        from backend.src.emulator.timing import BarrelTimingBridge
+        assert BarrelTimingBridge.rotations_required("ADD") <= 1.0
+
+    def test_phase_angles_at_45_intervals(self):
+        """Mechanical phases occur at 45-degree intervals (8 phases per rotation).
+
+        DE2 main shaft has 8 mechanical phases at 45 degree intervals.
+        """
+        from backend.src.emulator.timing import TimingController
+        from backend.src.emulator.types import MechanicalPhase
+        tc = TimingController()
+        phases_seen = set()
+        for angle in range(0, 360, 45):
+            phase = tc.get_phase_at_angle(angle)
+            phases_seen.add(phase)
+        assert len(phases_seen) == 8
+
+    def test_full_rotation_generates_phase_events(self):
+        """A full rotation should produce events for all phase transitions."""
+        from backend.src.emulator.timing import TimingController
+        tc = TimingController()
+        n_events = tc.run_full_cycle()
+        # 8 phase transitions + 1 rotation_complete = 9 events
+        assert n_events >= 8
+
+    def test_cycle_time_matches_observed(self, schema):
+        """One rotation at 30 RPM = 2 seconds, consistent with observed 2 sec/turn."""
+        rpm = schema["mechanisms"]["drive"]["rpm"]
+        cycle_time_s = 60.0 / rpm
+        # Observed: 2 sec/turn (User Manual lines 588-590)
+        assert 1.0 <= cycle_time_s <= 4.0
+
+
+class TestDE2SimulationFeasibility:
+    """Verify coupled simulation predictions match DE2 operational experience."""
+
+    def test_warmup_steady_state_below_limit(self):
+        """Simulation warmup from cold start stays below thermal limit.
+
+        DE2 operated reliably in museum conditions (~20C ambient).
+        """
+        from backend.src.emulator.simulation.engine import SimulationEngine
+        from backend.src.emulator.simulation.state import SimulationConfig
+        from backend.src.emulator.materials import MaterialLibrary
+
+        lib = MaterialLibrary()
+        cfg = SimulationConfig(
+            dt_s=1.0,
+            rpm=30.0,
+            ambient_temperature_C=20.0,
+        )
+        eng = SimulationEngine(cfg, lib)
+        # Run 1 hour warmup
+        eng.run(3600.0, 600.0)
+        assert eng.state.temperature_C < cfg.temperature_limit_C, (
+            f"Steady-state T={eng.state.temperature_C:.1f}C exceeds limit {cfg.temperature_limit_C}C"
+        )
+        assert not eng.failed
+
+    def test_bearing_clearances_positive_after_warmup(self):
+        """All bearing clearances remain positive after thermal warmup."""
+        from backend.src.emulator.simulation.engine import SimulationEngine
+        from backend.src.emulator.simulation.state import SimulationConfig
+        from backend.src.emulator.materials import MaterialLibrary
+
+        lib = MaterialLibrary()
+        cfg = SimulationConfig(dt_s=1.0, rpm=30.0)
+        eng = SimulationEngine(cfg, lib)
+        eng.run(3600.0, 600.0)
+        for i, c in enumerate(eng.state.bearing_clearances_mm):
+            assert c > 0, f"Bearing {i} seized: clearance={c:.6f}mm"
+
+    def test_wear_within_design_tolerance_after_1h(self):
+        """Bearing wear after 1 hour should be small relative to clearance."""
+        from backend.src.emulator.simulation.engine import SimulationEngine
+        from backend.src.emulator.simulation.state import SimulationConfig
+        from backend.src.emulator.materials import MaterialLibrary
+
+        lib = MaterialLibrary()
+        cfg = SimulationConfig(dt_s=1.0, rpm=30.0)
+        eng = SimulationEngine(cfg, lib)
+        eng.run(3600.0, 600.0)
+        max_wear = max(eng.state.bearing_wear_volumes_mm3)
+        # Wear depth estimate: V/(pi*d*L)
+        wear_depth = max_wear / (
+            math.pi * cfg.shaft_diameter_mm * cfg.bearing_length_mm
+        )
+        # Wear depth should be << initial clearance after 1 hour
+        assert wear_depth < cfg.initial_clearance_mm * 0.1, (
+            f"Wear depth {wear_depth:.6f}mm > 10% of clearance {cfg.initial_clearance_mm}mm"
+        )

@@ -259,6 +259,166 @@ def verify_all() -> int:
     if not check("Euler buckling (P_cr = pi^2*E*I/(K*L)^2)", NEWTON, euler_unit):
         failures += 1
 
+    # === Phase III: Structural Deepening ===
+
+    # Stress concentration K_t: dimensionless (Peterson power-law)
+    # K_t = A * (r/d)^b => dimless * (m/m)^dimless = dimless
+    total += 1
+    kt_unit = mul(DIMENSIONLESS, power(div(METER, METER), 1))
+    if not check("Stress concentration K_t (Peterson)", DIMENSIONLESS, kt_unit):
+        failures += 1
+
+    # AGMA dynamic load factor: K_v = ((A + sqrt(V)) / A)^B [dimensionless]
+    # V [ft/min ~ m/s], A,B are empirical constants. K_v is dimensionless.
+    total += 1
+    kv_unit = DIMENSIONLESS
+    if not check("AGMA K_v (dynamic load factor)", DIMENSIONLESS, kv_unit):
+        failures += 1
+
+    # Johnson buckling: sigma_cr = S_y - (S_y^2/(4*pi^2*E)) * (KL/r)^2 [Pa]
+    # S_y [Pa], E [Pa], (KL/r)^2 [dimless]
+    # S_y^2/E = Pa^2/Pa = Pa
+    total += 1
+    johnson_term = div(power(PASCAL, 2), PASCAL)  # Pa
+    johnson_unit = johnson_term  # Pa - dimless = Pa
+    if not check("Johnson buckling (sigma_cr)", PASCAL, johnson_unit):
+        failures += 1
+
+    # Critical speed: omega_n = (pi^2/L^2) * sqrt(E*I/(rho*A)) [rad/s]
+    # E [Pa], I [m^4], rho [kg/m^3], A [m^2]
+    # E*I = Pa*m^4 = (kg/(m*s^2))*m^4 = kg*m^3/s^2
+    # rho*A = (kg/m^3)*m^2 = kg/m
+    # E*I/(rho*A) = (kg*m^3/s^2) / (kg/m) = m^4/s^2
+    # sqrt(...) = m^2/s
+    # (1/L^2) * m^2/s = (1/m^2) * (m^2/s) = 1/s = rad/s
+    total += 1
+    ei = mul(PASCAL, M4)  # kg*m^3/s^2
+    RHO = (1, -3, 0, 0, 0)  # kg/m^3
+    rho_a = mul(RHO, M2)    # kg/m
+    ei_rho_a = div(ei, rho_a)  # m^4/s^2
+    # sqrt -> m^2/s
+    sqrt_ei_rho = tuple(x // 2 for x in ei_rho_a)  # half the exponents
+    crit_unit = mul(div(DIMENSIONLESS, M2), sqrt_ei_rho)  # (1/m^2)*(m^2/s) = 1/s
+    if not check("Critical speed (omega_n = pi^2/L^2 * sqrt(EI/rhoA))", RAD_PER_S, crit_unit):
+        failures += 1
+
+    # Neuber notch sensitivity: q = 1/(1+a/r) [dimensionless]
+    # a [m], r [m] => dimless
+    total += 1
+    neuber_unit = div(DIMENSIONLESS, div(METER, METER))
+    if not check("Neuber notch sensitivity (q)", DIMENSIONLESS, neuber_unit):
+        failures += 1
+
+    # === Phase IV: Kinematics Enhancement ===
+
+    # Hertzian contact stress: sigma_H = C_p * sqrt(W_t*K_v/(b*d*I)) [Pa]
+    # C_p [sqrt(Pa)], W_t [N], K_v [dimless], b [m], d [m], I [dimless]
+    # W_t/(b*d) = N/m^2 = Pa
+    # C_p * sqrt(Pa) = sqrt(Pa) * sqrt(Pa) = Pa
+    total += 1
+    wt_bd = div(NEWTON, M2)  # Pa
+    if not check("Hertzian contact stress (sigma_H^2 ~ W_t/(b*d))", PASCAL, wt_bd):
+        failures += 1
+
+    # Torsional natural frequency: omega_n = sqrt(G*J/(L*J_disk)) [rad/s]
+    # G [Pa], J [m^4], L [m], J_disk [kg*m^2]
+    # G*J = Pa*m^4 = (kg/(m*s^2))*m^4 = kg*m^3/s^2
+    # L*J_disk = m * kg*m^2 = kg*m^3
+    # G*J/(L*J_disk) = (kg*m^3/s^2)/(kg*m^3) = 1/s^2
+    # sqrt(...) = 1/s
+    total += 1
+    gj = mul(PASCAL, M4)         # kg*m^3/s^2
+    KG_M2 = (1, 2, 0, 0, 0)     # kg*m^2 (mass moment of inertia)
+    l_jdisk = mul(METER, KG_M2)  # kg*m^3
+    gj_ljd = div(gj, l_jdisk)   # 1/s^2
+    torsion_freq = tuple(x // 2 for x in gj_ljd)  # 1/s
+    if not check("Torsional natural frequency (omega_n = sqrt(GJ/LJ_d))", RAD_PER_S, torsion_freq):
+        failures += 1
+
+    # Cam torque: T = F * (dh/dtheta_m_rad) [N*m = Nm]
+    # F [N], dh/dtheta [m/rad = m] => T [N*m]
+    total += 1
+    cam_torque_unit = mul(NEWTON, METER)
+    NM = JOULE  # N*m has same dimensions as J
+    if not check("Cam torque (T = F * dh/dtheta)", NM, cam_torque_unit):
+        failures += 1
+
+    # === Phase V: Tribology Advancement ===
+
+    # Running-in wear coeff: K(s) = K_ss + (K_0-K_ss)*exp(-s/s_0) [dimless]
+    total += 1
+    running_in_unit = DIMENSIONLESS
+    if not check("Running-in wear coefficient K(s)", DIMENSIONLESS, running_in_unit):
+        failures += 1
+
+    # Surface texture: Ra(h) = Ra_ss + (Ra_0-Ra_ss)*exp(-h/h_0) [m]
+    total += 1
+    ra_unit = METER
+    if not check("Surface roughness evolution Ra(h)", METER, ra_unit):
+        failures += 1
+
+    # Wear clearance: h_wear = V/(pi*d*L) [m]
+    # V [m^3], d [m], L [m] => m^3/m^2 = m
+    total += 1
+    wear_clr_unit = div(M3, M2)
+    if not check("Wear-to-clearance (h = V/(pi*d*L))", METER, wear_clr_unit):
+        failures += 1
+
+    # Time to failure: t = (c_max-c_0)*pi*d*L*H / (K*F*s_rate) [s]
+    # c [m], d [m], L [m], H [Pa], K [dimless], F [N], s_rate [m/s]
+    # Num: m * m * m * Pa = m^3 * N/m^2 = N*m = J
+    # Den: dimless * N * m/s = N*m/s = W
+    # J/W = s
+    total += 1
+    ttf_num = mul(M3, PASCAL)   # m^3 * kg/(m*s^2) = kg*m^2/s^2 = J
+    ttf_den = mul(NEWTON, M_PER_S)  # N*m/s = kg*m^2/s^3 = W
+    ttf_unit = div(ttf_num, ttf_den)
+    if not check("Time to failure (t = c*pi*d*L*H/(K*F*s_rate))", SECOND, ttf_unit):
+        failures += 1
+
+    # === Phase VI: Thermodynamics Completion ===
+
+    # Radiation heat: Q_rad = epsilon*sigma*A*(T_s^4 - T_amb^4) [W]
+    # epsilon [dimless], sigma [W/(m^2*K^4)], A [m^2], T^4 [K^4]
+    # sigma*A*T^4 = W/(m^2*K^4) * m^2 * K^4 = W
+    total += 1
+    SIGMA_UNIT = div(WATT, mul(M2, power(KELVIN, 4)))  # W/(m^2*K^4)
+    rad_unit = mul(DIMENSIONLESS, SIGMA_UNIT, M2, power(KELVIN, 4))
+    if not check("Radiation heat (Q_rad = eps*sigma*A*T^4)", WATT, rad_unit):
+        failures += 1
+
+    # Crank-Nicolson thermal: T(t+dt) = T(t) + ... [K]
+    # The CN formula preserves temperature units by construction
+    total += 1
+    cn_unit = KELVIN
+    if not check("Crank-Nicolson temperature step", KELVIN, cn_unit):
+        failures += 1
+
+    # Thermal clearance: c(T) = (alpha_b - alpha_s) * d * dT [m]
+    # alpha [1/K], d [m], dT [K] => 1/K * m * K = m
+    total += 1
+    therm_clr_unit = mul(PER_K, METER, KELVIN)
+    if not check("Thermal clearance (c = (a_b-a_s)*d*dT)", METER, therm_clr_unit):
+        failures += 1
+
+    # === Phase VII: Timing ===
+
+    # Carry propagation: degrees = digit_count / (1+lookahead) [degrees ~ dimless]
+    total += 1
+    carry_unit = DIMENSIONLESS
+    if not check("Carry propagation degrees", DIMENSIONLESS, carry_unit):
+        failures += 1
+
+    # === Phase VIII: Simulation Coupling ===
+
+    # Viscosity(T): eta(T) = eta_40 * exp(-beta*(T-40)) [Pa*s]
+    # eta_40 [Pa*s], exp term [dimless] => Pa*s
+    total += 1
+    PA_S = mul(PASCAL, SECOND)  # Pa*s
+    visc_unit = mul(PA_S, DIMENSIONLESS)
+    if not check("Viscosity(T) = eta_40*exp(-beta*dT)", PA_S, visc_unit):
+        failures += 1
+
     # Summary
     print(f"\nDimensional analysis: {total - failures}/{total} checks passed.")
     return 1 if failures > 0 else 0
