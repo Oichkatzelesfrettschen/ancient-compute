@@ -179,3 +179,85 @@ class AntikytheraMechanism:
             if m.src == src and m.dst == dst:
                 self.gears[dst].angle = self.gears[src].angle * m.ratio
                 return
+
+
+# ---------------------------------------------------------------------------
+# Generic gear-train graph (used by tests and external analysis)
+# ---------------------------------------------------------------------------
+
+@dataclass
+class GearEdge:
+    """A directed edge in a gear-train graph with an explicit ratio."""
+    src: str
+    dst: str
+    ratio: float
+
+
+class GearTrain:
+    """
+    Generic gear-train propagation model.
+
+    Given a list of GearEdges, propagates an input angle through all
+    reachable gears via BFS from the input gear.
+    """
+
+    def __init__(self, edges: List[GearEdge]):
+        self.edges = list(edges)
+        self._adj: Dict[str, List[GearEdge]] = {}
+        for e in self.edges:
+            self._adj.setdefault(e.src, []).append(e)
+
+    def propagate(self, input_angle: float, input_gear: str) -> Dict[str, float]:
+        """Propagate input_angle from input_gear through all reachable edges."""
+        angles: Dict[str, float] = {input_gear: input_angle}
+        queue = [input_gear]
+        while queue:
+            current = queue.pop(0)
+            for edge in self._adj.get(current, []):
+                if edge.dst not in angles:
+                    angles[edge.dst] = angles[current] * edge.ratio
+                    queue.append(edge.dst)
+        return angles
+
+
+# ---------------------------------------------------------------------------
+# Draconic pointer train (Voulgaris et al. 2021, arxiv 2104.06181)
+# ---------------------------------------------------------------------------
+
+def draconic_pointer_train_from_arxiv_2104_06181() -> GearTrain:
+    """
+    Construct the Fragment D draconic pointer gear train from
+    Voulgaris et al. (2021), arxiv 2104.06181.
+
+    The train models the draconic month pointer driven by b1.
+    b1 (224 teeth) meshes with a1 (50 teeth), giving ratio 224/50.
+    r1 (60 teeth, coaxial with a1) meshes with s1 (20 teeth),
+    giving ratio 60/20.
+
+    The r1-a1 shaft coupling is modeled externally by the caller
+    (see test_antikythera_draconic_train.py).
+    """
+    return GearTrain([
+        GearEdge(src="b1", dst="a1", ratio=224.0 / 50.0),
+        GearEdge(src="r1", dst="s1", ratio=60.0 / 20.0),
+    ])
+
+
+class AntikytheraDraconicModel:
+    """
+    High-level wrapper for the draconic pointer computation.
+
+    Encapsulates the two-stage propagation (b1->a1, then r1->s1
+    with shaft coupling a1==r1) and returns the pointer rotation
+    ratio per b1 revolution.
+    """
+
+    def __init__(self):
+        self.train = draconic_pointer_train_from_arxiv_2104_06181()
+
+    def draconic_pointer_rotations_per_b1_rotation(self) -> float:
+        """Return s1 rotations per full b1 revolution."""
+        angles = self.train.propagate(1.0, "b1")
+        # Shaft coupling: r1 angle == a1 angle
+        angles2 = self.train.propagate(angles["a1"], "r1")
+        return abs(angles2["s1"])

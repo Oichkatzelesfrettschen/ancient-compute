@@ -488,12 +488,13 @@ class Engine:
 
         elif op == MicroOp.REPEAT_IF_COUNTER:
             if self.mill_counter > 0:
-                # Jump back to the start of the loop
-                # This requires finding the loop start. 
-                # For MULT, we'll hardcode the jump to step 3.
-                self.barrels.step_index = 3 
+                # Jump back to the loop body row (ADVANCE_MILL + DECREMENT_COUNTER).
+                # step() already incremented step_index past the REPEAT row, so
+                # step_index is now 2 past the target. Set to target directly.
+                # In the MULT barrel, loop body is at row index 1.
+                self.barrels.step_index = self.barrels.step_index - 2
             else:
-                # Loop terminated
+                # Loop terminated, proceed to next step
                 pass
 
         # Other MicroOps (Fetch, etc.) can be implemented here as needed
@@ -808,10 +809,26 @@ class Engine:
     # ========================================================================
 
     def _execute_RDCRD(self, reg_dest, value=None):
-        """Read punch card: load value from input card into register (30 cycles)."""
-        if value is None:
-            value = 42  # Default/placeholder
-        self._set_register_value(reg_dest, BabbageNumber(value))
+        """Read punch card: load value from input card into register (30 cycles).
+
+        If called with an explicit value (from operand), uses that value.
+        Otherwise, reads from the input card queue. Raises IndexError if
+        the card queue is empty (simulates a jam / out-of-cards condition).
+        """
+        if value is not None:
+            self._set_register_value(reg_dest, BabbageNumber(value))
+            return
+
+        if not hasattr(self, "input_cards"):
+            self.input_cards = []
+
+        if not self.input_cards:
+            raise IndexError(
+                f"RDCRD: input card queue empty at PC={self.PC}. "
+                "Load cards with engine.input_cards before execution."
+            )
+        card_value = self.input_cards.pop(0)
+        self._set_register_value(reg_dest, BabbageNumber(card_value))
 
     def _execute_WRPCH(self, reg_source):
         """Write punch card: output register value to result card (30 cycles)."""
@@ -1045,5 +1062,30 @@ Memory (first 10 words):
                 f.write(f"\n{value.to_card_format()}\n\n")
 
     def save_trace(self, filename):
-        """Save execution trace to file (placeholder for full implementation)."""
-        print(f"Trace saving not fully implemented. Would save to {filename}")
+        """Save execution trace to JSON file.
+
+        Each entry records: PC, opcode, operands, register values, flags,
+        and clock_time at the moment of execution.
+        """
+        import json
+
+        trace_entries = []
+        for card in self.result_cards:
+            trace_entries.append({
+                "opcode": card.get("opcode", ""),
+                "operands": card.get("operands", []),
+                "clock_time": card.get("clock_time", 0),
+                "value_decimal": card["value"].to_decimal() if "value" in card else None,
+            })
+
+        state_snapshot = {
+            "pc": self.PC,
+            "clock_time": self.clock_time,
+            "registers": {k: v.to_decimal() for k, v in self.registers.items()},
+            "flags": dict(self.flags),
+            "result_card_count": len(self.result_cards),
+            "trace": trace_entries,
+        }
+
+        with open(filename, "w", encoding="utf-8") as f:
+            json.dump(state_snapshot, f, indent=2)
