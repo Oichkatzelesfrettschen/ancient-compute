@@ -1,8 +1,8 @@
 # Ancient Compute - TODO Tracker & Project Planner
 
-**Document Version**: 2.1
-**Date**: February 24, 2026
-**Status**: Updated after Jan 2026 audit reconciliation and test-status refresh
+**Document Version**: 3.0
+**Date**: February 26, 2026
+**Status**: Updated after Phases 0-8 completion (Hypergranular Debt Resolution)
 **Purpose**: Comprehensive task tracking, priorities, and execution plan
 
 **Planning Context**:
@@ -84,6 +84,8 @@ This document tracks all pending tasks across the Ancient Compute project, organ
 - [x] Write ABI contract spec doc (calling convention, stack/memory model, register preservation).
 - [x] Add ABI conformance tests (positive and intentional-violation cases).
 - [x] Define freestanding C subset matrix and explicit unsupported-feature diagnostics.
+- [x] Implement Tier B/C Babbage extensions (SHL, SHR, bitwise logic, checksums).
+- [x] Implement Lovelace extensions (Music Engine, Symbolic Mode).
 - [ ] Promote one partial frontend at a time only after Gate 0/1/2 criteria are green.
 
 ### Exit Criteria
@@ -552,21 +554,26 @@ This document tracks all pending tasks across the Ancient Compute project, organ
 
 **Legend**: ⚪ Not Started | 🟡 In Progress | 🟢 Complete
 
-### Overall Project Progress (Jan 2026 Audit)
+### Overall Project Progress (Feb 2026 Audit)
 
-| Phase | Status | LOC | Tests | Completion |
-|-------|--------|-----|-------|------------|
-| Phase 1 | Complete | 7,070 | 174 | 100% |
-| Phase 2 | In Progress | 10,270 | 184 | 43% (3/7 services) |
-| Phase 3 | 80% Implemented | 6,000+ | 120+ | 80% (13/15 emulators) |
-| Phase 4 | In Progress | 6,000 | 850+ | 80% |
-| **Total** | **In Progress** | **~28,000** | **533 passing** | **~60%** |
+| Phase | Status | Tests | Notes |
+|-------|--------|-------|-------|
+| Phase 1 (Foundation) | Complete | 174 | FastAPI, DB, 3 lang services |
+| Phase 2 (Languages) | 43% | 184 | C, Python, Haskell only |
+| Phase 3 (Emulators) | 80% | 120+ | 13/15 emulators implemented |
+| Phase 4 (Frontend) | 80% | 850+ | SvelteKit, timeline, visualizations |
+| Physics Model (A-F) | Complete | 400+ | 6 modules, 50+ equations |
+| Debt Resolution (0-8) | Complete | -- | 8 phases of cleanup |
+| **Total** | **In Progress** | **1409 passing** | **8 skipped, 0 failures** |
 
-**Audit Notes**:
-- Phase 2 was previously reported at 85%; actual is 43% (only C, Python, Haskell complete)
-- Phase 3 emulators were implemented but not reflected in previous documentation
-- Test coverage: 25% line coverage (needs improvement)
-- Known issues: executor unit module required API rewrite; broader full-suite rerun still pending
+**Feb 2026 Metrics**:
+- 1409 unit/integration tests passing (up from ~1071 in early Feb)
+- 8 tests skipped (DB fixture dependencies)
+- 3 collection errors quarantined (test_tools_router, test_cross_language, test_phase4_w1_api)
+- Physics: 35/35 dimensional checks, 7/7 Monte Carlo, 24/24 DE2 comparisons
+- Note G deck runner: B1-B13 correct from pure card execution
+- Opcode-coupled physics: SimulationBridge connects engine to physics
+- API: sys.path hacks removed, globals replaced with FastAPI DI
 
 ---
 
@@ -628,11 +635,12 @@ This document tracks all pending tasks across the Ancient Compute project, organ
 
 ---
 
-**Document Revision**: 2.1
-**Last Updated**: February 24, 2026
-**Next Review**: After Tier B integration rerun
+**Document Revision**: 3.0
+**Last Updated**: February 26, 2026
+**Next Review**: After Phase 9-12 completion
 
 **Revision History**:
+- v3.0 (Feb 26, 2026): Updated after Phases 0-8 completion (1409 tests, physics model, Note G, API cleanup)
 - v2.1 (Feb 24, 2026): Reconciled test status, added gate tiers, and aligned planning hygiene completion
 - v2.0 (Jan 14, 2026): Comprehensive audit - corrected Phase 2/3 status, documented fixes and known issues
 - v1.0 (Nov 2, 2025): Initial TODO tracker creation
