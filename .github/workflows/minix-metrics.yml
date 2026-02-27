@@ -31,7 +31,7 @@ jobs:
           chmod +x scripts/minix_metrics.sh
           ./scripts/minix_metrics.sh --iso "${{ github.event.inputs.iso_path }}" --arch "${{ github.event.inputs.arch }}" --iterations "${{ github.event.inputs.iterations }}" --label ci
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: minix-metrics-${{ github.event.inputs.arch }}
           path: metrics/minix/${{ github.event.inputs.arch }}
