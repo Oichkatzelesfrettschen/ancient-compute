@@ -11,7 +11,7 @@ pytest-timeout>=2.3,<3.0
 hypothesis>=6.100,<7.0
 
 # Code Quality
-black>=24.0,<25.0
+black>=24.0,<27.0
 ruff==0.9.10
 mypy>=1.10,<2.0
 # Note: flake8, isort, and pylint replaced by ruff (ADR 0001)
