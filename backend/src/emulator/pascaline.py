@@ -18,20 +18,22 @@ References:
 
 class Wheel:
     """Represents a single digit wheel in the Pascaline."""
+
     def __init__(self, position: int):
-        self.position = position # Position in the machine (0 = units)
-        self.value = 0           # Current digit displayed (0-9)
-        self.pins_active = False # True when pins are lifting sautoir
-        self.sautoir_lifted = False # True when sautoir is lifted
+        self.position = position  # Position in the machine (0 = units)
+        self.value = 0  # Current digit displayed (0-9)
+        self.pins_active = False  # True when pins are lifting sautoir
+        self.sautoir_lifted = False  # True when sautoir is lifted
 
     def __repr__(self) -> str:
         return f"Wheel({self.position}, val={self.value})"
+
 
 class PascalineEmulator:
     def __init__(self, digits: int = 8):
         self.num_digits = digits
         self.wheels: list[Wheel] = [Wheel(i) for i in range(digits)]
-        self.nines_complement_mode = False # True for subtraction
+        self.nines_complement_mode = False  # True for subtraction
 
     def reset(self) -> None:
         for wheel in self.wheels:
@@ -45,7 +47,7 @@ class PascalineEmulator:
             "value": self.get_value(),
             "digits": [w.value for w in self.wheels],
             "sautoirs_lifted": [w.sautoir_lifted for w in self.wheels],
-            "nines_complement_mode": self.nines_complement_mode
+            "nines_complement_mode": self.nines_complement_mode,
         }
 
     def get_value(self) -> int:
@@ -83,7 +85,7 @@ class PascalineEmulator:
         This models the ripple carry mechanism.
         """
         if position >= self.num_digits:
-            return # Overflow
+            return  # Overflow
 
         current_value = self.wheels[position].value
         new_value = current_value + amount
@@ -94,13 +96,13 @@ class PascalineEmulator:
         if carry > 0:
             # Sautoir action: lift and then drop, kicking the next wheel.
             # This is the "ripple" carry.
-            self.wheels[position].sautoir_lifted = True # Indicate sautoir was lifted
+            self.wheels[position].sautoir_lifted = True  # Indicate sautoir was lifted
             self._add_to_wheel(position + 1, carry)
-            self.wheels[position].sautoir_lifted = False # Sautoir drops after carry
+            self.wheels[position].sautoir_lifted = False  # Sautoir drops after carry
 
     def add(self, operand: int) -> int:
         """Adds operand to the current value of the accumulator."""
-        s_op = str(operand)[::-1] # Reverse to process units first
+        s_op = str(operand)[::-1]  # Reverse to process units first
         for i, char in enumerate(s_op):
             if i < self.num_digits:
                 digit = int(char)
@@ -143,7 +145,7 @@ class PascalineEmulator:
         # For now, if the result exceeds the max representable number, we add 1.
 
         # Max value before overflow (e.g. 999 for 3 digits)
-        max_val = (10**self.num_digits) - 1
+        _max_val = (10**self.num_digits) - 1
 
         # If adding the complement resulted in a value > max_val, it's an end-around carry.
         # E.g., 50 - 10 = 40. Complement of 10 (for 3 digits) is 989.

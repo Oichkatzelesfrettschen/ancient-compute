@@ -1,0 +1,50 @@
+# Factorial -- Fourmilab AE card deck
+#
+# Computes: 5! = 120
+# Uses column 0 = counter (starts at 5, decrements to 1)
+# Column 1 = result (starts at 1, accumulates product)
+# Column 2 = constant 1 (for decrementing)
+#
+# Algorithm:
+#   Initialize: col0=5, col1=1, col2=1
+#   Loop: result = result * counter; counter = counter - 1
+#   Repeat until counter == 0
+#
+# Note: This is a simplified Fourmilab factorial that runs for exactly 5
+# iterations (the AE had counting loops via the "backing" mechanism).
+
+N000 +5
+N001 +1
+N002 +1
+
+# Iteration 1: result = 1 * 5 = 5
+L001
+L000
+*
+S001
+
+# Iteration 2: result = 5 * 4 = 20
+N000 +4
+L001
+L000
+*
+S001
+
+# Iteration 3: result = 20 * 3 = 60
+N000 +3
+L001
+L000
+*
+S001
+
+# Iteration 4: result = 60 * 2 = 120
+N000 +2
+L001
+L000
+*
+S001
+
+# Output: print 120
+L001
+P
+H

@@ -49,7 +49,7 @@ class TestIOPipeline:
 
         # Verify printed output
         output = printer.get_printed_output()
-        lines = output.split('\n')
+        lines = output.split("\n")
         assert len(lines) == 3
         assert lines[0] == "0 0 0 0 0 0 0 2"
         assert lines[1] == "0 0 0 0 0 0 0 3"
@@ -74,7 +74,7 @@ class TestIOPipeline:
 
         # Verify printer output
         printed = system.get_printed_output()
-        lines = printed.split('\n')
+        lines = printed.split("\n")
         assert len(lines) == 5
 
         # Verify stereotyper (mold not yet full)
@@ -125,7 +125,7 @@ class TestIOPipeline:
 
         # Verify output capture
         printed = system.get_printed_output()
-        lines = printed.split('\n')
+        lines = printed.split("\n")
         assert len(lines) == 20
 
         # Verify stereotyper progress (20 rows filled)
@@ -149,8 +149,8 @@ class TestDebuggerIntegration:
         # Set cycle breakpoint at cycle 3
         bp_id = debugger.set_cycle_breakpoint(3)
 
-        # Evaluate polynomial f(x) = x² + x + 1 for x ∈ [1, 5]
-        coefficients = [1, 1, 1]
+        # Evaluate polynomial f(x) = x^2 + x + 1 for x in [1, 5]
+        _coefficients = [1, 1, 1]
         x_range = (1, 5)
 
         # Step through manually to control execution
@@ -197,9 +197,7 @@ class TestDebuggerIntegration:
         debugger = Debugger(machine)
 
         # Set condition breakpoint: accumulator > 100
-        bp_id = debugger.set_condition_breakpoint(
-            lambda snapshot: snapshot.ae_accumulator > 100
-        )
+        _bp_id = debugger.set_condition_breakpoint(lambda snapshot: snapshot.ae_accumulator > 100)
 
         # Evaluate polynomial with some cycles
         results = machine.evaluate_polynomial([1, 2, 3], (5, 10))
@@ -272,7 +270,7 @@ class TestCompleteWorkflows:
 
         # Verify output was printed
         output = printer.get_printed_output()
-        assert len(output.split('\n')) == 3
+        assert len(output.split("\n")) == 3
 
     def test_multi_page_polynomial_printing(self):
         """Test polynomial evaluation that spans multiple pages."""
@@ -290,7 +288,7 @@ class TestCompleteWorkflows:
 
         # Should have 60 lines printed
         output = printer.get_printed_output()
-        lines = output.split('\n')
+        lines = output.split("\n")
         assert len(lines) == 60
 
         # Printer position should reflect page advancement
@@ -340,11 +338,11 @@ class TestMechanicalCycleSequences:
         """Test that single cycle executes all 6 phases correctly."""
         machine = DEMachine()
 
-        initial_phase = machine.timing.phase
+        _initial_phase = machine.timing.phase
         machine.run_full_cycle()
 
         # Cycle should complete and return to initial phase
-        final_phase = machine.timing.phase
+        _final_phase = machine.timing.phase
         # Note: exact phase depends on timing implementation
 
         # Verify cycle count incremented
@@ -387,7 +385,7 @@ class TestMechanicalCycleSequences:
 
         # Verify carry signals exist in the snapshot
         snapshot = machine.get_snapshot()
-        assert hasattr(snapshot, 'carry_signals')
+        assert hasattr(snapshot, "carry_signals")
         # Carry signals should be tracked for propagation
         assert isinstance(snapshot.carry_signals, list)
 
@@ -505,12 +503,12 @@ class TestHistoricalAccuracy:
         assert results == expected
 
         # Verify differences
-        diffs_1 = [results[i+1] - results[i] for i in range(len(results)-1)]
+        diffs_1 = [results[i + 1] - results[i] for i in range(len(results) - 1)]
         # First differences: 3, 5, 7, 9
         assert diffs_1 == [3, 5, 7, 9]
 
         # Second differences should be constant (2)
-        diffs_2 = [diffs_1[i+1] - diffs_1[i] for i in range(len(diffs_1)-1)]
+        diffs_2 = [diffs_1[i + 1] - diffs_1[i] for i in range(len(diffs_1) - 1)]
         assert all(d == 2 for d in diffs_2)
 
 

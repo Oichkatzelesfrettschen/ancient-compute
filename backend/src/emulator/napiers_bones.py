@@ -26,6 +26,7 @@ from dataclasses import dataclass
 @dataclass
 class Bone:
     """A single Napier's Bone representing a digit 0-9."""
+
     digit: int
     squares: list[tuple[int, int]]  # (tens, units) for 1x to 9x
 
@@ -38,6 +39,7 @@ class Bone:
             return self.squares[index - 1]
         return (0, 0)
 
+
 class NapiersBones:
     """
     Napier's Bones Calculator.
@@ -47,7 +49,7 @@ class NapiersBones:
 
     def __init__(self) -> None:
         self.bones: dict[int, Bone] = self._create_bones()
-        self.active_bones: list[Bone] = [] # Bones currently on the board
+        self.active_bones: list[Bone] = []  # Bones currently on the board
         self.index_rod = list(range(1, 10))
 
     def _create_bones(self) -> dict[int, Bone]:
@@ -101,7 +103,7 @@ class NapiersBones:
         last_pair = row[-1]
         val = last_pair[1] + carry
         result_digits.append(val % 10)
-        carry = val // 10 + last_pair[0] # Add tens to carry for next diagonal
+        carry = val // 10 + last_pair[0]  # Add tens to carry for next diagonal
 
         # Middle bones
         for i in range(len(row) - 2, -1, -1):
@@ -145,5 +147,5 @@ class NapiersBones:
             if digit == 0:
                 continue
             partial = self.multiply_single_digit(digit)
-            total += partial * (10 ** i)
+            total += partial * (10**i)
         return total

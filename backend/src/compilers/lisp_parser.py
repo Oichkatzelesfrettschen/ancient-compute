@@ -7,37 +7,45 @@ from .lisp_lexer import tokens  # noqa: F401 -- PLY requires tokens in module sc
 
 
 def p_expression_atom(p):
-    '''expression : atom'''
+    """expression : atom"""
     p[0] = p[1]
 
+
 def p_expression_sexpression(p):
-    '''expression : LPAREN elements RPAREN'''
+    """expression : LPAREN elements RPAREN"""
     p[0] = SExpression(p[2])
 
+
 def p_elements_list(p):
-    '''elements : elements expression'''
+    """elements : elements expression"""
     p[0] = p[1] + [p[2]]
 
+
 def p_elements_empty(p):
-    '''elements :'''
+    """elements :"""
     p[0] = []
 
+
 def p_atom_symbol(p):
-    '''atom : SYMBOL'''
+    """atom : SYMBOL"""
     p[0] = Symbol(p[1])
 
+
 def p_atom_number(p):
-    '''atom : NUMBER'''
+    """atom : NUMBER"""
     p[0] = Number(p[1])
 
+
 def p_atom_string(p):
-    '''atom : STRING'''
+    """atom : STRING"""
     p[0] = String(p[1])
+
 
 def p_error(p):
     if p:
         print(f"Syntax error at '{p.value}'")
     else:
         print("Syntax error at EOF")
+
 
 parser = yacc.yacc()

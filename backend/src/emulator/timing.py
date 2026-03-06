@@ -31,22 +31,22 @@ from .types import MechanicalPhase
 class TimingEvent:
     """Event generated at specific shaft angle."""
 
-    angle: int                              # 0-360 degrees
-    phase: MechanicalPhase                  # Current phase
-    event_type: str                         # Event name
-    timestamp: int                          # Cycle counter
-    payload: dict | None = None          # Additional data
+    angle: int  # 0-360 degrees
+    phase: MechanicalPhase  # Current phase
+    event_type: str  # Event name
+    timestamp: int  # Cycle counter
+    payload: dict | None = None  # Additional data
 
 
 @dataclass
 class TimingSnapshot:
     """Snapshot of TimingController state for debugging."""
 
-    angle: int                              # Current angle
-    phase: MechanicalPhase                  # Current phase
-    rotation_count: int                     # Total rotations
-    total_events: int                       # Events generated
-    is_rotating: bool                       # Currently rotating
+    angle: int  # Current angle
+    phase: MechanicalPhase  # Current phase
+    rotation_count: int  # Total rotations
+    total_events: int  # Events generated
+    is_rotating: bool  # Currently rotating
 
 
 class TimingController:
@@ -74,9 +74,9 @@ class TimingController:
 
     def __init__(self) -> None:
         """Initialize TimingController."""
-        self.angle = 0                      # Current shaft angle (0-360)
-        self.rotation_count = 0             # Total rotations completed
-        self.is_rotating = False            # Currently rotating
+        self.angle = 0  # Current shaft angle (0-360)
+        self.rotation_count = 0  # Total rotations completed
+        self.is_rotating = False  # Currently rotating
         self.phase = self._get_phase_at_angle(0)
         self.events: list[TimingEvent] = []
         self.event_callbacks: dict[int, list[Callable]] = {}  # angle → handlers
@@ -191,9 +191,7 @@ class TimingController:
             for callback in self.event_callbacks[angle]:
                 callback(angle, self.phase)
 
-    def register_callback(
-        self, angle: int, callback: Callable
-    ) -> None:
+    def register_callback(self, angle: int, callback: Callable) -> None:
         """
         Register callback for specific angle.
 
@@ -296,17 +294,13 @@ class TimingSequence:
         self.operations: dict[MechanicalPhase, list[str]] = {}
         self.duration = 360  # Default one rotation
 
-    def add_operation(
-        self, phase: MechanicalPhase, operation: str
-    ) -> None:
+    def add_operation(self, phase: MechanicalPhase, operation: str) -> None:
         """Add operation to phase."""
         if phase not in self.operations:
             self.operations[phase] = []
         self.operations[phase].append(operation)
 
-    def get_operations_for_phase(
-        self, phase: MechanicalPhase
-    ) -> list[str]:
+    def get_operations_for_phase(self, phase: MechanicalPhase) -> list[str]:
         """Get operations for given phase."""
         return self.operations.get(phase, [])
 
@@ -319,6 +313,7 @@ class TimingSequence:
 # Carry Propagation Timing Model
 # ---------------------------------------------------------------------------
 
+
 class CarryPropagationModel:
     """Models carry propagation timing in the Anticipating Carriage.
 
@@ -327,11 +322,11 @@ class CarryPropagationModel:
     All carry events must fit within the CARRY phase (135-180 degrees).
     """
 
-    DEGREES_PER_DIGIT = 1.0       # Carry propagation rate
-    LOOKAHEAD_POSITIONS = 2       # Anticipating carriage look-ahead
-    CARRY_PHASE_START = 135       # Degrees
-    CARRY_PHASE_END = 180         # Degrees
-    CARRY_PHASE_WIDTH = 45        # Degrees available
+    DEGREES_PER_DIGIT = 1.0  # Carry propagation rate
+    LOOKAHEAD_POSITIONS = 2  # Anticipating carriage look-ahead
+    CARRY_PHASE_START = 135  # Degrees
+    CARRY_PHASE_END = 180  # Degrees
+    CARRY_PHASE_WIDTH = 45  # Degrees available
 
     @staticmethod
     def carry_propagation_degrees(
@@ -352,7 +347,8 @@ class CarryPropagationModel:
     def worst_case_degrees(digit_count: int = 50) -> float:
         """Worst-case carry chain: all digits ripple."""
         return CarryPropagationModel.carry_propagation_degrees(
-            digit_count, CarryPropagationModel.LOOKAHEAD_POSITIONS,
+            digit_count,
+            CarryPropagationModel.LOOKAHEAD_POSITIONS,
         )
 
     @staticmethod
@@ -424,6 +420,7 @@ class BarrelTimingBridge:
 # ---------------------------------------------------------------------------
 # Opcode Timing Sequences
 # ---------------------------------------------------------------------------
+
 
 def build_opcode_timing_sequences() -> dict[str, TimingSequence]:
     """Build concrete TimingSequence for each supported opcode.

@@ -14,15 +14,17 @@ from typing import Union
 
 class IRType(str, Enum):
     """IR Data Types (all ultimately 50-digit decimal at runtime)"""
-    I64 = "i64"              # 64-bit integer (compile-time only)
-    F64 = "f64"              # 64-bit float (compile-time only)
-    DEC50 = "dec50"          # 50-digit decimal (Babbage native)
-    PTR = "ptr"              # Pointer (memory address 0-2047)
-    VOID = "void"            # No value (function return, discards)
+
+    I64 = "i64"  # 64-bit integer (compile-time only)
+    F64 = "f64"  # 64-bit float (compile-time only)
+    DEC50 = "dec50"  # 50-digit decimal (Babbage native)
+    PTR = "ptr"  # Pointer (memory address 0-2047)
+    VOID = "void"  # No value (function return, discards)
 
 
 class Register(str, Enum):
     """Babbage Physical Registers"""
+
     A = "a"  # Accumulator / Primary arithmetic
     B = "b"  # Secondary arithmetic, loop counter
     C = "c"  # Counter/Address
@@ -32,12 +34,14 @@ class Register(str, Enum):
 @dataclass
 class Value:
     """Represents an IR value (constant, register, memory, variable, etc.)"""
+
     pass
 
 
 @dataclass
 class Constant(Value):
     """Decimal constant value"""
+
     value: float
     ir_type: IRType = IRType.DEC50
 
@@ -48,6 +52,7 @@ class Constant(Value):
 @dataclass
 class RegisterValue(Value):
     """Physical register (A, B, C, D)"""
+
     register: Register
 
     def __repr__(self) -> str:
@@ -57,6 +62,7 @@ class RegisterValue(Value):
 @dataclass
 class MemoryValue(Value):
     """Direct memory access at fixed address"""
+
     address: int
     ir_type: IRType = IRType.DEC50
 
@@ -67,6 +73,7 @@ class MemoryValue(Value):
 @dataclass
 class VariableValue(Value):
     """Local variable (resolved to register or stack during allocation)"""
+
     name: str
     ir_type: IRType = IRType.DEC50
 
@@ -77,6 +84,7 @@ class VariableValue(Value):
 @dataclass
 class UndefValue(Value):
     """Undefined value (optimization barrier)"""
+
     ir_type: IRType = IRType.DEC50
 
     def __repr__(self) -> str:
@@ -90,12 +98,14 @@ Operand = Union[Constant, RegisterValue, MemoryValue, VariableValue, UndefValue]
 @dataclass
 class Instruction:
     """Base class for IR instructions"""
+
     pass
 
 
 @dataclass
 class Assignment(Instruction):
     """target = source"""
+
     target: str
     source: Operand
 
@@ -103,6 +113,7 @@ class Assignment(Instruction):
 @dataclass
 class BinaryOp(Instruction):
     """target = op operand1, operand2"""
+
     op: str  # "add", "sub", "mul", "div", "sqrt", "abs", "neg", "min", "max"
     target: str
     operand1: Operand
@@ -112,6 +123,7 @@ class BinaryOp(Instruction):
 @dataclass
 class Load(Instruction):
     """target = load address"""
+
     target: str
     address: Operand
 
@@ -119,6 +131,7 @@ class Load(Instruction):
 @dataclass
 class Store(Instruction):
     """store value, address"""
+
     value: Operand
     address: Operand
 
@@ -126,6 +139,7 @@ class Store(Instruction):
 @dataclass
 class LoadEffectiveAddress(Instruction):
     """target = lea variable"""
+
     target: str
     variable: str
 
@@ -133,12 +147,14 @@ class LoadEffectiveAddress(Instruction):
 @dataclass
 class Jump(Instruction):
     """jump label"""
+
     label: str
 
 
 @dataclass
 class ConditionalBranch(Instruction):
     """branch_condition operand1, operand2, true_label, false_label"""
+
     condition: str  # "eq", "ne", "lt", "gt", "le", "ge", "zero", "nonzero"
     operand1: Operand
     operand2: Operand | None = None  # None for zero/nonzero conditions
@@ -149,6 +165,7 @@ class ConditionalBranch(Instruction):
 @dataclass
 class Call(Instruction):
     """target = call function_name, arguments"""
+
     function_name: str
     arguments: list[Operand] = field(default_factory=list)
     target: str | None = None  # None if return value discarded
@@ -157,6 +174,7 @@ class Call(Instruction):
 @dataclass
 class IndirectCall(Instruction):
     """target = call function_pointer, arguments"""
+
     function_pointer: Operand
     arguments: list[Operand] = field(default_factory=list)
     target: str | None = None  # None if return value discarded
@@ -165,30 +183,35 @@ class IndirectCall(Instruction):
 @dataclass
 class Return(Instruction):
     """return value"""
+
     value: Operand | None = None
 
 
 @dataclass
 class Terminator:
     """Base class for block terminators"""
+
     pass
 
 
 @dataclass
 class ReturnTerminator(Terminator):
     """return value"""
+
     value: Operand | None = None
 
 
 @dataclass
 class JumpTerminator(Terminator):
     """jump label"""
+
     label: str
 
 
 @dataclass
 class BranchTerminator(Terminator):
     """branch condition true_label false_label"""
+
     condition: str  # "eq", "ne", "lt", "gt", "le", "ge", "zero", "nonzero"
     operand1: Operand
     operand2: Operand | None = None
@@ -199,6 +222,7 @@ class BranchTerminator(Terminator):
 @dataclass
 class CallTerminator(Terminator):
     """tail call (return from called function)"""
+
     function_name: str
     arguments: list[Operand] = field(default_factory=list)
 
@@ -206,6 +230,7 @@ class CallTerminator(Terminator):
 @dataclass
 class BasicBlock:
     """Basic block: sequence of instructions ending with terminator"""
+
     label: str
     instructions: list[Instruction] = field(default_factory=list)
     terminator: Terminator | None = None
@@ -222,6 +247,7 @@ class BasicBlock:
 @dataclass
 class Function:
     """IR Function: sequence of basic blocks with parameters"""
+
     name: str
     parameters: list[str] = field(default_factory=list)
     basic_blocks: list[BasicBlock] = field(default_factory=list)
@@ -243,6 +269,7 @@ class Function:
 @dataclass
 class GlobalVariable:
     """Global variable declaration"""
+
     name: str
     initial_value: float | None = None
     size: int | None = None  # For arrays
@@ -252,6 +279,7 @@ class GlobalVariable:
 @dataclass
 class GlobalFunction:
     """Function declaration (for forward references)"""
+
     name: str
     parameter_types: list[IRType] = field(default_factory=list)
     return_type: IRType = IRType.DEC50
@@ -260,6 +288,7 @@ class GlobalFunction:
 @dataclass
 class Program:
     """Complete IR program"""
+
     global_variables: dict[str, GlobalVariable] = field(default_factory=dict)
     global_functions: dict[str, GlobalFunction] = field(default_factory=dict)
     functions: dict[str, Function] = field(default_factory=dict)
@@ -314,8 +343,9 @@ class IRBuilder:
         """Emit: store value, address"""
         self.current_block.add_instruction(Store(value, address))
 
-    def emit_call(self, function_name: str, arguments: list[Operand],
-                  target: str | None = None) -> None:
+    def emit_call(
+        self, function_name: str, arguments: list[Operand], target: str | None = None
+    ) -> None:
         """Emit: target = call function_name, arguments"""
         self.current_block.add_instruction(Call(function_name, arguments, target))
 
@@ -332,8 +362,9 @@ class IRBuilder:
         """Emit: jump label (terminator)"""
         self.current_block.set_terminator(JumpTerminator(label))
 
-    def emit_branch(self, condition: str, op1: Operand, op2: Operand | None,
-                    true_label: str, false_label: str) -> None:
+    def emit_branch(
+        self, condition: str, op1: Operand, op2: Operand | None, true_label: str, false_label: str
+    ) -> None:
         """Emit: branch condition op1, op2, true_label, false_label (terminator)"""
         self.current_block.set_terminator(
             BranchTerminator(condition, op1, op2, true_label, false_label)

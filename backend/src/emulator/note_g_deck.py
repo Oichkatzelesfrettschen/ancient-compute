@@ -125,9 +125,7 @@ def _apply_op(state: dict[str, BabbageNumber], step: dict) -> None:
         state[target] = value
 
 
-def _apply_op_versioned(
-    state: dict[str, dict[int, BabbageNumber]], step: dict
-) -> None:
+def _apply_op_versioned(state: dict[str, dict[int, BabbageNumber]], step: dict) -> None:
     lhs = _get_value(state, step["lhs"])
     rhs = _get_value(state, step["rhs"])
     value = _exec_opcode(step["opcode"], lhs, rhs)
@@ -150,6 +148,7 @@ def _exec_opcode(opcode: str, lhs: BabbageNumber, rhs: BabbageNumber) -> Babbage
 # ---------------------------------------------------------------------------
 # Single-pass execution (legacy)
 # ---------------------------------------------------------------------------
+
 
 def run_once(n: int, deck_path: Path | None = None) -> dict[str, BabbageNumber]:
     """Execute Note G operations 1..25 once (no looping)."""
@@ -273,7 +272,4 @@ def run_note_g_exact(n_target: int) -> list[Fraction]:
     fixed-point BabbageNumber representation.
     """
     bn_results = run_note_g(n_target)
-    return [
-        Fraction(bn.value, 10**40).limit_denominator(10**10)
-        for bn in bn_results
-    ]
+    return [Fraction(bn.value, 10**40).limit_denominator(10**10) for bn in bn_results]

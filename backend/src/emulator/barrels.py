@@ -20,67 +20,73 @@ from enum import Enum, auto
 
 class MicroOp(Enum):
     # Axis Control
-    LIFT_INGRESS = auto()       # Lift the Ingress Axis to engage Mill
-    DROP_INGRESS = auto()       # Drop the Ingress Axis to disengage
-    LIFT_EGRESS = auto()        # Lift the Egress Axis to engage Mill (result)
-    DROP_EGRESS = auto()        # Drop the Egress Axis
-    LIFT_STORE_AXIS = auto()    # Lift a specific Store column to engage Mill
-    DROP_STORE_AXIS = auto()    # Drop a specific Store column
+    LIFT_INGRESS = auto()  # Lift the Ingress Axis to engage Mill
+    DROP_INGRESS = auto()  # Drop the Ingress Axis to disengage
+    LIFT_EGRESS = auto()  # Lift the Egress Axis to engage Mill (result)
+    DROP_EGRESS = auto()  # Drop the Egress Axis
+    LIFT_STORE_AXIS = auto()  # Lift a specific Store column to engage Mill
+    DROP_STORE_AXIS = auto()  # Drop a specific Store column
 
     # Mill Control
-    CONNECT_MILL_TO_STORE = auto() # Mill output to Store input
-    CONNECT_STORE_TO_MILL = auto() # Store output to Mill input (Ingress Axis)
-    ADVANCE_MILL = auto()       # Rotate Mill's gears to perform addition
-    REVERSE_MILL = auto()       # Rotate Mill's gears in reverse for subtraction
-    RUN_CARRY = auto()          # Engage Anticipating Carriage
-    RESET_MILL = auto()         # Clear Mill registers
-    LOAD_MILL_ACCUMULATOR = auto() # Load value into mill's internal accumulator (for product)
-    STORE_MILL_ACCUMULATOR = auto() # Store value from mill's internal accumulator
-    SHIFT_MILL_LEFT = auto()    # Shift mill's product accumulator left
-    SHIFT_MILL_RIGHT = auto()   # Shift mill's product accumulator right
-    GET_MULTIPLIER_DIGIT = auto() # Extract current digit from multiplier
+    CONNECT_MILL_TO_STORE = auto()  # Mill output to Store input
+    CONNECT_STORE_TO_MILL = auto()  # Store output to Mill input (Ingress Axis)
+    ADVANCE_MILL = auto()  # Rotate Mill's gears to perform addition
+    REVERSE_MILL = auto()  # Rotate Mill's gears in reverse for subtraction
+    RUN_CARRY = auto()  # Engage Anticipating Carriage
+    RESET_MILL = auto()  # Clear Mill registers
+    LOAD_MILL_ACCUMULATOR = auto()  # Load value into mill's internal accumulator (for product)
+    STORE_MILL_ACCUMULATOR = auto()  # Store value from mill's internal accumulator
+    SHIFT_MILL_LEFT = auto()  # Shift mill's product accumulator left
+    SHIFT_MILL_RIGHT = auto()  # Shift mill's product accumulator right
+    GET_MULTIPLIER_DIGIT = auto()  # Extract current digit from multiplier
     DECREMENT_COUNTER = auto()  # Decrement a counter for repeated operations
     # MicroOps for Division
-    COMPARE_MILL_BUFFERS = auto() # Compare mill_result_buffer with mill_operand_buffer (or other internal values)
-    SET_FLAG_GREATER = auto()   # Set a flag if comparison was A > B
-    SET_FLAG_LESS = auto()      # Set a flag if comparison was A < B
-    SET_FLAG_EQUAL = auto()     # Set a flag if comparison was A == B
-    SHIFT_MILL_DIVISOR = auto() # Shift mill's divisor buffer
-    INCREMENT_QUOTIENT_DIGIT = auto() # Increment a quotient digit
-    RESET_REMAINDER = auto()    # Reset the remainder buffer
+    COMPARE_MILL_BUFFERS = (
+        auto()
+    )  # Compare mill_result_buffer with mill_operand_buffer (or other internal values)
+    SET_FLAG_GREATER = auto()  # Set a flag if comparison was A > B
+    SET_FLAG_LESS = auto()  # Set a flag if comparison was A < B
+    SET_FLAG_EQUAL = auto()  # Set a flag if comparison was A == B
+    SHIFT_MILL_DIVISOR = auto()  # Shift mill's divisor buffer
+    INCREMENT_QUOTIENT_DIGIT = auto()  # Increment a quotient digit
+    RESET_REMAINDER = auto()  # Reset the remainder buffer
 
     # MicroOps for SQRT (Newton-Raphson)
-    INIT_SQRT_GUESS = auto()    # Initialize x_0 = S/2 as first guess
-    DIVIDE_S_BY_X = auto()      # Compute S / x_n
-    ADD_X_AND_QUOTIENT = auto() # Compute x_n + S/x_n
+    INIT_SQRT_GUESS = auto()  # Initialize x_0 = S/2 as first guess
+    DIVIDE_S_BY_X = auto()  # Compute S / x_n
+    ADD_X_AND_QUOTIENT = auto()  # Compute x_n + S/x_n
     HALVE_ACCUMULATOR = auto()  # Divide accumulator by 2: x_{n+1} = (x_n + S/x_n)/2
-    CHECK_SQRT_CONVERGENCE = auto() # Check if |x_{n+1} - x_n| < tolerance
+    CHECK_SQRT_CONVERGENCE = auto()  # Check if |x_{n+1} - x_n| < tolerance
     STORE_SQRT_RESULT = auto()  # Store converged result
 
     # Tier B/C and Lovelace Extensions
-    BITWISE_AND = auto()        # Digit-wise AND
-    BITWISE_OR = auto()         # Digit-wise OR
-    BITWISE_XOR = auto()        # Digit-wise XOR
-    COMPUTE_CHECKSUM = auto()   # Verify modulo-10 checksum
+    BITWISE_AND = auto()  # Digit-wise AND
+    BITWISE_OR = auto()  # Digit-wise OR
+    BITWISE_XOR = auto()  # Digit-wise XOR
+    COMPUTE_CHECKSUM = auto()  # Verify modulo-10 checksum
     SET_MODE_SYMBOLIC = auto()  # Switch to symbolic processing
-    SET_MODE_NUMERIC = auto()   # Switch to numeric processing
-    PLAY_NOTE = auto()          # Simulate playing a musical note
+    SET_MODE_NUMERIC = auto()  # Switch to numeric processing
+    PLAY_NOTE = auto()  # Simulate playing a musical note
 
     # Control Ops
-    JUMP_RELATIVE = auto()      # Relative jump in micro-program
+    JUMP_RELATIVE = auto()  # Relative jump in micro-program
     REPEAT_IF_COUNTER = auto()  # Jump back if mill_counter > 0
-    REPEAT_IF_GE = auto()       # Jump back if GREATER or EQUAL flag is set
-    JUMP_IF_LT = auto()         # Jump forward if LESS flag is set
+    REPEAT_IF_GE = auto()  # Jump back if GREATER or EQUAL flag is set
+    JUMP_IF_LT = auto()  # Jump forward if LESS flag is set
     FETCH_OP_CARD = auto()
     FETCH_VAR_CARD = auto()
+
 
 @dataclass
 class BarrelRow:
     """A vertical column of studs on a barrel (activates simultaneously)."""
+
     studs: set[MicroOp]
+
 
 class Barrel:
     """A control barrel (drum) defining a micro-program."""
+
     def __init__(self, name: str):
         self.name = name
         self.rows: list[BarrelRow] = []
@@ -88,12 +94,15 @@ class Barrel:
     def add_step(self, ops: list[MicroOp]) -> None:
         self.rows.append(BarrelRow(set(ops)))
 
+
 class BarrelController:
     """Orchestrates the barrels."""
-    def __init__(self) -> None:
+
+    def __init__(self, verbose: bool = False) -> None:
         self.barrels: dict[str, Barrel] = {}
         self.active_barrel: str | None = None
         self.step_index = 0
+        self.verbose = verbose
 
         self._init_standard_barrels()
 
@@ -129,16 +138,17 @@ class BarrelController:
         # Division Barrel
         div = Barrel("DIV")
         div.add_step([MicroOp.FETCH_VAR_CARD, MicroOp.LIFT_STORE_AXIS])
-        div.add_step([MicroOp.CONNECT_STORE_TO_MILL, MicroOp.DROP_STORE_AXIS,
-                       MicroOp.LOAD_MILL_ACCUMULATOR])
+        div.add_step(
+            [MicroOp.CONNECT_STORE_TO_MILL, MicroOp.DROP_STORE_AXIS, MicroOp.LOAD_MILL_ACCUMULATOR]
+        )
         div.add_step([MicroOp.FETCH_VAR_CARD, MicroOp.LIFT_STORE_AXIS])
         div.add_step([MicroOp.CONNECT_STORE_TO_MILL, MicroOp.DROP_STORE_AXIS])
         # Inner loop for one digit position
         div.add_step([MicroOp.COMPARE_MILL_BUFFERS])
-        div.add_step([MicroOp.JUMP_IF_LT]) # Skip if remainder < divisor
+        div.add_step([MicroOp.JUMP_IF_LT])  # Skip if remainder < divisor
         div.add_step([MicroOp.REVERSE_MILL])
         div.add_step([MicroOp.INCREMENT_QUOTIENT_DIGIT])
-        div.add_step([MicroOp.REPEAT_IF_GE]) # Repeat subtract while GE
+        div.add_step([MicroOp.REPEAT_IF_GE])  # Repeat subtract while GE
         # Next digit
         div.add_step([MicroOp.SHIFT_MILL_DIVISOR])
         div.add_step([MicroOp.RESET_REMAINDER])
@@ -207,7 +217,9 @@ class BarrelController:
         self.barrels["PLAY"] = play
 
         setmode = Barrel("SETMODE")
-        setmode.add_step([MicroOp.SET_MODE_SYMBOLIC]) # Simplified: assume SETMODE handles toggle or param
+        setmode.add_step(
+            [MicroOp.SET_MODE_SYMBOLIC]
+        )  # Simplified: assume SETMODE handles toggle or param
         self.barrels["SETMODE"] = setmode
 
     def select_barrel(self, op_name: str) -> None:
@@ -224,11 +236,13 @@ class BarrelController:
 
         barrel = self.barrels[self.active_barrel]
         if self.step_index >= len(barrel.rows):
-            print(f"Barrel {self.active_barrel} finished.")
+            if self.verbose:
+                print(f"Barrel {self.active_barrel} finished.")
             self.active_barrel = None
             return []
 
         ops = list(barrel.rows[self.step_index].studs)
-        print(f"Step {self.step_index}: {ops}")
+        if self.verbose:
+            print(f"Step {self.step_index}: {ops}")
         self.step_index += 1
         return ops

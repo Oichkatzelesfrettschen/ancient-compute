@@ -10,9 +10,7 @@ import yaml
 from backend.src.assembler.assembler import Assembler
 
 FIXTURE_PATH = (
-    Path(__file__).resolve().parents[1]
-    / "fixtures"
-    / "babbage_assembler_golden_corpus.yaml"
+    Path(__file__).resolve().parents[1] / "fixtures" / "babbage_assembler_golden_corpus.yaml"
 )
 
 

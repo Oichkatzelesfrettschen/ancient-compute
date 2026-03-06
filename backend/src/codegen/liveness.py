@@ -32,11 +32,12 @@ from backend.src.ir_types import (
 @dataclass
 class LiveInterval:
     """Live interval for a single IR value"""
-    name: str                    # Variable/value name
-    start: int                   # First instruction where live
-    end: int                     # Last instruction where live
+
+    name: str  # Variable/value name
+    start: int  # First instruction where live
+    end: int  # Last instruction where live
     definitions: set[int] = field(default_factory=set)  # Instruction indices where defined
-    uses: set[int] = field(default_factory=set)         # Instruction indices where used
+    uses: set[int] = field(default_factory=set)  # Instruction indices where used
 
     def overlaps_with(self, other: LiveInterval) -> bool:
         """Check if two intervals overlap"""
@@ -61,9 +62,11 @@ class LivenessAnalyzer:
         self.function = function
         self.intervals: dict[str, LiveInterval] = {}
         self.definitions: dict[str, int] = {}  # Variable name → instruction index where defined
-        self.uses: dict[str, list[int]] = {}   # Variable name → list of instruction indices where used
-        self.instr_index = 0                   # Current instruction index
-        self.parameters_live = True            # Parameters live from function entry
+        self.uses: dict[str, list[int]] = (
+            {}
+        )  # Variable name → list of instruction indices where used
+        self.instr_index = 0  # Current instruction index
+        self.parameters_live = True  # Parameters live from function entry
 
     def analyze(self) -> dict[str, LiveInterval]:
         """Run liveness analysis, return live intervals"""
@@ -166,7 +169,9 @@ class LivenessAnalyzer:
                 name=var,
                 start=start,
                 end=end,
-                definitions=set([self.definitions.get(var, start)]) if var in self.definitions else set(),
+                definitions=(
+                    set([self.definitions.get(var, start)]) if var in self.definitions else set()
+                ),
                 uses=set(self.uses.get(var, [])),
             )
 
@@ -251,7 +256,7 @@ def example_liveness_analysis():
 
     # Build IR: simple function with 3 values
     builder = IRBuilder("example", ["n"])
-    block = builder.new_block("entry")
+    _block = builder.new_block("entry")
 
     # a = 10
     builder.emit_assignment("a", Constant(10.0))

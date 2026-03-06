@@ -29,7 +29,7 @@ class LISPService(BaseExecutor):
             program = compiler.compile(ast)
 
             elapsed = time.monotonic() - start
-            func_names = list(program.functions.keys()) if hasattr(program, 'functions') else []
+            func_names = list(program.functions.keys()) if hasattr(program, "functions") else []
             return ExecutionResult(
                 status=ExecutionStatus.SUCCESS,
                 stdout=f"Compiled {len(func_names)} function(s): {', '.join(func_names) or '(top-level)'}",

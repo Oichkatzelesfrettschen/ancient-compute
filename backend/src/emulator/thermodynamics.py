@@ -26,9 +26,11 @@ from backend.src.emulator.materials import MaterialLibrary
 # Friction Heat Model (Shigley Ch.12-13)
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class HeatSource:
     """A single heat source with its contribution in watts."""
+
     name: str
     heat_W: float
     source_type: str  # "bearing", "gear", "cam"
@@ -74,6 +76,7 @@ class FrictionHeatModel:
 # ---------------------------------------------------------------------------
 # Thermal Expansion Model
 # ---------------------------------------------------------------------------
+
 
 class ThermalExpansionModel:
     """Thermal expansion effects on clearances and fits."""
@@ -135,9 +138,11 @@ class ThermalExpansionModel:
 # Operating Envelope
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class OperatingEnvelope:
     """Thermal operating envelope for the machine."""
+
     ambient_T_min_C: float = 10.0
     ambient_T_max_C: float = 40.0
     total_heat_generation_W: float = 0.0
@@ -278,6 +283,7 @@ def compute_steady_state_rise_C(
 # Full Engine Thermal Analysis
 # ---------------------------------------------------------------------------
 
+
 def compute_engine_thermal_model(
     schema_path: str | None = None,
 ) -> OperatingEnvelope:
@@ -286,8 +292,10 @@ def compute_engine_thermal_model(
     Computes heat from 4 bearings, 2 gear stages, and 2 cam followers.
     Returns an OperatingEnvelope with all results.
     """
-    path = Path(schema_path) if schema_path else (
-        Path(__file__).resolve().parents[3] / "docs" / "simulation" / "sim_schema.yaml"
+    path = (
+        Path(schema_path)
+        if schema_path
+        else (Path(__file__).resolve().parents[3] / "docs" / "simulation" / "sim_schema.yaml")
     )
     with path.open("r", encoding="utf-8") as fh:
         data = yaml.safe_load(fh)
@@ -351,7 +359,9 @@ def compute_engine_thermal_model(
     # Approximate surface area: 2m x 0.8m x 1m box -> ~7.2 m2
     footprint = data.get("structural", {}).get("footprint_m", [2.0, 0.8])
     height_m = 1.0  # Approximate
-    surface_area = 2 * (footprint[0] * footprint[1] + footprint[0] * height_m + footprint[1] * height_m)
+    surface_area = 2 * (
+        footprint[0] * footprint[1] + footprint[0] * height_m + footprint[1] * height_m
+    )
 
     # Weighted average c_p (approximate as cast iron frame)
     ci = lib.get("cast_iron")
@@ -368,6 +378,7 @@ def compute_engine_thermal_model(
 # ---------------------------------------------------------------------------
 # Radiation Heat Loss (Stefan-Boltzmann)
 # ---------------------------------------------------------------------------
+
 
 class RadiationHeatModel:
     """Stefan-Boltzmann radiation heat transfer.
@@ -388,9 +399,7 @@ class RadiationHeatModel:
     ) -> float:
         """Radiation heat loss [W]."""
         sigma = RadiationHeatModel.STEFAN_BOLTZMANN
-        return emissivity * sigma * surface_area_m2 * (
-            surface_T_K**4 - ambient_T_K**4
-        )
+        return emissivity * sigma * surface_area_m2 * (surface_T_K**4 - ambient_T_K**4)
 
     @staticmethod
     def linearized_h_rad_W_m2K(
@@ -405,14 +414,13 @@ class RadiationHeatModel:
         Useful for combining with convective h in total heat transfer.
         """
         sigma = RadiationHeatModel.STEFAN_BOLTZMANN
-        return emissivity * sigma * (
-            surface_T_K**2 + ambient_T_K**2
-        ) * (surface_T_K + ambient_T_K)
+        return emissivity * sigma * (surface_T_K**2 + ambient_T_K**2) * (surface_T_K + ambient_T_K)
 
 
 # ---------------------------------------------------------------------------
 # Transient Thermal PDE Solver
 # ---------------------------------------------------------------------------
+
 
 class TransientThermalSolver:
     """Lumped-parameter transient thermal model.
@@ -439,9 +447,9 @@ class TransientThermalSolver:
         """
         if mass_kg <= 0 or specific_heat_J_kgK <= 0:
             return T_current_C
-        dTdt = (
-            Q_in_W - h_total_W_m2K * surface_area_m2 * (T_current_C - ambient_T_C)
-        ) / (mass_kg * specific_heat_J_kgK)
+        dTdt = (Q_in_W - h_total_W_m2K * surface_area_m2 * (T_current_C - ambient_T_C)) / (
+            mass_kg * specific_heat_J_kgK
+        )
         return T_current_C + dt_s * dTdt
 
     @staticmethod
@@ -500,8 +508,14 @@ class TransientThermalSolver:
         )
         while t < duration_s:
             T = step_fn(
-                T, Q_in_W, h_total_W_m2K, surface_area_m2,
-                mass_kg, specific_heat_J_kgK, ambient_T_C, dt_s,
+                T,
+                Q_in_W,
+                h_total_W_m2K,
+                surface_area_m2,
+                mass_kg,
+                specific_heat_J_kgK,
+                ambient_T_C,
+                dt_s,
             )
             t += dt_s
             history.append((t, T))
@@ -541,6 +555,7 @@ class TransientThermalSolver:
 # Thermal-Clearance Feedback
 # ---------------------------------------------------------------------------
 
+
 class ThermalClearanceFeedback:
     """Combined thermal + wear clearance evolution."""
 
@@ -556,8 +571,8 @@ class ThermalClearanceFeedback:
 
         c(T) = (alpha_bushing - alpha_shaft) * d * (T - T_ref)
         """
-        return (alpha_bushing_per_K - alpha_shaft_per_K) * bore_diameter_mm * (
-            T_current_C - T_ref_C
+        return (
+            (alpha_bushing_per_K - alpha_shaft_per_K) * bore_diameter_mm * (T_current_C - T_ref_C)
         )
 
     @staticmethod

@@ -51,7 +51,9 @@ from .types import BabbageNumber
 
 class MechanicalFailureError(Exception):
     """Raised when the engine suffers a physical breakdown (seizure, breakage, etc.)"""
+
     pass
+
 
 TIMING_TABLE = {
     "NOP": 0,
@@ -74,103 +76,6 @@ TIMING_TABLE = {
     "POP": 4,
     "OIL": 100,
 }
-
-
-class Instruction:
-    """Analytical Engine instruction card."""
-
-    def to_card_format(self):
-        """
-        Convert to punch card 50-digit format.
-
-        Hollerith cards had 50 columns for digit punching.
-        This formats the number as a 50-character string.
-        """
-        return str(self.value).zfill(50)
-
-    def _check_overflow(self):
-        """
-        Check if value exceeds 50-digit bounds.
-
-        Returns:
-            True if overflow occurred, False otherwise
-            Sets internal overflow flag for later inspection
-        """
-        # Adjusted for scaled value
-        max_internal_value = (10**50 - 1) * (10**40)
-        min_internal_value = -(10**50 - 1) * (10**40)
-
-        if self.value > max_internal_value or self.value < min_internal_value:
-            self._overflow_flag = True
-            # For now, let's keep the flag and not modify value on overflow here.
-            return True
-        return False
-
-    def __add__(self, other):
-        """Addition with overflow check."""
-        result = BabbageNumber(0)
-        other_babbage = BabbageNumber(other)
-        result.value = self.value + other_babbage.value
-        result._check_overflow()
-        return result
-
-    def __sub__(self, other):
-        """Subtraction with overflow check."""
-        result = BabbageNumber(0)
-        other_babbage = BabbageNumber(other)
-        result.value = self.value - other_babbage.value
-        result._check_overflow()
-        return result
-
-    def __mul__(self, other):
-        """Multiplication with overflow check."""
-        result = BabbageNumber(0)
-        # Multiply scaled integer values, then scale back by 10^40
-        result.value = (self.value * BabbageNumber(other).value) // (10**40)
-        result._check_overflow()
-        return result
-
-    def __truediv__(self, other):
-        """Fixed-point division."""
-        if BabbageNumber(other).value == 0:
-            raise ZeroDivisionError("Division by zero")
-        result = BabbageNumber(0)
-        # Fixed-point division: scale numerator by 10^40 before dividing
-        result.value = (self.value * (10**40)) // BabbageNumber(other).value
-        result._check_overflow()
-        return result
-
-    def __eq__(self, other):
-        """Equality comparison."""
-        return self.value == BabbageNumber(other).value
-
-    def __lt__(self, other):
-        """Less-than comparison."""
-        return self.value < BabbageNumber(other).value
-
-    def __gt__(self, other):
-        """Greater-than comparison."""
-        return self.value > BabbageNumber(other).value
-
-    def __le__(self, other):
-        """Less-than-or-equal comparison."""
-        return self.value <= BabbageNumber(other).value
-
-    def __ge__(self, other):
-        """Greater-than-or-equal comparison."""
-        return self.value >= BabbageNumber(other).value
-
-    def __ne__(self, other):
-        """Not-equal comparison."""
-        return self.value != BabbageNumber(other).value
-
-    def __int__(self):
-        """Convert to integer (internal scaled value)."""
-        return self.value
-
-    def __repr__(self):
-        """String representation for debugging."""
-        return f"BabbageNumber({self.to_decimal()})"
 
 
 class Instruction:
@@ -200,9 +105,17 @@ class Engine:
     - Punch card I/O simulation
     """
 
-    def __init__(self, physical_engine=None):
-        """Initialize empty engine."""
+    def __init__(self, physical_engine=None, output_callback=None):
+        """Initialize empty engine.
+
+        Args:
+            physical_engine: Optional physics simulation engine.
+            output_callback: Optional callable(str) for capturing output messages.
+                When None, messages are printed to stdout.
+        """
         self.physical_engine = physical_engine
+        self._output_callback = output_callback
+        self.mode = "numeric"
         # Memory: Store of 2,000 50-digit decimal numbers
         self.memory = [BabbageNumber(0) for _ in range(2000)]
 
@@ -295,6 +208,13 @@ class Engine:
             "SETMODE": self._execute_SETMODE_micro,
             "OIL": self._execute_OIL,
         }
+
+    def _emit(self, msg: str) -> None:
+        """Route output through callback or stdout."""
+        if self._output_callback:
+            self._output_callback(msg)
+        else:
+            print(msg)
 
     def _get_register_value(self, reg_name):
         """Get value of named register."""
@@ -469,7 +389,7 @@ class Engine:
             self.mill_counter = self.mill_multiplier_digit_buffer
 
         elif op == MicroOp.DECREMENT_COUNTER:
-            print(f"DECREMENT_COUNTER: {self.mill_counter} -> {self.mill_counter - 1}")
+            pass  # counter decremented above
             self.mill_counter -= 1
 
         elif op == MicroOp.COMPARE_MILL_BUFFERS:
@@ -489,7 +409,6 @@ class Engine:
             # For multi-digit division, we add the current position value (e.g. 10^k)
             inc_val = getattr(self, "mill_quotient_digit_value", BabbageNumber(1))
             self.mill_quotient_buffer += inc_val
-
 
         elif op == MicroOp.RESET_REMAINDER:
             self.mill_remainder_buffer = BabbageNumber(0)
@@ -522,13 +441,11 @@ class Engine:
             else:
                 pass
 
-
-
         elif op == MicroOp.INIT_SQRT_GUESS:
             # First guess: x_0 = S / 2 (conceptual)
             val = self.registers[reg_dest]
             self.mill_product_accumulator = val / BabbageNumber(2)
-            self.mill_operand_buffer = val # Keep original S in operand buffer
+            self.mill_operand_buffer = val  # Keep original S in operand buffer
 
         elif op == MicroOp.DIVIDE_S_BY_X:
             # mill_result_buffer = S / x_n
@@ -558,7 +475,7 @@ class Engine:
                 # Jump back to step 1 (DIVIDE_S_BY_X)
                 self.barrels.step_index = 1
             else:
-                self.mill_sqrt_iterations = 0 # Reset for next SQRT
+                self.mill_sqrt_iterations = 0  # Reset for next SQRT
 
         elif op == MicroOp.STORE_SQRT_RESULT:
             self.registers[reg_dest] = self.mill_product_accumulator
@@ -597,19 +514,19 @@ class Engine:
             computed_c = sum(int(d) for d in s) % 10
             if stored_checksum != computed_c:
                 self.flags["ERROR"] = True
-                print(f"CHECKSUM ERROR: Expected {computed_c}, found {stored_checksum}")
+                self._emit(f"CHECKSUM ERROR: Expected {computed_c}, found {stored_checksum}")
             else:
                 self.flags["ERROR"] = False
 
         elif op == MicroOp.PLAY_NOTE:
             note = getattr(self, "mill_note_buffer", "C4")
             duration = getattr(self, "mill_duration_buffer", "8")
-            print(f"LOVELACE MUSIC ENGINE: Playing {note} for {duration} cycles")
+            self._emit(f"LOVELACE MUSIC ENGINE: Playing {note} for {duration} cycles")
 
         elif op == MicroOp.SET_MODE_SYMBOLIC:
             mode = getattr(self, "mill_mode_buffer", "numeric")
             self.mode = mode
-            print(f"ENGINE MODE: {mode}")
+            self._emit(f"ENGINE MODE: {mode}")
 
         # Other MicroOps (Fetch, etc.) can be implemented here as needed
         # For now, FETCH_VAR_CARD is a symbolic trigger.
@@ -661,8 +578,9 @@ class Engine:
             initial_shift = 0
 
         # Outer loop for each quotient digit
-        for k in range(initial_shift, -1, -1): # Integer division only
-            if k < 0: break
+        for k in range(initial_shift, -1, -1):  # Integer division only
+            if k < 0:
+                break
 
             self.mill_operand_buffer = divisor * BabbageNumber(10**k)
             self.mill_quotient_digit_value = BabbageNumber(10**k)
@@ -674,7 +592,8 @@ class Engine:
             # Micro-op execution loop for ONE digit position
             while self.barrels.active_barrel:
                 ops = self.barrels.step()
-                if not ops: break
+                if not ops:
+                    break
                 for op in ops:
                     self._execute_micro_op(op, reg_dest, operand_src)
                 # If we hit step 9 (SHIFT_MILL_DIVISOR), we are done with this digit
@@ -721,7 +640,11 @@ class Engine:
 
     def _execute_STOR_micro(self, reg_source, address_dest):
         """Execute STOR using micro-ops."""
-        if not (isinstance(address_dest, str) and address_dest.startswith("[") and address_dest.endswith("]")):
+        if not (
+            isinstance(address_dest, str)
+            and address_dest.startswith("[")
+            and address_dest.endswith("]")
+        ):
             raise ValueError(f"Invalid address for STOR instruction: {address_dest}")
 
         self.barrels.select_barrel("STOR")
@@ -814,9 +737,9 @@ class Engine:
             st = self.physical_engine.state
             st.bearing_wear_volumes_mm3 = [0.0] * len(st.bearing_wear_volumes_mm3)
             st.gear_wear_volume_mm3 = 0.0
-            print("MAINTENANCE: Engine oiled, wear volumes reset.")
+            self._emit("MAINTENANCE: Engine oiled, wear volumes reset.")
         else:
-            print("MAINTENANCE: Engine oiled (no physical effect, physics not linked).")
+            self._emit("MAINTENANCE: Engine oiled (no physical effect, physics not linked).")
         return False
 
     def _execute_MULT(self, reg_dest, operand):
@@ -1078,7 +1001,7 @@ class Engine:
                 "clock_time": self.clock_time,
             }
         )
-        print(f"WRPCH: {value.to_decimal()}")
+        self._emit(f"WRPCH: {value.to_decimal()}")
 
     def _execute_WRPRN(self, reg_source):
         """Write printer: output register value to printer (2 cycles)."""
@@ -1091,7 +1014,7 @@ class Engine:
                 "clock_time": self.clock_time,
             }
         )
-        print(f"WRPRN: {value.to_decimal()}")
+        self._emit(f"WRPRN: {value.to_decimal()}")
 
     # ========================================================================
     # Instruction Execution & Control
@@ -1145,18 +1068,20 @@ class Engine:
         self.clock_time += time_cost
 
         # Record execution trace entry
-        self.execution_trace.append({
-            "pc": self.PC,
-            "opcode": opcode_name,
-            "operands": operands,
-            "clock_time": self.clock_time,
-            "registers": {k: v.to_decimal() for k, v in self.registers.items()},
-            "flags": dict(self.flags)
-        })
+        self.execution_trace.append(
+            {
+                "pc": self.PC,
+                "opcode": opcode_name,
+                "operands": operands,
+                "clock_time": self.clock_time,
+                "registers": {k: v.to_decimal() for k, v in self.registers.items()},
+                "flags": dict(self.flags),
+            }
+        )
 
         # Log if tracing enabled
         if self.trace_enabled:
-            print(f"Clock: {self.clock_time}s | {opcode_name} | Operands: {operands}")
+            self._emit(f"Clock: {self.clock_time}s | {opcode_name} | Operands: {operands}")
 
         # Increment PC only if not modified by jump/call/return
         if not pc_modified:
@@ -1255,7 +1180,7 @@ class Engine:
             if instruction.opcode == "HALT":
                 self.running = False
         except Exception as e:
-            print(f"Runtime Error at PC {self.PC}: {e}")
+            self._emit(f"Runtime Error at PC {self.PC}: {e}")
             self.running = False
 
     def set_breakpoint(self, condition_type, target):
@@ -1278,23 +1203,23 @@ class Engine:
 
             if bp["type"] == "address" and bp["target"] == self.PC:
                 self.paused = True
-                print(f"Breakpoint hit: PC={self.PC}")
+                self._emit(f"Breakpoint hit: PC={self.PC}")
 
             elif bp["type"] == "time" and self.clock_time >= bp["target"]:
                 self.paused = True
-                print(f"Breakpoint hit: Clock={self.clock_time}s")
+                self._emit(f"Breakpoint hit: Clock={self.clock_time}s")
 
             elif bp["type"] == "register" and self._get_register_value(bp["reg"]) == BabbageNumber(
                 bp["target"]
             ):
                 self.paused = True
-                print(f"Breakpoint hit: {bp['reg']}={bp['target']}")
+                self._emit(f"Breakpoint hit: {bp['reg']}={bp['target']}")
 
             elif bp["type"] == "memory" and self.memory[bp["address"]] == BabbageNumber(
                 bp["target"]
             ):
                 self.paused = True
-                print(f"Breakpoint hit: Memory[{bp['address']}]={bp['target']}")
+                self._emit(f"Breakpoint hit: Memory[{bp['address']}]={bp['target']}")
 
     def dump_state(self):
         """Return human-readable state dump for debugging."""

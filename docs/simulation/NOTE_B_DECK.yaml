@@ -1,0 +1,59 @@
+# Note B Card Decks -- Ada Lovelace / Menabrea (1843)
+#
+# Note B covers basic arithmetic examples with the Analytical Engine.
+# Three mini-decks are extracted here:
+#   deck_1: V0 * V1 -> V2  (multiplication)
+#   deck_2: V0 / V1 -> V2  (division)
+#   deck_3: a*b + c*d      (compound expression using 4 variables)
+#
+# Each deck uses the same variable-store notation as Note G:
+#   op:     operation number (1-based)
+#   lhs:    left operand (variable name)
+#   rhs:    right operand (variable name or constant)
+#   opcode: arithmetic operation (mult, div, add, sub)
+#   out:    list of output variable names
+#
+# References:
+#   Menabrea, L. F. / Lovelace, A. A. (1843). Sketch of the Analytical Engine.
+#   Taylor's Scientific Memoirs, Vol. 3, pp. 666-731.
+#   Note B: pp. 680-685 (arithmetic examples and notation).
+
+deck_1:
+  # Deck 1: Multiply V0 by V1, store result in V2
+  # Ada's notation: V2 = V0 * V1
+  - op: 1
+    lhs: "V0"
+    rhs: "V1"
+    opcode: "mult"
+    out: ["V2"]
+
+deck_2:
+  # Deck 2: Divide V0 by V1, store result in V2
+  # Ada's notation: V2 = V0 / V1
+  - op: 1
+    lhs: "V0"
+    rhs: "V1"
+    opcode: "div"
+    out: ["V2"]
+
+deck_3:
+  # Deck 3: Compute a*b + c*d using V0=a, V1=b, V2=c, V3=d
+  # Ada's notation: V4 = (V0 * V1) + (V2 * V3)
+  # Step 1: V4 = V0 * V1  (partial product ab)
+  - op: 1
+    lhs: "V0"
+    rhs: "V1"
+    opcode: "mult"
+    out: ["V4"]
+  # Step 2: V5 = V2 * V3  (partial product cd)
+  - op: 2
+    lhs: "V2"
+    rhs: "V3"
+    opcode: "mult"
+    out: ["V5"]
+  # Step 3: V6 = V4 + V5  (final sum a*b + c*d)
+  - op: 3
+    lhs: "V4"
+    rhs: "V5"
+    opcode: "add"
+    out: ["V6"]

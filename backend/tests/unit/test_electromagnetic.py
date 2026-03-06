@@ -31,11 +31,14 @@ def galvanic():
 
 # -- Eddy Current Losses --
 
+
 class TestEddyCurrentLoss:
     def test_shaft_loss_negligible(self, lib):
         steel = lib.get("steel")
         p = EddyCurrentModel.shaft_eddy_loss_W(
-            diameter_mm=50, length_mm=1500, rpm=30,
+            diameter_mm=50,
+            length_mm=1500,
+            rpm=30,
             resistivity_ohm_m=steel.electrical_resistivity_ohm_m,
         )
         assert p < 0.001, f"Shaft eddy loss {p*1000:.3f} mW should be << 1 mW"
@@ -43,7 +46,9 @@ class TestEddyCurrentLoss:
     def test_gear_loss_negligible(self, lib):
         brass = lib.get("brass")
         p = EddyCurrentModel.gear_eddy_loss_W(
-            pitch_diameter_mm=150, face_width_mm=15, rpm=30,
+            pitch_diameter_mm=150,
+            face_width_mm=15,
+            rpm=30,
             resistivity_ohm_m=brass.electrical_resistivity_ohm_m,
         )
         assert p < 0.001, f"Gear eddy loss {p*1000:.3f} mW should be << 1 mW"
@@ -51,10 +56,16 @@ class TestEddyCurrentLoss:
     def test_loss_proportional_to_rpm_squared(self, lib):
         steel = lib.get("steel")
         p30 = EddyCurrentModel.shaft_eddy_loss_W(
-            50, 1500, 30, steel.electrical_resistivity_ohm_m,
+            50,
+            1500,
+            30,
+            steel.electrical_resistivity_ohm_m,
         )
         p60 = EddyCurrentModel.shaft_eddy_loss_W(
-            50, 1500, 60, steel.electrical_resistivity_ohm_m,
+            50,
+            1500,
+            60,
+            steel.electrical_resistivity_ohm_m,
         )
         # P proportional to f^2, so doubling RPM -> 4x loss
         assert p60 == pytest.approx(4.0 * p30, rel=0.01)
@@ -62,7 +73,10 @@ class TestEddyCurrentLoss:
     def test_loss_positive(self, lib):
         steel = lib.get("steel")
         p = EddyCurrentModel.shaft_eddy_loss_W(
-            50, 1500, 30, steel.electrical_resistivity_ohm_m,
+            50,
+            1500,
+            30,
+            steel.electrical_resistivity_ohm_m,
         )
         assert p > 0
 
@@ -73,10 +87,16 @@ class TestEddyCurrentLoss:
         ci = lib.get("cast_iron")
         steel = lib.get("steel")
         p_ci = EddyCurrentModel.shaft_eddy_loss_W(
-            50, 1500, 30, ci.electrical_resistivity_ohm_m,
+            50,
+            1500,
+            30,
+            ci.electrical_resistivity_ohm_m,
         )
         p_steel = EddyCurrentModel.shaft_eddy_loss_W(
-            50, 1500, 30, steel.electrical_resistivity_ohm_m,
+            50,
+            1500,
+            30,
+            steel.electrical_resistivity_ohm_m,
         )
         # Cast iron has higher resistivity -> lower eddy loss
         assert p_ci < p_steel
@@ -88,17 +108,24 @@ class TestEddyCurrentLoss:
         total = 0.0
         # Main shaft
         total += EddyCurrentModel.shaft_eddy_loss_W(
-            50, 1500, 30, steel.electrical_resistivity_ohm_m,
+            50,
+            1500,
+            30,
+            steel.electrical_resistivity_ohm_m,
         )
         # 4 gears (2 stages x 2 gears)
         for pd_mm in [50, 150, 75, 150]:
             total += EddyCurrentModel.gear_eddy_loss_W(
-                pd_mm, 15, 30, brass.electrical_resistivity_ohm_m,
+                pd_mm,
+                15,
+                30,
+                brass.electrical_resistivity_ohm_m,
             )
         assert total < 0.01, f"Total EM loss {total*1000:.3f} mW should be << 10 mW"
 
 
 # -- Galvanic Corrosion Matrix --
+
 
 class TestGalvanicCorrosion:
     def test_brass_steel_moderate(self, galvanic):
@@ -141,6 +168,7 @@ class TestGalvanicCorrosion:
 
 # -- Static Charge --
 
+
 class TestStaticCharge:
     def test_lubricated_zero_charge(self):
         q = StaticChargeModel.triboelectric_charge_nC(10.0, 0.1, is_lubricated=True)
@@ -162,12 +190,16 @@ class TestStaticCharge:
 
 # -- Cross-validation: EM losses << friction losses --
 
+
 class TestEMvsfriction:
     def test_eddy_losses_fraction_of_friction(self, lib):
         """Eddy losses should be < 0.001% of estimated friction (~10-50 W)."""
         steel = lib.get("steel")
         p_eddy = EddyCurrentModel.shaft_eddy_loss_W(
-            50, 1500, 30, steel.electrical_resistivity_ohm_m,
+            50,
+            1500,
+            30,
+            steel.electrical_resistivity_ohm_m,
         )
         friction_estimate_W = 10.0  # Conservative lower bound
         ratio = p_eddy / friction_estimate_W

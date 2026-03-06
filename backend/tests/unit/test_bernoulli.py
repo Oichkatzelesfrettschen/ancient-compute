@@ -15,4 +15,3 @@ def test_ada_lovelace_series_first_four():
         Fraction(1, 42),
         Fraction(-1, 30),
     ]
-

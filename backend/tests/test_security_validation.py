@@ -16,7 +16,7 @@ class TestInputValidation:
 
     def test_code_execution_with_valid_inputs(self):
         """Test execution with valid, safe inputs."""
-        orchestrator = ExecutionOrchestrator()
+        _orchestrator = ExecutionOrchestrator()
 
         # Valid Python code
         code = "print('hello world')"
@@ -26,7 +26,7 @@ class TestInputValidation:
 
     def test_execution_with_very_large_code(self):
         """Test handling of extremely large code submissions."""
-        orchestrator = ExecutionOrchestrator()
+        _orchestrator = ExecutionOrchestrator()
 
         # 10MB of code (unrealistic but should be rejected gracefully)
         large_code = "x = 1\n" * 1_000_000
@@ -37,7 +37,7 @@ class TestInputValidation:
 
     def test_execution_with_binary_data(self):
         """Test rejection of binary/non-text code."""
-        orchestrator = ExecutionOrchestrator()
+        _orchestrator = ExecutionOrchestrator()
 
         # Binary data
         binary_code = b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR"
@@ -300,7 +300,7 @@ class TestResourceLimits:
 
     def test_output_size_limiting(self):
         """Test that execution output is limited."""
-        orchestrator = ExecutionOrchestrator()
+        _orchestrator = ExecutionOrchestrator()
 
         large_output = "x" * 100_000
         result = ExecutionResult(
@@ -319,7 +319,6 @@ class TestAuthenticationInputs:
     def test_exercise_id_validation(self):
         """Test that exercise IDs are properly validated."""
         valid_ids = [1, 100, 999999]
-        invalid_ids = [-1, 0, "string", None, "'; DROP TABLE--"]
 
         for valid_id in valid_ids:
             assert isinstance(valid_id, int)
@@ -355,10 +354,13 @@ class TestContentTypeValidation:
     def test_test_cases_must_be_valid_json(self):
         """Test that test cases are valid JSON."""
         import json
-        valid_test_cases = json.dumps([
-            {"input": "5", "expected": "120"},
-            {"input": "3", "expected": "6"},
-        ])
+
+        valid_test_cases = json.dumps(
+            [
+                {"input": "5", "expected": "120"},
+                {"input": "3", "expected": "6"},
+            ]
+        )
         parsed = json.loads(valid_test_cases)
         assert isinstance(parsed, list)
         assert len(parsed) == 2

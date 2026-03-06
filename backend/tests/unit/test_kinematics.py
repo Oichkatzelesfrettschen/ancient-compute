@@ -82,6 +82,7 @@ def column_latch_cam():
 
 # -- Gear Velocity Ratio --
 
+
 class TestGearVelocityRatio:
     def test_primary_ratio(self, primary_gear):
         vr = GearAnalysis.velocity_ratio(primary_gear)
@@ -107,6 +108,7 @@ class TestGearVelocityRatio:
 
 # -- Contact Ratio --
 
+
 class TestContactRatio:
     def test_primary_cr_above_minimum(self, primary_gear):
         cr = GearAnalysis.contact_ratio(primary_gear)
@@ -123,6 +125,7 @@ class TestContactRatio:
 
 # -- Pitch Line Velocity --
 
+
 class TestPitchLineVelocity:
     def test_positive(self, primary_gear):
         v = GearAnalysis.pitch_line_velocity_m_s(primary_gear, 30.0)
@@ -135,6 +138,7 @@ class TestPitchLineVelocity:
 
 
 # -- Lewis Bending Stress --
+
 
 class TestLewisBendingStress:
     def test_lewis_form_factor_positive(self):
@@ -165,6 +169,7 @@ class TestLewisBendingStress:
 
 # -- Cam Displacement --
 
+
 class TestCamDisplacement:
     def test_zero_at_start(self, column_latch_cam):
         s = CamAnalysis.displacement_mm(column_latch_cam, 0.0)
@@ -192,6 +197,7 @@ class TestCamDisplacement:
 
 # -- Cam Velocity/Acceleration/Jerk --
 
+
 class TestCamDerivatives:
     def test_velocity_positive_during_rise(self, column_latch_cam):
         v = CamAnalysis.velocity_mm_per_deg(column_latch_cam, 30.0)
@@ -214,6 +220,7 @@ class TestCamDerivatives:
 
 # -- Follower Force --
 
+
 class TestFollowerForce:
     def test_force_positive_at_full_lift(self, column_latch_cam):
         omega = 2.0 * math.pi * 30 / 60.0  # 30 RPM
@@ -222,6 +229,7 @@ class TestFollowerForce:
 
 
 # -- DOF Analysis --
+
 
 class TestDOFAnalysis:
     def test_simple_four_bar(self):
@@ -236,6 +244,7 @@ class TestDOFAnalysis:
 
 
 # -- Main Shaft Model --
+
 
 class TestMainShaftModel:
     @pytest.fixture
@@ -273,6 +282,7 @@ class TestMainShaftModel:
 
 # -- Schema Loading --
 
+
 class TestSchemaLoading:
     def test_chain_loads(self, chain):
         assert chain is not None
@@ -294,6 +304,7 @@ class TestSchemaLoading:
 
 
 # -- Integration: Full Kinematic Chain --
+
 
 class TestKinematicChainIntegration:
     def test_gear_train_reduces_rpm(self, chain):
@@ -321,13 +332,14 @@ class TestKinematicChainIntegration:
             v = GearAnalysis.pitch_line_velocity_m_s(gp, rpm)
             wt = GearAnalysis.tangential_force_N(50.0, v)
             sigma = GearAnalysis.lewis_bending_stress_MPa(gp, wt)
-            assert sigma < brass.yield_strength_MPa[0], (
-                f"{gp.name}: Lewis stress {sigma:.1f} MPa >= yield"
-            )
+            assert (
+                sigma < brass.yield_strength_MPa[0]
+            ), f"{gp.name}: Lewis stress {sigma:.1f} MPa >= yield"
             rpm = GearAnalysis.output_rpm(gp, rpm)
 
 
 # -- Phase IV: Hertzian Contact / Gear Surface Fatigue --
+
 
 class TestHertzianContact:
     def test_elastic_coefficient_positive(self):
@@ -342,7 +354,13 @@ class TestHertzianContact:
         Cp = HertzianContact.elastic_coefficient(97.0, 0.34, 97.0, 0.34)
         I = HertzianContact.geometry_factor_I(20, 60)
         sigma = HertzianContact.contact_stress_MPa(
-            100.0, 1.05, 1.0, 15.0, 50.0, I, Cp,
+            100.0,
+            1.05,
+            1.0,
+            15.0,
+            50.0,
+            I,
+            Cp,
         )
         assert sigma > 0
 
@@ -360,10 +378,14 @@ class TestHertzianContact:
 
 # -- Phase IV: Torsional Vibration --
 
+
 class TestTorsionalVibration:
     def test_frequency_positive(self):
         omega = TorsionalVibration.natural_frequency_rad_s(
-            80.0, 50.0, 500.0, 0.5,
+            80.0,
+            50.0,
+            500.0,
+            0.5,
         )
         assert omega > 0
 
@@ -385,6 +407,7 @@ class TestTorsionalVibration:
 
 
 # -- Phase IV: Cam Torque Ripple --
+
 
 class TestCamTorqueRipple:
     @pytest.fixture
@@ -418,10 +441,14 @@ class TestCamTorqueRipple:
 
 # -- Phase IV: Shaft Lateral Dynamics --
 
+
 class TestShaftLateralDynamics:
     def test_lateral_frequency_positive(self):
         omega = ShaftLateralDynamics.lateral_natural_frequency_rad_s(
-            200.0, 50.0, 500.0, 7850.0,
+            200.0,
+            50.0,
+            500.0,
+            7850.0,
         )
         assert omega > 0
 

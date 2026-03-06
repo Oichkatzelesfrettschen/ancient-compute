@@ -5,7 +5,6 @@ and opcode-coupled simulation verifying physics evolution during
 program execution.
 """
 
-
 import pytest
 
 from backend.src.emulator.materials import MaterialLibrary
@@ -23,6 +22,7 @@ def lib():
 # ---------------------------------------------------------------------------
 # IX.1.a: End-to-end warmup simulation
 # ---------------------------------------------------------------------------
+
 
 class TestWarmupSimulation:
     """Cold start -> steady state with all safety factors checked."""
@@ -55,9 +55,9 @@ class TestWarmupSimulation:
     def test_all_clearances_below_limit(self, warmup_result):
         eng, _ = warmup_result
         for i, c in enumerate(eng.state.bearing_clearances_mm):
-            assert c < eng.config.clearance_limit_mm, (
-                f"Bearing {i} clearance {c:.4f}mm exceeds limit"
-            )
+            assert (
+                c < eng.config.clearance_limit_mm
+            ), f"Bearing {i} clearance {c:.4f}mm exceeds limit"
 
     def test_bearing_loads_sum_correct(self, warmup_result):
         eng, _ = warmup_result
@@ -125,9 +125,7 @@ class TestWarmupSimulation:
         # Check that temperature differences decrease (approaching steady state)
         diffs = []
         for i in range(1, len(result.history)):
-            diffs.append(
-                abs(result.history[i].temperature_C - result.history[i - 1].temperature_C)
-            )
+            diffs.append(abs(result.history[i].temperature_C - result.history[i - 1].temperature_C))
         # Later diffs should be smaller than earlier ones (convergence)
         if len(diffs) >= 4:
             early_avg = sum(diffs[:2]) / 2
@@ -138,6 +136,7 @@ class TestWarmupSimulation:
 # ---------------------------------------------------------------------------
 # IX.1.b: Multi-module coupling consistency
 # ---------------------------------------------------------------------------
+
 
 class TestMultiModuleCoupling:
     """Verify that coupling between modules produces self-consistent results."""
@@ -163,9 +162,9 @@ class TestMultiModuleCoupling:
         # Warm environment should produce at least as much wear
         # (lower viscosity -> thinner film -> higher friction)
         # Note: the effect may be small, so just check direction
-        assert wear_warm >= wear_cool * 0.9, (
-            f"Warm wear {wear_warm:.6e} < cool wear {wear_cool:.6e}"
-        )
+        assert (
+            wear_warm >= wear_cool * 0.9
+        ), f"Warm wear {wear_warm:.6e} < cool wear {wear_cool:.6e}"
 
     def test_load_clearance_coupling(self, lib):
         """Heavier machine -> more bearing load -> more deflection -> more wear."""
@@ -202,6 +201,7 @@ class TestMultiModuleCoupling:
 # ---------------------------------------------------------------------------
 # IX.1: Dimensional consistency
 # ---------------------------------------------------------------------------
+
 
 class TestDimensionalConsistency:
     """Verify units are consistent across the simulation."""

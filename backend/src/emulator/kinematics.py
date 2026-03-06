@@ -23,9 +23,11 @@ import yaml
 # Dataclasses
 # ---------------------------------------------------------------------------
 
+
 @dataclass(frozen=True)
 class GearPair:
     """A meshing gear pair with geometric and material properties."""
+
     name: str
     tooth_count_driver: int
     tooth_count_driven: int
@@ -68,6 +70,7 @@ class GearPair:
 @dataclass(frozen=True)
 class CamFollower:
     """Cam mechanism with modified trapezoidal profile."""
+
     name: str
     rise_angle_deg: float
     dwell_angle_deg: float
@@ -80,6 +83,7 @@ class CamFollower:
 @dataclass
 class KinematicChain:
     """Complete kinematic chain from drive to output."""
+
     gear_pairs: list[GearPair] = field(default_factory=list)
     cam_followers: list[CamFollower] = field(default_factory=list)
     input_rpm: float = 30.0
@@ -91,6 +95,7 @@ class KinematicChain:
 # ---------------------------------------------------------------------------
 # Gear Analysis (Shigley Ch.13-14)
 # ---------------------------------------------------------------------------
+
 
 class GearAnalysis:
     """Gear mesh analysis: velocity ratio, contact ratio, Lewis bending stress."""
@@ -135,11 +140,7 @@ class GearAnalysis:
         r_b2 = r2 * cos_phi
         c = gear.center_distance_mm
 
-        numerator = (
-            math.sqrt(r_a1**2 - r_b1**2)
-            + math.sqrt(r_a2**2 - r_b2**2)
-            - c * sin_phi
-        )
+        numerator = math.sqrt(r_a1**2 - r_b1**2) + math.sqrt(r_a2**2 - r_b2**2) - c * sin_phi
         denominator = math.pi * gear.module_mm * cos_phi
         return numerator / denominator
 
@@ -154,9 +155,7 @@ class GearAnalysis:
         return 0.484 - (2.87 / teeth)
 
     @staticmethod
-    def lewis_bending_stress_MPa(
-        gear: GearPair, tangential_force_N: float
-    ) -> float:
+    def lewis_bending_stress_MPa(gear: GearPair, tangential_force_N: float) -> float:
         """Lewis bending stress sigma_b = W_t / (b * m * Y) [MPa] (Shigley Eq.14-3).
 
         W_t: tangential force [N]
@@ -180,6 +179,7 @@ class GearAnalysis:
 # ---------------------------------------------------------------------------
 # Cam Analysis (Norton / Shigley Ch.3)
 # ---------------------------------------------------------------------------
+
 
 class CamAnalysis:
     """Modified trapezoidal cam profile analysis."""
@@ -224,7 +224,9 @@ class CamAnalysis:
         return (s2 - s1) / (2.0 * d_theta)
 
     @staticmethod
-    def acceleration_mm_per_deg2(cam: CamFollower, theta_deg: float, d_theta: float = 0.01) -> float:
+    def acceleration_mm_per_deg2(
+        cam: CamFollower, theta_deg: float, d_theta: float = 0.01
+    ) -> float:
         """Numerical second derivative d2s/d(theta)^2 [mm/deg^2]."""
         v1 = CamAnalysis.velocity_mm_per_deg(cam, theta_deg - d_theta, d_theta)
         v2 = CamAnalysis.velocity_mm_per_deg(cam, theta_deg + d_theta, d_theta)
@@ -238,15 +240,13 @@ class CamAnalysis:
         return (a2 - a1) / (2.0 * d_theta)
 
     @staticmethod
-    def follower_force_N(
-        cam: CamFollower, theta_deg: float, omega_rad_s: float
-    ) -> float:
+    def follower_force_N(cam: CamFollower, theta_deg: float, omega_rad_s: float) -> float:
         """Total follower force: spring + inertia [N].
 
         F = k*s + m*a*(omega^2)
         where a is angular acceleration converted to linear.
         """
-        s = CamAnalysis.displacement_mm(cam, theta_deg) / 1000.0  # m
+        _s = CamAnalysis.displacement_mm(cam, theta_deg) / 1000.0  # m
         # Convert angular acceleration to linear
         accel_mm_deg2 = CamAnalysis.acceleration_mm_per_deg2(cam, theta_deg)
         # Convert deg^2 to rad^2: multiply by (pi/180)^2
@@ -260,6 +260,7 @@ class CamAnalysis:
 # ---------------------------------------------------------------------------
 # DOF Analysis (Grubler-Kutzbach)
 # ---------------------------------------------------------------------------
+
 
 class DOFAnalysis:
     """Grubler-Kutzbach mobility criterion for planar mechanisms.
@@ -280,6 +281,7 @@ class DOFAnalysis:
 # ---------------------------------------------------------------------------
 # Main Shaft Model
 # ---------------------------------------------------------------------------
+
 
 class MainShaftModel:
     """Main shaft rotation model: moment of inertia, torque, angular velocity."""
@@ -335,10 +337,13 @@ class MainShaftModel:
 # Schema Loader
 # ---------------------------------------------------------------------------
 
+
 def load_kinematic_chain(schema_path: str | None = None) -> KinematicChain:
     """Load kinematic chain parameters from sim_schema.yaml."""
-    path = Path(schema_path) if schema_path else (
-        Path(__file__).resolve().parents[3] / "docs" / "simulation" / "sim_schema.yaml"
+    path = (
+        Path(schema_path)
+        if schema_path
+        else (Path(__file__).resolve().parents[3] / "docs" / "simulation" / "sim_schema.yaml")
     )
     with path.open("r", encoding="utf-8") as fh:
         data = yaml.safe_load(fh)
@@ -391,13 +396,16 @@ def load_kinematic_chain(schema_path: str | None = None) -> KinematicChain:
 # Gear Surface Fatigue / Hertzian Contact (Shigley Ch.14)
 # ---------------------------------------------------------------------------
 
+
 class HertzianContact:
     """Hertzian contact stress and AGMA pitting resistance."""
 
     @staticmethod
     def elastic_coefficient(
-        E1_GPa: float, nu1: float,
-        E2_GPa: float, nu2: float,
+        E1_GPa: float,
+        nu1: float,
+        E2_GPa: float,
+        nu2: float,
     ) -> float:
         """AGMA elastic coefficient C_p (Shigley Eq.14-14).
 
@@ -436,8 +444,8 @@ class HertzianContact:
         """
         if face_width_mm <= 0 or pitch_diameter_mm <= 0 or geometry_factor_I <= 0:
             return float("inf")
-        product = tangential_force_N * Kv * Ko / (
-            face_width_mm * pitch_diameter_mm * geometry_factor_I
+        product = (
+            tangential_force_N * Kv * Ko / (face_width_mm * pitch_diameter_mm * geometry_factor_I)
         )
         if product < 0:
             return 0.0
@@ -475,6 +483,7 @@ class HertzianContact:
 # ---------------------------------------------------------------------------
 # Torsional Vibration (Shigley Ch.7)
 # ---------------------------------------------------------------------------
+
 
 class TorsionalVibration:
     """Torsional natural frequency and vibration margin."""
@@ -520,6 +529,7 @@ class TorsionalVibration:
 # ---------------------------------------------------------------------------
 # Cam Torque Ripple
 # ---------------------------------------------------------------------------
+
 
 class CamTorqueRipple:
     """Instantaneous cam torque and ripple analysis."""
@@ -572,6 +582,7 @@ class CamTorqueRipple:
 # ---------------------------------------------------------------------------
 # Shaft Lateral Dynamics
 # ---------------------------------------------------------------------------
+
 
 class ShaftLateralDynamics:
     """Shaft lateral natural frequency and bearing reaction forces."""

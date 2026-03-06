@@ -1,0 +1,16 @@
+# Multiply -- Fourmilab AE card deck
+#
+# Computes: 6 * 7 = 42
+# N000 loads 6, N001 loads 7.
+# L000 + L001 load both into registers.
+# * multiplies them.
+# P prints 42.
+# H halts.
+
+N000 +6
+N001 +7
+L000
+L001
+*
+P
+H

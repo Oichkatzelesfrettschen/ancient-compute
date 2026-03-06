@@ -44,5 +44,6 @@ class Settings(BaseSettings):
     # Logging
     LOG_LEVEL: str = "DEBUG"
 
+
 # Create global settings instance
 settings = Settings()

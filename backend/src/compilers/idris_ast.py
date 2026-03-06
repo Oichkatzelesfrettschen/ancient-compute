@@ -1,18 +1,20 @@
 # Ancient Compute - IDRIS AST
 
 
-
 # ---------------------------------------------------------------------------
 # Type nodes (used by idris_types.py type system)
 # ---------------------------------------------------------------------------
 
+
 class Type:
     """Base class for all Idris type representations."""
+
     pass
 
 
 class BaseType(Type):
     """Named base type (Nat, Int, String, Bool, etc.)."""
+
     def __init__(self, name: str):
         self.name = name
 
@@ -28,6 +30,7 @@ class BaseType(Type):
 
 class TypeVariable(Type):
     """Type variable (e.g. 'a' in 'forall a. a -> a')."""
+
     def __init__(self, name: str):
         self.name = name
 
@@ -37,6 +40,7 @@ class TypeVariable(Type):
 
 class FunctionType(Type):
     """Arrow type: param_type -> return_type."""
+
     def __init__(self, param_type: Type, return_type: Type):
         self.param_type = param_type
         self.return_type = return_type
@@ -47,6 +51,7 @@ class FunctionType(Type):
 
 class DependentType(Type):
     """Dependent type: (x : A) -> B x."""
+
     def __init__(self, param_name: str, param_type: Type, body_type: Type):
         self.param_name = param_name
         self.param_type = param_type
@@ -58,6 +63,7 @@ class DependentType(Type):
 
 class TypeFamily(Type):
     """Type family application: F a1 a2 ... an."""
+
     def __init__(self, name: str, args: list[Type]):
         self.name = name
         self.args = args
@@ -68,6 +74,7 @@ class TypeFamily(Type):
 
 class RefinementType(Type):
     """Refinement type: { x : A | P x }."""
+
     def __init__(self, base_type: Type, predicate: "Expr"):
         self.base_type = base_type
         self.predicate = predicate
@@ -80,12 +87,14 @@ class RefinementType(Type):
 # AST nodes
 # ---------------------------------------------------------------------------
 
+
 class ASTNode:
     pass
 
 
 class Expr(ASTNode):
     """Base class for all expressions (used by idris_types.py)."""
+
     pass
 
 
@@ -119,6 +128,7 @@ class FunctionDeclaration(Declaration):
 
 class DataConstructor(Declaration):
     """Data constructor definition."""
+
     def __init__(self, name: str, type_sig: Type):
         self.name = name
         self.type_sig = type_sig
@@ -130,6 +140,7 @@ class Expression(Expr):
 
 class Var(Expr):
     """Variable reference (used by type system)."""
+
     def __init__(self, name: str):
         self.name = name
 
@@ -156,6 +167,7 @@ Application = FunctionApplication
 
 class Lambda(Expr):
     """Lambda expression."""
+
     def __init__(self, param: str, param_type: Type | None, body: Expr):
         self.param = param
         self.param_type = param_type
@@ -184,6 +196,7 @@ CaseExpr = Case
 
 class IfExpr(Expr):
     """If-then-else expression."""
+
     def __init__(self, condition: Expr, then_expr: Expr, else_expr: Expr):
         self.condition = condition
         self.then_expr = then_expr
@@ -192,6 +205,7 @@ class IfExpr(Expr):
 
 class ProofExpr(Expr):
     """Proof term (refl, cong, etc.)."""
+
     def __init__(self, name: str, args: list[Expr]):
         self.name = name
         self.args = args

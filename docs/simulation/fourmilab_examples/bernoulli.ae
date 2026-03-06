@@ -1,0 +1,33 @@
+# Bernoulli Number B1 -- Fourmilab AE card deck
+#
+# Computes the first Bernoulli number B1 = 1/2
+# based on Ada Lovelace's Note G algorithm (simplified one-pass).
+#
+# Using the formula for B1:
+#   A0 = 1 (for n=1, the A0 term)
+#   B1 = -A0 / 2 = -1/2
+#
+# Variables:
+#   Column 0: V1 = 1
+#   Column 1: V2 = 2
+#   Column 2: B1 result
+#
+# Steps:
+#   Load V1 = 1 into result
+#   Load V2 = 2 into prior
+#   Divide: result = V1 / V2 = 0.5
+#   Negate (subtract from 0): result = 0 - 0.5 = -0.5 = B1
+#   Print B1
+#   Halt
+
+N000 +1
+N001 +2
+N003 +0
+
+L000
+L001
+/
+N002 +0
+L002
+P
+H

@@ -2,12 +2,15 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 import os
 import tempfile
 import time
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any, TypedDict
+
+logger = logging.getLogger(__name__)
 
 try:
     import docker  # type: ignore[import-not-found]
@@ -71,14 +74,14 @@ class BaseExecutor:
     def _check_docker(self) -> bool:
         """Check if Docker is available"""
         if docker is None:
-            print(f"Warning: Docker module not installed for {self.language}")
+            logger.warning("Docker module not installed for %s", self.language)
             return False
         try:
             self.client = docker.from_env()
             self.client.ping()
             return True
         except Exception as exc:  # pragma: no cover - exercised in environments without Docker
-            print(f"Warning: Docker not available for {self.language}: {exc}")
+            logger.warning("Docker not available for %s: %s", self.language, exc)
             self.client = None
             return False
 
@@ -89,7 +92,7 @@ class BaseExecutor:
         try:
             self.client.images.get(self.docker_image)
         except docker.errors.ImageNotFound:  # type: ignore[attr-defined]
-            print(f"Building {self.docker_image}...")
+            logger.info("Building %s...", self.docker_image)
             self._build_image()
 
     def _build_image(self) -> None:
@@ -209,7 +212,9 @@ class BaseExecutor:
                 execution_time = time.time() - start_time
 
                 return ExecutionResult(
-                    status=ExecutionStatus.SUCCESS if exit_code == 0 else ExecutionStatus.RUNTIME_ERROR,
+                    status=(
+                        ExecutionStatus.SUCCESS if exit_code == 0 else ExecutionStatus.RUNTIME_ERROR
+                    ),
                     stdout=stdout[:10_000],  # Limit output to 10KB
                     stderr="",
                     execution_time=execution_time,

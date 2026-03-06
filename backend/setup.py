@@ -16,7 +16,15 @@ setup(
         "RestrictedPython>=6.0",
         "pytest>=7.4.0",
         "pytest-asyncio>=0.21.0",
+        "click>=8.0",
+        "rich>=14.0",
+        "textual>=8.0",
     ],
+    entry_points={
+        "console_scripts": [
+            "ancient-compute=backend.src.emulator.cli.app:cli",
+        ],
+    },
     python_requires=">=3.11",
     author="Ancient Compute Team",
     description="Educational platform for learning computation history",

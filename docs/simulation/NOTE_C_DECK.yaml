@@ -1,0 +1,53 @@
+# Note C Card Deck -- Ada Lovelace / Menabrea (1843)
+#
+# Note C discusses iteration ("backing") and conditional execution.
+# This deck computes triangular numbers: T(n) = 1 + 2 + 3 + ... + n
+# using the Engine's loop-back (backing) mechanism.
+#
+# Variables:
+#   V1: current counter (starts at 1, increments to n)
+#   V2: n (upper limit, input)
+#   V3: accumulator (running sum, starts 0)
+#   V4: constant 1 (for incrementing)
+#   V5: result = T(n)
+#
+# Loop body (ops 1-4) executes n times.
+# The backing card at op 4 returns to op 1 while V1 <= V2.
+# On exit, V3 holds the triangular number T(n).
+#
+# References:
+#   Menabrea / Lovelace (1843), Note C: pp. 686-689.
+#   "By means of the mechanism for backing..." (loop iteration discussion).
+
+# Initial values loaded by the runner before execution:
+#   V1 = 1, V2 = n, V3 = 0, V4 = 1
+
+deck:
+  # Op 1: Accumulate: V3 = V3 + V1
+  - op: 1
+    lhs: "V3"
+    rhs: "V1"
+    opcode: "add"
+    out: ["V3"]
+
+  # Op 2: Increment counter: V1 = V1 + V4
+  - op: 2
+    lhs: "V1"
+    rhs: "V4"
+    opcode: "add"
+    out: ["V1"]
+
+  # Op 3: Check remaining: V5 = V2 - V1 (if V5 < 0, loop done)
+  - op: 3
+    lhs: "V2"
+    rhs: "V1"
+    opcode: "sub"
+    out: ["V5"]
+
+  # Op 4: Copy result: V5 = V3 (output)
+  # (Loop terminates when V1 > V2, i.e. V5 < 0 after op 3)
+  - op: 4
+    lhs: "V3"
+    rhs: "V3"
+    opcode: "add"
+    out: ["V5"]

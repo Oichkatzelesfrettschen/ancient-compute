@@ -26,6 +26,7 @@ from card_compiler import (
 
 # --- Operation card round-trips ---
 
+
 class TestOperationCards:
     """Operation cards: encode -> decode preserves opcode and modifier."""
 
@@ -58,6 +59,7 @@ class TestOperationCards:
 
 # --- Variable card round-trips ---
 
+
 class TestVariableCards:
     """Variable cards: encode -> decode preserves direction and column."""
 
@@ -86,17 +88,21 @@ class TestVariableCards:
 
 # --- Number card round-trips ---
 
+
 class TestNumberCards:
     """Number cards: encode -> decode preserves sign and magnitude."""
 
-    @pytest.mark.parametrize("sign,magnitude", [
-        (0, "0"),
-        (0, "1"),
-        (0, "12345"),
-        (1, "99999"),
-        (0, "1234567890"),
-        (0, "12345678901234567890123456789012345678901234567890"),  # 50 digits
-    ])
+    @pytest.mark.parametrize(
+        "sign,magnitude",
+        [
+            (0, "0"),
+            (0, "1"),
+            (0, "12345"),
+            (1, "99999"),
+            (0, "1234567890"),
+            (0, "12345678901234567890123456789012345678901234567890"),  # 50 digits
+        ],
+    )
     def test_number_round_trip(self, sign, magnitude):
         card = CardData(card_class=CardClass.NUMBER, sign=sign, magnitude=magnitude)
         enc = encode_card(card)
@@ -120,6 +126,7 @@ class TestNumberCards:
 
 # --- Deck-level round-trips ---
 
+
 class TestDeckRoundTrip:
     """Full deck: source -> compile -> decompile -> source."""
 
@@ -142,16 +149,18 @@ class TestDeckRoundTrip:
 
     def test_note_g_style_deck(self):
         """A deck resembling Ada's Note G operations."""
-        source = "\n".join([
-            "LOAD V1",
-            "LOAD V2",
-            "MUL",
-            "STORE V4",
-            "LOAD V3",
-            "SUB",
-            "STORE V5",
-            "HALT",
-        ])
+        source = "\n".join(
+            [
+                "LOAD V1",
+                "LOAD V2",
+                "MUL",
+                "STORE V4",
+                "LOAD V3",
+                "SUB",
+                "STORE V5",
+                "HALT",
+            ]
+        )
         assert round_trip(source)
 
     def test_empty_lines_ignored(self):
@@ -168,6 +177,7 @@ class TestDeckRoundTrip:
 
 
 # --- Error handling ---
+
 
 class TestErrors:
     """Invalid inputs produce clear errors."""

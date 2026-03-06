@@ -16,10 +16,11 @@ Architecture:
 
 class SteppedDrum:
     """Represents a single Staffelwalze (stepped drum)."""
+
     def __init__(self, value: int):
         if not 0 <= value <= 9:
             raise ValueError("Stepped drum value must be 0-9")
-        self.value = value # Number of active teeth (0-9)
+        self.value = value  # Number of active teeth (0-9)
 
     def get_teeth_count(self) -> int:
         return self.value
@@ -27,11 +28,13 @@ class SteppedDrum:
     def __repr__(self) -> str:
         return f"SteppedDrum({self.value})"
 
+
 class CountingWheel:
     """A single digit counting wheel in the accumulator."""
+
     def __init__(self, position: int):
         self.position = position
-        self.value = 0 # 0-9
+        self.value = 0  # 0-9
 
     def advance(self, steps: int) -> int:
         """Advance wheel by steps, returns carry."""
@@ -42,15 +45,18 @@ class CountingWheel:
     def __repr__(self) -> str:
         return f"CountingWheel({self.position}, val={self.value})"
 
+
 class LeibnizReckonerEmulator:
     def __init__(self, num_input_digits: int = 8, num_accumulator_digits: int = 16):
         self.num_input_digits = num_input_digits
         self.num_accumulator_digits = num_accumulator_digits
 
         self.input_drums: list[SteppedDrum] = [SteppedDrum(0) for _ in range(num_input_digits)]
-        self.accumulator_wheels: list[CountingWheel] = [CountingWheel(i) for i in range(num_accumulator_digits)]
-        self.carriage_position = 0 # Offset for multiplication/division
-        self.turn_counter = 0 # Revolution counter for multiplication steps
+        self.accumulator_wheels: list[CountingWheel] = [
+            CountingWheel(i) for i in range(num_accumulator_digits)
+        ]
+        self.carriage_position = 0  # Offset for multiplication/division
+        self.turn_counter = 0  # Revolution counter for multiplication steps
 
     def reset(self) -> None:
         for drum in self.input_drums:
@@ -65,15 +71,15 @@ class LeibnizReckonerEmulator:
             "accumulator": self.get_accumulator_value(),
             "carriage_position": self.carriage_position,
             "input_drums": [d.value for d in self.input_drums],
-            "turn_counter": self.turn_counter
+            "turn_counter": self.turn_counter,
         }
 
     def set_input(self, value: int) -> None:
         """Sets the input drums from an integer."""
-        s_val = str(value).zfill(self.num_input_digits) # Pad to num_input_digits, e.g., "00000123"
+        s_val = str(value).zfill(self.num_input_digits)  # Pad to num_input_digits, e.g., "00000123"
         if len(s_val) > self.num_input_digits:
             raise OverflowError(f"Input {value} exceeds {self.num_input_digits} digits")
-        for i, char in enumerate(reversed(s_val)): # Store units at input_drums[0]
+        for i, char in enumerate(reversed(s_val)):  # Store units at input_drums[0]
             self.input_drums[i].value = int(char)
 
     def shift_carriage(self, offset: int) -> None:
@@ -127,7 +133,7 @@ class LeibnizReckonerEmulator:
         self.reset()
         self.set_input(multiplicand)
 
-        s_multiplier = str(multiplier)[::-1] # Process multiplier digits from right to left
+        s_multiplier = str(multiplier)[::-1]  # Process multiplier digits from right to left
 
         for i, char_digit in enumerate(s_multiplier):
             digit = int(char_digit)

@@ -33,10 +33,14 @@ def lib():
 
 # -- Shaft Deflection --
 
+
 class TestShaftDeflection:
     def test_deflection_positive(self):
         d = ShaftAnalysis.max_deflection_simply_supported_mm(
-            1000.0, 500.0, 200.0, 50.0,
+            1000.0,
+            500.0,
+            200.0,
+            50.0,
         )
         assert d > 0
 
@@ -60,7 +64,11 @@ class TestShaftDeflection:
         steel = lib.get("steel")
         load = 23.0 * 9.81  # shaft self-weight
         d = ShaftAnalysis.max_deflection_multi_support_mm(
-            load, 1500.0, 4, steel.youngs_modulus_GPa[0], 50.0,
+            load,
+            1500.0,
+            4,
+            steel.youngs_modulus_GPa[0],
+            50.0,
         )
         limit = ShaftAnalysis.deflection_limit_mm(1500.0 / 3)  # span between bearings
         assert d < limit, f"Deflection {d:.4f} mm >= limit {limit:.4f} mm"
@@ -71,6 +79,7 @@ class TestShaftDeflection:
 
 
 # -- Gear Tooth Stress --
+
 
 class TestGearToothStress:
     def test_stress_positive(self):
@@ -93,6 +102,7 @@ class TestGearToothStress:
 
 
 # -- Fatigue Analysis --
+
 
 class TestFatigueAnalysis:
     def test_surface_factor_positive(self):
@@ -130,7 +140,10 @@ class TestFatigueAnalysis:
         # Approximate bending stress amplitude from shaft deflection
         # At 30 RPM, light loading: sigma_a ~ 10 MPa, sigma_m ~ 0
         sf = FatigueAnalysis.goodman_safety_factor(
-            10.0, 0.0, Se, steel.ultimate_tensile_strength_MPa[0],
+            10.0,
+            0.0,
+            Se,
+            steel.ultimate_tensile_strength_MPa[0],
         )
         assert sf >= 2.0, f"Goodman SF={sf:.1f} < 2.0"
 
@@ -144,7 +157,9 @@ class TestFatigueAnalysis:
         )
         # Low stress amplitude (well below Se)
         N = FatigueAnalysis.fatigue_life_cycles(
-            10.0, Se, steel.ultimate_tensile_strength_MPa[0],
+            10.0,
+            Se,
+            steel.ultimate_tensile_strength_MPa[0],
         )
         assert N >= 1e8, f"Fatigue life {N:.0e} < 10^8"
 
@@ -158,6 +173,7 @@ class TestFatigueAnalysis:
 
 
 # -- Buckling Analysis --
+
 
 class TestBucklingAnalysis:
     def test_euler_load_positive(self):
@@ -178,7 +194,10 @@ class TestBucklingAnalysis:
         h = 25.0
         I = BucklingAnalysis.rectangular_section_I_mm4(w, h)
         P_cr = BucklingAnalysis.euler_critical_load_N(
-            steel.youngs_modulus_GPa[0], I, 600.0, 0.5,
+            steel.youngs_modulus_GPa[0],
+            I,
+            600.0,
+            0.5,
         )
         # Applied load: weight of column mechanism (~5 kg per column)
         applied = 5.0 * 9.81
@@ -198,6 +217,7 @@ class TestBucklingAnalysis:
 
 # -- Cross-validation with Phase B loads --
 
+
 class TestStructuralIntegration:
     def test_all_safety_factors_adequate(self, lib):
         """Verify overall structural adequacy."""
@@ -206,7 +226,11 @@ class TestStructuralIntegration:
 
         # Shaft deflection
         d = ShaftAnalysis.max_deflection_multi_support_mm(
-            23.0 * 9.81, 1500.0, 4, steel.youngs_modulus_GPa[0], 50.0,
+            23.0 * 9.81,
+            1500.0,
+            4,
+            steel.youngs_modulus_GPa[0],
+            50.0,
         )
         assert d < 0.1, "Shaft deflection excessive"
 
@@ -224,20 +248,27 @@ class TestStructuralIntegration:
             50.0,
         )
         sf_fatigue = FatigueAnalysis.goodman_safety_factor(
-            10.0, 0.0, Se, steel.ultimate_tensile_strength_MPa[0],
+            10.0,
+            0.0,
+            Se,
+            steel.ultimate_tensile_strength_MPa[0],
         )
         assert sf_fatigue >= 2.0
 
         # Buckling
         I = BucklingAnalysis.rectangular_section_I_mm4(25.0, 25.0)
         P_cr = BucklingAnalysis.euler_critical_load_N(
-            steel.youngs_modulus_GPa[0], I, 600.0, 0.5,
+            steel.youngs_modulus_GPa[0],
+            I,
+            600.0,
+            0.5,
         )
         sf_buckling = BucklingAnalysis.buckling_safety_factor(P_cr, 5.0 * 9.81)
         assert sf_buckling >= 3.0
 
 
 # -- Phase III: Stress Concentration Factors --
+
 
 class TestStressConcentration:
     def test_stepped_shaft_Kt_ge_1(self):
@@ -264,6 +295,7 @@ class TestStressConcentration:
 
 
 # -- Phase III: Dynamic Load Factor --
+
 
 class TestDynamicLoadFactor:
     def test_Kv_ge_1(self):
@@ -293,6 +325,7 @@ class TestDynamicLoadFactor:
 
 
 # -- Phase III: Johnson Column Transition --
+
 
 class TestJohnsonBuckling:
     def test_johnson_le_yield(self, lib):
@@ -349,10 +382,14 @@ class TestJohnsonBuckling:
 
 # -- Phase III: Shaft Critical Speed --
 
+
 class TestShaftCriticalSpeed:
     def test_critical_speed_positive(self):
         omega = ShaftCriticalSpeed.first_critical_speed_rad_s(
-            200.0, 50.0, 500.0, 7850.0,
+            200.0,
+            50.0,
+            500.0,
+            7850.0,
         )
         assert omega > 0
 
@@ -369,7 +406,10 @@ class TestShaftCriticalSpeed:
     def test_critical_speed_margin_above_3(self):
         """50mm steel shaft, 500mm span, 30 RPM: margin >> 3."""
         omega = ShaftCriticalSpeed.first_critical_speed_rad_s(
-            200.0, 50.0, 500.0, 7850.0,
+            200.0,
+            50.0,
+            500.0,
+            7850.0,
         )
         crit_rpm = ShaftCriticalSpeed.critical_speed_rpm(omega)
         margin = ShaftCriticalSpeed.critical_speed_margin(crit_rpm, 30.0)
@@ -377,6 +417,7 @@ class TestShaftCriticalSpeed:
 
 
 # -- Phase III: Notch Sensitivity --
+
 
 class TestNotchSensitivity:
     def test_q_in_0_1(self):

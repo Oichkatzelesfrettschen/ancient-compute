@@ -20,8 +20,9 @@ from backend.src.codegen.selector import AsmInstruction
 @dataclass
 class AssemblyOutput:
     """Complete assembly code output"""
+
     assembly_text: str
-    label_map: dict[str, int]     # label → instruction address
+    label_map: dict[str, int]  # label → instruction address
     instruction_count: int
     spill_count: int = 0
     comment: str = ""
@@ -86,7 +87,7 @@ class CodeEmitter:
             label_map=self.labels,
             instruction_count=len(self.instructions),
             spill_count=spill_count,
-            comment=f"Generated Babbage assembly ({len(self.instructions)} instructions)"
+            comment=f"Generated Babbage assembly ({len(self.instructions)} instructions)",
         )
 
     def _assign_addresses(self) -> None:
@@ -137,24 +138,19 @@ def example_code_emission():
 
     # Add instructions
     emitter.add_label("main")
-    emitter.add_instruction(AsmInstruction("MOV", [
-        AsmOperand("reg", "A"),
-        AsmOperand("immed", "10")
-    ], comment="a = 10"))
+    emitter.add_instruction(
+        AsmInstruction("MOV", [AsmOperand("reg", "A"), AsmOperand("immed", "10")], comment="a = 10")
+    )
 
-    emitter.add_instruction(AsmInstruction("MOV", [
-        AsmOperand("reg", "B"),
-        AsmOperand("immed", "5")
-    ], comment="b = 5"))
+    emitter.add_instruction(
+        AsmInstruction("MOV", [AsmOperand("reg", "B"), AsmOperand("immed", "5")], comment="b = 5")
+    )
 
-    emitter.add_instruction(AsmInstruction("ADD", [
-        AsmOperand("reg", "A"),
-        AsmOperand("reg", "B")
-    ], comment="a = a + b"))
+    emitter.add_instruction(
+        AsmInstruction("ADD", [AsmOperand("reg", "A"), AsmOperand("reg", "B")], comment="a = a + b")
+    )
 
-    emitter.add_instruction(AsmInstruction("WRPRN", [
-        AsmOperand("reg", "A")
-    ], comment="print a"))
+    emitter.add_instruction(AsmInstruction("WRPRN", [AsmOperand("reg", "A")], comment="print a"))
 
     emitter.add_instruction(AsmInstruction("RET", [], comment="return"))
 

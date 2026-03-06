@@ -27,18 +27,24 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
+
 # Prometheus Metrics (idempotent: reuse existing collectors if already registered)
 def _get_or_create_counter(name: str, doc: str) -> Counter:
     try:
         return Counter(name, doc)
     except ValueError:
-        return REGISTRY._names_to_collectors.get(name + "_total") or REGISTRY._names_to_collectors[name]
+        return (
+            REGISTRY._names_to_collectors.get(name + "_total")
+            or REGISTRY._names_to_collectors[name]
+        )
+
 
 def _get_or_create_gauge(name: str, doc: str) -> Gauge:
     try:
         return Gauge(name, doc)
     except ValueError:
         return REGISTRY._names_to_collectors[name]
+
 
 REQUEST_COUNT = _get_or_create_counter("requests", "Total number of requests")
 UPTIME = _get_or_create_gauge("uptime_seconds", "Time the service has been running")
@@ -69,7 +75,7 @@ app = FastAPI(
 if not settings.DEBUG:
     app.add_middleware(
         TrustedHostMiddleware,
-        allowed_hosts=["ancient-compute.com", "*.ancient-compute.com", "localhost"]
+        allowed_hosts=["ancient-compute.com", "*.ancient-compute.com", "localhost"],
     )
 
 app.add_middleware(
@@ -79,6 +85,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 @app.middleware("http")
 async def add_security_headers(request: Request, call_next):
@@ -90,7 +97,9 @@ async def add_security_headers(request: Request, call_next):
         response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
     return response
 
+
 app.add_middleware(RateLimitMiddleware, limiter=RateLimiter())
+
 
 @app.middleware("http")
 async def count_requests(request: Request, call_next):
@@ -108,24 +117,29 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
         content={"detail": "Internal server error", "type": type(exc).__name__},
     )
 
+
 # Include API routers
 app.include_router(api_router, prefix="/api/v1")
 app.include_router(tools_router, prefix="/api/v1/tools", tags=["tools"])
+
 
 # Health check endpoints (Same as before)
 @app.get("/health")
 async def health_check():
     return {"status": "healthy", "service": "ancient-compute-backend"}
 
+
 @app.get("/ready")
 async def readiness_check():
     # ... (Same logic as before)
     return {"status": "ready"}
 
+
 @app.get("/metrics")
 async def metrics():
     UPTIME.set(time.time() - START_TIME)
     return Response(content=generate_latest().decode("utf-8"), media_type=CONTENT_TYPE_LATEST)
+
 
 @app.get("/")
 async def root():
@@ -138,4 +152,3 @@ async def root():
         "uptime_seconds": uptime,
         "environment": settings.ENVIRONMENT,
     }
-

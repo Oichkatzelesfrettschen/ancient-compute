@@ -40,6 +40,7 @@ def envelope():
 
 # -- Friction Heat --
 
+
 class TestFrictionHeat:
     def test_bearing_heat_positive(self):
         q = FrictionHeatModel.bearing_heat_W(0.10, 1000.0, 50.0, math.pi)
@@ -65,6 +66,7 @@ class TestFrictionHeat:
 
 # -- Thermal Expansion --
 
+
 class TestThermalExpansion:
     def test_linear_expansion_positive(self):
         delta = ThermalExpansionModel.linear_expansion_mm(20.5e-6, 100.0, 20.0)
@@ -88,8 +90,10 @@ class TestThermalExpansion:
         steel = lib.get("steel")
         # Brass bushing on steel shaft, 50mm bore, 20K rise
         delta = ThermalExpansionModel.dissimilar_metal_clearance_change_mm(
-            brass.thermal_expansion_coeff_per_K, 50.0,
-            steel.thermal_expansion_coeff_per_K, 50.0,
+            brass.thermal_expansion_coeff_per_K,
+            50.0,
+            steel.thermal_expansion_coeff_per_K,
+            50.0,
             20.0,
         )
         # Brass expands more -> positive delta -> clearance increases
@@ -102,7 +106,7 @@ class TestThermalExpansion:
             brass.thermal_expansion_coeff_per_K,
             steel.thermal_expansion_coeff_per_K,
             100.0,  # center distance
-            20.0,   # delta T
+            20.0,  # delta T
         )
         # Brass gears on steel shafts: brass CTE > steel CTE -> positive
         assert delta > 0
@@ -125,6 +129,7 @@ class TestThermalExpansion:
 
 
 # -- Thermal Time Constant --
+
 
 class TestThermalTimeConstant:
     def test_positive(self):
@@ -150,6 +155,7 @@ class TestThermalTimeConstant:
 
 
 # -- Operating Envelope --
+
 
 class TestOperatingEnvelope:
     def test_loads_from_schema(self, envelope):
@@ -197,6 +203,7 @@ class TestOperatingEnvelope:
 # Phase II: Regression - Monte Carlo gear backlash unit error
 # ---------------------------------------------------------------------------
 
+
 class TestGearBacklashRegression:
     """Regression: gear backlash delta must be in mm, not um.
 
@@ -215,9 +222,7 @@ class TestGearBacklashRegression:
             delta_T_K=30.0,
         )
         # Expected: ~(19e-6 - 12e-6) * 50 * 30 = ~0.0105 mm
-        assert 0.001 < abs(delta) < 0.1, (
-            f"Backlash change {delta:.6f} mm out of expected range"
-        )
+        assert 0.001 < abs(delta) < 0.1, f"Backlash change {delta:.6f} mm out of expected range"
 
     def test_backlash_positive_when_gear_expands_more(self, lib):
         """When gear CTE > shaft CTE, backlash decreases (gap closes)."""
@@ -236,6 +241,7 @@ class TestGearBacklashRegression:
 # ---------------------------------------------------------------------------
 # Phase VI: Radiation Heat Loss
 # ---------------------------------------------------------------------------
+
 
 class TestRadiationHeatModel:
     def test_radiation_positive_when_hot(self):
@@ -271,6 +277,7 @@ class TestRadiationHeatModel:
 # Phase VI: Transient Thermal Solver
 # ---------------------------------------------------------------------------
 
+
 class TestTransientThermalSolver:
     def test_euler_approaches_steady_state(self):
         Q_in = 20.0
@@ -281,8 +288,15 @@ class TestTransientThermalSolver:
         T_amb = 20.0
         T_ss = TransientThermalSolver.steady_state_T_C(Q_in, h, A, T_amb)
         curve = TransientThermalSolver.warmup_curve(
-            Q_in, h, A, m, cp, T_amb,
-            duration_s=100000.0, dt_s=100.0, method="euler",
+            Q_in,
+            h,
+            A,
+            m,
+            cp,
+            T_amb,
+            duration_s=100000.0,
+            dt_s=100.0,
+            method="euler",
         )
         T_final = curve[-1][1]
         assert T_final == pytest.approx(T_ss, rel=0.05)
@@ -296,8 +310,15 @@ class TestTransientThermalSolver:
         T_amb = 20.0
         T_ss = TransientThermalSolver.steady_state_T_C(Q_in, h, A, T_amb)
         curve = TransientThermalSolver.warmup_curve(
-            Q_in, h, A, m, cp, T_amb,
-            duration_s=100000.0, dt_s=100.0, method="crank_nicolson",
+            Q_in,
+            h,
+            A,
+            m,
+            cp,
+            T_amb,
+            duration_s=100000.0,
+            dt_s=100.0,
+            method="crank_nicolson",
         )
         T_final = curve[-1][1]
         assert T_final == pytest.approx(T_ss, rel=0.05)
@@ -310,12 +331,26 @@ class TestTransientThermalSolver:
         cp = 460.0
         T_amb = 20.0
         curve_e = TransientThermalSolver.warmup_curve(
-            Q_in, h, A, m, cp, T_amb,
-            duration_s=100000.0, dt_s=100.0, method="euler",
+            Q_in,
+            h,
+            A,
+            m,
+            cp,
+            T_amb,
+            duration_s=100000.0,
+            dt_s=100.0,
+            method="euler",
         )
         curve_cn = TransientThermalSolver.warmup_curve(
-            Q_in, h, A, m, cp, T_amb,
-            duration_s=100000.0, dt_s=100.0, method="crank_nicolson",
+            Q_in,
+            h,
+            A,
+            m,
+            cp,
+            T_amb,
+            duration_s=100000.0,
+            dt_s=100.0,
+            method="crank_nicolson",
         )
         assert curve_e[-1][1] == pytest.approx(curve_cn[-1][1], rel=0.05)
 
@@ -332,8 +367,14 @@ class TestTransientThermalSolver:
         delta_T_ss = T_ss - T_amb
         # Run to tau
         curve = TransientThermalSolver.warmup_curve(
-            Q_in, h, A, m, cp, T_amb,
-            duration_s=tau, dt_s=tau / 100.0,
+            Q_in,
+            h,
+            A,
+            m,
+            cp,
+            T_amb,
+            duration_s=tau,
+            dt_s=tau / 100.0,
         )
         T_at_tau = curve[-1][1]
         fraction = (T_at_tau - T_amb) / delta_T_ss
@@ -344,6 +385,7 @@ class TestTransientThermalSolver:
 # Phase VI: Thermal-Clearance Feedback
 # ---------------------------------------------------------------------------
 
+
 class TestThermalClearanceFeedback:
     def test_thermal_clearance_change(self, lib):
         pb = lib.get("phosphor_bronze")
@@ -351,7 +393,9 @@ class TestThermalClearanceFeedback:
         delta = ThermalClearanceFeedback.thermal_clearance_mm(
             pb.thermal_expansion_coeff_per_K,
             steel.thermal_expansion_coeff_per_K,
-            50.0, 40.0, 20.0,
+            50.0,
+            40.0,
+            20.0,
         )
         # Bronze CTE > steel CTE, clearance should increase
         assert delta > 0
@@ -368,17 +412,20 @@ class TestThermalClearanceFeedback:
             delta = ThermalClearanceFeedback.thermal_clearance_mm(
                 pb.thermal_expansion_coeff_per_K,
                 steel.thermal_expansion_coeff_per_K,
-                50.0, T, 20.0,
+                50.0,
+                T,
+                20.0,
             )
             c = ThermalClearanceFeedback.combined_clearance_mm(0.05, delta, 0.0)
-            assert not ThermalClearanceFeedback.is_seized(c), (
-                f"Seizure at T={T} C, clearance={c:.4f} mm"
-            )
+            assert not ThermalClearanceFeedback.is_seized(
+                c
+            ), f"Seizure at T={T} C, clearance={c:.4f} mm"
 
 
 # ---------------------------------------------------------------------------
 # Phase 6.3: Churchill-Chu Natural Convection Correlation
 # ---------------------------------------------------------------------------
+
 
 class TestNaturalConvectionH:
     """Validate compute_natural_convection_h_W_m2K against published data.
@@ -397,37 +444,49 @@ class TestNaturalConvectionH:
 
     def test_h_positive_for_hot_surface(self):
         h = compute_natural_convection_h_W_m2K(
-            surface_T_C=40.0, ambient_T_C=20.0, char_length_m=0.5,
+            surface_T_C=40.0,
+            ambient_T_C=20.0,
+            char_length_m=0.5,
         )
         assert h > 0.0
 
     def test_h_zero_at_zero_delta_T(self):
         h = compute_natural_convection_h_W_m2K(
-            surface_T_C=30.0, ambient_T_C=30.0, char_length_m=0.5,
+            surface_T_C=30.0,
+            ambient_T_C=30.0,
+            char_length_m=0.5,
         )
         assert h == pytest.approx(0.0, abs=1e-9)
 
     def test_h_physical_range_vertical_plate(self):
         """h must be in 2-8 W/(m^2.K) for a 0.5 m vertical plate, delta_T=20 K."""
         h = compute_natural_convection_h_W_m2K(
-            surface_T_C=40.0, ambient_T_C=20.0, char_length_m=0.5,
+            surface_T_C=40.0,
+            ambient_T_C=20.0,
+            char_length_m=0.5,
         )
         assert 2.0 < h < 8.0, f"h={h:.3f} W/m^2.K outside expected 2-8 range"
 
     def test_h_increases_with_delta_T(self):
         """Larger temperature difference -> larger h (stronger convection)."""
         h_small = compute_natural_convection_h_W_m2K(
-            surface_T_C=25.0, ambient_T_C=20.0, char_length_m=0.5,
+            surface_T_C=25.0,
+            ambient_T_C=20.0,
+            char_length_m=0.5,
         )
         h_large = compute_natural_convection_h_W_m2K(
-            surface_T_C=60.0, ambient_T_C=20.0, char_length_m=0.5,
+            surface_T_C=60.0,
+            ambient_T_C=20.0,
+            char_length_m=0.5,
         )
         assert h_large > h_small
 
     def test_h_horizontal_plate_reasonable(self):
         """Horizontal plate (heated up) h should also be in ~2-10 range."""
         h = compute_natural_convection_h_W_m2K(
-            surface_T_C=40.0, ambient_T_C=20.0, char_length_m=0.5,
+            surface_T_C=40.0,
+            ambient_T_C=20.0,
+            char_length_m=0.5,
             geometry="horizontal_plate_up",
         )
         assert 2.0 < h < 12.0, f"h={h:.3f} W/m^2.K outside expected range"
@@ -439,10 +498,14 @@ class TestNaturalConvectionH:
         decreases with L.  Either case: h for L=0.1 m >= h for L=1.0 m.
         """
         h_short = compute_natural_convection_h_W_m2K(
-            surface_T_C=40.0, ambient_T_C=20.0, char_length_m=0.1,
+            surface_T_C=40.0,
+            ambient_T_C=20.0,
+            char_length_m=0.1,
         )
         h_tall = compute_natural_convection_h_W_m2K(
-            surface_T_C=40.0, ambient_T_C=20.0, char_length_m=1.0,
+            surface_T_C=40.0,
+            ambient_T_C=20.0,
+            char_length_m=1.0,
         )
         assert h_short >= h_tall
 
@@ -453,7 +516,9 @@ class TestNaturalConvectionH:
         convection in still air, and the correlation gives more accurate results.
         """
         h = compute_natural_convection_h_W_m2K(
-            surface_T_C=30.0, ambient_T_C=20.0, char_length_m=1.0,
+            surface_T_C=30.0,
+            ambient_T_C=20.0,
+            char_length_m=1.0,
         )
         # Churchill-Chu for these params: Ra~3.5e9, h~2-4 W/m^2.K
         assert h < 10.0, f"h={h:.3f} should be < hardcoded 10 W/m^2.K"
@@ -463,6 +528,7 @@ class TestNaturalConvectionH:
 # ---------------------------------------------------------------------------
 # Phase 6.4: Crank-Nicolson Order-of-Convergence (Richardson Extrapolation)
 # ---------------------------------------------------------------------------
+
 
 class TestCrankNicolsonConvergence:
     """Verify Crank-Nicolson is second-order in time (order p ~ 2).
@@ -500,7 +566,14 @@ class TestCrankNicolsonConvergence:
         t = 0.0
         while t < self.T_END - dt * 0.5:
             T = TransientThermalSolver.crank_nicolson_step(
-                T, self.Q_IN, self.H, self.A, self.M, self.CP, self.T_AMB, dt,
+                T,
+                self.Q_IN,
+                self.H,
+                self.A,
+                self.M,
+                self.CP,
+                self.T_AMB,
+                dt,
             )
             t += dt
         return T
@@ -520,7 +593,7 @@ class TestCrankNicolsonConvergence:
             # Errors too small to measure order; method already converged
             return
 
-        order_12 = math.log2(e1 / e2) if e1 > e2 else 0.0
+        _order_12 = math.log2(e1 / e2) if e1 > e2 else 0.0
         order_23 = math.log2(e2 / e3) if e2 > e3 else 0.0
         # Take the finer estimate (order_23) as more accurate
         observed_order = order_23
@@ -541,12 +614,17 @@ class TestCrankNicolsonConvergence:
         t = 0.0
         while t < self.T_END - dt * 0.5:
             T_eu = TransientThermalSolver.forward_euler_step(
-                T_eu, self.Q_IN, self.H, self.A, self.M, self.CP, self.T_AMB, dt,
+                T_eu,
+                self.Q_IN,
+                self.H,
+                self.A,
+                self.M,
+                self.CP,
+                self.T_AMB,
+                dt,
             )
             t += dt
 
         err_cn = abs(T_cn - T_exact)
         err_eu = abs(T_eu - T_exact)
-        assert err_cn <= err_eu, (
-            f"CN error {err_cn:.4e} > Euler error {err_eu:.4e} at dt={dt}"
-        )
+        assert err_cn <= err_eu, f"CN error {err_cn:.4e} > Euler error {err_eu:.4e} at dt={dt}"

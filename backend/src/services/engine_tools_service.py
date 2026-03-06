@@ -10,6 +10,7 @@ class EngineTools:
     """
     Facade for interacting with Analytical Engine tools.
     """
+
     def __init__(self):
         self.engine = Engine()
         self.adapter = AEMachineAdapter(self.engine)
@@ -70,10 +71,7 @@ class EngineTools:
             instr = self.engine.instruction_cards[self.engine.PC]
             self.profiler.record_step(instr)
 
-        return {
-            "triggered_breakpoints": triggered,
-            "state": self.debugger.get_state()
-        }
+        return {"triggered_breakpoints": triggered, "state": self.debugger.get_state()}
 
     def get_performance_report(self):
         return self.profiler.get_report()

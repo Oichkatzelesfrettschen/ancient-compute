@@ -417,7 +417,7 @@ class TestStereotyperMoldManagement:
         stereo = Stereotyper()
         stereo.engrave_number(12345678)
 
-        mold = stereo.extract_mold()
+        _mold = stereo.extract_mold()
 
         assert stereo.get_completed_mold_count() == 1
         assert stereo.y_position == 0

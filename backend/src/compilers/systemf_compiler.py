@@ -138,13 +138,13 @@ class SystemFCompiler:
             cond_block = self.ir_builder.current_block
 
             # Build then block
-            then_block = self.ir_builder.new_block(then_label)
+            _then_block = self.ir_builder.new_block(then_label)
             then_val = self._compile_expr(expr.then_expr)
             self.ir_builder.emit_assignment(result_var, then_val)
             self.ir_builder.emit_jump(merge_label)
 
             # Build else block
-            else_block = self.ir_builder.new_block(else_label)
+            _else_block = self.ir_builder.new_block(else_label)
             else_val = self._compile_expr(expr.else_expr)
             self.ir_builder.emit_assignment(result_var, else_val)
             self.ir_builder.emit_jump(merge_label)

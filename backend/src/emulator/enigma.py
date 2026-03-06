@@ -20,52 +20,56 @@ Historical Context:
   - Represents the transition from mechanical calculation to electro-mechanical logic.
 """
 
-
 # Rotor wiring configurations (Input A-Z maps to output string)
 # Source: http://users.telenet.be/d.rijmenants/en/enigmatech.htm
 ROTOR_WIRING = {
-    "I":    "EKMFLGDQVZNTOWYHXUSPAIBRCJ",
-    "II":   "AJDKSIRUXBLHWTMCQGZNPYFVOE",
-    "III":  "BDFHJLCPRTXVZNYEIWGAKMUSQO",
-    "IV":   "ESOVPZJAYQUIRHXLNFTGKDCMWB",
-    "V":    "VZBRGITYUPSDNHLXAWMJQOFECK",
-    "VI":   "JPGVOUMFYQBENHZRDKASXLICTW",
-    "VII":  "NZJHGRCXMYSWBOUFAIVLPEKQDT",
+    "I": "EKMFLGDQVZNTOWYHXUSPAIBRCJ",
+    "II": "AJDKSIRUXBLHWTMCQGZNPYFVOE",
+    "III": "BDFHJLCPRTXVZNYEIWGAKMUSQO",
+    "IV": "ESOVPZJAYQUIRHXLNFTGKDCMWB",
+    "V": "VZBRGITYUPSDNHLXAWMJQOFECK",
+    "VI": "JPGVOUMFYQBENHZRDKASXLICTW",
+    "VII": "NZJHGRCXMYSWBOUFAIVLPEKQDT",
     "VIII": "FKQHTLXOCBJSPDZRAMEWNIUYGV",
-    "Beta": "LEYJVCNIXWPBQMDRTAKZGFUHOS", # M4 thin rotor
-    "Gamma":"FSOKANUERHMBTIYCWLQPZXVGJD"  # M4 thin rotor
+    "Beta": "LEYJVCNIXWPBQMDRTAKZGFUHOS",  # M4 thin rotor
+    "Gamma": "FSOKANUERHMBTIYCWLQPZXVGJD",  # M4 thin rotor
 }
 
 # Turnover notch positions (letter visible in window when turnover happens)
 # E.g., 'Q' for Rotor I means when Q -> R, the next rotor steps.
 ROTOR_NOTCHES = {
-    "I":    "Q",
-    "II":   "E",
-    "III":  "V",
-    "IV":   "J",
-    "V":    "Z",
-    "VI":   "ZM", # Two notches
-    "VII":  "ZM",
+    "I": "Q",
+    "II": "E",
+    "III": "V",
+    "IV": "J",
+    "V": "Z",
+    "VI": "ZM",  # Two notches
+    "VII": "ZM",
     "VIII": "ZM",
 }
 
 # Reflector wiring
 REFLECTOR_WIRING = {
-    "A":      "EJMZALYXVBWFCRQUONTSPIKHGD",
-    "B":      "YRUHQSLDPXNGOKMIEBFZCWVJAT",
-    "C":      "FVPJIAOYEDRZXWGCTKUQSBNMHL",
-    "B-Thin": "ENKQAUYWJICOPBLMDXZVFTHRGS", # M4 thin reflector
-    "C-Thin": "RDOBJNTKVEHMLFCWZAXGYIPSUQ"  # M4 thin reflector
+    "A": "EJMZALYXVBWFCRQUONTSPIKHGD",
+    "B": "YRUHQSLDPXNGOKMIEBFZCWVJAT",
+    "C": "FVPJIAOYEDRZXWGCTKUQSBNMHL",
+    "B-Thin": "ENKQAUYWJICOPBLMDXZVFTHRGS",  # M4 thin reflector
+    "C-Thin": "RDOBJNTKVEHMLFCWZAXGYIPSUQ",  # M4 thin reflector
 }
+
 
 def to_int(char: str) -> int:
     return ord(char.upper()) - 65
 
+
 def to_char(val: int) -> str:
     return chr((val % 26) + 65)
 
+
 class Rotor:
-    def __init__(self, name: str, wiring: str, notches: str, ring_setting: int = 0, position: int = 0):
+    def __init__(
+        self, name: str, wiring: str, notches: str, ring_setting: int = 0, position: int = 0
+    ):
         self.name = name
         # Forward wiring: Input(0..25) -> Output(0..25)
         self.forward_map = [to_int(c) for c in wiring]
@@ -75,8 +79,8 @@ class Rotor:
             self.reverse_map[out] = i
 
         self.notches = [to_int(c) for c in notches] if notches else []
-        self.ring_setting = ring_setting # Ringstellung (0-25)
-        self.position = position # Grundstellung (0-25, current rotation)
+        self.ring_setting = ring_setting  # Ringstellung (0-25)
+        self.position = position  # Grundstellung (0-25, current rotation)
 
     def step(self) -> None:
         self.position = (self.position + 1) % 26
@@ -101,6 +105,7 @@ class Rotor:
         exit_val = (exit_index - offset) % 26
         return exit_val
 
+
 class Reflector:
     def __init__(self, name: str, wiring: str):
         self.name = name
@@ -108,6 +113,7 @@ class Reflector:
 
     def reflect(self, k: int) -> int:
         return self.map[k]
+
 
 class Plugboard:
     def __init__(self, connections: list[str]):
@@ -125,13 +131,20 @@ class Plugboard:
     def swap(self, k: int) -> int:
         return self.map[k]
 
+
 class EnigmaMachine:
     """
     Enigma Machine Simulator.
     Default configuration: Enigma I (Wehrmacht) with Rotors I, II, III and Reflector B.
     """
-    def __init__(self, rotors: list[str] = ["I", "II", "III"], reflector: str = "B",
-                 ring_settings: list[int] = [0, 0, 0], plugboard_connections: list[str] = []):
+
+    def __init__(
+        self,
+        rotors: list[str] = ["I", "II", "III"],
+        reflector: str = "B",
+        ring_settings: list[int] = [0, 0, 0],
+        plugboard_connections: list[str] = [],
+    ):
 
         self.rotors = []
         # Rotors are typically listed Left-to-Right in config strings, but physically
@@ -175,13 +188,16 @@ class EnigmaMachine:
         rotate_m = r_rotor.is_at_notch() or m_rotor.is_at_notch()
         rotate_r = True
 
-        if rotate_l: l_rotor.step()
-        if rotate_m: m_rotor.step()
-        if rotate_r: r_rotor.step()
+        if rotate_l:
+            l_rotor.step()
+        if rotate_m:
+            m_rotor.step()
+        if rotate_r:
+            r_rotor.step()
 
     def encipher_char(self, char: str) -> str:
         if not char.isalpha():
-            return char # Ignore non-letters
+            return char  # Ignore non-letters
 
         k = to_int(char)
 

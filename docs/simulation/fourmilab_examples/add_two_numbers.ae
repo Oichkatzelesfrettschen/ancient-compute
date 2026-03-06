@@ -1,0 +1,17 @@
+# Add Two Numbers -- Fourmilab AE card deck
+#
+# Computes: 3 + 5 = 8
+# N000 loads 3 into column 0, N001 loads 5 into column 1.
+# L000 loads column 0 into the result register.
+# L001 loads column 1 into the prior register.
+# + adds prior and result.
+# P prints the result (should output 8).
+# H halts.
+
+N000 +3
+N001 +5
+L000
+L001
++
+P
+H

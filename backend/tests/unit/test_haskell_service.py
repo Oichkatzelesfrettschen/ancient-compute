@@ -9,7 +9,6 @@ Tests cover:
 - QuickCheck property testing
 """
 
-
 import pytest
 
 from backend.src.services.languages.haskell_service import ExecutionStatus, HaskellService
@@ -37,11 +36,11 @@ async def test_haskell_hello_world(haskell_service):
 @pytest.mark.asyncio
 async def test_haskell_factorial(haskell_service):
     """Test factorial function"""
-    code = '''
+    code = """
 factorial 0 = 1
 factorial n = n * factorial (n - 1)
 main = print (factorial 5)
-'''
+"""
     result = await haskell_service.execute(code)
 
     assert result is not None
@@ -63,12 +62,12 @@ async def test_haskell_type_error(haskell_service):
 @pytest.mark.asyncio
 async def test_haskell_pattern_matching(haskell_service):
     """Test pattern matching in Haskell"""
-    code = '''
+    code = """
 fibonacci 0 = 0
 fibonacci 1 = 1
 fibonacci n = fibonacci (n-1) + fibonacci (n-2)
 main = print (fibonacci 10)
-'''
+"""
     result = await haskell_service.execute(code)
 
     assert result is not None
@@ -79,7 +78,7 @@ main = print (fibonacci 10)
 @pytest.mark.asyncio
 async def test_haskell_list_processing(haskell_service):
     """Test list processing and map"""
-    code = 'main = print (map (*2) [1..10])'
+    code = "main = print (map (*2) [1..10])"
     result = await haskell_service.execute(code)
 
     assert result is not None
@@ -90,10 +89,10 @@ async def test_haskell_list_processing(haskell_service):
 @pytest.mark.asyncio
 async def test_haskell_unsafe_io_blocked(haskell_service):
     """Test that unsafe IO is blocked"""
-    code = '''
+    code = """
 import System.IO.Unsafe
 main = putStrLn "This should fail"
-'''
+"""
     result = await haskell_service.execute(code)
 
     assert result is not None
@@ -104,11 +103,11 @@ main = putStrLn "This should fail"
 @pytest.mark.asyncio
 async def test_haskell_unsafeperformio_blocked(haskell_service):
     """Test that unsafePerformIO is blocked"""
-    code = '''
+    code = """
 import System.IO.Unsafe
 f = unsafePerformIO getLine
 main = print f
-'''
+"""
     result = await haskell_service.execute(code)
 
     assert result is not None
@@ -120,10 +119,10 @@ main = print f
 async def test_haskell_timeout(haskell_service):
     """Test timeout handling"""
     # Infinite loop - this test verifies the service handles potential timeouts
-    code = '''
+    code = """
 infinite = 1 + infinite
 main = print infinite
-'''
+"""
     # Note: HaskellService doesn't accept timeout as constructor argument
     # Using the default service instance
     result = await haskell_service.execute(code)
@@ -135,7 +134,7 @@ main = print infinite
 @pytest.mark.asyncio
 async def test_haskell_guards(haskell_service):
     """Test Haskell guards"""
-    code = '''
+    code = """
 sign x
     | x > 0 = "positive"
     | x < 0 = "negative"
@@ -144,7 +143,7 @@ main = do
     putStrLn (sign 5)
     putStrLn (sign (-3))
     putStrLn (sign 0)
-'''
+"""
     result = await haskell_service.execute(code)
 
     assert result is not None
@@ -157,7 +156,7 @@ main = do
 @pytest.mark.asyncio
 async def test_haskell_where_clause(haskell_service):
     """Test where clauses"""
-    code = '''
+    code = """
 quadratic a b c x = a * x^2 + b * x + c
   where
     a = 1
@@ -165,7 +164,7 @@ quadratic a b c x = a * x^2 + b * x + c
     c = 1
 
 main = print (quadratic 1 2 1 5)
-'''
+"""
     result = await haskell_service.execute(code)
 
     assert result is not None

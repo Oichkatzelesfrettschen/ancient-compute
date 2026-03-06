@@ -115,6 +115,7 @@ class SimulationBridge:
         else:
             # Non-mechanical: use abstract cycle count at nominal rate
             from backend.src.emulator.analytical_engine import TIMING_TABLE
+
             cycles = TIMING_TABLE.get(opcode, 0)
             rpm = self.config.rpm
             time_s = cycles / (rpm / 60.0) if rpm > 0 else 0.0

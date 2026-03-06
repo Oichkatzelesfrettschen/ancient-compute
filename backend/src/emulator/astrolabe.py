@@ -76,6 +76,8 @@ class AstrolabeEmulator:
         hour_angle = math.radians((minutes / 4.0) - 180.0)
 
         lat = math.radians(latitude_deg)
-        sin_alt = math.sin(lat) * math.sin(decl) + math.cos(lat) * math.cos(decl) * math.cos(hour_angle)
+        sin_alt = math.sin(lat) * math.sin(decl) + math.cos(lat) * math.cos(decl) * math.cos(
+            hour_angle
+        )
         sin_alt = max(-1.0, min(1.0, sin_alt))
         return math.degrees(math.asin(sin_alt))

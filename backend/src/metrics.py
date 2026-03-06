@@ -17,84 +17,54 @@ from prometheus_client import CONTENT_TYPE_LATEST, Counter, Gauge, Histogram, In
 from starlette.middleware.base import BaseHTTPMiddleware
 
 # Application info
-app_info = Info('ancient_compute_app', 'Ancient Compute application information')
-app_info.info({
-    'version': '0.1.0',
-    'environment': 'development',
-    'name': 'Ancient Compute'
-})
+app_info = Info("ancient_compute_app", "Ancient Compute application information")
+app_info.info({"version": "0.1.0", "environment": "development", "name": "Ancient Compute"})
 
 # Request metrics
 http_requests_total = Counter(
-    'http_requests_total',
-    'Total HTTP requests',
-    ['method', 'endpoint', 'status']
+    "http_requests_total", "Total HTTP requests", ["method", "endpoint", "status"]
 )
 
 http_request_duration_seconds = Histogram(
-    'http_request_duration_seconds',
-    'HTTP request duration in seconds',
-    ['method', 'endpoint'],
-    buckets=[0.01, 0.05, 0.1, 0.5, 1.0, 2.5, 5.0, 10.0]
+    "http_request_duration_seconds",
+    "HTTP request duration in seconds",
+    ["method", "endpoint"],
+    buckets=[0.01, 0.05, 0.1, 0.5, 1.0, 2.5, 5.0, 10.0],
 )
 
 # Code execution metrics
 code_execution_total = Counter(
-    'code_execution_total',
-    'Total code executions',
-    ['language', 'status']
+    "code_execution_total", "Total code executions", ["language", "status"]
 )
 
 code_execution_duration_seconds = Histogram(
-    'code_execution_duration_seconds',
-    'Code execution duration in seconds',
-    ['language'],
-    buckets=[0.1, 0.5, 1.0, 5.0, 10.0, 30.0, 60.0]
+    "code_execution_duration_seconds",
+    "Code execution duration in seconds",
+    ["language"],
+    buckets=[0.1, 0.5, 1.0, 5.0, 10.0, 30.0, 60.0],
 )
 
 code_compilation_duration_seconds = Histogram(
-    'code_compilation_duration_seconds',
-    'Code compilation duration in seconds',
-    ['language'],
-    buckets=[0.01, 0.05, 0.1, 0.25, 0.5, 1.0, 2.0]
+    "code_compilation_duration_seconds",
+    "Code compilation duration in seconds",
+    ["language"],
+    buckets=[0.01, 0.05, 0.1, 0.25, 0.5, 1.0, 2.0],
 )
 
 # Active connections
-active_requests = Gauge(
-    'active_requests',
-    'Number of active HTTP requests'
-)
+active_requests = Gauge("active_requests", "Number of active HTTP requests")
 
-active_executions = Gauge(
-    'active_executions',
-    'Number of active code executions',
-    ['language']
-)
+active_executions = Gauge("active_executions", "Number of active code executions", ["language"])
 
 # System metrics
-database_connections = Gauge(
-    'database_connections_active',
-    'Number of active database connections'
-)
+database_connections = Gauge("database_connections_active", "Number of active database connections")
 
-cache_hits = Counter(
-    'cache_hits_total',
-    'Total cache hits',
-    ['cache_type']
-)
+cache_hits = Counter("cache_hits_total", "Total cache hits", ["cache_type"])
 
-cache_misses = Counter(
-    'cache_misses_total',
-    'Total cache misses',
-    ['cache_type']
-)
+cache_misses = Counter("cache_misses_total", "Total cache misses", ["cache_type"])
 
 # Error metrics
-errors_total = Counter(
-    'errors_total',
-    'Total errors',
-    ['error_type', 'endpoint']
-)
+errors_total = Counter("errors_total", "Total errors", ["error_type", "endpoint"])
 
 
 class MetricsMiddleware(BaseHTTPMiddleware):
@@ -122,26 +92,16 @@ class MetricsMiddleware(BaseHTTPMiddleware):
             status = response.status_code
 
             # Record metrics
-            http_requests_total.labels(
-                method=method,
-                endpoint=endpoint,
-                status=status
-            ).inc()
+            http_requests_total.labels(method=method, endpoint=endpoint, status=status).inc()
 
             duration = time.time() - start_time
-            http_request_duration_seconds.labels(
-                method=method,
-                endpoint=endpoint
-            ).observe(duration)
+            http_request_duration_seconds.labels(method=method, endpoint=endpoint).observe(duration)
 
             return response
 
         except Exception as e:
             # Record error
-            errors_total.labels(
-                error_type=type(e).__name__,
-                endpoint=endpoint
-            ).inc()
+            errors_total.labels(error_type=type(e).__name__, endpoint=endpoint).inc()
             raise
 
         finally:
@@ -156,13 +116,11 @@ def metrics_response() -> Response:
     Returns:
         Response with Prometheus-formatted metrics
     """
-    return Response(
-        content=generate_latest(),
-        media_type=CONTENT_TYPE_LATEST
-    )
+    return Response(content=generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
 
 # Utility functions for recording metrics
+
 
 def record_code_execution(language: str, duration: float, status: str):
     """
@@ -218,7 +176,7 @@ class ExecutionContext:
     def __init__(self, language: str):
         self.language = language
         self.start_time = None
-        self.status = 'error'  # Default to error, mark success explicitly
+        self.status = "error"  # Default to error, mark success explicitly
 
     async def __aenter__(self):
         self.start_time = time.time()
@@ -230,18 +188,18 @@ class ExecutionContext:
         active_executions.labels(language=self.language).dec()
 
         if exc_type is not None:
-            self.status = 'error'
+            self.status = "error"
 
         record_code_execution(self.language, duration, self.status)
 
     def mark_success(self):
         """Mark execution as successful"""
-        self.status = 'success'
+        self.status = "success"
 
     def mark_error(self):
         """Mark execution as error"""
-        self.status = 'error'
+        self.status = "error"
 
     def mark_timeout(self):
         """Mark execution as timeout"""
-        self.status = 'timeout'
+        self.status = "timeout"

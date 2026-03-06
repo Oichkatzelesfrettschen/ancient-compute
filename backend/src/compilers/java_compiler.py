@@ -84,13 +84,13 @@ class JavaCompiler:
         params = [p.name for p in method_decl.parameters]
         self.ir_builder = IRBuilder(method_decl.name, params)
         self.ir_builder.function.local_variables = {p: IRType.DEC50 for p in params}
-        self.ir_builder.new_block('entry')
+        self.ir_builder.new_block("entry")
 
         # Map params in symbol table
         self.symbol_table = {p: VariableValue(p) for p in params}
 
         # Compile method body
-        if method_decl.body and hasattr(method_decl.body, 'statements'):
+        if method_decl.body and hasattr(method_decl.body, "statements"):
             for stmt in method_decl.body.statements:
                 self._compile_stmt(stmt)
 
@@ -136,8 +136,8 @@ class JavaCompiler:
             right = self._compile_expr(expr.right)
             target = self._new_tmp()
 
-            op_map = {'+': 'add', '-': 'sub', '*': 'mul', '/': 'div'}
-            ir_op = op_map.get(expr.operator, 'add')
+            op_map = {"+": "add", "-": "sub", "*": "mul", "/": "div"}
+            ir_op = op_map.get(expr.operator, "add")
 
             self.ir_builder.emit_binary_op(ir_op, target, left, right)
             return VariableValue(target)

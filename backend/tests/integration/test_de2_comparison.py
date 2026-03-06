@@ -78,6 +78,7 @@ OBSERVED_PARTS_COUNT = 8000
 # Comparison tests
 # ---------------------------------------------------------------------------
 
+
 class TestDE2CalculationRate:
     """Compare simulation timing with observed calculation rates."""
 
@@ -192,9 +193,9 @@ class TestDE2ThermalFeasibility:
         expansion_mm = alpha * pitch_d_mm * delta_T
 
         # Expansion must be less than available backlash
-        assert expansion_mm < backlash_mm, (
-            f"Expansion {expansion_mm:.4f} mm exceeds backlash {backlash_mm} mm"
-        )
+        assert (
+            expansion_mm < backlash_mm
+        ), f"Expansion {expansion_mm:.4f} mm exceeds backlash {backlash_mm} mm"
 
     def test_bearing_clearance_survives_thermal(self, schema, materials):
         """Bearing clearance should remain positive at max operating temperature."""
@@ -244,9 +245,7 @@ class TestDE2StructuralFeasibility:
         delta_mm = delta_m * 1000.0
 
         limit_mm = span_mm / 10000.0  # L/10000 criterion
-        assert delta_mm < limit_mm, (
-            f"Deflection {delta_mm:.6f} mm exceeds limit {limit_mm:.4f} mm"
-        )
+        assert delta_mm < limit_mm, f"Deflection {delta_mm:.6f} mm exceeds limit {limit_mm:.4f} mm"
 
     def test_gear_stress_below_yield(self, schema, materials):
         """Gear tooth bending stress should be well below material yield.
@@ -301,6 +300,7 @@ class TestDE2OperationalNotes:
 # Phase IX: Extended timing, phase angle, and carry comparisons
 # ---------------------------------------------------------------------------
 
+
 class TestDE2TimingComparison:
     """Compare simulation timing model with DE2 mechanical constraints."""
 
@@ -310,10 +310,11 @@ class TestDE2TimingComparison:
         DE2 uses 31 digits with 2-position look-ahead anticipating carriage.
         """
         from backend.src.emulator.timing import CarryPropagationModel
+
         degrees = CarryPropagationModel.worst_case_degrees(31)
-        assert CarryPropagationModel.fits_within_phase(degrees), (
-            f"31-digit carry needs {degrees:.1f} degrees, exceeds 45 degree phase"
-        )
+        assert CarryPropagationModel.fits_within_phase(
+            degrees
+        ), f"31-digit carry needs {degrees:.1f} degrees, exceeds 45 degree phase"
 
     def test_add_completes_in_one_rotation(self):
         """ADD operation should fit within one shaft rotation (360 degrees).
@@ -321,6 +322,7 @@ class TestDE2TimingComparison:
         DE2 performs one addition per crank turn.
         """
         from backend.src.emulator.timing import BarrelTimingBridge
+
         assert BarrelTimingBridge.rotations_required("ADD") <= 1.0
 
     def test_phase_angles_at_45_intervals(self):
@@ -329,6 +331,7 @@ class TestDE2TimingComparison:
         DE2 main shaft has 8 mechanical phases at 45 degree intervals.
         """
         from backend.src.emulator.timing import TimingController
+
         tc = TimingController()
         phases_seen = set()
         for angle in range(0, 360, 45):
@@ -339,6 +342,7 @@ class TestDE2TimingComparison:
     def test_full_rotation_generates_phase_events(self):
         """A full rotation should produce events for all phase transitions."""
         from backend.src.emulator.timing import TimingController
+
         tc = TimingController()
         n_events = tc.run_full_cycle()
         # 8 phase transitions + 1 rotation_complete = 9 events
@@ -373,9 +377,9 @@ class TestDE2SimulationFeasibility:
         eng = SimulationEngine(cfg, lib)
         # Run 1 hour warmup
         eng.run(3600.0, 600.0)
-        assert eng.state.temperature_C < cfg.temperature_limit_C, (
-            f"Steady-state T={eng.state.temperature_C:.1f}C exceeds limit {cfg.temperature_limit_C}C"
-        )
+        assert (
+            eng.state.temperature_C < cfg.temperature_limit_C
+        ), f"Steady-state T={eng.state.temperature_C:.1f}C exceeds limit {cfg.temperature_limit_C}C"
         assert not eng.failed
 
     def test_bearing_clearances_positive_after_warmup(self):
@@ -403,10 +407,8 @@ class TestDE2SimulationFeasibility:
         eng.run(3600.0, 600.0)
         max_wear = max(eng.state.bearing_wear_volumes_mm3)
         # Wear depth estimate: V/(pi*d*L)
-        wear_depth = max_wear / (
-            math.pi * cfg.shaft_diameter_mm * cfg.bearing_length_mm
-        )
+        wear_depth = max_wear / (math.pi * cfg.shaft_diameter_mm * cfg.bearing_length_mm)
         # Wear depth should be << initial clearance after 1 hour
-        assert wear_depth < cfg.initial_clearance_mm * 0.1, (
-            f"Wear depth {wear_depth:.6f}mm > 10% of clearance {cfg.initial_clearance_mm}mm"
-        )
+        assert (
+            wear_depth < cfg.initial_clearance_mm * 0.1
+        ), f"Wear depth {wear_depth:.6f}mm > 10% of clearance {cfg.initial_clearance_mm}mm"

@@ -24,6 +24,7 @@ def lib():
 
 # -- Schema Loading --
 
+
 class TestSchemaLoading:
     def test_loads_without_error(self, lib):
         assert lib is not None
@@ -65,6 +66,7 @@ class TestSchemaLoading:
 
 
 # -- Individual Material Access --
+
 
 class TestBrass:
     def test_accessible(self, lib):
@@ -183,6 +185,7 @@ class TestSpringSteel:
 
 # -- Property Range Validation (all materials) --
 
+
 class TestPropertyRanges:
     """Sanity checks that all materials have physically reasonable values."""
 
@@ -206,15 +209,15 @@ class TestPropertyRanges:
 
     def test_all_yield_below_uts(self, lib):
         for mat in lib.all_materials():
-            assert mat.yield_strength_MPa[0] <= mat.ultimate_tensile_strength_MPa[1], (
-                f"{mat.name}: Sy_min > Su_max"
-            )
+            assert (
+                mat.yield_strength_MPa[0] <= mat.ultimate_tensile_strength_MPa[1]
+            ), f"{mat.name}: Sy_min > Su_max"
 
     def test_all_endurance_below_uts(self, lib):
         for mat in lib.all_materials():
-            assert mat.endurance_limit_MPa[1] <= mat.ultimate_tensile_strength_MPa[1], (
-                f"{mat.name}: Se_max > Su_max"
-            )
+            assert (
+                mat.endurance_limit_MPa[1] <= mat.ultimate_tensile_strength_MPa[1]
+            ), f"{mat.name}: Se_max > Su_max"
 
     def test_all_friction_positive(self, lib):
         for mat in lib.all_materials():
@@ -258,6 +261,7 @@ class TestPropertyRanges:
 
 # -- SI Unit Conversions --
 
+
 class TestUnitConversions:
     def test_youngs_modulus_pa(self, lib):
         brass = lib.get("brass")
@@ -278,6 +282,7 @@ class TestUnitConversions:
 
 
 # -- Safety Factors --
+
 
 class TestSafetyFactors:
     def test_yield_sf_normal_case(self, lib):

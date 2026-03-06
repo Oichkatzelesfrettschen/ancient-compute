@@ -20,6 +20,7 @@ from backend.src.emulator.timing import (
 # BarrelController construction
 # ---------------------------------------------------------------------------
 
+
 class TestBarrelControllerInit:
     """Verify that all standard barrels are registered on construction."""
 
@@ -38,6 +39,7 @@ class TestBarrelControllerInit:
 # ---------------------------------------------------------------------------
 # Barrel selection
 # ---------------------------------------------------------------------------
+
 
 class TestBarrelSelection:
 
@@ -63,6 +65,7 @@ class TestBarrelSelection:
 # ---------------------------------------------------------------------------
 # Step sequencing
 # ---------------------------------------------------------------------------
+
 
 class TestStepSequencing:
 
@@ -91,6 +94,7 @@ class TestStepSequencing:
 # ---------------------------------------------------------------------------
 # ADD barrel micro-ops
 # ---------------------------------------------------------------------------
+
 
 class TestADDBarrel:
 
@@ -142,6 +146,7 @@ class TestADDBarrel:
 # SUB barrel micro-ops
 # ---------------------------------------------------------------------------
 
+
 class TestSUBBarrel:
 
     def setup_method(self):
@@ -162,6 +167,7 @@ class TestSUBBarrel:
 # ---------------------------------------------------------------------------
 # MULT barrel micro-ops
 # ---------------------------------------------------------------------------
+
 
 class TestMULTBarrel:
 
@@ -204,6 +210,7 @@ class TestMULTBarrel:
 # ---------------------------------------------------------------------------
 # DIV barrel micro-ops (restoring division algorithm)
 # ---------------------------------------------------------------------------
+
 
 class TestDIVBarrel:
 
@@ -256,6 +263,7 @@ class TestDIVBarrel:
 # SQRT barrel micro-ops
 # ---------------------------------------------------------------------------
 
+
 class TestSQRTBarrel:
 
     def setup_method(self):
@@ -286,6 +294,7 @@ class TestSQRTBarrel:
 # LOAD/STOR barrel micro-ops
 # ---------------------------------------------------------------------------
 
+
 class TestLOADSTORBarrels:
 
     def setup_method(self):
@@ -304,7 +313,8 @@ class TestLOADSTORBarrels:
         # 2: Lift Ingress
         # 3: Advance Mill
         # 4: Drop Ingress + Lift Egress
-        for _ in range(3): self.ctrl.step()
+        for _ in range(3):
+            self.ctrl.step()
         assert MicroOp.ADVANCE_MILL in self.ctrl.step()
         assert MicroOp.LIFT_EGRESS in self.ctrl.step()
 
@@ -324,6 +334,7 @@ class TestLOADSTORBarrels:
 # Barrel-Timing Bridge Consistency
 # ---------------------------------------------------------------------------
 
+
 class TestBarrelTimingBridge:
     def test_timing_consistent_with_barrel_steps(self):
         # This test ensures that the Timing Controller and Barrel Controller
@@ -332,7 +343,7 @@ class TestBarrelTimingBridge:
         ctrl = BarrelController()
         for name in ["ADD", "SUB", "MULT", "DIV", "SQRT", "LOAD", "STOR"]:
             barrel = ctrl.barrels[name]
-            n_steps = len(barrel.rows)
+            _n_steps = len(barrel.rows)
             # We don't assert equality here because Timing is abstract units,
             # but we check if it's non-zero.
             assert BarrelTimingBridge.total_degrees(name) > 0

@@ -56,8 +56,9 @@ from backend.src.ir_types import (
 class Symbol:
     """Symbol table entry for variable or function."""
 
-    def __init__(self, name: str, c_type: CType, is_global: bool = False,
-                 is_function: bool = False) -> None:
+    def __init__(
+        self, name: str, c_type: CType, is_global: bool = False, is_function: bool = False
+    ) -> None:
         """Initialize symbol."""
         self.name = name
         self.c_type = c_type
@@ -73,8 +74,9 @@ class SymbolTable:
         self.parent = parent
         self.symbols: dict[str, Symbol] = {}
 
-    def define(self, name: str, c_type: CType, is_global: bool = False,
-               is_function: bool = False) -> None:
+    def define(
+        self, name: str, c_type: CType, is_global: bool = False, is_function: bool = False
+    ) -> None:
         """Define a symbol in current scope."""
         self.symbols[name] = Symbol(name, c_type, is_global, is_function)
 
@@ -184,7 +186,7 @@ class CCompiler:
             func_scope.define(param.name, param.type, is_global=False)
 
         # Create entry block
-        entry_block = self.builder.new_block("entry")
+        _entry_block = self.builder.new_block("entry")
 
         # Compile function body
         self._compile_statement(func.body)
@@ -358,7 +360,7 @@ class CCompiler:
             if expr.value not in self.string_literals:
                 addr = self.next_string_addr
                 self.string_literals[expr.value] = addr
-                self.next_string_addr += (len(expr.value) + 1)
+                self.next_string_addr += len(expr.value) + 1
 
             addr = self.string_literals[expr.value]
             return Constant(float(addr), IRType.PTR)
@@ -395,19 +397,19 @@ class CCompiler:
 
         # Map C operator to IR operator
         op_map = {
-            '+': 'add',
-            '-': 'sub',
-            '*': 'mul',
-            '/': 'div',
-            '%': 'mod',
-            '==': 'eq',
-            '!=': 'ne',
-            '<': 'lt',
-            '<=': 'le',
-            '>': 'gt',
-            '>=': 'ge',
-            '&&': 'and',
-            '||': 'or',
+            "+": "add",
+            "-": "sub",
+            "*": "mul",
+            "/": "div",
+            "%": "mod",
+            "==": "eq",
+            "!=": "ne",
+            "<": "lt",
+            "<=": "le",
+            ">": "gt",
+            ">=": "ge",
+            "&&": "and",
+            "||": "or",
         }
 
         ir_op = op_map.get(expr.op, expr.op)
@@ -424,8 +426,8 @@ class CCompiler:
 
         # Map C operator to IR operator
         op_map = {
-            '-': 'neg',
-            '!': 'not',
+            "-": "neg",
+            "!": "not",
         }
 
         ir_op = op_map.get(expr.op, expr.op)
@@ -462,7 +464,7 @@ class CCompiler:
             raise Exception(f"Not an array: {expr.name}")
 
         # Compile index
-        index = self._compile_expression(expr.index)
+        _index = self._compile_expression(expr.index)
 
         # Create temporary for result
         temp_name = self._gen_temp()

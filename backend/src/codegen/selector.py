@@ -36,13 +36,15 @@ from backend.src.ir_types import (
 @dataclass
 class AsmOperand:
     """Operand in assembly (register, immediate, address, label)"""
+
     operand_type: str  # "reg", "immed", "addr", "label"
-    value: str         # "A", "B", "C", "D", "42", "100", "loop_start", etc.
+    value: str  # "A", "B", "C", "D", "42", "100", "loop_start", etc.
 
 
 @dataclass
 class AsmInstruction:
     """Assembly instruction"""
+
     mnemonic: str
     operands: list[AsmOperand]
     comment: str = ""
@@ -128,11 +130,13 @@ class InstructionSelector:
         source_op = self._get_operand(instr.source)
 
         # MOV target, source
-        return [AsmInstruction(
-            "MOV",
-            [AsmOperand("reg", target_reg), source_op],
-            comment=f"{instr.target} = {instr.source}"
-        )]
+        return [
+            AsmInstruction(
+                "MOV",
+                [AsmOperand("reg", target_reg), source_op],
+                comment=f"{instr.target} = {instr.source}",
+            )
+        ]
 
     def _select_binary_op(self, instr: BinaryOp) -> list[AsmInstruction]:
         """Select for: target = op operand1, operand2"""
@@ -159,23 +163,29 @@ class InstructionSelector:
             # Unary operations: only one operand
             # Ensure source in A (Babbage convention)
             if op1.operand_type == "reg" and op1.value != "A":
-                result.append(AsmInstruction("MOV", [
-                    AsmOperand("reg", "A"),
-                    op1
-                ], comment="move to A for unary op"))
+                result.append(
+                    AsmInstruction(
+                        "MOV", [AsmOperand("reg", "A"), op1], comment="move to A for unary op"
+                    )
+                )
 
-            result.append(AsmInstruction(
-                mnemonic,
-                [AsmOperand("reg", "A")],
-                comment=f"{instr.target} = {instr.op}({instr.operand1})"
-            ))
+            result.append(
+                AsmInstruction(
+                    mnemonic,
+                    [AsmOperand("reg", "A")],
+                    comment=f"{instr.target} = {instr.op}({instr.operand1})",
+                )
+            )
 
             # Move result back to target if needed
             if target_reg != "A":
-                result.append(AsmInstruction("MOV", [
-                    AsmOperand("reg", target_reg),
-                    AsmOperand("reg", "A")
-                ], comment="move result to target"))
+                result.append(
+                    AsmInstruction(
+                        "MOV",
+                        [AsmOperand("reg", target_reg), AsmOperand("reg", "A")],
+                        comment="move result to target",
+                    )
+                )
 
         else:
             # Binary operations: need two operands
@@ -185,29 +195,32 @@ class InstructionSelector:
             # So we need op1 in A, op2 in B
 
             if op1.operand_type == "reg" and op1.value != "A":
-                result.append(AsmInstruction("MOV", [
-                    AsmOperand("reg", "A"),
-                    op1
-                ], comment="move op1 to A"))
+                result.append(
+                    AsmInstruction("MOV", [AsmOperand("reg", "A"), op1], comment="move op1 to A")
+                )
 
             if op2.operand_type == "reg" and op2.value != "B":
-                result.append(AsmInstruction("MOV", [
-                    AsmOperand("reg", "B"),
-                    op2
-                ], comment="move op2 to B"))
+                result.append(
+                    AsmInstruction("MOV", [AsmOperand("reg", "B"), op2], comment="move op2 to B")
+                )
 
-            result.append(AsmInstruction(
-                mnemonic,
-                [AsmOperand("reg", "A"), AsmOperand("reg", "B")],
-                comment=f"{instr.target} = {instr.operand1} {instr.op} {instr.operand2}"
-            ))
+            result.append(
+                AsmInstruction(
+                    mnemonic,
+                    [AsmOperand("reg", "A"), AsmOperand("reg", "B")],
+                    comment=f"{instr.target} = {instr.operand1} {instr.op} {instr.operand2}",
+                )
+            )
 
             # Move result back to target if needed
             if target_reg != "A":
-                result.append(AsmInstruction("MOV", [
-                    AsmOperand("reg", target_reg),
-                    AsmOperand("reg", "A")
-                ], comment="move result to target"))
+                result.append(
+                    AsmInstruction(
+                        "MOV",
+                        [AsmOperand("reg", target_reg), AsmOperand("reg", "A")],
+                        comment="move result to target",
+                    )
+                )
 
         return result
 
@@ -217,11 +230,13 @@ class InstructionSelector:
         addr_op = self._get_operand(instr.address)
 
         # LOAD target, address
-        return [AsmInstruction(
-            "LOAD",
-            [AsmOperand("reg", target_reg), addr_op],
-            comment=f"load {instr.target} from {instr.address}"
-        )]
+        return [
+            AsmInstruction(
+                "LOAD",
+                [AsmOperand("reg", target_reg), addr_op],
+                comment=f"load {instr.target} from {instr.address}",
+            )
+        ]
 
     def _select_store(self, instr: Store) -> list[AsmInstruction]:
         """Select for: store value, address"""
@@ -229,11 +244,11 @@ class InstructionSelector:
         addr_op = self._get_operand(instr.address)
 
         # STOR value, address
-        return [AsmInstruction(
-            "STOR",
-            [value_op, addr_op],
-            comment=f"store {instr.value} to {instr.address}"
-        )]
+        return [
+            AsmInstruction(
+                "STOR", [value_op, addr_op], comment=f"store {instr.value} to {instr.address}"
+            )
+        ]
 
     def _select_call(self, instr: Call) -> list[AsmInstruction]:
         """Select for: target = call func(args)"""
@@ -241,25 +256,30 @@ class InstructionSelector:
 
         # Push arguments onto stack (reverse order)
         for i, arg in enumerate(instr.arguments):
-            arg_op = self._get_operand(arg)
+            _arg_op = self._get_operand(arg)
             # In real implementation, would PUSH arg
             # For now, just record the operation
 
         # CALL function_label
-        result.append(AsmInstruction(
-            "CALL",
-            [AsmOperand("label", instr.function_name)],
-            comment=f"call {instr.function_name}"
-        ))
+        result.append(
+            AsmInstruction(
+                "CALL",
+                [AsmOperand("label", instr.function_name)],
+                comment=f"call {instr.function_name}",
+            )
+        )
 
         # Return value in A (Babbage convention)
         if instr.target:
             target_reg = self.allocation.get_allocation(instr.target)
             if target_reg != "A":
-                result.append(AsmInstruction("MOV", [
-                    AsmOperand("reg", target_reg),
-                    AsmOperand("reg", "A")
-                ], comment="move return value to target"))
+                result.append(
+                    AsmInstruction(
+                        "MOV",
+                        [AsmOperand("reg", target_reg), AsmOperand("reg", "A")],
+                        comment="move return value to target",
+                    )
+                )
 
         return result
 
@@ -320,16 +340,13 @@ class InstructionSelector:
             value_op = self._get_operand(instr.value)
             # Return value must be in A
             if value_op.operand_type == "reg" and value_op.value != "A":
-                result.append(AsmInstruction("MOV", [
-                    AsmOperand("reg", "A"),
-                    value_op
-                ], comment="move return value to A"))
+                result.append(
+                    AsmInstruction(
+                        "MOV", [AsmOperand("reg", "A"), value_op], comment="move return value to A"
+                    )
+                )
 
-        result.append(AsmInstruction(
-            "RET",
-            [],
-            comment="return"
-        ))
+        result.append(AsmInstruction("RET", [], comment="return"))
 
         return result
 
@@ -338,11 +355,11 @@ class InstructionSelector:
         result: list[AsmInstruction] = []
 
         if isinstance(term, JumpTerminator):
-            result.append(AsmInstruction(
-                "JMP",
-                [AsmOperand("label", term.label)],
-                comment=f"jump to {term.label}"
-            ))
+            result.append(
+                AsmInstruction(
+                    "JMP", [AsmOperand("label", term.label)], comment=f"jump to {term.label}"
+                )
+            )
 
         elif isinstance(term, BranchTerminator):
             # Compare operands first
@@ -351,45 +368,45 @@ class InstructionSelector:
             # CMP op1, op2 (if binary condition)
             if term.operand2:
                 op2 = self._get_operand(term.operand2)
-                result.append(AsmInstruction(
-                    "CMP",
-                    [op1, op2],
-                    comment=f"compare {term.operand1} vs {term.operand2}"
-                ))
+                result.append(
+                    AsmInstruction(
+                        "CMP", [op1, op2], comment=f"compare {term.operand1} vs {term.operand2}"
+                    )
+                )
 
             # Conditional jump based on condition
             condition_map = {
-                "eq": "JZ",        # Result of CMP (A - B) == 0
+                "eq": "JZ",  # Result of CMP (A - B) == 0
                 "ne": "JNZ",
-                "lt": "JLT",       # Result < 0
-                "gt": "JGT",       # Result > 0
-                "le": "JLE",       # Result <= 0
-                "ge": "JGE",       # Result >= 0
+                "lt": "JLT",  # Result < 0
+                "gt": "JGT",  # Result > 0
+                "le": "JLE",  # Result <= 0
+                "ge": "JGE",  # Result >= 0
                 "zero": "JZ",
                 "nonzero": "JNZ",
             }
 
             jump_mnemonic = condition_map.get(term.condition, "JMP")
 
-            result.append(AsmInstruction(
-                jump_mnemonic,
-                [AsmOperand("label", term.true_label)],
-                comment=f"jump to {term.true_label} if {term.condition}"
-            ))
+            result.append(
+                AsmInstruction(
+                    jump_mnemonic,
+                    [AsmOperand("label", term.true_label)],
+                    comment=f"jump to {term.true_label} if {term.condition}",
+                )
+            )
 
-            result.append(AsmInstruction(
-                "JMP",
-                [AsmOperand("label", term.false_label)],
-                comment=f"jump to {term.false_label}"
-            ))
+            result.append(
+                AsmInstruction(
+                    "JMP",
+                    [AsmOperand("label", term.false_label)],
+                    comment=f"jump to {term.false_label}",
+                )
+            )
 
         elif isinstance(term, ReturnTerminator):
             # This should have been handled by Return instruction
-            result.append(AsmInstruction(
-                "RET",
-                [],
-                comment="return"
-            ))
+            result.append(AsmInstruction("RET", [], comment="return"))
 
         return result
 
@@ -404,10 +421,11 @@ def example_instruction_selection():
     builder.emit_assignment("a", Constant(10.0))
     builder.emit_binary_op("add", "b", VariableValue("a"), Constant(5.0))
     builder.emit_return(VariableValue("b"))
-    func = builder.finalize()
+    _func = builder.finalize()
 
     # Simulate allocation (a→A, b→B)
     from regalloc import AllocationMap
+
     allocation = AllocationMap(
         allocations={"a": "A", "b": "B"},
         spilled={},

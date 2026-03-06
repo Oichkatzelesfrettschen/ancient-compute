@@ -12,13 +12,16 @@ from src.models import Era, Exercise, ExerciseProgress, ExerciseSubmission, Modu
 
 def _db_available() -> bool:
     try:
-        importlib.import_module('src.database')
-        importlib.import_module('src.models')
+        importlib.import_module("src.database")
+        importlib.import_module("src.models")
         return True
     except Exception:
         return False
 
-pytestmark = pytest.mark.skipif(not _db_available(), reason="database/models unavailable in this environment")
+
+pytestmark = pytest.mark.skipif(
+    not _db_available(), reason="database/models unavailable in this environment"
+)
 
 
 class TestEraModel:

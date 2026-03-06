@@ -69,9 +69,7 @@ class OptimizedExecutor:
         """
         # Check cache first if enabled
         if use_cache:
-            cached_result = self.execution_cache.get(
-                language, code, input_data
-            )
+            cached_result = self.execution_cache.get(language, code, input_data)
             if cached_result is not None:
                 return cached_result
 
@@ -106,17 +104,13 @@ class OptimizedExecutor:
             exercise_language=exercise_language,
         )
 
-    def get_exercise_with_optimization(
-        self, db: Session, exercise_id: int
-    ) -> Any | None:
+    def get_exercise_with_optimization(self, db: Session, exercise_id: int) -> Any | None:
         """
         Get exercise with optimized queries (eager loading).
 
         Uses query cache and eager loading to minimize database round-trips.
         """
-        return self.query_cache.get_exercise_with_relations(
-            db, exercise_id
-        )
+        return self.query_cache.get_exercise_with_relations(db, exercise_id)
 
     def get_supported_languages(self) -> list[str]:
         """Get list of supported programming languages."""

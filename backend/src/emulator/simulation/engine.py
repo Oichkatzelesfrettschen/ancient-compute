@@ -126,12 +126,16 @@ class SimulationEngine:
 
         # 3. Bearing friction heat
         Q_bearing = CouplingFunctions.friction_heat_from_bearings(
-            st.bearing_loads_N, cfg.shaft_diameter_mm, omega, mu,
+            st.bearing_loads_N,
+            cfg.shaft_diameter_mm,
+            omega,
+            mu,
         )
 
         # 4. Gear mesh heat (assume 98% efficiency for lubricated spur gears)
         Q_gear = FrictionHeatModel.gear_mesh_heat_W(
-            cfg.transmitted_power_W, 0.98,
+            cfg.transmitted_power_W,
+            0.98,
         )
 
         # 4.1 Electromagnetic losses (Eddy currents)
@@ -154,7 +158,7 @@ class SimulationEngine:
 
         # 4.5 Energy consumption tracking
         # Work = Torque * Delta_Theta
-        d_theta_rad = (angle_advance_deg * math.pi / 180.0)
+        d_theta_rad = angle_advance_deg * math.pi / 180.0
         # Total torque from bearings and gears (approximate from heat)
         # Power = Torque * omega -> Torque = Power / omega
         torque_Nm = Q_total / cfg.omega_rad_s if cfg.omega_rad_s > 0 else 0.0
@@ -164,15 +168,18 @@ class SimulationEngine:
         # 4.6 Ambient temperature fluctuation (Day/Night cycle)
         # T_amb = T_base + Amplitude * sin(2*pi * t / Period)
         # 24-hour period = 86400s
-        amplitude = 5.0 # +/- 5 degrees
-        st.ambient_temperature_C = cfg.ambient_temperature_C + amplitude * math.sin(2 * math.pi * st.time_s / 86400.0)
+        amplitude = 5.0  # +/- 5 degrees
+        st.ambient_temperature_C = cfg.ambient_temperature_C + amplitude * math.sin(
+            2 * math.pi * st.time_s / 86400.0
+        )
 
         # 5. Temperature step (Crank-Nicolson via coupling)
         st.temperature_C = CouplingFunctions.thermal_step(st, cfg, Q_total)
 
         # 6. Update oil viscosity from temperature
         st.oil_viscosity_Pa_s = CouplingFunctions.viscosity_at_temperature(
-            0.1, st.temperature_C,
+            0.1,
+            st.temperature_C,
         )
 
         # 7. Lubrication film thickness and regime
@@ -192,18 +199,24 @@ class SimulationEngine:
 
         # 10. Update bearing clearances (thermal + wear)
         st.bearing_clearances_mm = CouplingFunctions.update_bearing_clearances(
-            st, cfg, self.lib,
+            st,
+            cfg,
+            self.lib,
         )
 
         # 11. Redistribute bearing loads from clearances
         total_load = self._total_gravity_load_N()
         st.bearing_loads_N = CouplingFunctions.redistribute_bearing_loads(
-            total_load, cfg.bearing_count, st.bearing_clearances_mm,
+            total_load,
+            cfg.bearing_count,
+            st.bearing_clearances_mm,
         )
 
         # 12. Shaft deflection
         st.shaft_deflection_mm = CouplingFunctions.shaft_deflection_mm(
-            st, cfg, self.lib,
+            st,
+            cfg,
+            self.lib,
         )
 
         # 13. Check failure limits
@@ -261,9 +274,7 @@ class SimulationEngine:
             final_state=self.state.copy(),
             history=history,
             limiting_component=self._failure_reason,
-            failure_time_s=(
-                self.state.time_s if self._failed else float("inf")
-            ),
+            failure_time_s=(self.state.time_s if self._failed else float("inf")),
         )
 
     def predict_maintenance(
@@ -316,10 +327,7 @@ class SimulationEngine:
         u = PVAnalysis.surface_velocity_m_s(cfg.shaft_diameter_mm, cfg.rpm)
 
         # Average bearing load
-        avg_load = (
-            sum(st.bearing_loads_N) / len(st.bearing_loads_N)
-            if st.bearing_loads_N else 0.0
-        )
+        avg_load = sum(st.bearing_loads_N) / len(st.bearing_loads_N) if st.bearing_loads_N else 0.0
         if avg_load <= 0 or u <= 0:
             return (3.0, "full_film")
 
@@ -339,7 +347,11 @@ class SimulationEngine:
         R_eff = cfg.shaft_diameter_mm / 2.0
 
         h_min = LubricationModel.minimum_film_thickness_um(
-            st.oil_viscosity_Pa_s, u, R_eff, E_reduced, w_per_length,
+            st.oil_viscosity_Pa_s,
+            u,
+            R_eff,
+            E_reduced,
+            w_per_length,
         )
 
         # Surface roughness: machined shaft ~0.8 um, bearing ~1.6 um

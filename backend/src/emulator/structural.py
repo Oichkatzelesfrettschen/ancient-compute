@@ -22,6 +22,7 @@ import math
 # Shaft Deflection Analysis (Euler-Bernoulli, Shigley Ch.4)
 # ---------------------------------------------------------------------------
 
+
 class ShaftAnalysis:
     """Simply-supported beam deflection for multi-support shafts."""
 
@@ -66,13 +67,19 @@ class ShaftAnalysis:
         """
         if bearing_count < 2:
             return ShaftAnalysis.max_deflection_simply_supported_mm(
-                total_load_N, total_length_mm, youngs_modulus_GPa, diameter_mm,
+                total_load_N,
+                total_length_mm,
+                youngs_modulus_GPa,
+                diameter_mm,
             )
         n_spans = bearing_count - 1
         span = total_length_mm / n_spans
         load_per_span = total_load_N / n_spans
         return ShaftAnalysis.max_deflection_simply_supported_mm(
-            load_per_span, span, youngs_modulus_GPa, diameter_mm,
+            load_per_span,
+            span,
+            youngs_modulus_GPa,
+            diameter_mm,
         )
 
     @staticmethod
@@ -84,6 +91,7 @@ class ShaftAnalysis:
 # ---------------------------------------------------------------------------
 # Gear Tooth Stress (AGMA/Lewis, Shigley Ch.14)
 # ---------------------------------------------------------------------------
+
 
 class GearToothStress:
     """Gear tooth bending stress analysis with safety factor."""
@@ -120,6 +128,7 @@ class GearToothStress:
 # ---------------------------------------------------------------------------
 # Fatigue Analysis (Goodman Diagram, Shigley Ch.6)
 # ---------------------------------------------------------------------------
+
 
 class FatigueAnalysis:
     """Modified Goodman criterion for infinite-life fatigue design.
@@ -160,9 +169,9 @@ class FatigueAnalysis:
         if diameter_mm <= 2.79:
             return 1.0
         elif diameter_mm <= 51.0:
-            return float(1.24 * diameter_mm**(-0.107))
+            return float(1.24 * diameter_mm ** (-0.107))
         elif diameter_mm <= 254.0:
-            return float(1.51 * diameter_mm**(-0.157))
+            return float(1.51 * diameter_mm ** (-0.157))
         else:
             return 0.6
 
@@ -185,11 +194,7 @@ class FatigueAnalysis:
         # Seshia-Noll polynomial (Shigley Eq.6-23) for 250 < T <= 600 C
         T = temperature_C
         return float(
-            0.9877
-            + 1.0403e-3 * T
-            - 1.8723e-5 * T**2
-            + 2.0046e-7 * T**3
-            - 8.9088e-10 * T**4
+            0.9877 + 1.0403e-3 * T - 1.8723e-5 * T**2 + 2.0046e-7 * T**3 - 8.9088e-10 * T**4
         )
 
     @staticmethod
@@ -263,6 +268,7 @@ class FatigueAnalysis:
 # Buckling Analysis (Euler/Johnson, Shigley Ch.4)
 # ---------------------------------------------------------------------------
 
+
 class BucklingAnalysis:
     """Column buckling analysis for vertical supports."""
 
@@ -332,10 +338,10 @@ class BucklingAnalysis:
         Valid for slenderness ratios below the transition point.
         """
         E_MPa = youngs_modulus_GPa * 1000.0
-        return yield_strength_MPa - (
-            yield_strength_MPa**2
-            / (4.0 * math.pi**2 * E_MPa)
-        ) * slenderness_ratio**2
+        return (
+            yield_strength_MPa
+            - (yield_strength_MPa**2 / (4.0 * math.pi**2 * E_MPa)) * slenderness_ratio**2
+        )
 
     @staticmethod
     def transition_slenderness_ratio(
@@ -362,14 +368,18 @@ class BucklingAnalysis:
         Uses Johnson for slenderness < transition, Euler for >= transition.
         """
         transition = BucklingAnalysis.transition_slenderness_ratio(
-            yield_strength_MPa, youngs_modulus_GPa,
+            yield_strength_MPa,
+            youngs_modulus_GPa,
         )
         if slenderness_ratio < transition:
             return BucklingAnalysis.johnson_critical_stress_MPa(
-                yield_strength_MPa, youngs_modulus_GPa, slenderness_ratio,
+                yield_strength_MPa,
+                youngs_modulus_GPa,
+                slenderness_ratio,
             )
         return BucklingAnalysis.euler_critical_stress_MPa(
-            youngs_modulus_GPa, slenderness_ratio,
+            youngs_modulus_GPa,
+            slenderness_ratio,
         )
 
     @staticmethod
@@ -386,6 +396,7 @@ class BucklingAnalysis:
 # ---------------------------------------------------------------------------
 # Stress Concentration Factors (Peterson/Shigley)
 # ---------------------------------------------------------------------------
+
 
 class StressConcentration:
     """Stress concentration factor K_t for geometric discontinuities."""
@@ -426,7 +437,7 @@ class StressConcentration:
         else:
             A_coeff, b_exp = 1.04, -0.26
 
-        K_t = float(A_coeff * ratio_rd ** b_exp)
+        K_t = float(A_coeff * ratio_rd**b_exp)
         return max(1.0, K_t)
 
     @staticmethod
@@ -443,6 +454,7 @@ class StressConcentration:
 # ---------------------------------------------------------------------------
 # Dynamic Load Factor (AGMA, Shigley Ch.14)
 # ---------------------------------------------------------------------------
+
 
 class DynamicLoadFactor:
     """AGMA dynamic factor K_v for gear tooth bending stress."""
@@ -491,6 +503,7 @@ class DynamicLoadFactor:
 # Shaft Critical Speed (Rayleigh-Ritz)
 # ---------------------------------------------------------------------------
 
+
 class ShaftCriticalSpeed:
     """First critical speed of a rotating shaft (Shigley Ch.7)."""
 
@@ -538,6 +551,7 @@ class ShaftCriticalSpeed:
 # Notch Sensitivity (Neuber, Shigley Ch.6)
 # ---------------------------------------------------------------------------
 
+
 class NotchSensitivity:
     """Neuber notch sensitivity for fatigue concentration factors."""
 
@@ -550,12 +564,7 @@ class NotchSensitivity:
         For cast iron/bronze, use larger a (less notch-sensitive).
         """
         Su = max(345.0, min(1725.0, ultimate_strength_MPa))
-        a = (
-            0.246
-            - 3.08e-3 * Su
-            + 1.51e-5 * Su**2
-            - 2.67e-8 * Su**3
-        )
+        a = 0.246 - 3.08e-3 * Su + 1.51e-5 * Su**2 - 2.67e-8 * Su**3
         return max(0.001, a)
 
     @staticmethod

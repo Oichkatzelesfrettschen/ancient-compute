@@ -1,7 +1,10 @@
 # Comprehensive Linting Strategy - Warnings as Errors
 
-## Version: 1.0
-## Date: November 2, 2025
+> **Note**: Python linter consolidated to **ruff** per [ADR 0001](../adr/0001-remove-bazel.md).
+> References to pylint, flake8, and isort below are historical; ruff replaces all three.
+
+## Version: 1.1
+## Date: March 5, 2026
 ## Status: Production-Ready
 
 ---
@@ -91,35 +94,28 @@ FILES=$(find . -name "*.txt")
 
 ### Tools
 
-1. **black** - Code formatting (PEP 8)
-2. **isort** - Import sorting
-3. **flake8** - Style + logic errors
-4. **pylint** - Code quality (score ≥ 9.0)
-5. **mypy** - Type checking (strict mode)
-6. **bandit** - Security scanning
+1. **ruff** - Lint + import sort (replaces pylint, flake8, isort per ADR 0001)
+2. **black** - Code formatting (PEP 8)
+3. **mypy** - Type checking (strict mode)
+4. **bandit** - Security scanning
 
 ### Configuration Files
 
-- **`.pylintrc`**: Pylint rules
-- **`pyproject.toml`**: Black, isort, pytest config
-- **`setup.cfg`**: Flake8 config
+- **`pyproject.toml`**: ruff, black, mypy, isort (legacy), pytest config
 
 ### Linting Commands
 
 ```bash
 cd backend
 
+# Lint + import order (single tool)
+ruff check src/ tests/
+
+# Auto-fix safe violations
+ruff check --fix src/ tests/
+
 # Format check
 black --check --diff src/ tests/
-
-# Import order
-isort --check-only --diff src/ tests/
-
-# Style
-flake8 src/ tests/ --max-line-length=100 --count --show-source --statistics
-
-# Quality (fail if < 9.0)
-pylint src/ --fail-under=9.0
 
 # Type checking (strict)
 mypy src/ --strict --warn-return-any --warn-unused-configs \
@@ -134,7 +130,7 @@ bandit -r src/ -ll
 - **Line length**: 100 characters
 - **Type hints**: Required for all functions
 - **Complexity**: Max cyclomatic complexity 10
-- **Pylint score**: ≥ 9.0/10
+- **Ruff violations**: 0 (warnings as errors)
 - **Test coverage**: ≥ 90%
 
 ### Common Fixes
@@ -324,19 +320,8 @@ find . -name "*.json" -exec python3 -m json.tool {} \; > /dev/null
 
 ## Bazel Files
 
-### Tool: Buildifier
-
-### Linting Commands
-
-```bash
-buildifier -mode=check -lint=warn -warnings=all $(find . -name "*.bazel" -o -name "*.bzl")
-```
-
-### Standards
-
-- Consistent formatting
-- Sorted lists
-- Proper load statements
+> **Removed**: Bazel was removed per [ADR 0001](../adr/0001-remove-bazel.md).
+> This section is kept for historical reference only.
 
 ---
 
@@ -374,7 +359,7 @@ jobs:
 
 ```bash
 # Install all linting tools
-cd backend && pip install black isort pylint mypy flake8 bandit
+cd backend && pip install -r requirements-dev.txt  # includes ruff, black, mypy
 cd frontend && pnpm install  # Includes ESLint, Prettier
 sudo apt-get install shellcheck hadolint yamllint
 ```
@@ -384,10 +369,8 @@ sudo apt-get install shellcheck hadolint yamllint
 ```bash
 # Backend
 cd backend
-black src/ tests/
-isort src/ tests/
-flake8 src/ tests/
-pylint src/ --fail-under=9.0
+ruff check src/ tests/
+black --check src/ tests/
 mypy src/
 
 # Frontend
@@ -455,14 +438,13 @@ pre-commit run --all-files
 | Language | Tool | Config | Warnings-as-Errors Flag |
 |----------|------|--------|------------------------|
 | **Shell** | ShellCheck | `.shellcheckrc` | `severity=style` |
-| **Python** | pylint | `.pylintrc` | `--fail-under=9.0` |
+| **Python** | ruff | `pyproject.toml` | exit non-zero on violations |
 | **Python** | mypy | `pyproject.toml` | `--strict` |
 | **TypeScript** | ESLint | `.eslintrc.json` | `--max-warnings 0` |
 | **TypeScript** | TSC | `tsconfig.json` | `--strict` |
 | **C** | clang-tidy | N/A | `--warnings-as-errors='*'` |
 | **Docker** | Hadolint | `.hadolint.yaml` | `failure-threshold: warning` |
 | **YAML** | yamllint | CLI | `-s` (strict) |
-| **Bazel** | Buildifier | CLI | `-warnings=all` |
 
 ---
 
@@ -562,6 +544,7 @@ When adding new languages:
 | Version | Date | Changes |
 |---------|------|---------|
 | 1.0 | 2025-11-02 | Initial comprehensive linting strategy |
+| 1.1 | 2026-03-05 | Consolidated pylint/flake8/isort to ruff per ADR 0001; removed Bazel section |
 
 ---
 

@@ -27,8 +27,11 @@ from backend.src.ir_types import Function, Register
 @dataclass
 class AllocationMap:
     """Result of register allocation"""
-    allocations: dict[str, str] = field(default_factory=dict)  # var_name → register name or "mem_NNN"
-    spilled: dict[str, int] = field(default_factory=dict)      # var_name → memory address
+
+    allocations: dict[str, str] = field(
+        default_factory=dict
+    )  # var_name → register name or "mem_NNN"
+    spilled: dict[str, int] = field(default_factory=dict)  # var_name → memory address
     spill_count: int = 0
     register_pressure: float = 0.0  # percentage of time registers at capacity
 
@@ -73,7 +76,7 @@ class LinearScanAllocator:
         self.function = function
         self.intervals = intervals
         self.allocations: dict[str, str] = {}  # var → register name
-        self.spilled: dict[str, int] = {}      # var → stack address
+        self.spilled: dict[str, int] = {}  # var → stack address
         self.register_to_interval: dict[Register, LiveInterval | None] = {
             reg: None for reg in self.PHYSICAL_REGISTERS
         }
@@ -119,7 +122,8 @@ class LinearScanAllocator:
     def _expire_old_intervals(self, current_start: int) -> None:
         """Remove intervals that ended before current start"""
         expired = [
-            (interval, reg) for interval, reg in self.active_intervals
+            (interval, reg)
+            for interval, reg in self.active_intervals
             if interval.end < current_start
         ]
 
@@ -143,8 +147,7 @@ class LinearScanAllocator:
 
         # Choose victim: active interval with furthest next use
         victim_interval, victim_reg = max(
-            self.active_intervals,
-            key=lambda x: self._furthest_next_use(x[0])
+            self.active_intervals, key=lambda x: self._furthest_next_use(x[0])
         )
 
         # Spill victim to memory
@@ -173,7 +176,9 @@ class LinearScanAllocator:
 
         if self.stack_pointer >= 512:
             # Stack overflow (max stack: 256-511)
-            raise RuntimeError(f"Stack overflow: allocated {self.stack_pointer - self.STACK_BASE} stack slots")
+            raise RuntimeError(
+                f"Stack overflow: allocated {self.stack_pointer - self.STACK_BASE} stack slots"
+            )
 
         return addr
 
@@ -187,10 +192,7 @@ class LinearScanAllocator:
 
         for i in range(total_instructions):
             # Count live intervals at instruction i
-            live_count = sum(
-                1 for iv in self.intervals.values()
-                if iv.start <= i <= iv.end
-            )
+            live_count = sum(1 for iv in self.intervals.values() if iv.start <= i <= iv.end)
             if live_count >= len(self.PHYSICAL_REGISTERS):
                 at_capacity_count += 1
 
@@ -207,7 +209,7 @@ def example_register_allocation():
 
     # Build IR: function with 5 simultaneous values (needs spill)
     builder = IRBuilder("example", [])
-    block = builder.new_block("entry")
+    _block = builder.new_block("entry")
 
     # a = 1, b = 2, c = 3, d = 4, e = 5
     builder.emit_assignment("a", Constant(1.0))

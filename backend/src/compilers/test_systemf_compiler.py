@@ -13,12 +13,13 @@ def test_compile_identity():
     program = compiler.compile(source)
 
     assert "main" in program.functions
-    assert len(program.functions) >= 2 # main + lambda_1
+    assert len(program.functions) >= 2  # main + lambda_1
 
     main_func = program.functions["main"]
     entry = main_func.basic_blocks[0]
     assert isinstance(entry.terminator.value, Constant)
     assert "lambda" in str(entry.terminator.value.value)
+
 
 def test_compile_type_application():
     source = r"(/\a => \x : a => x) [Int] 42"
@@ -28,6 +29,7 @@ def test_compile_type_application():
     main_func = program.functions["main"]
     entry = main_func.basic_blocks[0]
     assert any(isinstance(instr, Call) for instr in entry.instructions)
+
 
 def test_compile_let():
     # Note: 'x' is identifier, but my lexer says single lowercase is TYPE_VAR

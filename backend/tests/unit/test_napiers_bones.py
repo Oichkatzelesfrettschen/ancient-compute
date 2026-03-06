@@ -15,6 +15,7 @@ def test_bone_creation():
     assert bone7.get_row(2) == (1, 4)
     assert bone7.get_row(9) == (6, 3)
 
+
 def test_single_digit_multiplication():
     nb = NapiersBones()
 
@@ -38,6 +39,7 @@ def test_single_digit_multiplication():
     nb.load_number(425)
     assert nb.multiply_single_digit(6) == 2550
 
+
 def test_multi_digit_multiplication():
     nb = NapiersBones()
     nb.load_number(123)
@@ -45,6 +47,7 @@ def test_multi_digit_multiplication():
 
     nb.load_number(999)
     assert nb.multiply(999) == 999 * 999
+
 
 def test_zero_handling():
     nb = NapiersBones()

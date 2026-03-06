@@ -30,19 +30,19 @@ class LispCompiler:
 
         first = sexp.children[0]
         if isinstance(first, Symbol):
-            if first.value == 'defun':
+            if first.value == "defun":
                 return self._compile_defun(sexp)
-            elif first.value == 'if':
+            elif first.value == "if":
                 return self._compile_if(sexp)
-            elif first.value == 'let':
+            elif first.value == "let":
                 return self._compile_let(sexp)
-            elif first.value in ['+', '-', '*', '/']:
+            elif first.value in ["+", "-", "*", "/"]:
                 return self._compile_arithmetic(sexp)
             else:
                 return self._compile_function_call(sexp)
         else:
-             # Handle ((lambda ...) args)
-             return self._compile_function_call(sexp)
+            # Handle ((lambda ...) args)
+            return self._compile_function_call(sexp)
 
     def _compile_defun(self, sexp: SExpression):
         func_name = sexp.children[1].value
@@ -51,7 +51,7 @@ class LispCompiler:
 
         self.builder = IRBuilder(func_name, params)
         self.builder.function.local_variables = {p: IRType.DEC50 for p in params}
-        self.builder.new_block('entry')
+        self.builder.new_block("entry")
 
         last_result = Constant(0)
         for expr in body:
@@ -61,12 +61,7 @@ class LispCompiler:
         self.program.add_function(self.builder.finalize())
 
     def _compile_arithmetic(self, sexp: SExpression):
-        op_map = {
-            '+': 'add',
-            '-': 'sub',
-            '*': 'mul',
-            '/': 'div'
-        }
+        op_map = {"+": "add", "-": "sub", "*": "mul", "/": "div"}
         op_sym = sexp.children[0].value
         op = op_map.get(op_sym)
         args = sexp.children[1:]
@@ -115,9 +110,9 @@ class LispCompiler:
 
         cond_val = self._compile_expression(condition)
 
-        then_block = self.builder.new_block('then')
-        else_block = self.builder.new_block('else')
-        merge_block = self.builder.new_block('merge')
+        then_block = self.builder.new_block("then")
+        else_block = self.builder.new_block("else")
+        merge_block = self.builder.new_block("merge")
 
         result_var = self._new_tmp()
 

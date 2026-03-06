@@ -23,11 +23,13 @@ class Gear:
     teeth: int
     angle: float = 0.0  # 0-360 degrees
 
+
 @dataclass
 class Mesh:
     src: str
     dst: str
     ratio: float  # -src_teeth / dst_teeth (negative for direction change)
+
 
 class AntikytheraMechanism:
     def __init__(self) -> None:
@@ -36,8 +38,8 @@ class AntikytheraMechanism:
         self.pointers: dict[str, float] = {}
 
         self._init_main_train()
-        self._init_b1_cover_disc() # Voulgaris 2024
-        self._init_draconic()      # Voulgaris 2021 (Fragment D)
+        self._init_b1_cover_disc()  # Voulgaris 2024
+        self._init_draconic()  # Voulgaris 2021 (Fragment D)
 
     def _add_gear(self, name: str, teeth: int) -> None:
         self.gears[name] = Gear(name, teeth)
@@ -46,7 +48,7 @@ class AntikytheraMechanism:
         """Connect two gears. Ratio is determined by tooth counts."""
         src_g = self.gears[src]
         dst_g = self.gears[dst]
-        ratio = -(src_g.teeth / dst_g.teeth) # Standard mesh reverses direction
+        ratio = -(src_g.teeth / dst_g.teeth)  # Standard mesh reverses direction
         self.meshes.append(Mesh(src, dst, ratio))
 
     def _init_main_train(self) -> None:
@@ -91,7 +93,7 @@ class AntikytheraMechanism:
         # V(18) meshes with VI(57). VI turns 0.166... * 18/57 = 0.05263... = 1/19.
         # Perfect. Pointer is on VI.
 
-        self.gears["I"].angle = 0 # Slave to b1
+        self.gears["I"].angle = 0  # Slave to b1
         self._mesh("I", "II")
         # II and III are coaxial (handled in propagate)
         self._mesh("III", "IV")
@@ -106,7 +108,7 @@ class AntikytheraMechanism:
         self._add_gear("IX", 30)
         self._add_gear("X", 48)
 
-        self.gears["VII"].angle = 0 # Slave to b1
+        self.gears["VII"].angle = 0  # Slave to b1
         self._mesh("VII", "VIII")
         # VIII and IX coaxial
         self._mesh("IX", "X")
@@ -125,9 +127,9 @@ class AntikytheraMechanism:
         Let's assume the paper's finding: r1(63) and s1(22) are the key.
         We will link a1 to r1.
         """
-        self._add_gear("a1", 224) # Standard a1
+        self._add_gear("a1", 224)  # Standard a1
         self._add_gear("r1", 63)
-        self._add_gear("s1", 22) # Hypothetical s1 from Voulgaris 2022
+        self._add_gear("s1", 22)  # Hypothetical s1 from Voulgaris 2022
 
         # b1 drives a1? Usually they are the same component (Spoke vs Crown).
         # Let's assume a1 rotates with b1.
@@ -156,15 +158,15 @@ class AntikytheraMechanism:
         # Simple BFS or ordered propagation
         # 1. 19-Year Train
         self._propagate_pair("I", "II")
-        self.gears["III"].angle = self.gears["II"].angle # Coaxial
+        self.gears["III"].angle = self.gears["II"].angle  # Coaxial
         self._propagate_pair("III", "IV")
-        self.gears["V"].angle = self.gears["IV"].angle # Coaxial
+        self.gears["V"].angle = self.gears["IV"].angle  # Coaxial
         self._propagate_pair("V", "VI")
         self.pointers["19-Year"] = self.gears["VI"].angle
 
         # 2. Egyptian Reminder
         self._propagate_pair("VII", "VIII")
-        self.gears["IX"].angle = self.gears["VIII"].angle # Coaxial
+        self.gears["IX"].angle = self.gears["VIII"].angle  # Coaxial
         self._propagate_pair("IX", "X")
         self.pointers["Egyptian"] = self.gears["X"].angle
 
@@ -185,9 +187,11 @@ class AntikytheraMechanism:
 # Generic gear-train graph (used by tests and external analysis)
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class GearEdge:
     """A directed edge in a gear-train graph with an explicit ratio."""
+
     src: str
     dst: str
     ratio: float
@@ -224,6 +228,7 @@ class GearTrain:
 # Draconic pointer train (Voulgaris et al. 2021, arxiv 2104.06181)
 # ---------------------------------------------------------------------------
 
+
 def draconic_pointer_train_from_arxiv_2104_06181() -> GearTrain:
     """
     Construct the Fragment D draconic pointer gear train from
@@ -237,10 +242,12 @@ def draconic_pointer_train_from_arxiv_2104_06181() -> GearTrain:
     The r1-a1 shaft coupling is modeled externally by the caller
     (see test_antikythera_draconic_train.py).
     """
-    return GearTrain([
-        GearEdge(src="b1", dst="a1", ratio=224.0 / 50.0),
-        GearEdge(src="r1", dst="s1", ratio=60.0 / 20.0),
-    ])
+    return GearTrain(
+        [
+            GearEdge(src="b1", dst="a1", ratio=224.0 / 50.0),
+            GearEdge(src="r1", dst="s1", ratio=60.0 / 20.0),
+        ]
+    )
 
 
 class AntikytheraDraconicModel:

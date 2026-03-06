@@ -19,6 +19,7 @@ from backend.src.emulator.simulation.state import SimulationConfig, SimulationSt
 # Fixtures
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture
 def lib():
     return MaterialLibrary()
@@ -37,6 +38,7 @@ def engine(default_config, lib):
 # ---------------------------------------------------------------------------
 # SimulationState Tests
 # ---------------------------------------------------------------------------
+
 
 class TestSimulationState:
 
@@ -63,6 +65,7 @@ class TestSimulationState:
 # SimulationConfig Tests
 # ---------------------------------------------------------------------------
 
+
 class TestSimulationConfig:
 
     def test_omega_rad_s(self):
@@ -83,6 +86,7 @@ class TestSimulationConfig:
 # CouplingFunctions Tests
 # ---------------------------------------------------------------------------
 
+
 class TestCouplingFunctions:
 
     def test_viscosity_at_40C_is_base(self):
@@ -96,7 +100,10 @@ class TestCouplingFunctions:
 
     def test_friction_heat_positive(self):
         Q = CouplingFunctions.friction_heat_from_bearings(
-            [100.0, 100.0], 50.0, math.pi, 0.05,
+            [100.0, 100.0],
+            50.0,
+            math.pi,
+            0.05,
         )
         assert Q > 0
 
@@ -109,7 +116,9 @@ class TestCouplingFunctions:
     def test_redistribute_unequal_clearances(self):
         """Smaller clearance -> higher load."""
         loads = CouplingFunctions.redistribute_bearing_loads(
-            200.0, 2, [0.03, 0.06],
+            200.0,
+            2,
+            [0.03, 0.06],
         )
         assert loads[0] > loads[1]  # Tighter bearing carries more
         assert sum(loads) == pytest.approx(200.0)
@@ -121,6 +130,7 @@ class TestCouplingFunctions:
 # ---------------------------------------------------------------------------
 # SimulationEngine Initialization
 # ---------------------------------------------------------------------------
+
 
 class TestEngineInit:
 
@@ -153,6 +163,7 @@ class TestEngineInit:
 # Single Step
 # ---------------------------------------------------------------------------
 
+
 class TestSingleStep:
 
     def test_step_advances_time(self, engine, default_config):
@@ -183,7 +194,13 @@ class TestSingleStep:
 
     def test_sliding_distance_accumulates(self, engine, default_config):
         engine.step()
-        expected = math.pi * default_config.shaft_diameter_mm * default_config.rpm / 60.0 * default_config.dt_s
+        expected = (
+            math.pi
+            * default_config.shaft_diameter_mm
+            * default_config.rpm
+            / 60.0
+            * default_config.dt_s
+        )
         assert engine.state.total_sliding_distance_mm == pytest.approx(expected, rel=0.01)
 
     def test_shaft_deflection_positive(self, engine):
@@ -213,6 +230,7 @@ class TestSingleStep:
 # ---------------------------------------------------------------------------
 # Energy Conservation
 # ---------------------------------------------------------------------------
+
 
 class TestEnergyConservation:
 
@@ -247,14 +265,15 @@ class TestEnergyConservation:
         # At steady state these should match within 20%
         if Q_gen > 0.1:  # Only check if meaningful heat is generated
             ratio = Q_dissipated / Q_gen
-            assert 0.5 < ratio < 2.0, (
-                f"Q_gen={Q_gen:.2f} W, Q_diss={Q_dissipated:.2f} W, ratio={ratio:.2f}"
-            )
+            assert (
+                0.5 < ratio < 2.0
+            ), f"Q_gen={Q_gen:.2f} W, Q_diss={Q_dissipated:.2f} W, ratio={ratio:.2f}"
 
 
 # ---------------------------------------------------------------------------
 # Force Equilibrium
 # ---------------------------------------------------------------------------
+
 
 class TestForceEquilibrium:
 
@@ -274,6 +293,7 @@ class TestForceEquilibrium:
 # ---------------------------------------------------------------------------
 # Coupled Convergence
 # ---------------------------------------------------------------------------
+
 
 class TestCoupledConvergence:
 
@@ -296,24 +316,29 @@ class TestCoupledConvergence:
         mu = bearing_mat.friction_coeff * 0.05  # full-film reduction
         Q_bearing = 0.0
         for _ in range(cfg.bearing_count):
-            Q_bearing += 0.5 * mu * initial_load * (cfg.shaft_diameter_mm / 1000.0) * cfg.omega_rad_s
+            Q_bearing += (
+                0.5 * mu * initial_load * (cfg.shaft_diameter_mm / 1000.0) * cfg.omega_rad_s
+            )
         Q_gear = cfg.transmitted_power_W * 0.02
         Q_total = Q_bearing + Q_gear
-        T_simple = cfg.ambient_temperature_C + Q_total / (cfg.h_convection_W_m2K * cfg.surface_area_m2)
+        T_simple = cfg.ambient_temperature_C + Q_total / (
+            cfg.h_convection_W_m2K * cfg.surface_area_m2
+        )
 
         # Allow 50% tolerance because coupling adds radiation, load redistribution, etc.
         if T_simple > cfg.ambient_temperature_C + 0.1:
             delta_coupled = T_coupled - cfg.ambient_temperature_C
             delta_simple = T_simple - cfg.ambient_temperature_C
             ratio = delta_coupled / delta_simple
-            assert 0.3 < ratio < 3.0, (
-                f"T_coupled={T_coupled:.2f}, T_simple={T_simple:.2f}, ratio={ratio:.2f}"
-            )
+            assert (
+                0.3 < ratio < 3.0
+            ), f"T_coupled={T_coupled:.2f}, T_simple={T_simple:.2f}, ratio={ratio:.2f}"
 
 
 # ---------------------------------------------------------------------------
 # Long-Duration Run
 # ---------------------------------------------------------------------------
+
 
 class TestLongDurationRun:
 
@@ -349,6 +374,7 @@ class TestLongDurationRun:
     def test_run_wall_time_reasonable(self, lib):
         """1 hour simulation (3600 steps) should complete quickly."""
         import time
+
         cfg = SimulationConfig(dt_s=1.0, rpm=30.0)
         eng = SimulationEngine(cfg, lib)
         t0 = time.monotonic()
@@ -360,6 +386,7 @@ class TestLongDurationRun:
 # ---------------------------------------------------------------------------
 # Predict Maintenance
 # ---------------------------------------------------------------------------
+
 
 class TestPredictMaintenance:
 
@@ -373,13 +400,14 @@ class TestPredictMaintenance:
         """Default config should not fail within 1 hour."""
         cfg = SimulationConfig(dt_s=10.0, rpm=30.0)
         eng = SimulationEngine(cfg, lib)
-        result = eng.predict_maintenance(max_hours=1.0)
+        _result = eng.predict_maintenance(max_hours=1.0)
         assert not eng.failed, f"Failed at {eng.state.time_s:.0f}s: {eng.failure_reason}"
 
 
 # ---------------------------------------------------------------------------
 # Failure Detection
 # ---------------------------------------------------------------------------
+
 
 class TestFailureDetection:
 
@@ -389,12 +417,12 @@ class TestFailureDetection:
             dt_s=1.0,
             rpm=30.0,
             temperature_limit_C=22.0,  # Very low limit
-            h_convection_W_m2K=0.01,   # Very poor cooling
-            surface_area_m2=0.01,      # Tiny surface (no cooling)
-            machine_mass_kg=0.1,       # Very light (fast heat up)
+            h_convection_W_m2K=0.01,  # Very poor cooling
+            surface_area_m2=0.01,  # Tiny surface (no cooling)
+            machine_mass_kg=0.1,  # Very light (fast heat up)
         )
         eng = SimulationEngine(cfg, lib)
-        result = eng.run(10000.0, 100.0)
+        _result = eng.run(10000.0, 100.0)
         assert eng.failed
         assert eng.failure_reason == "temperature"
 
@@ -403,11 +431,11 @@ class TestFailureDetection:
         cfg = SimulationConfig(
             dt_s=1.0,
             rpm=30.0,
-            archard_K_bearing=1e-2,      # Extreme wear
-            clearance_limit_mm=0.06,     # Tight limit
+            archard_K_bearing=1e-2,  # Extreme wear
+            clearance_limit_mm=0.06,  # Tight limit
         )
         eng = SimulationEngine(cfg, lib)
-        result = eng.run(10000.0, 100.0)
+        _result = eng.run(10000.0, 100.0)
         # Should fail from clearance OR some other limit before 10000s
         # (extreme wear rate will blow through clearance quickly)
         if eng.failed:
@@ -426,6 +454,7 @@ class TestFailureDetection:
 # ---------------------------------------------------------------------------
 # Mass Conservation (Wear)
 # ---------------------------------------------------------------------------
+
 
 class TestMassConservation:
 

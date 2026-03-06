@@ -9,6 +9,7 @@ Implements:
 - Token refresh mechanism
 """
 
+import logging
 from datetime import datetime, timedelta
 
 import jwt
@@ -18,11 +19,14 @@ from pydantic import BaseModel
 
 from .config import settings
 
+logger = logging.getLogger(__name__)
+
 security = HTTPBearer()
 
 
 class TokenData(BaseModel):
     """JWT token payload structure"""
+
     user_id: int
     username: str
     email: str
@@ -31,13 +35,16 @@ class TokenData(BaseModel):
 
 class UserResponse(BaseModel):
     """User information returned after authentication"""
+
     id: int
     username: str
     email: str
     is_active: bool = True
 
 
-def create_access_token(user_id: int, username: str, email: str, expires_delta: timedelta | None = None) -> str:
+def create_access_token(
+    user_id: int, username: str, email: str, expires_delta: timedelta | None = None
+) -> str:
     """
     Create JWT access token for authenticated user.
 
@@ -55,12 +62,7 @@ def create_access_token(user_id: int, username: str, email: str, expires_delta: 
     else:
         expire = datetime.utcnow() + timedelta(minutes=30)
 
-    to_encode = {
-        "sub": user_id,
-        "username": username,
-        "email": email,
-        "exp": expire
-    }
+    to_encode = {"sub": user_id, "username": username, "email": email, "exp": expire}
 
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm="HS256")
     return encoded_jwt
@@ -92,12 +94,14 @@ def decode_token(token: str) -> TokenData:
         return TokenData(user_id=user_id, username=username, email=email, exp=exp)
 
     except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token has expired")
+        raise HTTPException(status_code=401, detail="Token has expired") from None
     except jwt.InvalidTokenError:
-        raise HTTPException(status_code=401, detail="Invalid token")
+        raise HTTPException(status_code=401, detail="Invalid token") from None
 
 
-async def get_current_user(credentials: HTTPAuthorizationCredentials = Security(security)) -> UserResponse:
+async def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Security(security),
+) -> UserResponse:
     """
     Validate JWT token and return current user.
 
@@ -134,7 +138,7 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Security(
         finally:
             db.close()
     except Exception:
-        pass  # Database unavailable; fall through to token data
+        logger.warning("DB lookup failed, falling back to token data", exc_info=True)
 
     if db_user is not None:
         user = UserResponse(
@@ -157,7 +161,9 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Security(
     return user
 
 
-async def get_current_active_user(current_user: UserResponse = Depends(get_current_user)) -> UserResponse:
+async def get_current_active_user(
+    current_user: UserResponse = Depends(get_current_user),
+) -> UserResponse:
     """
     Get current active user (additional validation layer).
 

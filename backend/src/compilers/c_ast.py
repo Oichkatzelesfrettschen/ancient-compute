@@ -29,6 +29,7 @@ from typing import Union
 
 class TokenType(Enum):
     """Token types for C lexical analysis."""
+
     # Literals
     INT_LIT = "INT_LIT"
     FLOAT_LIT = "FLOAT_LIT"
@@ -82,6 +83,7 @@ class TokenType(Enum):
 @dataclass
 class Token:
     """Represents a single token in the C source."""
+
     type: TokenType
     value: str
     line: int
@@ -92,14 +94,14 @@ class CLexer:
     """Lexical analyzer for C code."""
 
     KEYWORDS = {
-        'int': TokenType.INT,
-        'float': TokenType.FLOAT,
-        'void': TokenType.VOID,
-        'if': TokenType.IF,
-        'else': TokenType.ELSE,
-        'while': TokenType.WHILE,
-        'for': TokenType.FOR,
-        'return': TokenType.RETURN,
+        "int": TokenType.INT,
+        "float": TokenType.FLOAT,
+        "void": TokenType.VOID,
+        "if": TokenType.IF,
+        "else": TokenType.ELSE,
+        "while": TokenType.WHILE,
+        "for": TokenType.FOR,
+        "return": TokenType.RETURN,
     }
 
     def __init__(self, source: str) -> None:
@@ -121,7 +123,7 @@ class CLexer:
             ch = self.source[self.pos]
 
             # Newline tracking
-            if ch == '\n':
+            if ch == "\n":
                 self.line += 1
                 self.col = 1
                 self.pos += 1
@@ -131,7 +133,7 @@ class CLexer:
             if ch.isdigit():
                 self._read_number()
             # Identifiers and keywords
-            elif ch.isalpha() or ch == '_':
+            elif ch.isalpha() or ch == "_":
                 self._read_identifier()
             # String literals
             elif ch == '"':
@@ -146,7 +148,7 @@ class CLexer:
                 self.pos += 1
                 self.col += 1
 
-        self.tokens.append(Token(TokenType.EOF, '', self.line, self.col))
+        self.tokens.append(Token(TokenType.EOF, "", self.line, self.col))
         return self.tokens
 
     def _skip_whitespace_and_comments(self) -> None:
@@ -154,25 +156,25 @@ class CLexer:
         while self.pos < len(self.source):
             ch = self.source[self.pos]
 
-            if ch in ' \t\r':
+            if ch in " \t\r":
                 self.pos += 1
                 self.col += 1
-            elif ch == '\n':
+            elif ch == "\n":
                 break
-            elif self.pos + 1 < len(self.source) and ch == '/' and self.source[self.pos + 1] == '/':
+            elif self.pos + 1 < len(self.source) and ch == "/" and self.source[self.pos + 1] == "/":
                 # Skip line comment
-                while self.pos < len(self.source) and self.source[self.pos] != '\n':
+                while self.pos < len(self.source) and self.source[self.pos] != "\n":
                     self.pos += 1
-            elif self.pos + 1 < len(self.source) and ch == '/' and self.source[self.pos + 1] == '*':
+            elif self.pos + 1 < len(self.source) and ch == "/" and self.source[self.pos + 1] == "*":
                 # Skip block comment
                 self.pos += 2
                 self.col += 2
                 while self.pos + 1 < len(self.source):
-                    if self.source[self.pos] == '*' and self.source[self.pos + 1] == '/':
+                    if self.source[self.pos] == "*" and self.source[self.pos + 1] == "/":
                         self.pos += 2
                         self.col += 2
                         break
-                    if self.source[self.pos] == '\n':
+                    if self.source[self.pos] == "\n":
                         self.line += 1
                         self.col = 1
                     else:
@@ -192,7 +194,7 @@ class CLexer:
 
         # Check for float
         is_float = False
-        if self.pos < len(self.source) and self.source[self.pos] == '.':
+        if self.pos < len(self.source) and self.source[self.pos] == ".":
             is_float = True
             self.pos += 1
             self.col += 1
@@ -200,7 +202,7 @@ class CLexer:
                 self.pos += 1
                 self.col += 1
 
-        value = self.source[start:self.pos]
+        value = self.source[start : self.pos]
         token_type = TokenType.FLOAT_LIT if is_float else TokenType.INT_LIT
         self.tokens.append(Token(token_type, value, self.line, start_col))
 
@@ -209,11 +211,13 @@ class CLexer:
         start = self.pos
         start_col = self.col
 
-        while self.pos < len(self.source) and (self.source[self.pos].isalnum() or self.source[self.pos] == '_'):
+        while self.pos < len(self.source) and (
+            self.source[self.pos].isalnum() or self.source[self.pos] == "_"
+        ):
             self.pos += 1
             self.col += 1
 
-        value = self.source[start:self.pos]
+        value = self.source[start : self.pos]
         token_type = self.KEYWORDS.get(value, TokenType.IDENT)
         self.tokens.append(Token(token_type, value, self.line, start_col))
 
@@ -225,13 +229,13 @@ class CLexer:
 
         value = ""
         while self.pos < len(self.source) and self.source[self.pos] != '"':
-            if self.source[self.pos] == '\\' and self.pos + 1 < len(self.source):
+            if self.source[self.pos] == "\\" and self.pos + 1 < len(self.source):
                 self.pos += 2
                 self.col += 2
-                value += self.source[self.pos - 2:self.pos]
+                value += self.source[self.pos - 2 : self.pos]
             else:
                 value += self.source[self.pos]
-                if self.source[self.pos] == '\n':
+                if self.source[self.pos] == "\n":
                     self.line += 1
                     self.col = 1
                 else:
@@ -251,8 +255,8 @@ class CLexer:
         self.col += 1
 
         value = ""
-        if self.pos < len(self.source) and self.source[self.pos] == '\\':
-            value = self.source[self.pos:self.pos + 2]
+        if self.pos < len(self.source) and self.source[self.pos] == "\\":
+            value = self.source[self.pos : self.pos + 2]
             self.pos += 2
             self.col += 2
         elif self.pos < len(self.source):
@@ -276,17 +280,17 @@ class CLexer:
             two_ch = ch + self.source[self.pos + 1]
             token_type = None
 
-            if two_ch == '==':
+            if two_ch == "==":
                 token_type = TokenType.EQ
-            elif two_ch == '!=':
+            elif two_ch == "!=":
                 token_type = TokenType.NE
-            elif two_ch == '<=':
+            elif two_ch == "<=":
                 token_type = TokenType.LE
-            elif two_ch == '>=':
+            elif two_ch == ">=":
                 token_type = TokenType.GE
-            elif two_ch == '&&':
+            elif two_ch == "&&":
                 token_type = TokenType.AND
-            elif two_ch == '||':
+            elif two_ch == "||":
                 token_type = TokenType.OR
 
             if token_type:
@@ -297,41 +301,41 @@ class CLexer:
 
         # Single-character operators
         token_type = None
-        if ch == '+':
+        if ch == "+":
             token_type = TokenType.PLUS
-        elif ch == '-':
+        elif ch == "-":
             token_type = TokenType.MINUS
-        elif ch == '*':
+        elif ch == "*":
             token_type = TokenType.STAR
-        elif ch == '/':
+        elif ch == "/":
             token_type = TokenType.SLASH
-        elif ch == '%':
+        elif ch == "%":
             token_type = TokenType.PERCENT
-        elif ch == '=':
+        elif ch == "=":
             token_type = TokenType.ASSIGN
-        elif ch == '<':
+        elif ch == "<":
             token_type = TokenType.LT
-        elif ch == '>':
+        elif ch == ">":
             token_type = TokenType.GT
-        elif ch == '!':
+        elif ch == "!":
             token_type = TokenType.NOT
-        elif ch == '&':
+        elif ch == "&":
             token_type = TokenType.AMPERSAND
-        elif ch == '(':
+        elif ch == "(":
             token_type = TokenType.LPAREN
-        elif ch == ')':
+        elif ch == ")":
             token_type = TokenType.RPAREN
-        elif ch == '{':
+        elif ch == "{":
             token_type = TokenType.LBRACE
-        elif ch == '}':
+        elif ch == "}":
             token_type = TokenType.RBRACE
-        elif ch == '[':
+        elif ch == "[":
             token_type = TokenType.LBRACKET
-        elif ch == ']':
+        elif ch == "]":
             token_type = TokenType.RBRACKET
-        elif ch == ';':
+        elif ch == ";":
             token_type = TokenType.SEMICOLON
-        elif ch == ',':
+        elif ch == ",":
             token_type = TokenType.COMMA
 
         if token_type:
@@ -345,9 +349,11 @@ class CLexer:
 
 # AST Node definitions
 
+
 @dataclass
 class Type:
     """Base type representation."""
+
     name: str
     is_pointer: bool = False
     array_size: int | None = None
@@ -356,6 +362,7 @@ class Type:
 @dataclass
 class Variable:
     """Variable declaration with type."""
+
     name: str
     type: Type
     is_global: bool = False
@@ -364,36 +371,42 @@ class Variable:
 @dataclass
 class Expression:
     """Base expression node."""
+
     pass
 
 
 @dataclass
 class IntLiteral(Expression):
     """Integer literal expression."""
+
     value: int
 
 
 @dataclass
 class FloatLiteral(Expression):
     """Float literal expression."""
+
     value: float
 
 
 @dataclass
 class StringLiteral(Expression):
     """String literal expression."""
+
     value: str
 
 
 @dataclass
 class VariableRef(Expression):
     """Variable reference expression."""
+
     name: str
 
 
 @dataclass
 class BinaryOp(Expression):
     """Binary operation expression."""
+
     op: str  # '+', '-', '*', '/', '%', '==', '!=', '<', '<=', '>', '>=', '&&', '||'
     left: Expression
     right: Expression
@@ -402,6 +415,7 @@ class BinaryOp(Expression):
 @dataclass
 class UnaryOp(Expression):
     """Unary operation expression."""
+
     op: str  # '-', '!', '&', '*'
     operand: Expression
 
@@ -409,6 +423,7 @@ class UnaryOp(Expression):
 @dataclass
 class FunctionCall(Expression):
     """Function call expression."""
+
     name: str
     args: list[Expression]
 
@@ -416,6 +431,7 @@ class FunctionCall(Expression):
 @dataclass
 class ArrayAccess(Expression):
     """Array access expression."""
+
     name: str
     index: Expression
 
@@ -423,6 +439,7 @@ class ArrayAccess(Expression):
 @dataclass
 class Assignment(Expression):
     """Assignment expression."""
+
     target: str
     value: Expression
 
@@ -430,30 +447,35 @@ class Assignment(Expression):
 @dataclass
 class Statement:
     """Base statement node."""
+
     pass
 
 
 @dataclass
 class ExpressionStatement(Statement):
     """Expression statement."""
+
     expr: Expression
 
 
 @dataclass
 class VariableDeclaration(Statement):
     """Variable declaration statement."""
+
     variables: list[Variable]
 
 
 @dataclass
 class Block(Statement):
     """Block of statements."""
+
     statements: list[Statement]
 
 
 @dataclass
 class IfStatement(Statement):
     """If statement."""
+
     condition: Expression
     then_stmt: Statement
     else_stmt: Statement | None = None
@@ -462,6 +484,7 @@ class IfStatement(Statement):
 @dataclass
 class WhileStatement(Statement):
     """While loop statement."""
+
     condition: Expression
     body: Statement
 
@@ -469,6 +492,7 @@ class WhileStatement(Statement):
 @dataclass
 class ForStatement(Statement):
     """For loop statement."""
+
     init: Expression | None
     condition: Expression | None
     increment: Expression | None
@@ -478,12 +502,14 @@ class ForStatement(Statement):
 @dataclass
 class ReturnStatement(Statement):
     """Return statement."""
+
     value: Expression | None = None
 
 
 @dataclass
 class FunctionParameter:
     """Function parameter declaration."""
+
     name: str
     type: Type
 
@@ -491,6 +517,7 @@ class FunctionParameter:
 @dataclass
 class Function:
     """Function declaration."""
+
     name: str
     return_type: Type
     parameters: list[FunctionParameter]
@@ -500,12 +527,14 @@ class Function:
 @dataclass
 class GlobalDeclaration:
     """Global variable declaration."""
+
     variables: list[Variable]
 
 
 @dataclass
 class Program:
     """Complete C program (top-level declarations)."""
+
     declarations: list[Union[GlobalDeclaration, Function]] = field(default_factory=list)
 
 
@@ -522,7 +551,11 @@ class CParser:
         program = Program()
 
         while not self._is_at_end():
-            if self._check(TokenType.INT) or self._check(TokenType.FLOAT) or self._check(TokenType.VOID):
+            if (
+                self._check(TokenType.INT)
+                or self._check(TokenType.FLOAT)
+                or self._check(TokenType.VOID)
+            ):
                 # Could be function or global variable
                 decl = self._parse_declaration()
                 if decl:
@@ -614,7 +647,11 @@ class CParser:
         if self._check(TokenType.RETURN):
             return self._parse_return()
 
-        if self._check(TokenType.INT) or self._check(TokenType.FLOAT) or self._check(TokenType.VOID):
+        if (
+            self._check(TokenType.INT)
+            or self._check(TokenType.FLOAT)
+            or self._check(TokenType.VOID)
+        ):
             return self._parse_variable_declaration()
 
         # Expression statement
@@ -755,8 +792,12 @@ class CParser:
         """Parse comparison expression."""
         expr = self._parse_additive()
 
-        while (self._check(TokenType.LT) or self._check(TokenType.LE) or
-               self._check(TokenType.GT) or self._check(TokenType.GE)):
+        while (
+            self._check(TokenType.LT)
+            or self._check(TokenType.LE)
+            or self._check(TokenType.GT)
+            or self._check(TokenType.GE)
+        ):
             op = self._advance().value
             right = self._parse_additive()
             expr = BinaryOp(op, expr, right)
@@ -778,8 +819,11 @@ class CParser:
         """Parse multiplicative expression."""
         expr = self._parse_unary()
 
-        while (self._check(TokenType.STAR) or self._check(TokenType.SLASH) or
-               self._check(TokenType.PERCENT)):
+        while (
+            self._check(TokenType.STAR)
+            or self._check(TokenType.SLASH)
+            or self._check(TokenType.PERCENT)
+        ):
             op = self._advance().value
             right = self._parse_unary()
             expr = BinaryOp(op, expr, right)
@@ -788,7 +832,11 @@ class CParser:
 
     def _parse_unary(self) -> Expression:
         """Parse unary expression."""
-        if self._check(TokenType.MINUS) or self._check(TokenType.NOT) or self._check(TokenType.AMPERSAND):
+        if (
+            self._check(TokenType.MINUS)
+            or self._check(TokenType.NOT)
+            or self._check(TokenType.AMPERSAND)
+        ):
             op = self._advance().value
             expr = self._parse_unary()
             return UnaryOp(op, expr)

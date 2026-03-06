@@ -16,6 +16,9 @@ ruff==0.9.10
 mypy>=1.10,<2.0
 # Note: flake8, isort, and pylint replaced by ruff (ADR 0001)
 
+# Measurement & Profiling
+psutil>=6.0,<7.0
+
 # Development
 watchfiles>=1.0,<2.0
 ipython>=8.20,<9.0

@@ -15,10 +15,12 @@ def pytest_configure(config):
 # Shared emulator fixtures
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture
 def analytical_engine():
     """Fresh Analytical Engine instance (no physics)."""
     from backend.src.emulator.analytical_engine import Engine
+
     return Engine()
 
 
@@ -37,6 +39,7 @@ def babbage_number():
 def simulation_config():
     """Default SimulationConfig at 30 RPM."""
     from backend.src.emulator.simulation.state import SimulationConfig
+
     return SimulationConfig(rpm=30.0)
 
 
@@ -44,6 +47,7 @@ def simulation_config():
 def simulation_engine(simulation_config):
     """SimulationEngine wired to default config."""
     from backend.src.emulator.simulation.engine import SimulationEngine
+
     return SimulationEngine(simulation_config)
 
 
@@ -57,6 +61,7 @@ _sqlalchemy = pytest.importorskip("sqlalchemy", reason="SQLAlchemy not installed
 try:
     from backend.src.database import Base, get_db
     from backend.src.main import app
+
     _HAS_DB = True
 except ImportError:
     _HAS_DB = False

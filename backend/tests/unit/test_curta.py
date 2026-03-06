@@ -8,13 +8,14 @@ from backend.src.emulator.curta import CrankMode, CurtaTypeI
 def test_curta_addition():
     curta = CurtaTypeI()
     curta.set_input(123)
-    curta.turn_crank() # Add 123
+    curta.turn_crank()  # Add 123
     assert curta.result_dial == 123
     assert curta.counter_dial == 1
 
-    curta.turn_crank() # Add 123
+    curta.turn_crank()  # Add 123
     assert curta.result_dial == 246
     assert curta.counter_dial == 2
+
 
 def test_curta_multiplication():
     # 12 * 12 = 144
@@ -30,25 +31,27 @@ def test_curta_multiplication():
     curta.turn_crank()
 
     assert curta.result_dial == 144
-    assert curta.counter_dial == 12 # 1 ten + 2 units
+    assert curta.counter_dial == 12  # 1 ten + 2 units
+
 
 def test_curta_subtraction():
     curta = CurtaTypeI()
     curta.set_input(100)
-    curta.turn_crank() # +100
+    curta.turn_crank()  # +100
 
     curta.set_input(10)
     curta.set_crank_mode(CrankMode.SUBTRACT)
-    curta.turn_crank() # -10
+    curta.turn_crank()  # -10
 
     assert curta.result_dial == 90
 
     # Verify counter subtraction
-    assert curta.counter_dial == 0 # 1 - 1 = 0
+    assert curta.counter_dial == 0  # 1 - 1 = 0
+
 
 def test_overflow():
-    curta = CurtaTypeI()
+    _curta = CurtaTypeI()
     # Max result is 11 nines
     # Input 999...
     # Turn crank
-    pass # Implementation uses modulo arithmetic, implicit test
+    pass  # Implementation uses modulo arithmetic, implicit test

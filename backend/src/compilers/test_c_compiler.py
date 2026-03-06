@@ -125,7 +125,7 @@ class TestCParser:
         """Test parsing integer literal."""
         lexer = CLexer("42")
         tokens = lexer.tokenize()
-        parser = CParser(tokens)
+        _parser = CParser(tokens)
 
         # Just verify parser doesn't crash on simple input
         assert len(tokens) > 0

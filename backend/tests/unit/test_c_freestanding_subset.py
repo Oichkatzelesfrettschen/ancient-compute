@@ -67,9 +67,7 @@ def test_freestanding_subset_accepts_scalar_core_program() -> None:
         ),
     ],
 )
-def test_freestanding_subset_rejects_unsupported_features(
-    expected_label: str, code: str
-) -> None:
+def test_freestanding_subset_rejects_unsupported_features(expected_label: str, code: str) -> None:
     result = _execute(code)
     assert result.status == ExecutionStatus.COMPILE_ERROR
     assert "Unsupported C feature(s) for freestanding subset" in result.stderr

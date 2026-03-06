@@ -15,17 +15,19 @@ from enum import Enum
 
 class CTypeKind(Enum):
     """C type classification."""
-    INT = "int"           # 64-bit signed integer
-    FLOAT = "float"       # 64-bit IEEE 754 double
-    VOID = "void"         # Void type (no value)
-    POINTER = "pointer"   # Pointer type
-    ARRAY = "array"       # Array type
-    FUNCTION = "function" # Function type
+
+    INT = "int"  # 64-bit signed integer
+    FLOAT = "float"  # 64-bit IEEE 754 double
+    VOID = "void"  # Void type (no value)
+    POINTER = "pointer"  # Pointer type
+    ARRAY = "array"  # Array type
+    FUNCTION = "function"  # Function type
 
 
 @dataclass
 class CType:
     """C type representation."""
+
     kind: CTypeKind
     base_type: CType | None = None  # For pointers and arrays
     size: int | None = None  # For arrays
@@ -92,9 +94,9 @@ class CTypeSystem:
     def __init__(self) -> None:
         """Initialize type system."""
         self.type_cache: dict[str, CType] = {
-            'int': self.INT_TYPE,
-            'float': self.FLOAT_TYPE,
-            'void': self.VOID_TYPE,
+            "int": self.INT_TYPE,
+            "float": self.FLOAT_TYPE,
+            "void": self.VOID_TYPE,
         }
 
     def make_type(self, name: str) -> CType | None:
@@ -102,11 +104,11 @@ class CTypeSystem:
         if name in self.type_cache:
             return self.type_cache[name]
 
-        if name == 'int':
+        if name == "int":
             return self.INT_TYPE
-        elif name == 'float':
+        elif name == "float":
             return self.FLOAT_TYPE
-        elif name == 'void':
+        elif name == "void":
             return self.VOID_TYPE
 
         return None
@@ -172,8 +174,7 @@ class CTypeSystem:
             return self._types_equal(t1.base_type, t2.base_type)
 
         if t1.kind == CTypeKind.ARRAY:
-            return (self._types_equal(t1.base_type, t2.base_type) and
-                    t1.size == t2.size)
+            return self._types_equal(t1.base_type, t2.base_type) and t1.size == t2.size
 
         return True
 

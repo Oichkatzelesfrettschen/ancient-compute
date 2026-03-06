@@ -71,6 +71,7 @@ from backend.src.emulator.tribology import (
 # Shared fixtures -- realistic parameters from sim_schema.yaml
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture
 def lib():
     """Material library loaded from the canonical schema."""
@@ -150,13 +151,14 @@ BEARING_COUNT = 4
 SHAFT_DIAMETER_MM = 50.0
 BEARING_LENGTH_MM = 60.0
 INPUT_RPM = 30.0
-TRANSMITTED_POWER_W = 50.0   # realistic computation load through gears
+TRANSMITTED_POWER_W = 50.0  # realistic computation load through gears
 TOTAL_ENGINE_POWER_W = 500.0
 
 
 # ===================================================================
 # 1. Cross-Module Consistency
 # ===================================================================
+
 
 class TestCrossModuleConsistency:
     """Tests that cross-reference computed values between modules.
@@ -168,7 +170,9 @@ class TestCrossModuleConsistency:
     # ----- materials vs kinematics/structural: stress < yield -----
 
     def test_gear_bending_stress_below_yield_all_stages(
-        self, chain, lib,
+        self,
+        chain,
+        lib,
     ):
         """Lewis bending stress must be below yield for every gear stage.
 
@@ -184,13 +188,15 @@ class TestCrossModuleConsistency:
             sigma = GearAnalysis.lewis_bending_stress_MPa(gp, wt)
             sy_min = brass.yield_strength_MPa[0]
             assert sigma < sy_min, (
-                f"{gp.name}: Lewis stress {sigma:.1f} MPa >= "
-                f"yield {sy_min} MPa"
+                f"{gp.name}: Lewis stress {sigma:.1f} MPa >= " f"yield {sy_min} MPa"
             )
             rpm = GearAnalysis.output_rpm(gp, rpm)
 
     def test_structural_gear_tooth_sf_ge_2(
-        self, primary_gear, secondary_gear, lib,
+        self,
+        primary_gear,
+        secondary_gear,
+        lib,
     ):
         """Structural gear tooth safety factor >= 2.0 for both stages.
 
@@ -204,14 +210,16 @@ class TestCrossModuleConsistency:
             v = GearAnalysis.pitch_line_velocity_m_s(gp, stage_rpm)
             wt = GearAnalysis.tangential_force_N(TRANSMITTED_POWER_W, v)
             sigma = GearToothStress.bending_stress_MPa(
-                wt, gp.face_width_mm, gp.module_mm, gp.tooth_count_driver,
+                wt,
+                gp.face_width_mm,
+                gp.module_mm,
+                gp.tooth_count_driver,
             )
             sf = GearToothStress.safety_factor(
-                brass.yield_strength_MPa[0], sigma,
+                brass.yield_strength_MPa[0],
+                sigma,
             )
-            assert sf >= 2.0, (
-                f"{gp.name}: gear tooth SF={sf:.2f} < 2.0"
-            )
+            assert sf >= 2.0, f"{gp.name}: gear tooth SF={sf:.2f} < 2.0"
 
     # ----- tribology vs materials: PV < limit for bearing materials ---
 
@@ -223,32 +231,40 @@ class TestCrossModuleConsistency:
         """
         radial_load_N = MACHINE_MASS_KG * 9.81 / BEARING_COUNT
         pv = PVAnalysis.pv_product_MPa_m_s(
-            radial_load_N, SHAFT_DIAMETER_MM, BEARING_LENGTH_MM, INPUT_RPM,
+            radial_load_N,
+            SHAFT_DIAMETER_MM,
+            BEARING_LENGTH_MM,
+            INPUT_RPM,
         )
         assert PVAnalysis.is_within_limit(
-            pv, PV_LIMIT_BRONZE_ON_STEEL_LUBRICATED,
+            pv,
+            PV_LIMIT_BRONZE_ON_STEEL_LUBRICATED,
         ), (
-            f"Bearing PV={pv:.4f} MPa.m/s >= "
-            f"limit {PV_LIMIT_BRONZE_ON_STEEL_LUBRICATED}"
+            f"Bearing PV={pv:.4f} MPa.m/s >= " f"limit {PV_LIMIT_BRONZE_ON_STEEL_LUBRICATED}"
         )
 
     def test_bearing_pv_also_below_brass_limit(self):
         """Even the more conservative brass PV limit is satisfied."""
         radial_load_N = MACHINE_MASS_KG * 9.81 / BEARING_COUNT
         pv = PVAnalysis.pv_product_MPa_m_s(
-            radial_load_N, SHAFT_DIAMETER_MM, BEARING_LENGTH_MM, INPUT_RPM,
+            radial_load_N,
+            SHAFT_DIAMETER_MM,
+            BEARING_LENGTH_MM,
+            INPUT_RPM,
         )
         assert PVAnalysis.is_within_limit(
-            pv, PV_LIMIT_BRASS_ON_STEEL_LUBRICATED,
+            pv,
+            PV_LIMIT_BRASS_ON_STEEL_LUBRICATED,
         ), (
-            f"Bearing PV={pv:.4f} MPa.m/s >= "
-            f"brass limit {PV_LIMIT_BRASS_ON_STEEL_LUBRICATED}"
+            f"Bearing PV={pv:.4f} MPa.m/s >= " f"brass limit {PV_LIMIT_BRASS_ON_STEEL_LUBRICATED}"
         )
 
     # ----- electromagnetic vs thermodynamics: eddy << friction --------
 
     def test_eddy_losses_three_orders_below_friction_heat(
-        self, lib, envelope,
+        self,
+        lib,
+        envelope,
     ):
         """Total EM eddy losses must be at least 3 orders of magnitude
         below total friction heat generation.
@@ -262,13 +278,17 @@ class TestCrossModuleConsistency:
         total_eddy_W = 0.0
         # Main shaft eddy losses
         total_eddy_W += EddyCurrentModel.shaft_eddy_loss_W(
-            SHAFT_DIAMETER_MM, 1500.0, INPUT_RPM,
+            SHAFT_DIAMETER_MM,
+            1500.0,
+            INPUT_RPM,
             steel.electrical_resistivity_ohm_m,
         )
         # Gear eddy losses (4 gears across 2 stages)
         for pd_mm in [50.0, 150.0, 75.0, 150.0]:
             total_eddy_W += EddyCurrentModel.gear_eddy_loss_W(
-                pd_mm, 15.0, INPUT_RPM,
+                pd_mm,
+                15.0,
+                INPUT_RPM,
                 brass.electrical_resistivity_ohm_m,
             )
 
@@ -291,18 +311,21 @@ class TestCrossModuleConsistency:
         brass = lib.get("brass")
         steel = lib.get("steel")
         assert (
-            brass.thermal_expansion_coeff_per_K
-            > steel.thermal_expansion_coeff_per_K
+            brass.thermal_expansion_coeff_per_K > steel.thermal_expansion_coeff_per_K
         ), "Brass CTE must exceed steel CTE"
 
         # Also verify via ThermalExpansionModel for a concrete length
         length_mm = 100.0
         delta_T = 20.0
         d_brass = ThermalExpansionModel.linear_expansion_mm(
-            brass.thermal_expansion_coeff_per_K, length_mm, delta_T,
+            brass.thermal_expansion_coeff_per_K,
+            length_mm,
+            delta_T,
         )
         d_steel = ThermalExpansionModel.linear_expansion_mm(
-            steel.thermal_expansion_coeff_per_K, length_mm, delta_T,
+            steel.thermal_expansion_coeff_per_K,
+            length_mm,
+            delta_T,
         )
         assert d_brass > d_steel
 
@@ -321,12 +344,14 @@ class TestCrossModuleConsistency:
 
         # -- Gear tooth SF (primary stage) --
         v = GearAnalysis.pitch_line_velocity_m_s(
-            GearPair("p", 20, 60, 2.5, 20, 15, "brass"), INPUT_RPM,
+            GearPair("p", 20, 60, 2.5, 20, 15, "brass"),
+            INPUT_RPM,
         )
         wt = GearAnalysis.tangential_force_N(TRANSMITTED_POWER_W, v)
         sigma_gear = GearToothStress.bending_stress_MPa(wt, 15.0, 2.5, 20)
         sf_gear = GearToothStress.safety_factor(
-            brass.yield_strength_MPa[0], sigma_gear,
+            brass.yield_strength_MPa[0],
+            sigma_gear,
         )
         assert sf_gear >= 2.0, f"Gear tooth SF={sf_gear:.2f}"
 
@@ -338,18 +363,25 @@ class TestCrossModuleConsistency:
         )
         # Fully reversed bending at light load: sigma_a ~ 10 MPa
         sf_fatigue = FatigueAnalysis.goodman_safety_factor(
-            10.0, 0.0, Se, steel.ultimate_tensile_strength_MPa[0],
+            10.0,
+            0.0,
+            Se,
+            steel.ultimate_tensile_strength_MPa[0],
         )
         assert sf_fatigue >= 2.0, f"Fatigue Goodman SF={sf_fatigue:.2f}"
 
         # -- Buckling SF (column supports, require >= 3.0) --
         I_col = BucklingAnalysis.rectangular_section_I_mm4(25.0, 25.0)
         P_cr = BucklingAnalysis.euler_critical_load_N(
-            steel.youngs_modulus_GPa[0], I_col, 600.0, 0.5,
+            steel.youngs_modulus_GPa[0],
+            I_col,
+            600.0,
+            0.5,
         )
         applied_col = 5.0 * 9.81  # ~5 kg per column mechanism
         sf_buckling = BucklingAnalysis.buckling_safety_factor(
-            P_cr, applied_col,
+            P_cr,
+            applied_col,
         )
         assert sf_buckling >= 3.0, f"Buckling SF={sf_buckling:.2f}"
 
@@ -369,13 +401,15 @@ class TestCrossModuleConsistency:
         load_N = shaft_mass_kg * 9.81
 
         deflection_mm = ShaftAnalysis.max_deflection_multi_support_mm(
-            load_N, total_length_mm, bearing_count,
-            steel.youngs_modulus_GPa[0], SHAFT_DIAMETER_MM,
+            load_N,
+            total_length_mm,
+            bearing_count,
+            steel.youngs_modulus_GPa[0],
+            SHAFT_DIAMETER_MM,
         )
         limit_mm = total_length_mm * 0.001
         assert deflection_mm < limit_mm, (
-            f"Shaft deflection {deflection_mm:.4f} mm >= "
-            f"{limit_mm:.2f} mm (L/1000)"
+            f"Shaft deflection {deflection_mm:.4f} mm >= " f"{limit_mm:.2f} mm (L/1000)"
         )
 
     # ----- materials vs tribology: wear model uses correct hardness ---
@@ -388,9 +422,9 @@ class TestCrossModuleConsistency:
         pb = lib.get("phosphor_bronze")
         steel = lib.get("steel")
         # Bronze bushings are softer than the steel shaft
-        assert pb.hardness_HB[0] <= steel.hardness_HB[1], (
-            "Phosphor bronze min HB should be <= steel max HB"
-        )
+        assert (
+            pb.hardness_HB[0] <= steel.hardness_HB[1]
+        ), "Phosphor bronze min HB should be <= steel max HB"
 
     # ----- kinematics vs thermodynamics: shaft omega consistent -------
 
@@ -400,7 +434,8 @@ class TestCrossModuleConsistency:
         """
         expected_omega = 2.0 * math.pi * INPUT_RPM / 60.0
         assert main_shaft.angular_velocity_rad_s == pytest.approx(
-            expected_omega, rel=1e-9,
+            expected_omega,
+            rel=1e-9,
         )
 
     # ----- fatigue vs materials: endurance limit ordering -------------
@@ -412,14 +447,15 @@ class TestCrossModuleConsistency:
         ss = lib.get("spring_steel")
         for name in lib.names():
             other = lib.get(name)
-            assert ss.endurance_limit_MPa[1] >= other.endurance_limit_MPa[0], (
-                f"Spring steel Se_max < {name} Se_min"
-            )
+            assert (
+                ss.endurance_limit_MPa[1] >= other.endurance_limit_MPa[0]
+            ), f"Spring steel Se_max < {name} Se_min"
 
 
 # ===================================================================
 # 2. Physical Plausibility
 # ===================================================================
+
 
 class TestPhysicalPlausibility:
     """Tests that computed values fall within physically reasonable
@@ -434,8 +470,7 @@ class TestPhysicalPlausibility:
         """
         for mat in lib.all_materials():
             assert 2000 <= mat.density_kg_m3 <= 9000, (
-                f"{mat.name}: density {mat.density_kg_m3} kg/m3 "
-                f"outside [2000, 9000]"
+                f"{mat.name}: density {mat.density_kg_m3} kg/m3 " f"outside [2000, 9000]"
             )
 
     # ----- Young's modulus -----
@@ -444,21 +479,17 @@ class TestPhysicalPlausibility:
         """Engineering metals span roughly 50-250 GPa."""
         for mat in lib.all_materials():
             e_min, e_max = mat.youngs_modulus_GPa
-            assert e_min >= 50, (
-                f"{mat.name}: E_min={e_min} GPa below 50"
-            )
-            assert e_max <= 250, (
-                f"{mat.name}: E_max={e_max} GPa above 250"
-            )
+            assert e_min >= 50, f"{mat.name}: E_min={e_min} GPa below 50"
+            assert e_max <= 250, f"{mat.name}: E_max={e_max} GPa above 250"
 
     # ----- Poisson's ratio -----
 
     def test_all_poissons_ratios_between_0_2_and_0_5(self, lib):
         """Metals have nu in [0.2, 0.5); rubber approaches 0.5."""
         for mat in lib.all_materials():
-            assert 0.2 <= mat.poissons_ratio < 0.5, (
-                f"{mat.name}: nu={mat.poissons_ratio} outside [0.2, 0.5)"
-            )
+            assert (
+                0.2 <= mat.poissons_ratio < 0.5
+            ), f"{mat.name}: nu={mat.poissons_ratio} outside [0.2, 0.5)"
 
     # ----- yield strength -----
 
@@ -466,12 +497,8 @@ class TestPhysicalPlausibility:
         """From soft grey iron (~165 MPa) to spring steel (~1200 MPa)."""
         for mat in lib.all_materials():
             sy_min, sy_max = mat.yield_strength_MPa
-            assert sy_min >= 50, (
-                f"{mat.name}: Sy_min={sy_min} MPa below 50"
-            )
-            assert sy_max <= 2000, (
-                f"{mat.name}: Sy_max={sy_max} MPa above 2000"
-            )
+            assert sy_min >= 50, f"{mat.name}: Sy_min={sy_min} MPa below 50"
+            assert sy_max <= 2000, f"{mat.name}: Sy_max={sy_max} MPa above 2000"
 
     # ----- total friction heat -----
 
@@ -480,22 +507,19 @@ class TestPhysicalPlausibility:
         through friction; 1-500 W is a generous plausibility band.
         """
         q = envelope.total_heat_generation_W
-        assert 1.0 <= q <= 500.0, (
-            f"Total friction heat {q:.1f} W outside [1, 500]"
-        )
+        assert 1.0 <= q <= 500.0, f"Total friction heat {q:.1f} W outside [1, 500]"
 
     # ----- thermal time constant -----
 
     def test_thermal_time_constant_between_100_and_100000_s(
-        self, envelope,
+        self,
+        envelope,
     ):
         """A 500 kg iron/steel machine with ~7 m2 surface area has
         tau ~ 3000-5000 s; 100-100000 s is a generous band.
         """
         tau = envelope.thermal_time_constant_s
-        assert 100 <= tau <= 100000, (
-            f"Thermal time constant {tau:.0f} s outside [100, 100000]"
-        )
+        assert 100 <= tau <= 100000, f"Thermal time constant {tau:.0f} s outside [100, 100000]"
 
     # ----- steady-state temperature rise -----
 
@@ -504,9 +528,7 @@ class TestPhysicalPlausibility:
         small (1-10 C typically); 1-50 C is generous.
         """
         dT = envelope.steady_state_rise_C
-        assert 0.1 <= dT <= 50.0, (
-            f"Steady-state rise {dT:.2f} C outside [0.1, 50]"
-        )
+        assert 0.1 <= dT <= 50.0, f"Steady-state rise {dT:.2f} C outside [0.1, 50]"
 
     # ----- lambda ratio: boundary regime at 30 RPM is expected --------
 
@@ -528,14 +550,12 @@ class TestPhysicalPlausibility:
         nu_brass = brass.poissons_ratio
         E_steel = steel.youngs_modulus_GPa[0]
         nu_steel = steel.poissons_ratio
-        E_star = 1.0 / (
-            (1 - nu_brass**2) / E_brass + (1 - nu_steel**2) / E_steel
-        )
+        E_star = 1.0 / ((1 - nu_brass**2) / E_brass + (1 - nu_steel**2) / E_steel)
 
         # Pitch-line velocity at primary gear stage
         v_pitch = math.pi * 50.0 * INPUT_RPM / 60000.0  # m/s
 
-        r1_mm = 50.0 / 2.0   # driver pitch radius
+        r1_mm = 50.0 / 2.0  # driver pitch radius
         r2_mm = 150.0 / 2.0  # driven pitch radius
         R_eff_mm = (r1_mm * r2_mm) / (r1_mm + r2_mm)
 
@@ -554,10 +574,7 @@ class TestPhysicalPlausibility:
         lam = LubricationModel.lambda_ratio(h_min, Ra_gear, Ra_pinion)
 
         # At 30 RPM, boundary lubrication is expected and correct
-        assert lam < 1.0, (
-            f"Lambda {lam:.2f} >= 1.0 -- at 30 RPM boundary "
-            f"regime is expected"
-        )
+        assert lam < 1.0, f"Lambda {lam:.2f} >= 1.0 -- at 30 RPM boundary " f"regime is expected"
         regime = LubricationModel.regime(lam)
         assert regime == "boundary"
 
@@ -575,20 +592,21 @@ class TestPhysicalPlausibility:
             load_per_length_N_mm=40.0,
         )
         h_1x = LubricationModel.minimum_film_thickness_um(
-            entrainment_velocity_m_s=0.08, **params,
+            entrainment_velocity_m_s=0.08,
+            **params,
         )
         h_2x = LubricationModel.minimum_film_thickness_um(
-            entrainment_velocity_m_s=0.16, **params,
+            entrainment_velocity_m_s=0.16,
+            **params,
         )
         assert h_2x > h_1x, (
-            f"Film at 2x speed ({h_2x:.4f} um) not greater than "
-            f"1x ({h_1x:.4f} um)"
+            f"Film at 2x speed ({h_2x:.4f} um) not greater than " f"1x ({h_1x:.4f} um)"
         )
         # U^0.7 scaling: 2^0.7 ~ 1.625
         ratio = h_2x / h_1x
-        assert ratio == pytest.approx(2.0**0.7, rel=0.05), (
-            f"Velocity scaling ratio {ratio:.3f} != expected ~1.625"
-        )
+        assert ratio == pytest.approx(
+            2.0**0.7, rel=0.05
+        ), f"Velocity scaling ratio {ratio:.3f} != expected ~1.625"
 
     def test_lambda_ratio_full_film_with_adequate_film_thickness(self):
         """Lambda ratio > 3 (full-film) when h_min is well above
@@ -599,9 +617,7 @@ class TestPhysicalPlausibility:
         shaft, 0.8 um bearing), lambda should exceed 3.
         """
         lam = LubricationModel.lambda_ratio(5.0, 0.8, 0.8)
-        assert lam > 3.0, (
-            f"Lambda {lam:.2f} should be > 3.0 for h_min=5 um"
-        )
+        assert lam > 3.0, f"Lambda {lam:.2f} should be > 3.0 for h_min=5 um"
 
     # ----- eddy losses are truly negligible -----
 
@@ -613,21 +629,28 @@ class TestPhysicalPlausibility:
         brass = lib.get("brass")
         total_mW = 0.0
 
-        total_mW += EddyCurrentModel.shaft_eddy_loss_W(
-            SHAFT_DIAMETER_MM, 1500.0, INPUT_RPM,
-            steel.electrical_resistivity_ohm_m,
-        ) * 1000.0
-
-        for pd_mm, fw_mm in [(50.0, 15.0), (150.0, 15.0),
-                              (75.0, 12.0), (150.0, 12.0)]:
-            total_mW += EddyCurrentModel.gear_eddy_loss_W(
-                pd_mm, fw_mm, INPUT_RPM,
-                brass.electrical_resistivity_ohm_m,
-            ) * 1000.0
-
-        assert total_mW < 1.0, (
-            f"Total eddy loss {total_mW:.4f} mW >= 1 mW"
+        total_mW += (
+            EddyCurrentModel.shaft_eddy_loss_W(
+                SHAFT_DIAMETER_MM,
+                1500.0,
+                INPUT_RPM,
+                steel.electrical_resistivity_ohm_m,
+            )
+            * 1000.0
         )
+
+        for pd_mm, fw_mm in [(50.0, 15.0), (150.0, 15.0), (75.0, 12.0), (150.0, 12.0)]:
+            total_mW += (
+                EddyCurrentModel.gear_eddy_loss_W(
+                    pd_mm,
+                    fw_mm,
+                    INPUT_RPM,
+                    brass.electrical_resistivity_ohm_m,
+                )
+                * 1000.0
+            )
+
+        assert total_mW < 1.0, f"Total eddy loss {total_mW:.4f} mW >= 1 mW"
 
     # ----- static charge negligible in oiled machine -----
 
@@ -652,11 +675,11 @@ class TestPhysicalPlausibility:
         )
         for theta_deg in range(0, int(total_cycle) + 1):
             s = CamAnalysis.displacement_mm(
-                column_latch_cam, float(theta_deg),
+                column_latch_cam,
+                float(theta_deg),
             )
             assert -0.01 <= s <= h + 0.01, (
-                f"Cam displacement {s:.3f} mm at {theta_deg} deg "
-                f"outside [0, {h}]"
+                f"Cam displacement {s:.3f} mm at {theta_deg} deg " f"outside [0, {h}]"
             )
 
     # ----- galvanic corrosion: copper alloys are cathodic to steel ----
@@ -675,14 +698,13 @@ class TestPhysicalPlausibility:
         Must be in [0.001, 0.1] kg.m2 range.
         """
         I = main_shaft.moment_of_inertia_kg_m2
-        assert 0.001 <= I <= 0.1, (
-            f"Shaft MOI {I:.6f} kg.m2 outside [0.001, 0.1]"
-        )
+        assert 0.001 <= I <= 0.1, f"Shaft MOI {I:.6f} kg.m2 outside [0.001, 0.1]"
 
 
 # ===================================================================
 # 3. Dimensional Consistency
 # ===================================================================
+
 
 class TestDimensionalConsistency:
     """Tests that verify sign conventions, finiteness, and
@@ -770,9 +792,7 @@ class TestDimensionalConsistency:
                 ("creep_T", mat.creep_threshold_C),
             ]
             for prop_name, value in finite_checks:
-                assert math.isfinite(value), (
-                    f"{mat.name}.{prop_name} = {value} is not finite"
-                )
+                assert math.isfinite(value), f"{mat.name}.{prop_name} = {value} is not finite"
 
     def test_gear_analysis_outputs_finite(self, primary_gear):
         """All GearAnalysis outputs must be finite for valid inputs."""
@@ -802,22 +822,26 @@ class TestDimensionalConsistency:
         )
         for theta in [0, 15, 30, 60, 90, 120, 180, total_cycle]:
             s = CamAnalysis.displacement_mm(
-                column_latch_cam, float(theta),
+                column_latch_cam,
+                float(theta),
             )
             assert math.isfinite(s), f"s({theta}) not finite"
 
             vel = CamAnalysis.velocity_mm_per_deg(
-                column_latch_cam, float(theta),
+                column_latch_cam,
+                float(theta),
             )
             assert math.isfinite(vel), f"v({theta}) not finite"
 
             acc = CamAnalysis.acceleration_mm_per_deg2(
-                column_latch_cam, float(theta),
+                column_latch_cam,
+                float(theta),
             )
             assert math.isfinite(acc), f"a({theta}) not finite"
 
             jrk = CamAnalysis.jerk_mm_per_deg3(
-                column_latch_cam, float(theta),
+                column_latch_cam,
+                float(theta),
             )
             assert math.isfinite(jrk), f"j({theta}) not finite"
 
@@ -829,9 +853,9 @@ class TestDimensionalConsistency:
         assert math.isfinite(envelope.operating_T_min_C)
         assert math.isfinite(envelope.operating_T_max_C)
         for src in envelope.heat_sources:
-            assert math.isfinite(src.heat_W), (
-                f"Heat source {src.name} has non-finite heat: {src.heat_W}"
-            )
+            assert math.isfinite(
+                src.heat_W
+            ), f"Heat source {src.name} has non-finite heat: {src.heat_W}"
 
     def test_structural_outputs_finite(self, lib):
         """Shaft deflection, fatigue life, and buckling load must
@@ -841,7 +865,11 @@ class TestDimensionalConsistency:
 
         # Shaft deflection
         d = ShaftAnalysis.max_deflection_multi_support_mm(
-            23.0 * 9.81, 1500.0, 4, steel.youngs_modulus_GPa[0], 50.0,
+            23.0 * 9.81,
+            1500.0,
+            4,
+            steel.youngs_modulus_GPa[0],
+            50.0,
         )
         assert math.isfinite(d)
 
@@ -853,14 +881,19 @@ class TestDimensionalConsistency:
         )
         assert math.isfinite(Se)
         N = FatigueAnalysis.fatigue_life_cycles(
-            10.0, Se, steel.ultimate_tensile_strength_MPa[0],
+            10.0,
+            Se,
+            steel.ultimate_tensile_strength_MPa[0],
         )
         assert math.isfinite(N)
 
         # Buckling
         I_col = BucklingAnalysis.rectangular_section_I_mm4(25.0, 25.0)
         P_cr = BucklingAnalysis.euler_critical_load_N(
-            steel.youngs_modulus_GPa[0], I_col, 600.0, 0.5,
+            steel.youngs_modulus_GPa[0],
+            I_col,
+            600.0,
+            0.5,
         )
         assert math.isfinite(P_cr)
 
@@ -870,12 +903,18 @@ class TestDimensionalConsistency:
         brass = lib.get("brass")
 
         p_shaft = EddyCurrentModel.shaft_eddy_loss_W(
-            50.0, 1500.0, 30.0, steel.electrical_resistivity_ohm_m,
+            50.0,
+            1500.0,
+            30.0,
+            steel.electrical_resistivity_ohm_m,
         )
         assert math.isfinite(p_shaft)
 
         p_gear = EddyCurrentModel.gear_eddy_loss_W(
-            150.0, 15.0, 30.0, brass.electrical_resistivity_ohm_m,
+            150.0,
+            15.0,
+            30.0,
+            brass.electrical_resistivity_ohm_m,
         )
         assert math.isfinite(p_gear)
 
@@ -892,8 +931,7 @@ class TestDimensionalConsistency:
         for gp in chain.gear_pairs:
             cr = GearAnalysis.contact_ratio(gp)
             assert cr >= 1.0, (
-                f"{gp.name}: contact ratio {cr:.3f} < 1.0 "
-                f"-- teeth would disengage"
+                f"{gp.name}: contact ratio {cr:.3f} < 1.0 " f"-- teeth would disengage"
             )
 
     # ----- Grubler-Kutzbach DOF = 1 -----
@@ -901,6 +939,7 @@ class TestDimensionalConsistency:
     def test_mechanism_dof_is_1(self, chain):
         """The Babbage engine kinematic chain must have exactly 1 DOF."""
         from backend.src.emulator.kinematics import DOFAnalysis
+
         m = DOFAnalysis.grubler_kutzbach(
             chain.link_count,
             chain.joint_count_full,
@@ -913,9 +952,7 @@ class TestDimensionalConsistency:
     def test_all_heat_sources_positive(self, envelope):
         """Every individual heat source must generate >= 0 W."""
         for src in envelope.heat_sources:
-            assert src.heat_W >= 0, (
-                f"Heat source {src.name}: {src.heat_W:.4f} W < 0"
-            )
+            assert src.heat_W >= 0, f"Heat source {src.name}: {src.heat_W:.4f} W < 0"
 
     # ----- PV components are positive -----
 
@@ -923,7 +960,9 @@ class TestDimensionalConsistency:
         """Bearing pressure and surface velocity must both be positive."""
         load = MACHINE_MASS_KG * 9.81 / BEARING_COUNT
         p = PVAnalysis.bearing_pressure_MPa(
-            load, SHAFT_DIAMETER_MM, BEARING_LENGTH_MM,
+            load,
+            SHAFT_DIAMETER_MM,
+            BEARING_LENGTH_MM,
         )
         assert p > 0
 
@@ -937,7 +976,10 @@ class TestDimensionalConsistency:
         force, ensuring the safety factor denominator is valid.
         """
         sigma = GearToothStress.bending_stress_MPa(
-            100.0, 15.0, 2.5, 20,
+            100.0,
+            15.0,
+            2.5,
+            20,
         )
         assert sigma > 0
 
@@ -949,11 +991,11 @@ class TestDimensionalConsistency:
         """
         for mat in lib.all_materials():
             delta = ThermalExpansionModel.linear_expansion_mm(
-                mat.thermal_expansion_coeff_per_K, 100.0, 10.0,
+                mat.thermal_expansion_coeff_per_K,
+                100.0,
+                10.0,
             )
-            assert delta > 0, (
-                f"{mat.name}: expansion {delta} <= 0 for positive delta_T"
-            )
+            assert delta > 0, f"{mat.name}: expansion {delta} <= 0 for positive delta_T"
 
     # ----- yield > endurance limit (for steel-class materials) --------
 
@@ -970,14 +1012,12 @@ class TestDimensionalConsistency:
     # ----- velocity ratio reciprocal consistency --------------------
 
     def test_velocity_ratio_reciprocal_of_tooth_ratio(
-        self, primary_gear,
+        self,
+        primary_gear,
     ):
         """Velocity ratio N_driver/N_driven must equal the reciprocal
         of the tooth count ratio.
         """
         vr = GearAnalysis.velocity_ratio(primary_gear)
-        tooth_ratio = (
-            primary_gear.tooth_count_driver
-            / primary_gear.tooth_count_driven
-        )
+        tooth_ratio = primary_gear.tooth_count_driver / primary_gear.tooth_count_driven
         assert vr == pytest.approx(tooth_ratio, rel=1e-12)

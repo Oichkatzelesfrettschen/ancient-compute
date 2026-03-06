@@ -24,19 +24,21 @@ from enum import Enum
 
 
 class CrankMode(Enum):
-    ADD = "ADD"         # Normal position
-    SUBTRACT = "SUB"    # Pulled position
+    ADD = "ADD"  # Normal position
+    SUBTRACT = "SUB"  # Pulled position
+
 
 class CurtaTypeI:
     """
     Curta Type I Emulator.
     Capacity: 8 input, 6 counter, 11 result.
     """
+
     def __init__(self) -> None:
-        self.sliders = [0] * 8          # 8 input sliders
-        self.result_dial = 0            # 11 digits
-        self.counter_dial = 0           # 6 digits
-        self.carriage_position = 0      # 0 to 5 (6 positions)
+        self.sliders = [0] * 8  # 8 input sliders
+        self.result_dial = 0  # 11 digits
+        self.counter_dial = 0  # 6 digits
+        self.carriage_position = 0  # 0 to 5 (6 positions)
         self.crank_mode = CrankMode.ADD
 
         # Physical limits
@@ -63,13 +65,13 @@ class CurtaTypeI:
         """Get current value represented by sliders."""
         val = 0
         for i, digit in enumerate(self.sliders):
-            val += digit * (10 ** i)
+            val += digit * (10**i)
         return val
 
     def shift_carriage(self, steps: int) -> None:
         """Rotate carriage. Positive = increase multiplier."""
         new_pos = self.carriage_position + steps
-        if 0 <= new_pos <= 5: # Type I has 6 positions typically
+        if 0 <= new_pos <= 5:  # Type I has 6 positions typically
             self.carriage_position = new_pos
         else:
             # Mechanical stop
@@ -85,7 +87,7 @@ class CurtaTypeI:
         Adds/Subtracts input * 10^carriage to result.
         Adds/Subtracts 1 * 10^carriage to counter.
         """
-        multiplier = 10 ** self.carriage_position
+        multiplier = 10**self.carriage_position
         input_val = self.get_input_value() * multiplier
         count_val = 1 * multiplier
 
@@ -108,23 +110,23 @@ class CurtaTypeI:
         self.result_dial += value
         # Handle wrap-around (tens bell)
         if self.result_dial > self.MAX_RESULT:
-            self.result_dial %= (self.MAX_RESULT + 1)
+            self.result_dial %= self.MAX_RESULT + 1
 
     def _sub_result(self, value: int) -> None:
         self.result_dial -= value
         if self.result_dial < 0:
             # Ten's complement wrap around
-            self.result_dial += (self.MAX_RESULT + 1)
+            self.result_dial += self.MAX_RESULT + 1
 
     def _add_counter(self, value: int) -> None:
         self.counter_dial += value
         if self.counter_dial > self.MAX_COUNTER:
-            self.counter_dial %= (self.MAX_COUNTER + 1)
+            self.counter_dial %= self.MAX_COUNTER + 1
 
     def _sub_counter(self, value: int) -> None:
         self.counter_dial -= value
         if self.counter_dial < 0:
-            self.counter_dial += (self.MAX_COUNTER + 1)
+            self.counter_dial += self.MAX_COUNTER + 1
 
     def clear_result(self) -> None:
         """Clear result dial (clearing lever)."""

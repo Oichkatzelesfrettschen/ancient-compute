@@ -16,6 +16,7 @@ from backend.src.emulator.carry import AnticipatingCarriage, CarryPropagationUni
 # Initialization Tests (5 tests)
 # ============================================================================
 
+
 def test_anticipating_carriage_init():
     """Test AnticipatingCarriage initialization."""
     carriage = AnticipatingCarriage()
@@ -92,6 +93,7 @@ def test_anticipating_carriage_clear_history():
 # ============================================================================
 # Carry Signal Tests (8 tests)
 # ============================================================================
+
 
 def test_anticipating_carriage_set_carry_signals():
     """Test setting carry signals from columns."""
@@ -174,6 +176,7 @@ def test_anticipating_carriage_is_carrying_last():
 # ============================================================================
 # Anticipation Logic Tests (15 tests)
 # ============================================================================
+
 
 def test_anticipating_carriage_anticipate_simple():
     """Test anticipating carries from single input."""
@@ -322,6 +325,7 @@ def test_anticipating_carriage_simultaneous_carries():
 # Phase Management Tests (6 tests)
 # ============================================================================
 
+
 def test_anticipating_carriage_advance_phase():
     """Test advancing mechanical phase."""
     carriage = AnticipatingCarriage()
@@ -404,6 +408,7 @@ def test_anticipating_carriage_history_with_phases():
 # ============================================================================
 # Edge Cases and Integration Tests (16 tests)
 # ============================================================================
+
 
 def test_anticipating_carriage_last_column_carry():
     """Test carry from last column (no column 8)."""
@@ -558,7 +563,7 @@ def test_anticipating_carriage_de2_cycle():
     for phase, input_carries in enumerate(carries_sequence):
         carriage.current_phase = phase
         carriage.set_carry_signals(input_carries)
-        result = carriage.anticipate_carries()
+        _result = carriage.anticipate_carries()
         carriage.record_snapshot()
 
     # Verify complete history
@@ -579,7 +584,7 @@ def test_anticipating_carriage_high_frequency_carries():
 
     for carries in carries_list:
         carriage.set_carry_signals(carries)
-        result = carriage.anticipate_carries()
+        _result = carriage.anticipate_carries()
         assert carriage.is_carrying()
 
 
@@ -593,7 +598,7 @@ def test_anticipating_carriage_statistical_carries():
         # Alternating pattern
         carries = [bool(i % 2) for i in range(8)]
         carriage.set_carry_signals(carries)
-        result = carriage.anticipate_carries()
+        _result = carriage.anticipate_carries()
 
         if carriage.is_carrying():
             carries_count += 1

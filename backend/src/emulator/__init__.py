@@ -16,17 +16,33 @@ from backend.src.emulator.columns import DigitColumn as Column
 from backend.src.emulator.curta import CurtaTypeI
 from backend.src.emulator.debugger import Debugger
 from backend.src.emulator.enigma import EnigmaMachine
+from backend.src.emulator.fourmilab_compat import (
+    fourmilab_to_instructions,
+    parse_fourmilab_deck,
+    run_fourmilab_deck,
+)
 from backend.src.emulator.jacquard import JacquardEmulator as JacquardLoom
 from backend.src.emulator.leibniz_reckoner import LeibnizReckonerEmulator as LeibnizReckoner
+from backend.src.emulator.lovelace_notes import (
+    run_note_b,
+    run_note_b_compound,
+    run_note_b_div,
+    run_note_b_mult,
+    run_note_c,
+    run_note_d,
+)
+from backend.src.emulator.ludgate import LudgateMachine
 from backend.src.emulator.machine import DEMachine
 from backend.src.emulator.napiers_bones import NapiersBones
 from backend.src.emulator.pascaline import PascalineEmulator as Pascaline
 from backend.src.emulator.performance import PerformanceAnalyzer
 from backend.src.emulator.printer import Printer
 from backend.src.emulator.quipu import QuipuEmulator as Quipu
+from backend.src.emulator.scheutz import ScheutzDifferenceEngine
 from backend.src.emulator.slide_rule import SlideRuleEmulator as SlideRule
 from backend.src.emulator.tally_marks import TallyMarksEmulator as TallyMarks
 from backend.src.emulator.timing import TimingController
+from backend.src.emulator.torres_quevedo import TorresQuevedo
 from backend.src.emulator.types import (
     AntikytheraGear,
     AntikytheraMechanismState,
@@ -39,11 +55,16 @@ from backend.src.emulator.types import (
     OperationCard,
     VariableCard,
 )
+from backend.src.emulator.zuse_z1 import ZuseZ1
 
 __all__ = [
     "Abacus",
+    "AnticipatingCarriage",
+    "AntikytheraGear",
     "AntikytheraMechanism",
+    "AntikytheraMechanismState",
     "BabbageNumber",
+    "BarrelController",
     "CardReader",
     "CardType",
     "ClayTokens",
@@ -59,8 +80,10 @@ __all__ = [
     "JacquardCard",
     "JacquardLoom",
     "LeibnizReckoner",
+    "LudgateMachine",
     "MachineState",
     "Mesh",
+    "MicroOp",
     "MillState",
     "NapiersBones",
     "OperationCard",
@@ -68,11 +91,23 @@ __all__ = [
     "PerformanceAnalyzer",
     "Printer",
     "Quipu",
+    "ScheutzDifferenceEngine",
     "SlideRule",
     "TallyMarks",
     "TimingController",
+    "TorresQuevedo",
     "VariableCard",
+    "ZuseZ1",
     "ada_lovelace_bernoulli_series",
     "analytical_engine_bernoulli_algorithm",
     "bernoulli_number",
+    "fourmilab_to_instructions",
+    "parse_fourmilab_deck",
+    "run_fourmilab_deck",
+    "run_note_b",
+    "run_note_b_compound",
+    "run_note_b_div",
+    "run_note_b_mult",
+    "run_note_c",
+    "run_note_d",
 ]

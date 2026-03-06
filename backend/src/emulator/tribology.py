@@ -35,6 +35,7 @@ PV_LIMIT_BRASS_ON_STEEL_LUBRICATED = 5.0
 # Archard Wear Model
 # ---------------------------------------------------------------------------
 
+
 class WearModel:
     """Archard adhesive wear equation: V = K * F_N * s / H.
 
@@ -112,6 +113,7 @@ class WearModel:
 # PV Limit Analysis
 # ---------------------------------------------------------------------------
 
+
 class PVAnalysis:
     """Pressure-velocity (PV) product analysis for plain bearings.
 
@@ -152,9 +154,7 @@ class PVAnalysis:
         rpm: float,
     ) -> float:
         """PV product [MPa.m/s]."""
-        p = PVAnalysis.bearing_pressure_MPa(
-            radial_load_N, shaft_diameter_mm, bearing_length_mm
-        )
+        p = PVAnalysis.bearing_pressure_MPa(radial_load_N, shaft_diameter_mm, bearing_length_mm)
         v = PVAnalysis.surface_velocity_m_s(shaft_diameter_mm, rpm)
         return p * v
 
@@ -170,6 +170,7 @@ class PVAnalysis:
 # ---------------------------------------------------------------------------
 # Lubrication Film Thickness (Hamrock-Dowson EHL)
 # ---------------------------------------------------------------------------
+
 
 class LubricationModel:
     """Elastohydrodynamic lubrication (EHL) film thickness model.
@@ -213,7 +214,7 @@ class LubricationModel:
 
         # Dowson-Higginson line contact:
         # H_min = 1.6 * U^0.7 * G^0.54 * W'^(-0.13)
-        H_min = 1.6 * U_param**0.7 * G_param**0.54 * w_prime**(-0.13)
+        H_min = 1.6 * U_param**0.7 * G_param**0.54 * w_prime ** (-0.13)
         h_min_m = H_min * R_m
         return float(h_min_m * 1e6)  # convert to um
 
@@ -249,9 +250,11 @@ class LubricationModel:
 # Surface Finish Specification
 # ---------------------------------------------------------------------------
 
+
 @dataclass(frozen=True)
 class SurfaceFinishSpec:
     """Surface finish requirements for a wearing surface."""
+
     component: str
     Ra_um: float
     process: str
@@ -261,6 +264,7 @@ class SurfaceFinishSpec:
 # ---------------------------------------------------------------------------
 # Running-In Wear Model (Rabinowicz, 1995)
 # ---------------------------------------------------------------------------
+
 
 class RunningInWear:
     """Transient wear coefficient model during running-in period.
@@ -286,9 +290,7 @@ class RunningInWear:
         """
         if s_0_mm <= 0:
             return K_steady
-        return K_steady + (K_initial - K_steady) * math.exp(
-            -sliding_distance_mm / s_0_mm
-        )
+        return K_steady + (K_initial - K_steady) * math.exp(-sliding_distance_mm / s_0_mm)
 
     @staticmethod
     def cumulative_wear_volume_mm3(
@@ -319,6 +321,7 @@ class RunningInWear:
 # Surface Texture Evolution
 # ---------------------------------------------------------------------------
 
+
 class SurfaceTextureEvolution:
     """Surface roughness evolution during running-in.
 
@@ -342,14 +345,13 @@ class SurfaceTextureEvolution:
             h_0_um = 2.0 * Ra_initial_um
         if h_0_um <= 0:
             return Ra_steady_um
-        return Ra_steady_um + (Ra_initial_um - Ra_steady_um) * math.exp(
-            -wear_depth_um / h_0_um
-        )
+        return Ra_steady_um + (Ra_initial_um - Ra_steady_um) * math.exp(-wear_depth_um / h_0_um)
 
 
 # ---------------------------------------------------------------------------
 # Wear-to-Clearance Feedback
 # ---------------------------------------------------------------------------
+
 
 class WearClearanceFeedback:
     """Converts wear volume to bearing clearance and gear backlash changes."""
@@ -390,6 +392,7 @@ class WearClearanceFeedback:
 # Time-to-Failure Prediction
 # ---------------------------------------------------------------------------
 
+
 class TimeToFailure:
     """Predict component life from wear-based failure criteria."""
 
@@ -418,9 +421,7 @@ class TimeToFailure:
             return 0.0
         wear_rate_per_hour = K * normal_force_N * s_per_hour / hardness_MPa
         # h_wear per hour = wear_rate / (pi * d * L)
-        h_per_hour = wear_rate_per_hour / (
-            math.pi * shaft_diameter_mm * bearing_length_mm
-        )
+        h_per_hour = wear_rate_per_hour / (math.pi * shaft_diameter_mm * bearing_length_mm)
         if h_per_hour <= 0:
             return float("inf")
         return delta_c / h_per_hour
@@ -428,12 +429,15 @@ class TimeToFailure:
 
 # 19th-century achievable finishes
 PERIOD_SURFACE_FINISHES = [
-    SurfaceFinishSpec("shaft_journal", 0.8, "turning + polishing",
-                      "Best achievable with 19th-c lathe + hand polish"),
-    SurfaceFinishSpec("gear_tooth_flank", 1.6, "hobbing + hand filing",
-                      "Typical for brass gear teeth"),
-    SurfaceFinishSpec("bearing_bore", 0.8, "boring + burnishing",
-                      "Bronze bushing ID finish"),
-    SurfaceFinishSpec("cam_surface", 1.6, "milling + polishing",
-                      "Steel cam profile surface"),
+    SurfaceFinishSpec(
+        "shaft_journal",
+        0.8,
+        "turning + polishing",
+        "Best achievable with 19th-c lathe + hand polish",
+    ),
+    SurfaceFinishSpec(
+        "gear_tooth_flank", 1.6, "hobbing + hand filing", "Typical for brass gear teeth"
+    ),
+    SurfaceFinishSpec("bearing_bore", 0.8, "boring + burnishing", "Bronze bushing ID finish"),
+    SurfaceFinishSpec("cam_surface", 1.6, "milling + polishing", "Steel cam profile surface"),
 ]

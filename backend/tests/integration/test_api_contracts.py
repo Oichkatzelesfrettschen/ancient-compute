@@ -6,7 +6,6 @@ and HTTP semantics. Ensures API consistency, error handling, and compatibility.
 """
 
 
-
 class TestExecutionAPIContract:
     """Test /execute endpoint contract and behavior."""
 
@@ -59,7 +58,14 @@ class TestExecutionAPIContract:
             "error": "Language not supported",
             "language": "cobol",
             "supported_languages": [
-                "python", "c", "haskell", "idris", "lisp", "java", "assembly", "systemf"
+                "python",
+                "c",
+                "haskell",
+                "idris",
+                "lisp",
+                "java",
+                "assembly",
+                "systemf",
             ],
             "status_code": 400,
         }
@@ -69,11 +75,7 @@ class TestExecutionAPIContract:
 
     def test_missing_required_field_error(self):
         """Test error when required field is missing."""
-        request = {
-            "code": "print('hello')",
-            # Missing: language
-        }
-
+        # Request with missing 'language' field
         error_response = {
             "error": "Missing required field: language",
             "status_code": 400,
@@ -83,8 +85,6 @@ class TestExecutionAPIContract:
 
     def test_invalid_json_error(self):
         """Test error on invalid JSON."""
-        invalid_json = '{"language": "python", "code": invalid}'
-
         error_response = {
             "error": "Invalid JSON",
             "status_code": 400,
@@ -471,6 +471,7 @@ class TestTimeFormatContract:
 
         iso_pattern = r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$"
         import re
+
         for ts in timestamps:
             assert re.match(iso_pattern, ts)
 

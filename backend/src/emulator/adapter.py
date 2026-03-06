@@ -41,6 +41,7 @@ class MachineAdapter(ABC):
     def get_snapshot(self) -> Any:
         pass
 
+
 class DEMachineAdapter(MachineAdapter):
     def __init__(self, machine):
         self.machine = machine
@@ -65,6 +66,7 @@ class DEMachineAdapter(MachineAdapter):
 
     def get_snapshot(self) -> Any:
         return self.machine.get_snapshot()
+
 
 class AEMachineAdapter(MachineAdapter):
     def __init__(self, engine):
@@ -98,12 +100,151 @@ class AEMachineAdapter(MachineAdapter):
             "clock_time": self.engine.clock_time,
             "barrel": {
                 "active": self.engine.barrels.active_barrel,
-                "step": self.engine.barrels.step_index
+                "step": self.engine.barrels.step_index,
             },
             "mill_operand_buffer": self.engine.mill_operand_buffer.to_decimal(),
             "mill_result_buffer": self.engine.mill_result_buffer.to_decimal(),
-            "active_store_address": self.engine.active_store_address
+            "active_store_address": self.engine.active_store_address,
         }
+
+
+class ScheutzAdapter(MachineAdapter):
+    """Adapter for ScheutzDifferenceEngine."""
+
+    def __init__(self, machine):
+        self.machine = machine
+        self._cranks = 0
+
+    def get_cycle_count(self) -> int:
+        return self._cranks
+
+    def get_current_phase(self) -> MechanicalPhase | None:
+        return None
+
+    def get_column_values(self) -> list[int]:
+        return [int(r) for r in self.machine.state.registers]
+
+    def get_register_values(self) -> dict[str, Any]:
+        return {f"D{i}": float(self.machine.state.registers[i]) for i in range(len(self.machine.state.registers))}
+
+    def get_memory_value(self, address: int) -> Any:
+        if 0 <= address < len(self.machine.state.registers):
+            return float(self.machine.state.registers[address])
+        return 0
+
+    def step(self) -> None:
+        self.machine.crank()
+        self._cranks += 1
+
+    def get_snapshot(self) -> Any:
+        return {
+            "registers": self.get_register_values(),
+            "cranks": self._cranks,
+            "cycle_count": self.machine.state.cycle_count,
+        }
+
+
+class LudgateAdapter(MachineAdapter):
+    """Adapter for LudgateMachine."""
+
+    def __init__(self, machine):
+        self.machine = machine
+        self._steps = 0
+
+    def get_cycle_count(self) -> int:
+        return self._steps
+
+    def get_current_phase(self) -> MechanicalPhase | None:
+        return None
+
+    def get_column_values(self) -> list[int]:
+        return []
+
+    def get_register_values(self) -> dict[str, Any]:
+        return {"accumulator": self.machine.state.accumulator}
+
+    def get_memory_value(self, address: int) -> Any:
+        if 0 <= address < len(self.machine.state.store):
+            return self.machine.state.store[address]
+        return 0
+
+    def step(self) -> None:
+        self._steps += 1
+
+    def get_snapshot(self) -> Any:
+        return {"accumulator": self.machine.state.accumulator, "steps": self._steps}
+
+
+class TorresQuevedoAdapter(MachineAdapter):
+    """Adapter for TorresQuevedo."""
+
+    def __init__(self, machine):
+        self.machine = machine
+        self._steps = 0
+
+    def get_cycle_count(self) -> int:
+        return self._steps
+
+    def get_current_phase(self) -> MechanicalPhase | None:
+        return None
+
+    def get_column_values(self) -> list[int]:
+        return []
+
+    def get_register_values(self) -> dict[str, Any]:
+        return {
+            f"R{i}": self.machine.state.registers[i].to_float()
+            for i in range(len(self.machine.state.registers))
+        }
+
+    def get_memory_value(self, address: int) -> Any:
+        if 0 <= address < len(self.machine.state.registers):
+            return self.machine.state.registers[address].to_float()
+        return 0.0
+
+    def step(self) -> None:
+        self._steps += 1
+
+    def get_snapshot(self) -> Any:
+        return {
+            "registers": self.get_register_values(),
+            "cycle_count": self.machine.state.cycle_count,
+        }
+
+
+class ZuseZ1Adapter(MachineAdapter):
+    """Adapter for ZuseZ1."""
+
+    def __init__(self, machine):
+        self.machine = machine
+
+    def get_cycle_count(self) -> int:
+        return self.machine.state.program_counter
+
+    def get_current_phase(self) -> MechanicalPhase | None:
+        return None
+
+    def get_column_values(self) -> list[int]:
+        return []
+
+    def get_register_values(self) -> dict[str, Any]:
+        return {"accumulator": self.machine.state.accumulator.to_float()}
+
+    def get_memory_value(self, address: int) -> Any:
+        if 0 <= address < len(self.machine.state.memory):
+            return self.machine.state.memory[address].to_float()
+        return 0.0
+
+    def step(self) -> None:
+        self.machine.step()
+
+    def get_snapshot(self) -> Any:
+        return {
+            "pc": self.machine.state.program_counter,
+            "accumulator": self.machine.state.accumulator.to_float(),
+            "cycle_count": self.machine.state.cycle_count,
+        }
+
 
 class CurtaAdapter(MachineAdapter):
     def __init__(self, curta):
@@ -123,7 +264,7 @@ class CurtaAdapter(MachineAdapter):
         return {
             "Result": self.curta.result_dial,
             "Counter": self.curta.counter_dial,
-            "Carriage": self.curta.carriage_position
+            "Carriage": self.curta.carriage_position,
         }
 
     def get_memory_value(self, address: int) -> Any:
@@ -138,5 +279,5 @@ class CurtaAdapter(MachineAdapter):
             "result": self.curta.result_dial,
             "counter": self.curta.counter_dial,
             "sliders": self.curta.sliders,
-            "mode": self.curta.crank_mode.name
+            "mode": self.curta.crank_mode.name,
         }

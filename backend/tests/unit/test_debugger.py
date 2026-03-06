@@ -22,6 +22,7 @@ from backend.src.emulator.timing import MechanicalPhase
 # Symbol Table Tests (8 tests)
 # ============================================================================
 
+
 class TestSymbolTableBasics:
     """Test basic symbol table operations."""
 
@@ -92,6 +93,7 @@ class TestSymbolTableBasics:
 # Symbol Access Tracking Tests (7 tests)
 # ============================================================================
 
+
 class TestSymbolAccessTracking:
     """Test symbol access recording."""
 
@@ -159,6 +161,7 @@ class TestSymbolAccessTracking:
 # Symbol Statistics Tests (4 tests)
 # ============================================================================
 
+
 class TestSymbolStatistics:
     """Test symbol statistics and reporting."""
 
@@ -210,6 +213,7 @@ class TestSymbolStatistics:
 # ============================================================================
 # Breakpoint Manager Tests (8 tests)
 # ============================================================================
+
 
 class TestBreakpointManager:
     """Test breakpoint management."""
@@ -281,6 +285,7 @@ class TestBreakpointManager:
 # Breakpoint Detection Tests (6 tests)
 # ============================================================================
 
+
 class TestBreakpointDetection:
     """Test breakpoint triggering via Debugger step interface."""
 
@@ -297,7 +302,7 @@ class TestBreakpointDetection:
         """Test cycle breakpoint doesn't trigger before target."""
         machine = DEMachine()
         debugger = Debugger(machine)
-        bp_id = debugger.set_cycle_breakpoint(5)
+        _bp_id = debugger.set_cycle_breakpoint(5)
         # Step once -- cycle 1 should not trigger bp targeting cycle 5
         # Note: the check_breakpoints uses >= so it triggers once cycle >= target
         result = debugger.step_cycle()
@@ -344,6 +349,7 @@ class TestBreakpointDetection:
 # ============================================================================
 # Debugger Integration Tests (10 tests)
 # ============================================================================
+
 
 class TestDebuggerBasics:
     """Test basic debugger operations."""
@@ -419,8 +425,8 @@ class TestDebuggerBasics:
         """Test listing breakpoints."""
         machine = DEMachine()
         debugger = Debugger(machine)
-        bp_id1 = debugger.set_cycle_breakpoint(5)
-        bp_id2 = debugger.set_cycle_breakpoint(10)
+        _bp_id1 = debugger.set_cycle_breakpoint(5)
+        _bp_id2 = debugger.set_cycle_breakpoint(10)
         breakpoints = debugger.list_breakpoints()
         assert len(breakpoints) == 2
 
@@ -439,6 +445,7 @@ class TestDebuggerBasics:
 # ============================================================================
 # Debugger Execution Tests (8 tests)
 # ============================================================================
+
 
 class TestDebuggerExecution:
     """Test debugger execution control."""
@@ -534,6 +541,7 @@ class TestDebuggerExecution:
 # Polynomial Evaluation with Debugger Tests (6 tests)
 # ============================================================================
 
+
 class TestDebuggerPolynomialEvaluation:
     """Test debugger with polynomial evaluation."""
 
@@ -572,7 +580,7 @@ class TestDebuggerPolynomialEvaluation:
         machine = DEMachine()
         debugger = Debugger(machine)
         condition = lambda snapshot: snapshot.ae_accumulator > 0
-        bp_id = debugger.set_condition_breakpoint(condition)
+        _bp_id = debugger.set_condition_breakpoint(condition)
         breakpoints = debugger.list_breakpoints()
         assert len(breakpoints) == 1
 
@@ -580,9 +588,9 @@ class TestDebuggerPolynomialEvaluation:
         """Test multiple breakpoints can be set."""
         machine = DEMachine()
         debugger = Debugger(machine)
-        bp1 = debugger.set_cycle_breakpoint(3)
-        bp2 = debugger.set_cycle_breakpoint(5)
-        bp3 = debugger.set_phase_breakpoint(MechanicalPhase.CARRY)
+        _bp1 = debugger.set_cycle_breakpoint(3)
+        _bp2 = debugger.set_cycle_breakpoint(5)
+        _bp3 = debugger.set_phase_breakpoint(MechanicalPhase.CARRY)
         breakpoints = debugger.list_breakpoints()
         assert len(breakpoints) == 3
 
@@ -604,6 +612,7 @@ class TestDebuggerPolynomialEvaluation:
 # ============================================================================
 # Edge Cases and Advanced Tests (7 tests)
 # ============================================================================
+
 
 class TestDebuggerEdgeCases:
     """Test edge cases and advanced scenarios."""

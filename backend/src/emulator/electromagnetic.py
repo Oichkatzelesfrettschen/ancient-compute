@@ -24,7 +24,7 @@ from dataclasses import dataclass
 # ---------------------------------------------------------------------------
 
 MU_0 = 4.0 * math.pi * 1e-7  # Vacuum permeability [H/m]
-EARTH_B_FIELD_T = 50e-6       # Earth's magnetic field ~50 uT
+EARTH_B_FIELD_T = 50e-6  # Earth's magnetic field ~50 uT
 
 
 # ---------------------------------------------------------------------------
@@ -50,6 +50,7 @@ GALVANIC_HIGH_RISK_V = 0.50
 # Eddy Current Model
 # ---------------------------------------------------------------------------
 
+
 class EddyCurrentModel:
     """Eddy current losses in conducting bodies rotating in a magnetic field.
 
@@ -73,9 +74,9 @@ class EddyCurrentModel:
         """Compute eddy current power loss [W]."""
         if resistivity_ohm_m <= 0:
             return float("inf")
-        return (
-            math.pi**2 * B_T**2 * thickness_m**2 * frequency_Hz**2 * volume_m3
-        ) / (6.0 * resistivity_ohm_m)
+        return (math.pi**2 * B_T**2 * thickness_m**2 * frequency_Hz**2 * volume_m3) / (
+            6.0 * resistivity_ohm_m
+        )
 
     @staticmethod
     def shaft_eddy_loss_W(
@@ -118,9 +119,11 @@ class EddyCurrentModel:
 # Galvanic Corrosion Matrix
 # ---------------------------------------------------------------------------
 
+
 @dataclass(frozen=True)
 class GalvanicPair:
     """A pair of metals in contact, with corrosion risk assessment."""
+
     material_anodic: str
     material_cathodic: str
     potential_difference_V: float
@@ -183,7 +186,7 @@ class GalvanicCorrosionMatrix:
         names = sorted(self._potentials.keys())
         pairs = []
         for i, a in enumerate(names):
-            for b in names[i + 1:]:
+            for b in names[i + 1 :]:
                 pairs.append(self.evaluate_pair(a, b))
         return pairs
 
@@ -191,6 +194,7 @@ class GalvanicCorrosionMatrix:
 # ---------------------------------------------------------------------------
 # Static Charge Model
 # ---------------------------------------------------------------------------
+
 
 class StaticChargeModel:
     """Triboelectric static charge accumulation estimate.

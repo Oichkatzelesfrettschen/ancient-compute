@@ -5,7 +5,6 @@ Comprehensive tests for exercise code submission, validation, and result handlin
 with language service integration.
 """
 
-
 import pytest
 
 # Import database and models; these are importable but tests that use
@@ -30,6 +29,7 @@ def _postgres_reachable() -> bool:
         return True
     except Exception:
         return False
+
 
 _needs_postgres = pytest.mark.skipif(
     not _postgres_reachable(),

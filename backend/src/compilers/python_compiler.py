@@ -62,6 +62,7 @@ from backend.src.ir_types import Constant as IRConstant
 @dataclass
 class Symbol:
     """Symbol table entry"""
+
     name: str
     ptype: PythonType
     scope: str  # 'global', 'parameter', 'local'
@@ -75,7 +76,7 @@ class SymbolTable:
         self.symbols: dict[str, Symbol] = {}
         self.parent = parent
 
-    def define(self, name: str, ptype: PythonType, scope: str = 'local') -> None:
+    def define(self, name: str, ptype: PythonType, scope: str = "local") -> None:
         """Define symbol in current scope"""
         self.symbols[name] = Symbol(name=name, ptype=ptype, scope=scope)
 
@@ -148,9 +149,7 @@ class PythonCompiler:
         for stmt in module.body:
             if isinstance(stmt, FunctionDef):
                 self.symbol_table.define(
-                    stmt.name,
-                    PythonType.any(),  # Functions don't have simple types
-                    scope='global'
+                    stmt.name, PythonType.any(), scope="global"  # Functions don't have simple types
                 )
 
     def _generate_ir_module(self, module: Module) -> Program:
@@ -181,15 +180,14 @@ class PythonCompiler:
 
         # Define parameters
         for arg in func_def.args:
-            self.symbol_table.define(arg, PythonType.any(), scope='parameter')
+            self.symbol_table.define(arg, PythonType.any(), scope="parameter")
 
         # Compile function body
         for stmt in func_def.body:
             self._compile_statement(stmt, entry_block)
 
         # If no explicit return, add implicit return None
-        if not entry_block.instructions or \
-           not isinstance(entry_block.terminator, ReturnTerminator):
+        if not entry_block.instructions or not isinstance(entry_block.terminator, ReturnTerminator):
             self.builder.emit_return(IRConstant(0))
 
         # Restore previous scope
@@ -240,7 +238,7 @@ class PythonCompiler:
             else:
                 inferred_type = PythonType.any()
 
-            self.symbol_table.define(stmt.target, inferred_type, scope='local')
+            self.symbol_table.define(stmt.target, inferred_type, scope="local")
 
         # Emit assignment
         self.builder.current_block.instructions.append(
@@ -265,11 +263,11 @@ class PythonCompiler:
 
         # Emit branch
         self.builder.current_block.terminator = BranchTerminator(
-            condition='nonzero',
+            condition="nonzero",
             operand1=test_operand,
             operand2=None,
             true_label=true_label,
-            false_label=false_label
+            false_label=false_label,
         )
 
         # True branch
@@ -308,11 +306,11 @@ class PythonCompiler:
 
         body_label = self._gen_label("while_body")
         self.builder.current_block.terminator = BranchTerminator(
-            condition='nonzero',
+            condition="nonzero",
             operand1=test_operand,
             operand2=None,
             true_label=body_label,
-            false_label=end_label
+            false_label=end_label,
         )
 
         # Body block
@@ -334,7 +332,7 @@ class PythonCompiler:
 
     def _compile_for(self, stmt: For, block: BasicBlock) -> None:
         """Compile for loop: for i in range(n), range(start, stop), range(start, stop, step)"""
-        if not isinstance(stmt.iter, Call) or stmt.iter.func != 'range':
+        if not isinstance(stmt.iter, Call) or stmt.iter.func != "range":
             raise NotImplementedError("Only 'for x in range(...)' is supported")
 
         argc = len(stmt.iter.args)
@@ -366,7 +364,7 @@ class PythonCompiler:
             Assignment(target=counter_temp, source=start_operand)
         )
 
-        self.symbol_table.define(stmt.target, PythonType.int(), scope='local')
+        self.symbol_table.define(stmt.target, PythonType.int(), scope="local")
 
         # Jump to condition check
         self.builder.emit_jump(loop_label)
@@ -377,18 +375,18 @@ class PythonCompiler:
         loop_block.instructions.append(
             BinaryOp(
                 target=condition_temp,
-                op='<',
+                op="<",
                 operand1=VariableValue(counter_temp),
-                operand2=n_operand
+                operand2=n_operand,
             )
         )
 
         loop_block.terminator = BranchTerminator(
-            condition='nonzero',
+            condition="nonzero",
             operand1=VariableValue(condition_temp),
             operand2=None,
             true_label=body_label,
-            false_label=end_label
+            false_label=end_label,
         )
 
         # Body block
@@ -412,9 +410,9 @@ class PythonCompiler:
             body_block.instructions.append(
                 BinaryOp(
                     target=increment_temp,
-                    op='+',
+                    op="+",
                     operand1=VariableValue(counter_temp),
-                    operand2=step_operand
+                    operand2=step_operand,
                 )
             )
             body_block.instructions.append(
@@ -463,21 +461,21 @@ class PythonCompiler:
 
         # Map Python operators to IR operators
         op_map = {
-            '+': 'add',
-            '-': 'sub',
-            '*': 'mul',
-            '/': 'div',
-            '//': 'floordiv',
-            '%': 'mod',
-            '**': 'pow',
-            '==': 'eq',
-            '!=': 'ne',
-            '<': 'lt',
-            '<=': 'le',
-            '>': 'gt',
-            '>=': 'ge',
-            'and': 'and',
-            'or': 'or',
+            "+": "add",
+            "-": "sub",
+            "*": "mul",
+            "/": "div",
+            "//": "floordiv",
+            "%": "mod",
+            "**": "pow",
+            "==": "eq",
+            "!=": "ne",
+            "<": "lt",
+            "<=": "le",
+            ">": "gt",
+            ">=": "ge",
+            "and": "and",
+            "or": "or",
         }
 
         ir_op = op_map.get(expr.op, expr.op)
@@ -494,17 +492,15 @@ class PythonCompiler:
         operand = self._compile_expression(expr.operand, block)
 
         op_map = {
-            '-': 'neg',
-            '+': 'pos',
-            'not': 'not',
+            "-": "neg",
+            "+": "pos",
+            "not": "not",
         }
 
         ir_op = op_map.get(expr.op, expr.op)
 
         temp = self._gen_temp("unop")
-        block.instructions.append(
-            BinaryOp(target=temp, op=ir_op, operand1=operand, operand2=None)
-        )
+        block.instructions.append(BinaryOp(target=temp, op=ir_op, operand1=operand, operand2=None))
 
         return VariableValue(temp)
 
@@ -513,9 +509,7 @@ class PythonCompiler:
         args = [self._compile_expression(arg, block) for arg in expr.args]
 
         temp = self._gen_temp("call")
-        block.instructions.append(
-            IRCall(target=temp, function_name=expr.func, arguments=args)
-        )
+        block.instructions.append(IRCall(target=temp, function_name=expr.func, arguments=args))
 
         return VariableValue(temp)
 
@@ -526,13 +520,11 @@ class PythonCompiler:
 
         addr_temp = self._gen_temp("sub_addr")
         block.instructions.append(
-            BinaryOp(target=addr_temp, op='add', operand1=base_operand, operand2=index_operand)
+            BinaryOp(target=addr_temp, op="add", operand1=base_operand, operand2=index_operand)
         )
 
         temp = self._gen_temp("subscript")
-        block.instructions.append(
-            Load(target=temp, address=VariableValue(addr_temp))
-        )
+        block.instructions.append(Load(target=temp, address=VariableValue(addr_temp)))
         return VariableValue(temp)
 
     def _compile_attribute(self, expr: Attribute, block: BasicBlock):
@@ -542,13 +534,11 @@ class PythonCompiler:
 
         addr_temp = self._gen_temp("attr_addr")
         block.instructions.append(
-            BinaryOp(target=addr_temp, op='add', operand1=base_operand, operand2=field_offset)
+            BinaryOp(target=addr_temp, op="add", operand1=base_operand, operand2=field_offset)
         )
 
         temp = self._gen_temp("attr")
-        block.instructions.append(
-            Load(target=temp, address=VariableValue(addr_temp))
-        )
+        block.instructions.append(Load(target=temp, address=VariableValue(addr_temp)))
         return VariableValue(temp)
 
     def _gen_temp(self, prefix: str = "temp") -> str:

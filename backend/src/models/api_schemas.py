@@ -8,22 +8,26 @@ class ExecutionRequest(BaseModel):
     code: str
     input_data: str | None = None
 
+
 class ExecutionResult(BaseModel):
     stdout: str
     stderr: str
     exit_code: int
     duration_ms: float
 
+
 class CompilationRequest(BaseModel):
     language: str
     source_code: str
     optimize: bool = False
+
 
 class CompilationResult(BaseModel):
     success: bool
     ir_code: str | None = None
     assembly_code: str | None = None
     errors: list[str] = []
+
 
 class EmulatorState(BaseModel):
     pc: int
@@ -32,19 +36,22 @@ class EmulatorState(BaseModel):
     flags: dict[str, bool]
     cycle_count: int
 
+
 class AnalyticalEngineSnapshot(BaseModel):
     pc: int
-    registers: dict[str, Union[int, float]] # Assuming values are decimals
+    registers: dict[str, Union[int, float]]  # Assuming values are decimals
     flags: dict[str, bool]
     clock_time: int
-    barrel: dict[str, Union[str, int, None]] # active, step
+    barrel: dict[str, Union[str, int, None]]  # active, step
     mill_operand_buffer: float
     mill_result_buffer: float
     active_store_address: int | None = None
 
+
 class DebuggerCommand(BaseModel):
     action: str = Field(..., description="step, continue, pause, reset")
     breakpoints: list[int] | None = None
+
 
 class PerformanceReport(BaseModel):
     total_cycles: int

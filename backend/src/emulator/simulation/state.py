@@ -95,8 +95,8 @@ class SimulationConfig:
     """Configuration parameters for a simulation run."""
 
     # Time stepping
-    dt_s: float = 1.0             # Time step [s]
-    rpm: float = 30.0             # Operating speed [RPM]
+    dt_s: float = 1.0  # Time step [s]
+    rpm: float = 30.0  # Operating speed [RPM]
 
     # Machine geometry
     shaft_diameter_mm: float = 50.0
@@ -154,6 +154,7 @@ class SimulationConfig:
         This method applies a Gaussian perturbation to key geometric parameters.
         """
         import random
+
         if seed is not None:
             random.seed(seed)
 
@@ -164,7 +165,7 @@ class SimulationConfig:
         self.initial_gear_backlash_mm += random.gauss(0, sigma)
 
         # Gear module also subject to manufacturing variance
-        self.gear_module_mm += random.gauss(0, sigma / 10.0) # Module variance is typically smaller
+        self.gear_module_mm += random.gauss(0, sigma / 10.0)  # Module variance is typically smaller
 
         # Clamp to ensure physical sanity
         self.initial_clearance_mm = max(0.001, self.initial_clearance_mm)

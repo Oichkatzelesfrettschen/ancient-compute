@@ -23,6 +23,7 @@ def test_19_year_dial():
     current = am.pointers["19-Year"]
     assert abs(abs(current) - expected_angle) < 0.001
 
+
 def test_egyptian_reminder_dial():
     # 4 years -> 1 turn
     am = AntikytheraMechanism()
@@ -34,6 +35,7 @@ def test_egyptian_reminder_dial():
     am.set_input_date(1.0)
     # VII->VIII (-), IX->X (-). Total 2 flips = Positive.
     assert abs(am.pointers["Egyptian"] - 90.0) < 0.001
+
 
 def test_draconic_gearing():
     # Fragment D: b1 -> a1 -> r1 -> s1
@@ -66,5 +68,5 @@ def test_draconic_gearing():
     # r1 (63) -> s1 (22): Ratio -63/22 = -2.863
     # Total: 10.1818...
 
-    expected = 1.0 * (-224/63) * (-63/22) * 360.0
+    expected = 1.0 * (-224 / 63) * (-63 / 22) * 360.0
     assert abs(am.pointers["Draconic"] - expected) < 0.001

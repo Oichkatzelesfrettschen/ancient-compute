@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Dict, Literal, Optional
+from typing import Any, Literal
 
 from .babbage_assembly_service import BabbageAssemblyService
 from .c_service import CService
@@ -147,9 +147,7 @@ _LANGUAGE_CAPABILITIES: tuple[LanguageCapability, ...] = (
 )
 
 _CANONICAL_BY_ALIAS: dict[str, str] = {
-    alias: spec.id
-    for spec in _LANGUAGE_CAPABILITIES
-    for alias in spec.aliases
+    alias: spec.id for spec in _LANGUAGE_CAPABILITIES for alias in spec.aliases
 }
 _CAPABILITY_BY_ID: dict[str, LanguageCapability] = {
     spec.id: spec for spec in _LANGUAGE_CAPABILITIES

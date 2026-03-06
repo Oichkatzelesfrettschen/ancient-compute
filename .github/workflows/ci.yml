@@ -45,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:15-alpine
+        image: postgres:15.10-alpine
         env:
           POSTGRES_DB: ancient_compute_test
           POSTGRES_USER: test
@@ -59,7 +59,7 @@ jobs:
           - 5432:5432
 
       redis:
-        image: redis:7-alpine
+        image: redis:7.4-alpine
         options: >-
           --health-cmd "redis-cli ping"
           --health-interval 10s

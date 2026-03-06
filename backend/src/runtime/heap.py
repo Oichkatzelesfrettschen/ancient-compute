@@ -40,7 +40,9 @@ class MemoryHeap:
         self.heap_end = heap_end
         self._cells: list[float] = [0.0] * heap_end
 
-        self._free_blocks: list[HeapBlock] = [HeapBlock(start=heap_start, size_words=heap_end - heap_start)]
+        self._free_blocks: list[HeapBlock] = [
+            HeapBlock(start=heap_start, size_words=heap_end - heap_start)
+        ]
         self._allocated: dict[int, HeapBlock] = {}
 
     def malloc(self, size_words: int) -> int:
@@ -141,7 +143,9 @@ class MemoryHeap:
         for block in self._free_blocks[1:]:
             last = merged[-1]
             if last.end == block.start:
-                merged[-1] = HeapBlock(start=last.start, size_words=last.size_words + block.size_words)
+                merged[-1] = HeapBlock(
+                    start=last.start, size_words=last.size_words + block.size_words
+                )
             else:
                 merged.append(block)
 

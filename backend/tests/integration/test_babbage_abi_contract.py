@@ -29,21 +29,21 @@ def _assert_gate1_contract(engine: Engine, expected_return: float) -> None:
 @pytest.mark.integration
 def test_gate1_abi_positive_callee_preserves_c_and_d() -> None:
     instructions = [
-        Instruction("LOAD", ["A", "7"]),    # 0 caller setup
-        Instruction("LOAD", ["C", "99"]),   # 1 caller setup
-        Instruction("LOAD", ["D", "77"]),   # 2 caller setup
-        Instruction("CALL", ["6"]),         # 3 call callee
-        Instruction("JMP", ["14"]),         # 4 skip callee body post-return
-        Instruction("NOP"),                 # 5 padding
-        Instruction("PUSH", ["C"]),         # 6 callee prologue
-        Instruction("PUSH", ["D"]),         # 7 callee prologue
+        Instruction("LOAD", ["A", "7"]),  # 0 caller setup
+        Instruction("LOAD", ["C", "99"]),  # 1 caller setup
+        Instruction("LOAD", ["D", "77"]),  # 2 caller setup
+        Instruction("CALL", ["6"]),  # 3 call callee
+        Instruction("JMP", ["14"]),  # 4 skip callee body post-return
+        Instruction("NOP"),  # 5 padding
+        Instruction("PUSH", ["C"]),  # 6 callee prologue
+        Instruction("PUSH", ["D"]),  # 7 callee prologue
         Instruction("LOAD", ["C", "123"]),  # 8 clobber C internally
         Instruction("LOAD", ["D", "456"]),  # 9 clobber D internally
-        Instruction("ADD", ["A", "1"]),     # 10 produce return value in A
-        Instruction("POP", ["D"]),          # 11 restore D
-        Instruction("POP", ["C"]),          # 12 restore C
-        Instruction("RET"),                 # 13 return
-        Instruction("NOP"),                 # 14 end
+        Instruction("ADD", ["A", "1"]),  # 10 produce return value in A
+        Instruction("POP", ["D"]),  # 11 restore D
+        Instruction("POP", ["C"]),  # 12 restore C
+        Instruction("RET"),  # 13 return
+        Instruction("NOP"),  # 14 end
     ]
 
     engine = _run_program(instructions)

@@ -33,11 +33,11 @@ from backend.src.emulator.note_g_deck import (
 
 # Ada's B_{2k-1} = modern B_{2k}
 KNOWN_VALUES = {
-    1: Fraction(1, 6),       # B1 = modern B_2
-    3: Fraction(-1, 30),     # B3 = modern B_4
-    5: Fraction(1, 42),      # B5 = modern B_6
-    7: Fraction(-1, 30),     # B7 = modern B_8
-    9: Fraction(5, 66),      # B9 = modern B_10
+    1: Fraction(1, 6),  # B1 = modern B_2
+    3: Fraction(-1, 30),  # B3 = modern B_4
+    5: Fraction(1, 42),  # B5 = modern B_6
+    7: Fraction(-1, 30),  # B7 = modern B_8
+    9: Fraction(5, 66),  # B9 = modern B_10
 }
 
 
@@ -62,9 +62,7 @@ class TestOracleMapping:
         modern = bernoulli_numbers(10)
         ada = ada_lovelace_bernoulli_series(5)
         for k in range(1, 6):
-            assert ada[k - 1] == modern[2 * k], (
-                f"Ada B_{2*k-1} != modern B_{2*k}"
-            )
+            assert ada[k - 1] == modern[2 * k], f"Ada B_{2*k-1} != modern B_{2*k}"
 
 
 class TestDeckStructure:
@@ -136,18 +134,18 @@ class TestRunNoteGFull:
         deck_results = run_note_g_exact(5)
         oracle = ada_lovelace_bernoulli_series(5)
         for i in range(5):
-            assert deck_results[i] == oracle[i], (
-                f"B_{2*i+1}: deck={deck_results[i]} != oracle={oracle[i]}"
-            )
+            assert (
+                deck_results[i] == oracle[i]
+            ), f"B_{2*i+1}: deck={deck_results[i]} != oracle={oracle[i]}"
 
     def test_series_matches_oracle_7(self):
         """Extended test through B13."""
         deck_results = run_note_g_exact(7)
         oracle = ada_lovelace_bernoulli_series(7)
         for i in range(7):
-            assert deck_results[i] == oracle[i], (
-                f"B_{2*i+1}: deck={deck_results[i]} != oracle={oracle[i]}"
-            )
+            assert (
+                deck_results[i] == oracle[i]
+            ), f"B_{2*i+1}: deck={deck_results[i]} != oracle={oracle[i]}"
 
     def test_invalid_n_target(self):
         with pytest.raises(ValueError):

@@ -187,7 +187,7 @@ For the most up-to-date information on the status of language service implementa
 ### Warnings As Errors
 
 **Python**:
-- pylint with no warnings
+- ruff with no violations (replaces pylint/flake8/isort per ADR 0001)
 - mypy with strict mode
 - black formatter required
 
@@ -395,7 +395,7 @@ See [ADR 0001](../adr/0001-remove-bazel.md) for rationale on Bazel removal.
 
 ### 2. Cross-Platform Path Handling
 **Problem**: Hardcoded Unix paths break on Windows
-**Solution**: Use `pathlib` (Python) or Bazel's `$(location)` syntax
+**Solution**: Use `pathlib` (Python) for all path construction
 
 ### 3. LaTeX Compilation Dependencies
 **Problem**: Missing TikZ libraries cause silent PDF generation failures

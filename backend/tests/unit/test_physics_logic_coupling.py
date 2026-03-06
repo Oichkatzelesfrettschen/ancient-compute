@@ -11,7 +11,7 @@ from backend.src.emulator.simulation.state import SimulationConfig
 def test_logic_physics_timing_coupling():
     """Verify that linked physics engine affects instruction timing."""
     # Setup physics engine
-    config = SimulationConfig(rpm=30.0) # 0.5 rotations per second
+    config = SimulationConfig(rpm=30.0)  # 0.5 rotations per second
     # With 30 RPM, 8 cycles should take 8 / (30/60) = 16 seconds if lag is 0.
 
     sim = SimulationEngine(config)
@@ -28,7 +28,8 @@ def test_logic_physics_timing_coupling():
 
     assert engine.clock_time > 0
     assert sim.state.time_s == engine.clock_time
-    assert sim.state.time_s >= 16.0 # 8 / 0.5
+    assert sim.state.time_s >= 16.0  # 8 / 0.5
+
 
 def test_mechanical_failure_halts_logic():
     """Verify that a physical failure (seizure) raises MechanicalFailureError in logic engine."""
@@ -49,6 +50,7 @@ def test_mechanical_failure_halts_logic():
 
     assert "Mechanical failure: bearing_seizure" in str(excinfo.value)
 
+
 def test_oil_instruction_resets_wear():
     """Verify that the OIL instruction resets wear volumes in the physics state."""
     config = SimulationConfig()
@@ -64,6 +66,7 @@ def test_oil_instruction_resets_wear():
     # Verify wear is reset
     assert all(v == 0.0 for v in sim.state.bearing_wear_volumes_mm3)
 
+
 def test_monte_carlo_variance():
     """Verify that randomize_tolerances creates distinct engine configurations."""
     config1 = SimulationConfig(initial_clearance_mm=0.05)
@@ -75,9 +78,10 @@ def test_monte_carlo_variance():
     assert config1.initial_clearance_mm != config2.initial_clearance_mm
     assert config1.initial_gear_backlash_mm != config2.initial_gear_backlash_mm
 
+
 def test_energy_consumption():
     """Verify that energy consumption is tracked in the physics state."""
-    config = SimulationConfig(rpm=60.0) # 1 rotation per sec
+    config = SimulationConfig(rpm=60.0)  # 1 rotation per sec
     sim = SimulationEngine(config)
 
     # Run for 10 seconds
@@ -87,9 +91,10 @@ def test_energy_consumption():
     # Expected work ~ Torque * 10 rotations * 2pi
     # Torque ~ Q_total / omega
     expected_rotations = 10
-    expected_radians = expected_rotations * 2 * math.pi
+    _expected_radians = expected_rotations * 2 * math.pi
     # Rough check
     assert sim.state.energy_consumed_J > 0
+
 
 def test_electromagnetic_integration():
     """Verify that EM effects are integrated into the simulation loop."""

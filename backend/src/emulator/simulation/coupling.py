@@ -104,7 +104,10 @@ class CouplingFunctions:
         total = 0.0
         for load in bearing_loads_N:
             total += FrictionHeatModel.bearing_heat_W(
-                friction_coeff, load, shaft_diameter_mm, omega_rad_s,
+                friction_coeff,
+                load,
+                shaft_diameter_mm,
+                omega_rad_s,
             )
         return total
 
@@ -122,7 +125,9 @@ class CouplingFunctions:
         T_s_K = state.temperature_C + 273.15
         T_amb_K = config.ambient_temperature_C + 273.15
         h_rad = RadiationHeatModel.linearized_h_rad_W_m2K(
-            config.emissivity, T_s_K, T_amb_K,
+            config.emissivity,
+            T_s_K,
+            T_amb_K,
         )
         h_total = config.h_convection_W_m2K + h_rad
 
@@ -153,9 +158,7 @@ class CouplingFunctions:
         H_MPa = WearModel.hardness_HB_to_MPa(bearing_mat.hardness_HB[0])
 
         # Sliding distance this time step
-        ds_mm = (
-            math.pi * config.shaft_diameter_mm * config.rpm / 60.0
-        ) * config.dt_s
+        ds_mm = (math.pi * config.shaft_diameter_mm * config.rpm / 60.0) * config.dt_s
 
         increments = []
         for i, load in enumerate(state.bearing_loads_N):
@@ -190,15 +193,21 @@ class CouplingFunctions:
                 state.temperature_C,
             )
             # Wear clearance change
-            wear_vol = state.bearing_wear_volumes_mm3[i] if i < len(
-                state.bearing_wear_volumes_mm3
-            ) else 0.0
-            delta_wear_mm = wear_vol / (
-                math.pi * config.shaft_diameter_mm * config.bearing_length_mm
-            ) if config.bearing_length_mm > 0 else 0.0
+            wear_vol = (
+                state.bearing_wear_volumes_mm3[i]
+                if i < len(state.bearing_wear_volumes_mm3)
+                else 0.0
+            )
+            delta_wear_mm = (
+                wear_vol / (math.pi * config.shaft_diameter_mm * config.bearing_length_mm)
+                if config.bearing_length_mm > 0
+                else 0.0
+            )
 
             c = ThermalClearanceFeedback.combined_clearance_mm(
-                config.initial_clearance_mm, delta_thermal, delta_wear_mm,
+                config.initial_clearance_mm,
+                delta_thermal,
+                delta_wear_mm,
             )
             clearances.append(c)
         return clearances

@@ -37,6 +37,7 @@ def lib():
 
 # -- Archard Wear --
 
+
 class TestArchardWear:
     def test_volume_positive(self):
         v = WearModel.archard_volume_mm3(1e-6, 1000.0, 1000.0, 1000.0)
@@ -89,6 +90,7 @@ class TestArchardWear:
 
 # -- PV Analysis --
 
+
 class TestPVAnalysis:
     def test_pressure_positive(self):
         p = PVAnalysis.bearing_pressure_MPa(1000.0, 50.0, 60.0)
@@ -103,9 +105,9 @@ class TestPVAnalysis:
         # 4 bearings, 500 kg machine -> ~1225 N per bearing
         load = 500 * 9.81 / 4
         pv = PVAnalysis.pv_product_MPa_m_s(load, 50.0, 60.0, 30.0)
-        assert PVAnalysis.is_within_limit(pv), (
-            f"PV={pv:.3f} exceeds limit {PV_LIMIT_BRONZE_ON_STEEL_LUBRICATED}"
-        )
+        assert PVAnalysis.is_within_limit(
+            pv
+        ), f"PV={pv:.3f} exceeds limit {PV_LIMIT_BRONZE_ON_STEEL_LUBRICATED}"
 
     def test_pv_proportional_to_rpm(self):
         pv30 = PVAnalysis.pv_product_MPa_m_s(1000.0, 50.0, 60.0, 30.0)
@@ -114,6 +116,7 @@ class TestPVAnalysis:
 
 
 # -- Lubrication Film --
+
 
 class TestLubricationFilm:
     def test_film_thickness_positive(self):
@@ -143,6 +146,7 @@ class TestLubricationFilm:
 
 # -- Surface Finish --
 
+
 class TestSurfaceFinish:
     def test_period_finishes_defined(self):
         assert len(PERIOD_SURFACE_FINISHES) >= 4
@@ -157,6 +161,7 @@ class TestSurfaceFinish:
 
 
 # -- Cross-validation with lubrication schedule --
+
 
 class TestLubricationSchedule:
     def test_wear_compatible_with_160h_schedule(self, lib):
@@ -177,6 +182,7 @@ class TestLubricationSchedule:
 
 
 # -- Phase V: Running-In Wear Model --
+
 
 class TestRunningInWear:
     def test_K_at_zero_equals_initial(self):
@@ -207,6 +213,7 @@ class TestRunningInWear:
 
 # -- Phase V: Surface Texture Evolution --
 
+
 class TestSurfaceTextureEvolution:
     def test_Ra_initial_at_zero_depth(self):
         Ra = SurfaceTextureEvolution.roughness_um(0.0, 1.6, 0.4)
@@ -224,6 +231,7 @@ class TestSurfaceTextureEvolution:
 
 
 # -- Phase V: Wear-to-Clearance Feedback --
+
 
 class TestWearClearanceFeedback:
     def test_clearance_increases_monotonically(self):
@@ -258,6 +266,7 @@ class TestWearClearanceFeedback:
 
 # -- Phase V: Time-to-Failure Prediction --
 
+
 class TestTimeToFailure:
     def test_bearing_life_above_100h(self, lib):
         pb = lib.get("phosphor_bronze")
@@ -277,13 +286,23 @@ class TestTimeToFailure:
         pb = lib.get("phosphor_bronze")
         base_load = 500.0
         t1 = TimeToFailure.bearing_hours_to_clearance_limit(
-            0.15, 0.05, 50.0, 60.0,
+            0.15,
+            0.05,
+            50.0,
+            60.0,
             ARCHARD_K_LUBRICATED_BRONZE_ON_STEEL,
-            base_load, WearModel.hardness_HB_to_MPa(pb.hardness_HB[0]), 30.0,
+            base_load,
+            WearModel.hardness_HB_to_MPa(pb.hardness_HB[0]),
+            30.0,
         )
         t2 = TimeToFailure.bearing_hours_to_clearance_limit(
-            0.15, 0.05, 50.0, 60.0,
+            0.15,
+            0.05,
+            50.0,
+            60.0,
             ARCHARD_K_LUBRICATED_BRONZE_ON_STEEL,
-            2 * base_load, WearModel.hardness_HB_to_MPa(pb.hardness_HB[0]), 30.0,
+            2 * base_load,
+            WearModel.hardness_HB_to_MPa(pb.hardness_HB[0]),
+            30.0,
         )
         assert t2 == pytest.approx(t1 / 2.0, rel=0.01)

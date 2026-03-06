@@ -20,6 +20,7 @@ from backend.src.ir_types import Function, Program
 @dataclass
 class CodeGenResult:
     """Complete code generation result"""
+
     function_name: str
     assembly_output: AssemblyOutput
     allocation_map: AllocationMap
@@ -132,7 +133,9 @@ class CodeGenerator:
         assembly_output = emitter.emit(spill_count=allocation.spill_count)
 
         if verbose:
-            print(f"[CODEGEN]   Assembly lines: {len(assembly_output.assembly_text.split(chr(10)))}")
+            print(
+                f"[CODEGEN]   Assembly lines: {len(assembly_output.assembly_text.split(chr(10)))}"
+            )
             print("[CODEGEN] Code generation COMPLETE")
 
         result = CodeGenResult(
@@ -173,7 +176,7 @@ def example_code_generation():
     builder = IRBuilder("factorial", ["n"])
 
     # Entry block: check if n <= 1
-    entry_block = builder.new_block("entry")
+    _entry_block = builder.new_block("entry")
     builder.emit_assignment("one", Constant(1.0))
     # In real implementation, would have branch here
     # For now, just linear code

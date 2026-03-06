@@ -14,8 +14,10 @@ from typing import Any
 
 # --- Common Types ---
 
+
 class MechanicalPhase(Enum):
     """Mechanical phases during DE2 rotation (0-360°)."""
+
     IDLE = "idle"
     INPUT = "input"
     ADDITION = "addition"
@@ -25,6 +27,7 @@ class MechanicalPhase(Enum):
     ADVANCE = "advance"
     RESET = "reset"
     PAUSE = "pause"
+
 
 class BabbageNumber:
     """
@@ -39,20 +42,31 @@ class BabbageNumber:
     Supports full arithmetic operations with overflow detection.
     """
 
+    _SCALE: int = 10**40
+    _MAX_INTERNAL: int = (10**50 - 1) * _SCALE
+    _MIN_INTERNAL: int = -_MAX_INTERNAL
+
     value: int
     _overflow_flag: bool
 
     def __init__(self, value: "int | float | BabbageNumber") -> None:
         """Initialize BabbageNumber from Python number."""
         self._overflow_flag = False
+        self._error_flag = False
         if isinstance(value, BabbageNumber):
             self.value = value.value
         else:
-            self.value = int(value * (10**40))  # Scale to 50 digits
+            self.value = int(value * self._SCALE)
+
+    def get_checksum(self) -> int:
+        """Calculate checksum digit: (sum of all 50 digits) mod 10."""
+        s = str(abs(self.value)).zfill(50)
+        digit_sum = sum(int(d) for d in s)
+        return digit_sum % 10
 
     def to_decimal(self) -> float:
         """Convert to Python float (for display and testing)."""
-        return self.value / (10**40)  # int / int yields float in Python 3
+        return self.value / self._SCALE
 
     def to_card_format(self) -> str:
         """
@@ -71,11 +85,7 @@ class BabbageNumber:
             True if overflow occurred, False otherwise
             Sets internal overflow flag for later inspection
         """
-        # Adjusted for scaled value
-        max_internal_value = (10**50 - 1) * (10**40)
-        min_internal_value = -(10**50 - 1) * (10**40)
-
-        if self.value > max_internal_value or self.value < min_internal_value:
+        if self.value > self._MAX_INTERNAL or self.value < self._MIN_INTERNAL:
             self._overflow_flag = True
             # For now, let's keep the flag and not modify value on overflow here.
             return True
@@ -100,8 +110,8 @@ class BabbageNumber:
     def __mul__(self, other: "int | float | BabbageNumber") -> "BabbageNumber":
         """Multiplication with overflow check."""
         result = BabbageNumber(0)
-        # Multiply scaled integer values, then scale back by 10^40
-        result.value = (self.value * BabbageNumber(other).value) // (10**40)
+        # Multiply scaled integer values, then scale back
+        result.value = (self.value * BabbageNumber(other).value) // self._SCALE
         result._check_overflow()
         return result
 
@@ -110,8 +120,8 @@ class BabbageNumber:
         if BabbageNumber(other).value == 0:
             raise ZeroDivisionError("Division by zero")
         result = BabbageNumber(0)
-        # Fixed-point division: scale numerator by 10^40 before dividing
-        result.value = (self.value * (10**40)) // BabbageNumber(other).value
+        # Fixed-point division: scale numerator before dividing
+        result.value = (self.value * self._SCALE) // BabbageNumber(other).value
         result._check_overflow()
         return result
 
@@ -157,10 +167,12 @@ class CardType(Enum):
 
 # --- Analytical Engine Types ---
 
+
 @dataclass
 class MillState:
     registers: dict[str, BabbageNumber]
     flags: dict[str, bool]
+
 
 @dataclass
 class MachineState:
@@ -168,22 +180,27 @@ class MachineState:
     mill: MillState
     pc: int
 
+
 @dataclass
 class OperationCard:
     opcode: str
     operands: list[str]
 
+
 @dataclass
 class VariableCard:
     address: int
-    operation: str # READ/WRITE
+    operation: str  # READ/WRITE
+
 
 @dataclass
 class JacquardCard:
     card_type: CardType
     content: Any
 
+
 # --- Antikythera Types ---
+
 
 @dataclass
 class AntikytheraGear:
@@ -191,16 +208,20 @@ class AntikytheraGear:
     teeth: int
     angle: float
 
+
 @dataclass
 class AntikytheraMechanismState:
     gears: dict[str, AntikytheraGear]
     pointers: dict[str, float]
 
+
 # --- DE2 Types ---
+
 
 @dataclass
 class DebugSnapshot:
     """Complete mechanical state at a moment in time"""
+
     main_shaft_angle: int  # 0–360°
     column_states: dict[int, list[int]]  # column_index → digit array (31 digits)
     carry_states: dict[int, tuple[bool, bool]]  # position → (carry_in, carry_out)
@@ -215,6 +236,7 @@ class DebugSnapshot:
 @dataclass
 class TimeEvent:
     """One mechanical event at a specific main shaft angle"""
+
     angle: int  # 0–360°
     phase: str  # "column_latch", "addition", "carry", "print", "stereo"
     component: str  # "column_0", "carry", "printer", "stereotyper"
@@ -225,6 +247,7 @@ class TimeEvent:
 @dataclass
 class CarryState:
     """State of carry mechanism at one position"""
+
     position: int  # which column position (0–30)
     carry_in: bool  # incoming carry from previous position
     carry_out: bool  # outgoing carry to next position
@@ -236,13 +259,15 @@ class CarryState:
 @dataclass
 class ColumnSnapshot:
     """State of one digit column (Difference Engine No. 2)"""
-    column_index: int                    # Which column (0-7)
-    digits: list[int]                    # 31 digit positions
-    carry_in: bool                       # Incoming carry
-    carry_out: bool                      # Outgoing carry
-    is_latched: bool                     # Latch closed?
-    is_advancing: bool                   # Advancing to next row?
-    phase: str                           # Current mechanical phase
+
+    column_index: int  # Which column (0-7)
+    digits: list[int]  # 31 digit positions
+    carry_in: bool  # Incoming carry
+    carry_out: bool  # Outgoing carry
+    is_latched: bool  # Latch closed?
+    is_advancing: bool  # Advancing to next row?
+    phase: str  # Current mechanical phase
+
 
 # ColumnState is a deprecated alias for ColumnSnapshot.
 # Kept for backward compatibility; new code should use ColumnSnapshot.
@@ -252,6 +277,7 @@ ColumnState = ColumnSnapshot
 @dataclass
 class PrinterSnapshot:
     """State of printer apparatus"""
+
     type_wheels: list[int]  # 8 digit positions (0–9 each)
     inking_engaged: bool  # inking roller active
     hammer_ready: bool  # hammer positioned
@@ -262,15 +288,19 @@ class PrinterSnapshot:
 @dataclass
 class StereotyperSnapshot:
     """State of stereotype frame"""
+
     x_position: int  # 0–7 (digit positions)
     y_position: int  # 0–49 (line positions)
-    mold_image: dict[tuple[int, int], int] = field(default_factory=dict)  # (x,y) → raised (1) or flat (0)
+    mold_image: dict[tuple[int, int], int] = field(
+        default_factory=dict
+    )  # (x,y) → raised (1) or flat (0)
     completed_molds: list[dict] = field(default_factory=list)
 
 
 @dataclass
 class OperationResult:
     """Result of one machine operation (e.g., one cycle)"""
+
     success: bool
     cycle_count: int
     events: list[TimeEvent] = field(default_factory=list)
@@ -284,38 +314,43 @@ class OperationResult:
 @dataclass
 class TimingSpec:
     """Timing specification (from SMG Technical Description)"""
+
     # Phase timing (0–360° per cycle)
-    phase_map: dict[tuple[int, int], str] = field(default_factory=lambda: {
-        (0, 30): "column_latch",
-        (30, 60): "addition_begin",
-        (60, 90): "carry_evaluation_1",
-        (90, 120): "carry_execution",
-        (120, 150): "carry_evaluation_2",
-        (150, 180): "settle_phase",
-        (180, 210): "print_setup",
-        (210, 240): "inking",
-        (240, 270): "print_strike",
-        (270, 300): "platen_advance",
-        (300, 330): "stereo_advance",
-        (330, 360): "cycle_reset"
-    })
+    phase_map: dict[tuple[int, int], str] = field(
+        default_factory=lambda: {
+            (0, 30): "column_latch",
+            (30, 60): "addition_begin",
+            (60, 90): "carry_evaluation_1",
+            (90, 120): "carry_execution",
+            (120, 150): "carry_evaluation_2",
+            (150, 180): "settle_phase",
+            (180, 210): "print_setup",
+            (210, 240): "inking",
+            (240, 270): "print_strike",
+            (270, 300): "platen_advance",
+            (300, 330): "stereo_advance",
+            (330, 360): "cycle_reset",
+        }
+    )
 
     # Events that fire at specific angles
-    event_angles: dict[int, str] = field(default_factory=lambda: {
-        0: "cycle_start / column_latch_open",
-        30: "difference_addition_begins",
-        60: "anticipating_carriage_evaluates_position_0",
-        90: "column_advance / figure_wheel_shift",
-        120: "anticipating_carriage_evaluates_position_1",
-        150: "carry_execution_completes",
-        180: "print_setup_begins / type_setter_positioning",
-        210: "inking_roller_engages",
-        240: "print_hammer_strikes",
-        270: "platen_advances",
-        300: "stereotype_frame_advances_x_axis",
-        330: "stereotype_mold_extraction",
-        360: "cycle_reset / ready_for_next_rotation"
-    })
+    event_angles: dict[int, str] = field(
+        default_factory=lambda: {
+            0: "cycle_start / column_latch_open",
+            30: "difference_addition_begins",
+            60: "anticipating_carriage_evaluates_position_0",
+            90: "column_advance / figure_wheel_shift",
+            120: "anticipating_carriage_evaluates_position_1",
+            150: "carry_execution_completes",
+            180: "print_setup_begins / type_setter_positioning",
+            210: "inking_roller_engages",
+            240: "print_hammer_strikes",
+            270: "platen_advances",
+            300: "stereotype_frame_advances_x_axis",
+            330: "stereotype_mold_extraction",
+            360: "cycle_reset / ready_for_next_rotation",
+        }
+    )
 
     # Carry propagation timing (from SMG appendix)
     carry_look_ahead_depth: int = 2  # Check 2 positions ahead
@@ -330,6 +365,7 @@ DEFAULT_TIMING_SPEC = TimingSpec()
 @dataclass
 class MachineConfig:
     """Configuration for DE2 machine"""
+
     num_columns: int = 8  # Always 8 for DE2
     digits_per_column: int = 31  # Always 31 for DE2
     timing_spec: TimingSpec = field(default_factory=TimingSpec)

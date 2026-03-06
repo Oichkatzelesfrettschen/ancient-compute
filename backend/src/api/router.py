@@ -1,12 +1,15 @@
 # Ancient Compute Backend - Main API Router
 
 import json
+import logging
 import os
 from pathlib import Path
 
 from fastapi import APIRouter, Depends
 from fastapi.responses import PlainTextResponse
 from sqlalchemy.orm import Session
+
+logger = logging.getLogger(__name__)
 
 from ..database import get_db
 from ..models import Era, Module
@@ -40,12 +43,7 @@ async def get_status():
 @api_router.get("/modules")
 async def list_modules(db: Session = Depends(get_db)):
     """List all published educational modules ordered chronologically."""
-    modules = (
-        db.query(Module)
-        .filter(Module.is_published)
-        .order_by(Module.sequence_order)
-        .all()
-    )
+    modules = db.query(Module).filter(Module.is_published).order_by(Module.sequence_order).all()
     return {
         "modules": [
             {
@@ -76,6 +74,7 @@ async def get_minix_metrics(arch: str = "i386"):
             data = json.loads(boot_json.read_text())
             return {"available": True, "arch": arch, "metrics": data}
         except Exception:
+            logger.warning("Failed to parse boot_time.json for arch=%s", arch, exc_info=True)
             return {"available": False, "arch": arch, "error": "invalid_json"}
     return {"available": False, "arch": arch}
 
@@ -92,12 +91,17 @@ async def list_minix_runs(arch: str = "i386"):
         if bt.exists():
             try:
                 data = json.loads(bt.read_text())
-                runs.append({
-                    "runId": run_dir.name,
-                    "timestamp": data.get("timestamp"),
-                    "bootDurationMs": data.get("boot_duration_ms"),
-                })
+                runs.append(
+                    {
+                        "runId": run_dir.name,
+                        "timestamp": data.get("timestamp"),
+                        "bootDurationMs": data.get("boot_duration_ms"),
+                    }
+                )
             except Exception:
+                logger.warning(
+                    "Failed to parse run %s for arch=%s", run_dir.name, arch, exc_info=True
+                )
                 continue
     return {"arch": arch, "runs": runs}
 
@@ -112,6 +116,7 @@ async def get_minix_run(run_id: str, arch: str = "i386"):
     try:
         data = json.loads(bt.read_text())
     except Exception:
+        logger.warning("Failed to parse run %s metrics for arch=%s", run_id, arch, exc_info=True)
         data = None
     resp = {
         "found": True,
@@ -122,7 +127,7 @@ async def get_minix_run(run_id: str, arch: str = "i386"):
             "resource": (base / "resource_timeseries.csv").exists(),
             "bootLog": (base / "boot.log").exists(),
             "debugLog": (base / "qemu-debug.log").exists(),
-        }
+        },
     }
     return resp
 
@@ -137,6 +142,7 @@ async def get_minix_summary(arch: str = "i386"):
             data = json.loads(summary.read_text())
             return {"available": True, "arch": arch, "summary": data}
         except Exception:
+            logger.warning("Failed to parse summary.json for arch=%s", arch, exc_info=True)
             return {"available": False, "arch": arch, "error": "invalid_json"}
     return {"available": False, "arch": arch}
 
@@ -164,12 +170,7 @@ async def get_minix_run_resource(run_id: str, arch: str = "i386"):
 @api_router.get("/timeline")
 async def get_timeline(db: Session = Depends(get_db)):
     """Get historical timeline eras with their modules."""
-    eras = (
-        db.query(Era)
-        .filter(Era.is_published)
-        .order_by(Era.order)
-        .all()
-    )
+    eras = db.query(Era).filter(Era.is_published).order_by(Era.order).all()
     return {
         "timeline": [
             {

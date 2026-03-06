@@ -87,9 +87,9 @@ class TestTemperatureIncrease:
             physics_engine.execute_instruction(_add(1))
 
         final_temp = physics_engine.physical_engine.state.temperature_C
-        assert final_temp > initial_temp, (
-            f"Temperature should increase: {initial_temp} -> {final_temp}"
-        )
+        assert (
+            final_temp > initial_temp
+        ), f"Temperature should increase: {initial_temp} -> {final_temp}"
 
     def test_temperature_stays_ambient_without_physics(self, plain_engine):
         """Without physics, no temperature tracking."""
@@ -117,9 +117,9 @@ class TestWearAccumulation:
             engine_mult.execute_instruction(_mult(1))
         mult_time = bridge_mult.state.time_s
 
-        assert mult_time > add_time, (
-            f"MULT should take longer: {mult_time:.3f}s vs ADD {add_time:.3f}s"
-        )
+        assert (
+            mult_time > add_time
+        ), f"MULT should take longer: {mult_time:.3f}s vs ADD {add_time:.3f}s"
 
 
 class TestMechanicalFailure:
@@ -149,9 +149,7 @@ class TestMechanicalFailure:
                 engine.execute_instruction(_load(0))
                 engine.execute_instruction(_add(1))
                 if bridge.failed:
-                    raise MechanicalFailureError(
-                        f"Mechanical failure: {bridge.failure_reason}"
-                    )
+                    raise MechanicalFailureError(f"Mechanical failure: {bridge.failure_reason}")
 
 
 class TestPhysicsReport:

@@ -31,7 +31,7 @@ help:
 	@echo ""
 	@echo "Build:"
 	@echo "  make build           - Build all components"
-	@echo "  make build-backend   - Build backend with Bazel"
+	@echo "  make build-backend   - Build backend (placeholder)"
 	@echo "  make build-frontend  - Build frontend with Vite"
 	@echo "  make build-docker    - Build Docker images"
 	@echo ""
@@ -139,7 +139,7 @@ archive-audit:
 lint:
 	@echo "Running linters..."
 	@echo "Linting backend..."
-	cd backend && pylint src/
+	cd backend && ruff check src/ tests/
 	cd backend && mypy src/
 	@echo "Linting frontend..."
 	cd frontend && pnpm lint
@@ -147,8 +147,8 @@ lint:
 format:
 	@echo "Formatting code..."
 	@echo "Formatting backend..."
+	cd backend && ruff check --fix src/ tests/
 	cd backend && black src/ tests/
-	cd backend && isort src/ tests/
 	@echo "Formatting frontend..."
 	cd frontend && pnpm format
 
@@ -162,8 +162,7 @@ build: build-backend build-frontend
 
 build-backend:
 	@echo "Building backend..."
-	# TODO: Bazel not configured yet; add BUILD files to enable
-	@echo "Bazel build not configured. Use 'pip install -r requirements.txt' for now."
+	@echo "No build step required. Use 'pip install -r requirements.txt' to install."
 
 build-frontend:
 	@echo "Building frontend..."
@@ -242,17 +241,6 @@ minix-metrics:
 minix-install:
 	@[ -n "$$ISO" ] || (echo "Usage: make minix-install ISO=/path/to/minix.iso [ARCH=i386] [VNC=5900]" && exit 2)
 	ARCH=$${ARCH:-i386} VNC=$${VNC:-5900} ./scripts/minix_install_interactive.sh --iso "$$ISO" --arch "$$ARCH" --vnc-port "$$VNC"
-
-# Bazel operations (not yet configured -- no BUILD/WORKSPACE files)
-# TODO: Add BUILD files to enable Bazel-based hermetic builds
-bazel-build:
-	@echo "Bazel not configured. Add BUILD files first."
-
-bazel-test:
-	@echo "Bazel not configured. Use 'make test' instead."
-
-bazel-clean:
-	@echo "Bazel not configured."
 
 # --- Historian & Content ---
 historian-index:
@@ -334,10 +322,10 @@ physics-envelope:
 verify:
 	@echo "=== Local CI Verification ==="
 	@echo ""
-	@echo "[1/4] Backend formatting (black)..."
+	@echo "[1/4] Backend linting (ruff)..."
+	@cd backend && ruff check src/ tests/ 2>&1 || (echo "FAIL: ruff"; exit 1)
+	@echo "[2/4] Backend formatting (black)..."
 	@cd backend && python3 -m black --check --diff src/ tests/ 2>&1 || (echo "FAIL: black"; exit 1)
-	@echo "[2/4] Backend import order (isort)..."
-	@cd backend && python3 -m isort --check-only --diff src/ tests/ 2>&1 || (echo "FAIL: isort"; exit 1)
 	@echo "[3/4] Backend tests..."
 	@cd backend && python3 -m pytest tests/unit/ -q \
 	  --ignore=backend/tests/integration/test_cross_language.py \

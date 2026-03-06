@@ -24,18 +24,13 @@ This document provides comprehensive troubleshooting for GitHub Actions workflow
     fi
 ```
 
-### 2. Incorrect .pylintrc Path
+### 2. Linter Path (historical -- pylint removed)
 
-**Problem**: lint.yml referenced `../.pylintrc` from backend directory, but .pylintrc is in `backend/.pylintrc`.
+> **Note**: pylint was replaced by ruff per [ADR 0001](../adr/0001-remove-bazel.md).
+> This section is kept for historical context.
 
-**Fix**:
-```yaml
-# Before
-pylint src/ --fail-under=9.0 --rcfile=../.pylintrc
-
-# After
-pylint src/ --fail-under=9.0 --rcfile=.pylintrc
-```
+**Problem**: lint.yml referenced `../.pylintrc` from backend directory.
+**Resolution**: Replaced pylint with ruff; ruff reads `pyproject.toml` automatically.
 
 ### 3. Hardcoded Dockerfile Path
 
@@ -142,10 +137,8 @@ done
 
 # Test Python linting
 cd backend
+ruff check src/ tests/
 black --check --diff src/ tests/
-isort --check-only --diff src/ tests/
-flake8 src/ tests/ --count --show-source
-pylint src/ --fail-under=9.0 --rcfile=.pylintrc
 mypy src/ --strict
 
 # Test TypeScript linting
@@ -184,7 +177,7 @@ actionlint .github/workflows/ci.yml
 ### Implemented and Working
 
 ✅ **lint-shell**: ShellCheck with POSIX sh compliance
-✅ **lint-python**: black, isort, flake8, pylint≥9.0, mypy --strict, bandit
+✅ **lint-python**: ruff, black, mypy --strict, bandit
 ✅ **lint-typescript**: ESLint --max-warnings 0, Prettier, TSC --strict
 ✅ **lint-docker**: Hadolint on backend/frontend Dockerfiles
 ✅ **lint-yaml**: yamllint on workflow files (strict mode)
@@ -196,7 +189,7 @@ actionlint .github/workflows/ci.yml
 
 ⚠️  **lint-c**: Skipped (c-service not yet implemented)
 ⚠️  **lint-haskell**: Skipped (haskell-service not yet implemented)
-⚠️  **lint-bazel**: Conditional (only if Bazel files exist)
+⚠️  **lint-bazel**: Removed (Bazel removed per ADR 0001)
 
 ### To Be Implemented
 
@@ -210,13 +203,12 @@ When these are implemented, the conditional lint jobs will automatically activat
 
 ## Common Issues and Solutions
 
-### Issue: "pylint: command not found"
+### Issue: "ruff: command not found"
 
-**Solution**: Ensure pylint is installed in requirements.txt:
+**Solution**: Ensure ruff is installed via requirements-dev.txt:
 ```bash
 cd backend
-pip install -r requirements.txt
-pip install pylint
+pip install -r requirements-dev.txt
 ```
 
 ### Issue: "mypy: No module named 'src'"
@@ -305,17 +297,15 @@ Critical linters fail immediately:
 | Language | Tool | Config | Status |
 |----------|------|--------|--------|
 | Shell | ShellCheck | `--severity=style` | ✅ Enforced |
-| Python | pylint | `--fail-under=9.0` | ✅ Enforced |
+| Python | ruff | exit non-zero on violations | ✅ Enforced |
 | Python | mypy | `--strict` | ✅ Enforced |
 | TypeScript | ESLint | `--max-warnings 0` | ✅ Enforced |
 | TypeScript | TSC | `--strict` | ✅ Enforced |
 | C | clang-tidy | `--warnings-as-errors='*'` | ⚠️  Conditional |
 | Docker | Hadolint | `failure-threshold: warning` | ✅ Enforced |
 | YAML | yamllint | `-s` (strict) | ✅ Enforced |
-| Bazel | Buildifier | `-warnings=all` | ⚠️  Conditional |
-
 ---
 
-**Document Version**: 1.0
-**Last Updated**: November 2, 2025
-**Maintained by**: PhD-Software-Engineer Agent
+**Document Version**: 1.1
+**Last Updated**: March 5, 2026
+**Maintained by**: Project Team

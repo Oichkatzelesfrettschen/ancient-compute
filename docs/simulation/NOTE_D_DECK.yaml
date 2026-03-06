@@ -1,0 +1,53 @@
+# Note D Card Deck -- Ada Lovelace / Menabrea (1843)
+#
+# Note D presents Ada's "Diagram of Development" -- a complete program trace
+# for computing the expression:
+#
+#   Result = (a + b*n) * (a - b*n)  =  a^2 - (b*n)^2
+#
+# where a, b, n are input variables.
+#
+# Ada's original trace (Table of the Development in Note D):
+#   V0 = a, V1 = b, V2 = n
+#   V3 = b * n          (op 1)
+#   V4 = a + V3         (op 2)  = a + bn
+#   V5 = a - V3         (op 3)  = a - bn
+#   V6 = V4 * V5        (op 4)  = (a+bn)(a-bn) = a^2 - b^2*n^2
+#
+# This is historically significant as the first "program trace" (diagram
+# of development) showing all working variables explicitly.
+#
+# References:
+#   Menabrea / Lovelace (1843), Note D: pp. 690-695.
+#   "Diagram of development for computing (a+bn)(a-bn)."
+
+# Initial values: V0=a, V1=b, V2=n (set by runner)
+
+deck:
+  # Op 1: V3 = b * n
+  - op: 1
+    lhs: "V1"
+    rhs: "V2"
+    opcode: "mult"
+    out: ["V3"]
+
+  # Op 2: V4 = a + b*n
+  - op: 2
+    lhs: "V0"
+    rhs: "V3"
+    opcode: "add"
+    out: ["V4"]
+
+  # Op 3: V5 = a - b*n
+  - op: 3
+    lhs: "V0"
+    rhs: "V3"
+    opcode: "sub"
+    out: ["V5"]
+
+  # Op 4: V6 = (a + b*n) * (a - b*n) = a^2 - b^2*n^2
+  - op: 4
+    lhs: "V4"
+    rhs: "V5"
+    opcode: "mult"
+    out: ["V6"]

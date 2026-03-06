@@ -56,10 +56,7 @@ class TestCardCreation:
     def test_create_load_coeff_card_simple(self):
         """Test creating LOAD_COEFF card with simple coefficient."""
         reader = CardReader()
-        card = reader.create_card_from_data(
-            CardOperation.LOAD_COEFF,
-            coefficient=42
-        )
+        card = reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=42)
 
         assert card.card_id == 1
         assert card.operation == CardOperation.LOAD_COEFF
@@ -71,10 +68,7 @@ class TestCardCreation:
     def test_create_load_coeff_card_zero(self):
         """Test creating card with zero coefficient."""
         reader = CardReader()
-        card = reader.create_card_from_data(
-            CardOperation.LOAD_COEFF,
-            coefficient=0
-        )
+        card = reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=0)
 
         assert card.coefficient == 0
         assert card.is_valid is True
@@ -83,10 +77,7 @@ class TestCardCreation:
         """Test creating card with large coefficient (near 50-digit limit)."""
         reader = CardReader()
         large_coeff = 10**49 - 1  # Just under 50 digits
-        card = reader.create_card_from_data(
-            CardOperation.LOAD_COEFF,
-            coefficient=large_coeff
-        )
+        card = reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=large_coeff)
 
         assert card.coefficient == large_coeff
         assert card.is_valid is True
@@ -95,10 +86,7 @@ class TestCardCreation:
         """Test creating card with exactly 50-digit coefficient."""
         reader = CardReader()
         max_coeff = 10**50 - 1  # Maximum 50-digit number
-        card = reader.create_card_from_data(
-            CardOperation.LOAD_COEFF,
-            coefficient=max_coeff
-        )
+        card = reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=max_coeff)
 
         assert card.coefficient == max_coeff
 
@@ -108,10 +96,7 @@ class TestCardCreation:
         too_large = 10**50
 
         with pytest.raises(ValueError, match="exceeds 50-digit limit"):
-            reader.create_card_from_data(
-                CardOperation.LOAD_COEFF,
-                coefficient=too_large
-            )
+            reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=too_large)
 
     def test_create_load_coeff_requires_coefficient(self):
         """Test that LOAD_COEFF requires coefficient parameter."""
@@ -125,19 +110,12 @@ class TestCardCreation:
         reader = CardReader()
 
         with pytest.raises(ValueError, match="non-negative"):
-            reader.create_card_from_data(
-                CardOperation.LOAD_COEFF,
-                coefficient=-1
-            )
+            reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=-1)
 
     def test_create_set_x_range_card(self):
         """Test creating SET_X_RANGE card."""
         reader = CardReader()
-        card = reader.create_card_from_data(
-            CardOperation.SET_X_RANGE,
-            x_start=1,
-            x_end=5
-        )
+        card = reader.create_card_from_data(CardOperation.SET_X_RANGE, x_start=1, x_end=5)
 
         assert card.operation == CardOperation.SET_X_RANGE
         assert card.x_start == 1
@@ -149,30 +127,19 @@ class TestCardCreation:
         reader = CardReader()
 
         with pytest.raises(ValueError, match="requires x_start and x_end"):
-            reader.create_card_from_data(
-                CardOperation.SET_X_RANGE,
-                x_start=1
-            )
+            reader.create_card_from_data(CardOperation.SET_X_RANGE, x_start=1)
 
     def test_create_set_x_range_invalid_order(self):
         """Test that x_start > x_end raises error."""
         reader = CardReader()
 
         with pytest.raises(ValueError, match="Invalid range"):
-            reader.create_card_from_data(
-                CardOperation.SET_X_RANGE,
-                x_start=5,
-                x_end=1
-            )
+            reader.create_card_from_data(CardOperation.SET_X_RANGE, x_start=5, x_end=1)
 
     def test_create_set_x_range_negative_values(self):
         """Test SET_X_RANGE with negative x values."""
         reader = CardReader()
-        card = reader.create_card_from_data(
-            CardOperation.SET_X_RANGE,
-            x_start=-5,
-            x_end=-1
-        )
+        card = reader.create_card_from_data(CardOperation.SET_X_RANGE, x_start=-5, x_end=-1)
 
         assert card.x_start == -5
         assert card.x_end == -1
@@ -180,11 +147,7 @@ class TestCardCreation:
     def test_create_set_x_range_mixed_signs(self):
         """Test SET_X_RANGE with mixed positive and negative."""
         reader = CardReader()
-        card = reader.create_card_from_data(
-            CardOperation.SET_X_RANGE,
-            x_start=-3,
-            x_end=3
-        )
+        card = reader.create_card_from_data(CardOperation.SET_X_RANGE, x_start=-3, x_end=3)
 
         assert card.x_start == -3
         assert card.x_end == 3
@@ -194,11 +157,7 @@ class TestCardCreation:
         reader = CardReader()
 
         with pytest.raises(ValueError, match="must be within"):
-            reader.create_card_from_data(
-                CardOperation.SET_X_RANGE,
-                x_start=-2000,
-                x_end=2000
-            )
+            reader.create_card_from_data(CardOperation.SET_X_RANGE, x_start=-2000, x_end=2000)
 
     def test_create_print_result_card(self):
         """Test creating PRINT_RESULT card."""
@@ -230,10 +189,7 @@ class TestCardCreation:
 
         card1 = reader.create_card_from_data(CardOperation.PRINT_RESULT)
         card2 = reader.create_card_from_data(CardOperation.HALT)
-        card3 = reader.create_card_from_data(
-            CardOperation.LOAD_COEFF,
-            coefficient=10
-        )
+        card3 = reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=10)
 
         assert card1.card_id == 1
         assert card2.card_id == 2
@@ -246,10 +202,7 @@ class TestOperationEncoding:
     def test_encode_decode_load_coeff(self):
         """Test encoding and decoding LOAD_COEFF operation."""
         reader = CardReader()
-        card = reader.create_card_from_data(
-            CardOperation.LOAD_COEFF,
-            coefficient=123
-        )
+        card = reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=123)
 
         # Decode and verify
         decoded_op = reader._decode_operation(card.holes)
@@ -258,11 +211,7 @@ class TestOperationEncoding:
     def test_encode_decode_set_x_range(self):
         """Test encoding and decoding SET_X_RANGE operation."""
         reader = CardReader()
-        card = reader.create_card_from_data(
-            CardOperation.SET_X_RANGE,
-            x_start=1,
-            x_end=10
-        )
+        card = reader.create_card_from_data(CardOperation.SET_X_RANGE, x_start=1, x_end=10)
 
         decoded_op = reader._decode_operation(card.holes)
         assert decoded_op == CardOperation.SET_X_RANGE
@@ -325,10 +274,7 @@ class TestCoefficientEncoding:
     def test_encode_decode_single_digit(self):
         """Test encoding and decoding single-digit coefficient."""
         reader = CardReader()
-        card = reader.create_card_from_data(
-            CardOperation.LOAD_COEFF,
-            coefficient=5
-        )
+        card = reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=5)
 
         decoded_coeff = reader._decode_coefficient(card.holes)
         assert decoded_coeff == 5
@@ -336,10 +282,7 @@ class TestCoefficientEncoding:
     def test_encode_decode_two_digits(self):
         """Test encoding and decoding two-digit coefficient."""
         reader = CardReader()
-        card = reader.create_card_from_data(
-            CardOperation.LOAD_COEFF,
-            coefficient=42
-        )
+        card = reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=42)
 
         decoded_coeff = reader._decode_coefficient(card.holes)
         assert decoded_coeff == 42
@@ -350,10 +293,7 @@ class TestCoefficientEncoding:
 
         for power in range(1, 11):
             value = 10**power - 1  # 9, 99, 999, etc.
-            card = reader.create_card_from_data(
-                CardOperation.LOAD_COEFF,
-                coefficient=value
-            )
+            card = reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=value)
 
             decoded = reader._decode_coefficient(card.holes)
             assert decoded == value
@@ -361,10 +301,7 @@ class TestCoefficientEncoding:
     def test_encode_decode_all_nines(self):
         """Test encoding/decoding all 9s coefficient."""
         reader = CardReader()
-        card = reader.create_card_from_data(
-            CardOperation.LOAD_COEFF,
-            coefficient=999999999999
-        )
+        card = reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=999999999999)
 
         decoded = reader._decode_coefficient(card.holes)
         assert decoded == 999999999999
@@ -373,10 +310,7 @@ class TestCoefficientEncoding:
         """Test that leading zeros in 50-digit representation work."""
         reader = CardReader()
         # This will be zero-padded to 50 digits
-        card = reader.create_card_from_data(
-            CardOperation.LOAD_COEFF,
-            coefficient=1
-        )
+        card = reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=1)
 
         decoded = reader._decode_coefficient(card.holes)
         assert decoded == 1
@@ -385,10 +319,7 @@ class TestCoefficientEncoding:
         """Test encoding/decoding near maximum 50-digit value."""
         reader = CardReader()
         large_val = 10**48 + 12345  # 49-ish digit value
-        card = reader.create_card_from_data(
-            CardOperation.LOAD_COEFF,
-            coefficient=large_val
-        )
+        card = reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=large_val)
 
         decoded = reader._decode_coefficient(card.holes)
         assert decoded == large_val
@@ -400,11 +331,7 @@ class TestXRangeEncoding:
     def test_encode_decode_simple_range(self):
         """Test encoding and decoding simple positive range."""
         reader = CardReader()
-        card = reader.create_card_from_data(
-            CardOperation.SET_X_RANGE,
-            x_start=1,
-            x_end=5
-        )
+        card = reader.create_card_from_data(CardOperation.SET_X_RANGE, x_start=1, x_end=5)
 
         x_start, x_end = reader._decode_x_range(card.holes)
         assert x_start == 1
@@ -413,11 +340,7 @@ class TestXRangeEncoding:
     def test_encode_decode_single_value_range(self):
         """Test encoding range where start == end."""
         reader = CardReader()
-        card = reader.create_card_from_data(
-            CardOperation.SET_X_RANGE,
-            x_start=42,
-            x_end=42
-        )
+        card = reader.create_card_from_data(CardOperation.SET_X_RANGE, x_start=42, x_end=42)
 
         x_start, x_end = reader._decode_x_range(card.holes)
         assert x_start == 42
@@ -426,11 +349,7 @@ class TestXRangeEncoding:
     def test_encode_decode_negative_range(self):
         """Test encoding negative x values."""
         reader = CardReader()
-        card = reader.create_card_from_data(
-            CardOperation.SET_X_RANGE,
-            x_start=-10,
-            x_end=-1
-        )
+        card = reader.create_card_from_data(CardOperation.SET_X_RANGE, x_start=-10, x_end=-1)
 
         x_start, x_end = reader._decode_x_range(card.holes)
         assert x_start == -10
@@ -439,11 +358,7 @@ class TestXRangeEncoding:
     def test_encode_decode_mixed_sign_range(self):
         """Test encoding range crossing zero."""
         reader = CardReader()
-        card = reader.create_card_from_data(
-            CardOperation.SET_X_RANGE,
-            x_start=-3,
-            x_end=7
-        )
+        card = reader.create_card_from_data(CardOperation.SET_X_RANGE, x_start=-3, x_end=7)
 
         x_start, x_end = reader._decode_x_range(card.holes)
         assert x_start == -3
@@ -452,11 +367,7 @@ class TestXRangeEncoding:
     def test_encode_decode_large_range(self):
         """Test encoding large range."""
         reader = CardReader()
-        card = reader.create_card_from_data(
-            CardOperation.SET_X_RANGE,
-            x_start=0,
-            x_end=999
-        )
+        card = reader.create_card_from_data(CardOperation.SET_X_RANGE, x_start=0, x_end=999)
 
         x_start, x_end = reader._decode_x_range(card.holes)
         assert x_start == 0
@@ -465,11 +376,7 @@ class TestXRangeEncoding:
     def test_encode_decode_zero_range(self):
         """Test encoding range at zero."""
         reader = CardReader()
-        card = reader.create_card_from_data(
-            CardOperation.SET_X_RANGE,
-            x_start=0,
-            x_end=0
-        )
+        card = reader.create_card_from_data(CardOperation.SET_X_RANGE, x_start=0, x_end=0)
 
         x_start, x_end = reader._decode_x_range(card.holes)
         assert x_start == 0
@@ -488,11 +395,7 @@ class TestXRangeEncoding:
         ]
 
         for start, end in test_cases:
-            card = reader.create_card_from_data(
-                CardOperation.SET_X_RANGE,
-                x_start=start,
-                x_end=end
-            )
+            card = reader.create_card_from_data(CardOperation.SET_X_RANGE, x_start=start, x_end=end)
 
             x_start, x_end = reader._decode_x_range(card.holes)
             assert x_start == start
@@ -505,10 +408,7 @@ class TestChecksumValidation:
     def test_valid_checksum_on_creation(self):
         """Test that newly created cards have valid checksums."""
         reader = CardReader()
-        card = reader.create_card_from_data(
-            CardOperation.LOAD_COEFF,
-            coefficient=123
-        )
+        card = reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=123)
 
         is_valid, error_msg = reader._validate_checksum(card.holes)
         assert is_valid is True
@@ -533,10 +433,7 @@ class TestChecksumValidation:
     def test_checksum_bit_flip_detected(self):
         """Test that flipping a data bit is detected."""
         reader = CardReader()
-        card = reader.create_card_from_data(
-            CardOperation.LOAD_COEFF,
-            coefficient=42
-        )
+        card = reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=42)
 
         # Flip a data bit (column 10, row 0)
         card.holes[10][0] = not card.holes[10][0]
@@ -552,11 +449,7 @@ class TestChecksumValidation:
         This is a mathematical property of XOR: flipping 2 bits cancels out.
         """
         reader = CardReader()
-        card = reader.create_card_from_data(
-            CardOperation.SET_X_RANGE,
-            x_start=10,
-            x_end=20
-        )
+        card = reader.create_card_from_data(CardOperation.SET_X_RANGE, x_start=10, x_end=20)
 
         # Flip three data bits (odd number)
         card.holes[5][2] = not card.holes[5][2]
@@ -573,10 +466,7 @@ class TestCardReading:
     def test_read_card_from_created(self):
         """Test reading a card that was just created."""
         reader = CardReader()
-        original = reader.create_card_from_data(
-            CardOperation.LOAD_COEFF,
-            coefficient=99
-        )
+        original = reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=99)
 
         # Create fresh reader and read the holes
         reader2 = CardReader()
@@ -607,10 +497,7 @@ class TestCardReading:
     def test_read_card_invalid_bcd_digit(self):
         """Test that invalid BCD digits are detected."""
         reader = CardReader()
-        card = reader.create_card_from_data(
-            CardOperation.LOAD_COEFF,
-            coefficient=42
-        )
+        card = reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=42)
 
         # Corrupt a BCD digit: set bit pattern to 1111 (15, not 0-9)
         card.holes[21][0] = True
@@ -629,11 +516,7 @@ class TestCardReading:
     def test_read_preserves_all_data(self):
         """Test that reading a card preserves all encoded data."""
         reader = CardReader()
-        card = reader.create_card_from_data(
-            CardOperation.SET_X_RANGE,
-            x_start=-42,
-            x_end=99
-        )
+        card = reader.create_card_from_data(CardOperation.SET_X_RANGE, x_start=-42, x_end=99)
 
         reader2 = CardReader()
         read_card = reader2.read_card(card.holes)
@@ -649,10 +532,7 @@ class TestCardSequences:
     def test_read_single_card_sequence(self):
         """Test reading a sequence with one card."""
         reader = CardReader()
-        card = reader.create_card_from_data(
-            CardOperation.LOAD_COEFF,
-            coefficient=42
-        )
+        card = reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=42)
 
         sequence = reader.read_card_sequence([card.holes])
 
@@ -665,23 +545,10 @@ class TestCardSequences:
         reader = CardReader()
 
         cards = [
-            reader.create_card_from_data(
-                CardOperation.LOAD_COEFF,
-                coefficient=1
-            ),
-            reader.create_card_from_data(
-                CardOperation.LOAD_COEFF,
-                coefficient=1
-            ),
-            reader.create_card_from_data(
-                CardOperation.LOAD_COEFF,
-                coefficient=1
-            ),
-            reader.create_card_from_data(
-                CardOperation.SET_X_RANGE,
-                x_start=1,
-                x_end=5
-            ),
+            reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=1),
+            reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=1),
+            reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=1),
+            reader.create_card_from_data(CardOperation.SET_X_RANGE, x_start=1, x_end=5),
         ]
 
         sequence = reader.read_card_sequence([c.holes for c in cards])
@@ -696,29 +563,12 @@ class TestCardSequences:
 
         # Sequence: Load coefficients [1, 1, 1], then set range
         cards = [
-            reader.create_card_from_data(
-                CardOperation.LOAD_COEFF,
-                coefficient=1  # a0
-            ),
-            reader.create_card_from_data(
-                CardOperation.LOAD_COEFF,
-                coefficient=1  # a1
-            ),
-            reader.create_card_from_data(
-                CardOperation.LOAD_COEFF,
-                coefficient=1  # a2
-            ),
-            reader.create_card_from_data(
-                CardOperation.SET_X_RANGE,
-                x_start=1,
-                x_end=5
-            ),
-            reader.create_card_from_data(
-                CardOperation.PRINT_RESULT
-            ),
-            reader.create_card_from_data(
-                CardOperation.HALT
-            ),
+            reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=1),  # a0
+            reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=1),  # a1
+            reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=1),  # a2
+            reader.create_card_from_data(CardOperation.SET_X_RANGE, x_start=1, x_end=5),
+            reader.create_card_from_data(CardOperation.PRINT_RESULT),
+            reader.create_card_from_data(CardOperation.HALT),
         ]
 
         sequence = reader.read_card_sequence([c.holes for c in cards])
@@ -737,14 +587,9 @@ class TestCardSequences:
         """Test that sequence continues even with invalid cards."""
         reader = CardReader()
 
-        card1 = reader.create_card_from_data(
-            CardOperation.LOAD_COEFF,
-            coefficient=42
-        )
+        card1 = reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=42)
 
-        card2 = reader.create_card_from_data(
-            CardOperation.HALT
-        )
+        card2 = reader.create_card_from_data(CardOperation.HALT)
 
         sequence = reader.read_card_sequence([card1.holes, card2.holes])
 
@@ -759,42 +604,28 @@ class TestErrorHandling:
         reader = CardReader()
 
         with pytest.raises(ValueError):
-            reader.create_card_from_data(
-                CardOperation.LOAD_COEFF,
-                coefficient=-5
-            )
+            reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=-5)
 
     def test_coefficient_too_large_error(self):
         """Test that oversized coefficients are rejected."""
         reader = CardReader()
 
         with pytest.raises(ValueError, match="exceeds 50-digit"):
-            reader.create_card_from_data(
-                CardOperation.LOAD_COEFF,
-                coefficient=10**50
-            )
+            reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=10**50)
 
     def test_x_range_invalid_order_error(self):
         """Test that invalid x_start > x_end is rejected."""
         reader = CardReader()
 
         with pytest.raises(ValueError, match="Invalid range"):
-            reader.create_card_from_data(
-                CardOperation.SET_X_RANGE,
-                x_start=10,
-                x_end=5
-            )
+            reader.create_card_from_data(CardOperation.SET_X_RANGE, x_start=10, x_end=5)
 
     def test_x_range_out_of_bounds_error(self):
         """Test that extreme x values are rejected."""
         reader = CardReader()
 
         with pytest.raises(ValueError, match="must be within"):
-            reader.create_card_from_data(
-                CardOperation.SET_X_RANGE,
-                x_start=-2000,
-                x_end=2000
-            )
+            reader.create_card_from_data(CardOperation.SET_X_RANGE, x_start=-2000, x_end=2000)
 
     def test_missing_required_parameter_error(self):
         """Test that missing required parameters are detected."""
@@ -813,10 +644,7 @@ class TestEdgeCases:
     def test_all_zeros_coefficient(self):
         """Test encoding all-zeros coefficient."""
         reader = CardReader()
-        card = reader.create_card_from_data(
-            CardOperation.LOAD_COEFF,
-            coefficient=0
-        )
+        card = reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=0)
 
         decoded = reader._decode_coefficient(card.holes)
         assert decoded == 0
@@ -826,10 +654,7 @@ class TestEdgeCases:
         reader = CardReader()
 
         for digit in range(1, 10):
-            card = reader.create_card_from_data(
-                CardOperation.LOAD_COEFF,
-                coefficient=digit
-            )
+            card = reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=digit)
 
             decoded = reader._decode_coefficient(card.holes)
             assert decoded == digit
@@ -837,11 +662,7 @@ class TestEdgeCases:
     def test_x_range_boundary_maximum(self):
         """Test maximum allowed x values."""
         reader = CardReader()
-        card = reader.create_card_from_data(
-            CardOperation.SET_X_RANGE,
-            x_start=-1000,
-            x_end=1000
-        )
+        card = reader.create_card_from_data(CardOperation.SET_X_RANGE, x_start=-1000, x_end=1000)
 
         x_start, x_end = reader._decode_x_range(card.holes)
         assert x_start == -1000
@@ -850,11 +671,7 @@ class TestEdgeCases:
     def test_x_range_boundary_minimum(self):
         """Test minimum allowed x values."""
         reader = CardReader()
-        card = reader.create_card_from_data(
-            CardOperation.SET_X_RANGE,
-            x_start=-999,
-            x_end=-999
-        )
+        card = reader.create_card_from_data(CardOperation.SET_X_RANGE, x_start=-999, x_end=-999)
 
         x_start, x_end = reader._decode_x_range(card.holes)
         assert x_start == -999
@@ -867,10 +684,7 @@ class TestEdgeCases:
         fib_values = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89]
 
         for value in fib_values:
-            card = reader.create_card_from_data(
-                CardOperation.LOAD_COEFF,
-                coefficient=value
-            )
+            card = reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=value)
 
             decoded = reader._decode_coefficient(card.holes)
             assert decoded == value
@@ -880,10 +694,7 @@ class TestEdgeCases:
         reader = CardReader()
         large_val = 123456789012345
 
-        card = reader.create_card_from_data(
-            CardOperation.LOAD_COEFF,
-            coefficient=large_val
-        )
+        card = reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=large_val)
 
         decoded = reader._decode_coefficient(card.holes)
         assert decoded == large_val
@@ -892,15 +703,9 @@ class TestEdgeCases:
         """Test that one card's data doesn't affect another."""
         reader = CardReader()
 
-        card1 = reader.create_card_from_data(
-            CardOperation.LOAD_COEFF,
-            coefficient=12345
-        )
+        card1 = reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=12345)
 
-        card2 = reader.create_card_from_data(
-            CardOperation.LOAD_COEFF,
-            coefficient=98765
-        )
+        card2 = reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=98765)
 
         decoded1 = reader._decode_coefficient(card1.holes)
         decoded2 = reader._decode_coefficient(card2.holes)
@@ -918,29 +723,12 @@ class TestRegressionAndIntegration:
 
         # Polynomial: f(x) = 2x^2 + 3x + 5
         cards = [
-            reader.create_card_from_data(
-                CardOperation.LOAD_COEFF,
-                coefficient=5  # a0
-            ),
-            reader.create_card_from_data(
-                CardOperation.LOAD_COEFF,
-                coefficient=3  # a1
-            ),
-            reader.create_card_from_data(
-                CardOperation.LOAD_COEFF,
-                coefficient=2  # a2
-            ),
-            reader.create_card_from_data(
-                CardOperation.SET_X_RANGE,
-                x_start=0,
-                x_end=10
-            ),
-            reader.create_card_from_data(
-                CardOperation.PRINT_RESULT
-            ),
-            reader.create_card_from_data(
-                CardOperation.HALT
-            ),
+            reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=5),  # a0
+            reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=3),  # a1
+            reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=2),  # a2
+            reader.create_card_from_data(CardOperation.SET_X_RANGE, x_start=0, x_end=10),
+            reader.create_card_from_data(CardOperation.PRINT_RESULT),
+            reader.create_card_from_data(CardOperation.HALT),
         ]
 
         # Verify all cards are valid
@@ -962,10 +750,7 @@ class TestRegressionAndIntegration:
 
         # Create multiple cards
         for i in range(5):
-            reader.create_card_from_data(
-                CardOperation.LOAD_COEFF,
-                coefficient=i * 10
-            )
+            reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=i * 10)
 
         # Verify all cards are in reader
         assert len(reader.cards_read) == 5
@@ -978,15 +763,9 @@ class TestRegressionAndIntegration:
         """Test that checksums are computed independently per card."""
         reader = CardReader()
 
-        card1 = reader.create_card_from_data(
-            CardOperation.LOAD_COEFF,
-            coefficient=100
-        )
+        card1 = reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=100)
 
-        card2 = reader.create_card_from_data(
-            CardOperation.LOAD_COEFF,
-            coefficient=200
-        )
+        card2 = reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=200)
 
         # Both should have valid checksums despite different data
         is_valid1, _ = reader._validate_checksum(card1.holes)

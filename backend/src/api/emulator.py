@@ -126,7 +126,7 @@ async def initialize_emulator(
             "message": "Emulator initialized successfully",
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 @router.post("/reset")
@@ -139,7 +139,7 @@ async def reset_emulator(
         state.debugger = Debugger(state.emulator)
         return {"success": True}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 @router.get("/state")
@@ -183,17 +183,13 @@ async def execute_polynomial(
     if request.x_range[0] < 0 or request.x_range[1] < 0:
         return ExecuteResponse(success=False, error="X range values must be non-negative")
     if request.x_range[0] > request.x_range[1]:
-        return ExecuteResponse(
-            success=False, error="X start must be less than or equal to X end"
-        )
+        return ExecuteResponse(success=False, error="X start must be less than or equal to X end")
 
     try:
         results = []
         emu = state.emulator
         for x in range(request.x_range[0], request.x_range[1] + 1):
-            temp_results = emu.evaluate_polynomial(
-                request.coefficients, (x, x)
-            )
+            temp_results = emu.evaluate_polynomial(request.coefficients, (x, x))
             result = temp_results[0] if temp_results else 0
             results.append(
                 ExecutionResultItem(
@@ -210,17 +206,14 @@ async def execute_polynomial(
             totalCycles=emu.cycle_count,
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Polynomial evaluation failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Polynomial evaluation failed: {e}") from e
 
 
 @router.get("/results")
 async def get_results():
     """Get previous execution results"""
     # Note: In a real application, this would be stored in session
-    return {
-        "success": True,
-        "results": []
-    }
+    return {"success": True, "results": []}
 
 
 # ============================================================================
@@ -289,9 +282,7 @@ async def set_breakpoint(
     try:
         breakpoint_type = BreakpointType[request.type]
     except KeyError:
-        return BreakpointResponse(
-            success=False, error=f"Invalid breakpoint type: {request.type}"
-        )
+        return BreakpointResponse(success=False, error=f"Invalid breakpoint type: {request.type}")
     kwargs: dict[str, Any] = {}
 
     if request.type == "CYCLE" and request.cycle_target is not None:

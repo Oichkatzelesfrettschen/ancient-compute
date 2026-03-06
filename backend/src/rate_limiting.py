@@ -35,18 +35,11 @@ class RateLimiter:
         if current_time - self.last_cleanup > self.cleanup_interval:
             # Remove entries older than 1 hour
             cutoff = current_time - 3600
-            self.buckets = {
-                k: v for k, v in self.buckets.items()
-                if v[1] > cutoff
-            }
+            self.buckets = {k: v for k, v in self.buckets.items() if v[1] > cutoff}
             self.last_cleanup = current_time
 
     def is_allowed(
-        self,
-        identifier: str,
-        route: str,
-        max_requests: int,
-        window_seconds: int
+        self, identifier: str, route: str, max_requests: int, window_seconds: int
     ) -> tuple[bool, int | None]:
         """
         Check if request is allowed under rate limit.
@@ -135,9 +128,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         path = request.url.path
         max_requests, window = self._get_rate_limit(path)
 
-        is_allowed, retry_after = self.limiter.is_allowed(
-            identifier, path, max_requests, window
-        )
+        is_allowed, retry_after = self.limiter.is_allowed(identifier, path, max_requests, window)
 
         if not is_allowed:
             return JSONResponse(
@@ -145,9 +136,9 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                 content={
                     "error": "Rate limit exceeded",
                     "message": f"Too many requests. Maximum {max_requests} requests per {window} seconds.",
-                    "retry_after": retry_after
+                    "retry_after": retry_after,
                 },
-                headers={"Retry-After": str(retry_after)}
+                headers={"Retry-After": str(retry_after)},
             )
 
         response = await call_next(request)
@@ -187,14 +178,12 @@ def rate_limit(max_requests: int, window_seconds: int):
             if not is_allowed:
                 raise HTTPException(
                     status_code=429,
-                    detail={
-                        "error": "Rate limit exceeded",
-                        "retry_after": retry_after
-                    },
-                    headers={"Retry-After": str(retry_after)}
+                    detail={"error": "Rate limit exceeded", "retry_after": retry_after},
+                    headers={"Retry-After": str(retry_after)},
                 )
 
             return await func(request, *args, **kwargs)
 
         return wrapper
+
     return decorator

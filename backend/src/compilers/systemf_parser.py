@@ -46,7 +46,7 @@ class SystemFParser:
         """Initialize parser with token list"""
         self.tokens = tokens
         self.pos = 0
-        self.current_token = tokens[0] if tokens else Token(TokenType.EOF, '', 0, 0)
+        self.current_token = tokens[0] if tokens else Token(TokenType.EOF, "", 0, 0)
 
     def parse(self) -> list[Expr]:
         """Parse entire source and return list of expressions"""
@@ -66,14 +66,14 @@ class SystemFParser:
             self.current_token = self.tokens[self.pos]
         else:
             self.pos = len(self.tokens)
-            self.current_token = Token(TokenType.EOF, '', 0, 0)
+            self.current_token = Token(TokenType.EOF, "", 0, 0)
 
     def _peek(self, offset: int = 1) -> Token:
         """Peek at future token"""
         pos = self.pos + offset
         if pos < len(self.tokens):
             return self.tokens[pos]
-        return Token(TokenType.EOF, '', 0, 0)
+        return Token(TokenType.EOF, "", 0, 0)
 
     def _expect(self, *token_types: TokenType) -> Token:
         """Consume token of expected type or raise error"""
@@ -185,8 +185,13 @@ class SystemFParser:
                 self._expect(TokenType.RBRACKET)
                 expr = TypeApplication(expr, type_arg)
             # Regular application: f x
-            elif self._match(TokenType.IDENTIFIER, TokenType.TYPE_VAR, TokenType.NUMBER, TokenType.STRING_LIT,
-                             TokenType.LPAREN):
+            elif self._match(
+                TokenType.IDENTIFIER,
+                TokenType.TYPE_VAR,
+                TokenType.NUMBER,
+                TokenType.STRING_LIT,
+                TokenType.LPAREN,
+            ):
                 arg = self._parse_primary_expr()
                 expr = Application(expr, arg)
             else:
@@ -202,12 +207,12 @@ class SystemFParser:
         if token.type == TokenType.NUMBER:
             self._advance()
             try:
-                if '.' in token.value:
+                if "." in token.value:
                     return Literal(float(token.value))
                 else:
                     return Literal(int(token.value))
-            except ValueError:
-                raise SyntaxError(f"Invalid number: {token.value}")
+            except ValueError as exc:
+                raise SyntaxError(f"Invalid number: {token.value}") from exc
 
         # String literal
         if token.type == TokenType.STRING_LIT:

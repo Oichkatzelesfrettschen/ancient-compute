@@ -375,7 +375,7 @@ class TestPythonCompilerSimple:
         # Check that assignment is in instructions
         has_assignment = False
         for block in func.basic_blocks:
-            if any(hasattr(instr, 'target') for instr in block.instructions):
+            if any(hasattr(instr, "target") for instr in block.instructions):
                 has_assignment = True
         assert has_assignment
 
@@ -389,7 +389,7 @@ class TestPythonCompilerSimple:
         has_call = False
         for block in func.basic_blocks:
             for instr in block.instructions:
-                if hasattr(instr, 'function_name'):
+                if hasattr(instr, "function_name"):
                     has_call = True
         assert has_call
 

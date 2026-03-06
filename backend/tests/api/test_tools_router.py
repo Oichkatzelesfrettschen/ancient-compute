@@ -8,6 +8,7 @@ from backend.src.main import app
 
 client = TestClient(app)
 
+
 def test_debug_step():
     """Test stepping the emulator via API."""
     # First reset to ensure known state
@@ -21,6 +22,7 @@ def test_debug_step():
     # Analytical Engine adapter returns clock_time as cycle
     assert data["state"]["cycle"] >= 0
 
+
 def test_performance_report():
     """Test retrieving performance report."""
     response = client.get("/api/v1/tools/performance")
@@ -29,6 +31,7 @@ def test_performance_report():
     assert "total_cycles" in data
     assert "instruction_frequency" in data
     assert "suggestions" in data
+
 
 def test_debug_command_reset():
     """Test resetting the emulator."""

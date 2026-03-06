@@ -19,37 +19,40 @@ from .adapter import MachineAdapter, MechanicalPhase
 
 class BreakpointType(Enum):
     """Types of breakpoints."""
-    CYCLE = "CYCLE"                    # Break at specific cycle number (or clock time)
-    PHASE = "PHASE"                    # Break at specific mechanical phase
-    VALUE_CHANGE = "VALUE_CHANGE"      # Break when variable changes
-    CONDITION = "CONDITION"            # Break when condition is true
-    INSTRUCTION = "INSTRUCTION"        # Break at specific instruction (PC)
+
+    CYCLE = "CYCLE"  # Break at specific cycle number (or clock time)
+    PHASE = "PHASE"  # Break at specific mechanical phase
+    VALUE_CHANGE = "VALUE_CHANGE"  # Break when variable changes
+    CONDITION = "CONDITION"  # Break when condition is true
+    INSTRUCTION = "INSTRUCTION"  # Break at specific instruction (PC)
 
 
 @dataclass
 class SymbolEntry:
     """Entry in the debugger's symbol table."""
-    name: str                           # Variable name
-    initial_value: float                # Initial value
-    current_value: float = 0.0          # Current value
-    read_count: int = 0                 # Times read
-    write_count: int = 0                # Times written
+
+    name: str  # Variable name
+    initial_value: float  # Initial value
+    current_value: float = 0.0  # Current value
+    read_count: int = 0  # Times read
+    write_count: int = 0  # Times written
     first_access_cycle: int | None = None  # First access cycle
-    last_access_cycle: int | None = None   # Last access cycle
+    last_access_cycle: int | None = None  # Last access cycle
     access_history: list[tuple[int, str, float]] = field(default_factory=list)  # (cycle, op, value)
 
 
 @dataclass
 class Breakpoint:
     """Represents a single breakpoint."""
-    breakpoint_id: int                  # Unique ID
-    breakpoint_type: BreakpointType     # Type of breakpoint
-    enabled: bool = True                # Breakpoint enabled
-    hit_count: int = 0                  # Times this breakpoint was hit
+
+    breakpoint_id: int  # Unique ID
+    breakpoint_type: BreakpointType  # Type of breakpoint
+    enabled: bool = True  # Breakpoint enabled
+    hit_count: int = 0  # Times this breakpoint was hit
     cycle_target: int | None = None  # For CYCLE breakpoints
     phase_target: MechanicalPhase | None = None  # For PHASE breakpoints
-    variable_name: str | None = None # For VALUE_CHANGE breakpoints
-    instruction_target: int | None = None # For INSTRUCTION breakpoints
+    variable_name: str | None = None  # For VALUE_CHANGE breakpoints
+    instruction_target: int | None = None  # For INSTRUCTION breakpoints
     condition_func: Callable[[Any], bool] | None = None  # For CONDITION
     trigger_on_change: float | None = None  # Previous value for VALUE_CHANGE
 
@@ -66,7 +69,9 @@ class SymbolTable:
         """Define a new symbol."""
         if name in self.symbols:
             raise ValueError(f"Symbol '{name}' already defined")
-        self.symbols[name] = SymbolEntry(name=name, initial_value=initial_value, current_value=initial_value)
+        self.symbols[name] = SymbolEntry(
+            name=name, initial_value=initial_value, current_value=initial_value
+        )
 
     def read_symbol(self, name: str, cycle: int) -> float:
         """Read symbol value and record access."""
@@ -247,6 +252,7 @@ class Debugger:
         else:
             # Auto-wrap raw machine objects for convenience
             from .adapter import DEMachineAdapter
+
             self.adapter = DEMachineAdapter(adapter)
             self.machine = adapter  # keep reference for backward compat
         self.symbol_table = SymbolTable()
@@ -274,7 +280,9 @@ class Debugger:
     # -- Breakpoint management --
 
     def set_instruction_breakpoint(self, pc: int) -> int:
-        return self.breakpoint_manager.set_breakpoint(BreakpointType.INSTRUCTION, instruction_target=pc)
+        return self.breakpoint_manager.set_breakpoint(
+            BreakpointType.INSTRUCTION, instruction_target=pc
+        )
 
     def set_cycle_breakpoint(self, cycle: int) -> int:
         return self.breakpoint_manager.set_breakpoint(BreakpointType.CYCLE, cycle_target=cycle)
@@ -283,10 +291,14 @@ class Debugger:
         return self.breakpoint_manager.set_breakpoint(BreakpointType.PHASE, phase_target=phase)
 
     def set_value_breakpoint(self, variable_name: str) -> int:
-        return self.breakpoint_manager.set_breakpoint(BreakpointType.VALUE_CHANGE, variable_name=variable_name)
+        return self.breakpoint_manager.set_breakpoint(
+            BreakpointType.VALUE_CHANGE, variable_name=variable_name
+        )
 
     def set_condition_breakpoint(self, condition_func: Callable) -> int:
-        return self.breakpoint_manager.set_breakpoint(BreakpointType.CONDITION, condition_func=condition_func)
+        return self.breakpoint_manager.set_breakpoint(
+            BreakpointType.CONDITION, condition_func=condition_func
+        )
 
     def disable_breakpoint(self, bp_id: int) -> None:
         self.breakpoint_manager.disable_breakpoint(bp_id)
