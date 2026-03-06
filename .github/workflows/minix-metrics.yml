@@ -25,7 +25,7 @@ jobs:
   run:
     runs-on: [self-hosted, kvm]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Run MINIX metrics
         run: |
           chmod +x scripts/minix_metrics.sh
