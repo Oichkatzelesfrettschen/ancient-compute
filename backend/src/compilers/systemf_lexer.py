@@ -20,10 +20,10 @@ Token types:
 from __future__ import annotations
 
 from dataclasses import dataclass
-from enum import Enum
+from enum import StrEnum
 
 
-class TokenType(str, Enum):
+class TokenType(StrEnum):
     """Token type enumeration for System F"""
 
     # Keywords

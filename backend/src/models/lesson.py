@@ -8,7 +8,7 @@ from sqlalchemy.sql import func
 from ..database import Base
 
 
-class LessonType(str, enum.Enum):
+class LessonType(enum.StrEnum):
     """Types of lessons in the curriculum."""
 
     READING = "reading"  # Text-based content
@@ -18,7 +18,7 @@ class LessonType(str, enum.Enum):
     SYNTHESIS = "synthesis"  # Cross-module integration
 
 
-class SupportedLanguage(str, enum.Enum):
+class SupportedLanguage(enum.StrEnum):
     """Programming languages supported for code execution."""
 
     C = "c"

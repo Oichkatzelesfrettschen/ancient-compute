@@ -16,7 +16,7 @@ from sqlalchemy.sql import func
 from ..database import Base
 
 
-class DifficultyLevel(str, enum.Enum):
+class DifficultyLevel(enum.StrEnum):
     """Difficulty levels for exercises."""
 
     BEGINNER = "beginner"

@@ -8,7 +8,7 @@ from sqlalchemy.sql import func
 from ..database import Base
 
 
-class ModuleEra(str, enum.Enum):
+class ModuleEra(enum.StrEnum):
     """Historical eras for organizing modules chronologically."""
 
     PREHISTORY = "prehistory"  # 20000 BC - 3000 BC

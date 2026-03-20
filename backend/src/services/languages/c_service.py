@@ -18,7 +18,7 @@ import asyncio
 import re
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 from backend.src.assembler.assembler import Assembler
@@ -26,7 +26,7 @@ from backend.src.codegen.codegen import CodeGenerator
 from backend.src.compilers.c_compiler import CCompiler
 
 
-class ExecutionStatus(str, Enum):
+class ExecutionStatus(StrEnum):
     """Execution status enumeration."""
 
     SUCCESS = "success"

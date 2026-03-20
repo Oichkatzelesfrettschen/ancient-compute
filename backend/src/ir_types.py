@@ -8,10 +8,10 @@ See BABBAGE_IR_SPECIFICATION.md for detailed semantics.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import StrEnum
 
 
-class IRType(str, Enum):
+class IRType(StrEnum):
     """IR Data Types (all ultimately 50-digit decimal at runtime)"""
 
     I64 = "i64"  # 64-bit integer (compile-time only)
@@ -21,7 +21,7 @@ class IRType(str, Enum):
     VOID = "void"  # No value (function return, discards)
 
 
-class Register(str, Enum):
+class Register(StrEnum):
     """Babbage Physical Registers"""
 
     A = "a"  # Accumulator / Primary arithmetic

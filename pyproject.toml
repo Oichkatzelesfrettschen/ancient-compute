@@ -40,7 +40,6 @@ ignore = [
     "SIM108", # ternary operator -- style preference
     # --- pre-existing debt; requires line-by-line review ---
     "E501",   # line-too-long: requires line-by-line review
-    "UP042",  # use StrEnum instead of str+Enum: 10 pre-existing sites; migrate per-file
 ]
 
 [tool.ruff.lint.isort]
