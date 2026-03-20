@@ -1,8 +1,8 @@
 # Project Status Dashboard
 
-**Auto-generated**: 2026-03-20 04:13 UTC
+**Auto-generated**: 2026-03-20 17:49 UTC
 **Branch**: `main`
-**Last commit**: `ac9a463 fix: add docs-check, mypy reporting, fix AE adapter, update deferred work (3rd Debt Resolution Phase 7)`
+**Last commit**: `1e55954 fix: clear all ruff violations (13 fixable + 2 manual) -- 0 violations`
 
 > Regenerate with: `make status`
 
@@ -12,10 +12,10 @@
 
 | Metric | Value |
 |--------|-------|
-| Unit tests collected | 1768 |
+| Unit tests collected | 2141 |
 | Collection errors | 0 |
-| Python source lines (backend/src/) | 36,606 |
-| Active docs (non-archive .md) | 196 |
+| Python source lines (backend/src/) | 38,227 |
+| Active docs (non-archive .md) | 197 |
 
 ## Phase Status
 
