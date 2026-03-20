@@ -9,8 +9,6 @@ program. These tests confirm it runs faithfully on our AE emulator.
 
 from fractions import Fraction
 
-import pytest
-
 from backend.src.emulator.analytical_engine import Engine
 from backend.src.emulator.bernoulli import ada_lovelace_bernoulli_series
 from backend.src.emulator.note_g_assembly import generate_note_g_assembly_text
@@ -44,15 +42,6 @@ def test_note_g_assembly_n1_contains_div():
     assert "DIV" in text
 
 
-@pytest.mark.xfail(
-    reason=(
-        "Engine DIV instruction computes integer quotient at the decimal level "
-        "(int(a) // int(b)), losing fractional parts. Note G requires 1/3, 1/6 etc. "
-        "Full numerical verification requires fractional DIV in _execute_DIV_micro. "
-        "See DEFERRED_WORK.md: 'AE DIV fractional support for Note G'."
-    ),
-    strict=True,
-)
 def test_note_g_n1_computes_b1():
     """Run Note G for n=1: V24 output = B1 = 1/6."""
     results = _run_note_g_on_ae(1)
@@ -61,14 +50,6 @@ def test_note_g_n1_computes_b1():
     assert results[0] == expected[0]
 
 
-@pytest.mark.xfail(
-    reason=(
-        "Engine DIV instruction computes integer quotient at the decimal level. "
-        "Note G inner loops require fractional intermediate values. "
-        "See DEFERRED_WORK.md: 'AE DIV fractional support for Note G'."
-    ),
-    strict=True,
-)
 def test_note_g_n3_computes_b1_b3_b5():
     """Run Note G for n=3: outputs match B1=1/6, B3=-1/30, B5=1/42."""
     results = _run_note_g_on_ae(3)

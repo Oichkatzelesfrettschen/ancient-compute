@@ -76,19 +76,4 @@ path (`run_note_g_exact`) moved to WISHLIST.
 
 ---
 
-### AE DIV fractional support for Note G native execution
-
-`_execute_DIV_micro` (engine.py) computes integer quotient at the decimal
-level (`int(a.to_decimal()) // int(b.to_decimal())`).  Note G assembly
-requires fractional results such as 1/3, 1/6, 1/30.  Two tests in
-`test_note_g_ae_execution.py` are currently `xfail` because of this.
-
-Fix path: replace the long-division loop in `_execute_DIV_micro` with the
-`BabbageNumber.__truediv__` operator which correctly divides scaled internal
-values; update integer-division callers to use a separate `INT_DIV` or
-`DIVMOD` opcode if they need floor-division semantics.
-
-Impact: unlocks full numerical verification of Note G on the AE emulator,
-the highest-fidelity historical goal of this codebase.
-
 ---

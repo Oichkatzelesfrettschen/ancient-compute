@@ -592,8 +592,18 @@ class Engine:
         self._update_flags(self.mill_product_accumulator)
 
     def _execute_DIV_micro(self, reg_dest: str, operand_src: Any) -> None:
-        """
-        Execute DIV using micro-ops, leveraging repeated subtractions and shifts.
+        """Execute DIV using fixed-point arithmetic.
+
+        Quotient stored in reg_dest; remainder (dividend - quotient * divisor)
+        stored in register D. Uses BabbageNumber.__truediv__ for full 40-digit
+        fractional precision.
+
+        WHY: The AE mill operated on 50-digit decimal fixed-point numbers
+        (Babbage, Passages from the Life of a Philosopher, 1864, Ch. VIII).
+        Division must preserve fractional parts so that chains like
+        (2n-1)/(2n+1) in Ada Lovelace's Note G (Menabrea/Lovelace 1843)
+        produce correct Bernoulli numbers (1/6, -1/30, 1/42, ...).
+        The prior integer-only implementation truncated e.g. 1/3 to 0.
         """
         dividend = self._get_operand_value(reg_dest)
         divisor = self._get_operand_value(operand_src)
@@ -601,48 +611,12 @@ class Engine:
         if divisor == BabbageNumber(0):
             raise ZeroDivisionError("Division by zero")
 
-        self.mill_remainder_buffer = dividend
-        self.mill_quotient_buffer = BabbageNumber(0)
+        quotient = dividend / divisor  # BabbageNumber.__truediv__: full fixed-point
+        remainder = dividend - quotient * divisor  # truncation residual (~0 for exact)
 
-        # Determine initial alignment
-        dividend_int = int(abs(dividend.to_decimal()))
-        divisor_int = int(abs(divisor.to_decimal()))
-
-        initial_shift = 0
-        if dividend_int != 0 and divisor_int != 0:
-            initial_shift = len(str(dividend_int)) - len(str(divisor_int))
-            if initial_shift > 0 and dividend < (divisor * BabbageNumber(10**initial_shift)):
-                initial_shift -= 1
-        elif dividend_int == 0:
-            initial_shift = 0
-
-        # Outer loop for each quotient digit
-        for k in range(initial_shift, -1, -1):  # Integer division only
-            if k < 0:
-                break
-
-            self.mill_operand_buffer = divisor * BabbageNumber(10**k)
-            self.mill_quotient_digit_value = BabbageNumber(10**k)
-
-            self.barrels.select_barrel("DIV")
-            # We skip the first 4 steps of the DIV barrel (setup) because we did it in Python
-            self.barrels.step_index = 4
-
-            # Micro-op execution loop for ONE digit position
-            while self.barrels.active_barrel:
-                ops = self.barrels.step()
-                if not ops:
-                    break
-                for op in ops:
-                    self._execute_micro_op(op, reg_dest, operand_src)
-                # If we hit step 9 (SHIFT_MILL_DIVISOR), we are done with this digit
-                if self.barrels.step_index >= 9:
-                    self.barrels.active_barrel = None
-
-        # Final storage
-        self.registers[reg_dest] = self.mill_quotient_buffer
-        self._set_register_value("D", self.mill_remainder_buffer)
-        self._update_flags(self.mill_quotient_buffer)
+        self.registers[reg_dest] = quotient
+        self._set_register_value("D", remainder)
+        self._update_flags(quotient)
 
     def _execute_SQRT_micro(self, reg_dest: str) -> None:
         """Execute SQRT using micro-ops (Newton-Raphson, 25 barrel iterations).
