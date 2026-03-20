@@ -9,9 +9,9 @@ Tests cover:
 
 import pytest
 
+from backend.src.compilers.c_parser import CParser
 from backend.src.compilers.c_ast import (
     CLexer,
-    CParser,
     GlobalDeclaration,
     TokenType,
 )

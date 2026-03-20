@@ -12,11 +12,11 @@ Compilation phases:
 
 from __future__ import annotations
 
+from backend.src.compilers.c_parser import CParser
 from backend.src.compilers.c_ast import (
     ArrayAccess,
     Block,
     CLexer,
-    CParser,
     Expression,
     ExpressionStatement,
     FloatLiteral,
