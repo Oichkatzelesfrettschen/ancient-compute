@@ -141,10 +141,10 @@ class EnigmaMachine:
 
     def __init__(
         self,
-        rotors: list[str] = None,
+        rotors: list[str] | None = None,
         reflector: str = "B",
-        ring_settings: list[int] = None,
-        plugboard_connections: list[str] = None,
+        ring_settings: list[int] | None = None,
+        plugboard_connections: list[str] | None = None,
     ):
 
         if plugboard_connections is None:

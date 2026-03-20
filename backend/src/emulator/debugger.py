@@ -61,7 +61,7 @@ class Breakpoint:
 class SymbolTable:
     """Manages variable symbols and their values during execution."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize empty symbol table."""
         self.symbols: dict[str, SymbolEntry] = {}
         self.total_accesses = 0
@@ -143,12 +143,12 @@ class SymbolTable:
 class BreakpointManager:
     """Manages breakpoints and condition evaluation."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize breakpoint manager."""
         self.breakpoints: dict[int, Breakpoint] = {}
-        self.next_id = 1
+        self.next_id: int = 1
 
-    def set_breakpoint(self, breakpoint_type: BreakpointType, **kwargs) -> int:
+    def set_breakpoint(self, breakpoint_type: BreakpointType, **kwargs: Any) -> int:
         """Set a new breakpoint."""
         breakpoint_id = self.next_id
         self.next_id += 1

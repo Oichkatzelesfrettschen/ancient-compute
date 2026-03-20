@@ -10,11 +10,12 @@ Implements:
 """
 
 import time
+from types import TracebackType
 
 from fastapi import Request
 from fastapi.responses import Response
 from prometheus_client import CONTENT_TYPE_LATEST, Counter, Gauge, Histogram, Info, generate_latest
-from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
 # Application info
 app_info = Info("ancient_compute_app", "Ancient Compute application information")
@@ -72,7 +73,7 @@ class MetricsMiddleware(BaseHTTPMiddleware):
     FastAPI middleware for collecting HTTP request metrics.
     """
 
-    async def dispatch(self, request: Request, call_next):
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         """Process request and collect metrics"""
         # Skip metrics collection for /metrics endpoint itself
         if request.url.path == "/metrics":
@@ -122,7 +123,7 @@ def metrics_response() -> Response:
 # Utility functions for recording metrics
 
 
-def record_code_execution(language: str, duration: float, status: str):
+def record_code_execution(language: str, duration: float, status: str) -> None:
     """
     Record code execution metrics.
 
@@ -135,7 +136,7 @@ def record_code_execution(language: str, duration: float, status: str):
     code_execution_duration_seconds.labels(language=language).observe(duration)
 
 
-def record_code_compilation(language: str, duration: float):
+def record_code_compilation(language: str, duration: float) -> None:
     """
     Record code compilation metrics.
 
@@ -146,7 +147,7 @@ def record_code_compilation(language: str, duration: float):
     code_compilation_duration_seconds.labels(language=language).observe(duration)
 
 
-def record_cache_access(cache_type: str, hit: bool):
+def record_cache_access(cache_type: str, hit: bool) -> None:
     """
     Record cache access metrics.
 
@@ -173,17 +174,22 @@ class ExecutionContext:
                 ctx.mark_error()
     """
 
-    def __init__(self, language: str):
+    def __init__(self, language: str) -> None:
         self.language = language
         self.start_time: float | None = None
         self.status = "error"  # Default to error, mark success explicitly
 
-    async def __aenter__(self):
+    async def __aenter__(self) -> "ExecutionContext":
         self.start_time = time.time()
         active_executions.labels(language=self.language).inc()
         return self
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
+    ) -> None:
         duration = time.time() - (self.start_time or 0.0)
         active_executions.labels(language=self.language).dec()
 
@@ -192,14 +198,14 @@ class ExecutionContext:
 
         record_code_execution(self.language, duration, self.status)
 
-    def mark_success(self):
+    def mark_success(self) -> None:
         """Mark execution as successful"""
         self.status = "success"
 
-    def mark_error(self):
+    def mark_error(self) -> None:
         """Mark execution as error"""
         self.status = "error"
 
-    def mark_timeout(self):
+    def mark_timeout(self) -> None:
         """Mark execution as timeout"""
         self.status = "timeout"

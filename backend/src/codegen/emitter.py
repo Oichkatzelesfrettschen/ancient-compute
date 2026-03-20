@@ -38,7 +38,7 @@ class CodeEmitter:
     3. Generate symbol table and debugging info
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.instructions: list[AsmInstruction] = []
         self.labels: dict[str, int] = {}  # label → instruction address
         self.current_address = 0
@@ -134,7 +134,7 @@ class CodeEmitter:
         return "\n".join(lines)
 
 
-def example_code_emission():
+def example_code_emission() -> None:
     """Example: Code emission"""
     from selector import AsmInstruction, AsmOperand
 

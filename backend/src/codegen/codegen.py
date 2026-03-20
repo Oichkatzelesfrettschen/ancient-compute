@@ -167,7 +167,7 @@ class CodeGenerator:
         return results
 
 
-def example_code_generation():
+def example_code_generation() -> None:
     """Example: Complete code generation"""
     from ir_types import Constant, IRBuilder, VariableValue
 

@@ -67,7 +67,7 @@ class Module(Base):
     )
     progress = relationship("ModuleProgress", back_populates="module", cascade="all, delete-orphan")
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<Module {self.slug}>"
 
 
@@ -99,5 +99,5 @@ class ModuleProgress(Base):
     user = relationship("User", back_populates="module_progress")
     module = relationship("Module", back_populates="progress")
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<ModuleProgress user={self.user_id} module={self.module_id}>"

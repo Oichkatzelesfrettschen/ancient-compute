@@ -26,6 +26,7 @@ from backend.src.ir_types import (
     JumpTerminator,
     Load,
     MemoryValue,
+    Operand,
     RegisterValue,
     Return,
     ReturnTerminator,
@@ -99,7 +100,7 @@ class InstructionSelector:
 
         return result
 
-    def _get_operand(self, value) -> AsmOperand:
+    def _get_operand(self, value: Operand) -> AsmOperand:
         """Convert IR value to assembly operand"""
         if isinstance(value, VariableValue):
             reg_or_mem = self.allocation.get_allocation(value.name)
@@ -212,6 +213,7 @@ class InstructionSelector:
 
         else:
             # Binary operations: need two operands
+            assert instr.operand2 is not None
             op2 = self._get_operand(instr.operand2)
 
             # Babbage convention: operations are A ← A op B
@@ -481,7 +483,7 @@ class InstructionSelector:
         return result
 
 
-def example_instruction_selection():
+def example_instruction_selection() -> None:
     """Example: Instruction selection"""
     from ir_types import Constant, IRBuilder, VariableValue
 

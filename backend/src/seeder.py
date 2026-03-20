@@ -4,7 +4,7 @@ from .database import Base, SessionLocal, engine
 from .models import Era, Lesson, Module, User
 
 
-def seed_database():
+def seed_database() -> None:
     """Populate the database with initial data."""
     db = SessionLocal()
 

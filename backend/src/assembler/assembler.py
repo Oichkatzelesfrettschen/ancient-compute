@@ -390,7 +390,7 @@ class InstructionEncoder:
 class SymbolTable:
     """Tracks labels, variables, and their addresses."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.symbols: dict[str, int] = {}
 
     def define(self, name: str, address: int) -> None:

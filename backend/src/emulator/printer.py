@@ -83,7 +83,7 @@ class Printer:
     LINES_PER_PAGE = 50  # Standard page size
     DIGITS_PER_NUMBER = 8  # Formatted as 8-digit numbers
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize printer with empty state."""
         self.state = PrinterState.IDLE
         self.type_wheels: list[int] = [0] * self.NUM_COLUMNS  # 8 wheels, each 0-9
@@ -276,7 +276,7 @@ class Stereotyper:
     MOLD_HEIGHT = 50  # 50 rows per mold
     MAX_MOLDS = 100  # Max molds in storage
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize stereotyper with empty mold."""
         self.x_position = 0  # Current column (0-7)
         self.y_position = 0  # Current row (0-49)
@@ -443,7 +443,7 @@ class PrinterStereotyperSystem:
     Allows simultaneous printing and stereotype creation.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize combined system."""
         self.printer = Printer()
         self.stereotyper = Stereotyper()

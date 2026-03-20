@@ -26,7 +26,7 @@ class PerformanceAnalyzer:
         self.metrics = PerformanceMetrics()
         self.history: list[dict[str, Any]] = []
 
-    def record_step(self, instruction: Any | None = None):
+    def record_step(self, instruction: Any | None = None) -> None:
         """Record metrics for a single execution step."""
         self.metrics.total_cycles = self.adapter.get_cycle_count()
 

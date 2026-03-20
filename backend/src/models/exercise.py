@@ -80,7 +80,7 @@ class Exercise(Base):
         "ExerciseProgress", back_populates="exercise", cascade="all, delete-orphan"
     )
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<Exercise {self.slug}>"
 
 
@@ -114,7 +114,7 @@ class ExerciseProgress(Base):
     user = relationship("User", back_populates="exercise_progress")
     exercise = relationship("Exercise", back_populates="progress")
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<ExerciseProgress user={self.user_id} exercise={self.exercise_id}>"
 
 
@@ -157,5 +157,5 @@ class ExerciseSubmission(Base):
     user = relationship("User", back_populates="exercise_submissions")
     exercise = relationship("Exercise", back_populates="submissions")
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<ExerciseSubmission user={self.user_id} exercise={self.exercise_id}>"

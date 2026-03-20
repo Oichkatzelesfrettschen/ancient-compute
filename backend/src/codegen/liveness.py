@@ -25,6 +25,7 @@ from backend.src.ir_types import (
     Return,
     ReturnTerminator,
     Store,
+    Terminator,
     VariableValue,
 )
 
@@ -126,7 +127,7 @@ class LivenessAnalyzer:
 
         self.instr_index += 1
 
-    def _analyze_terminator(self, term) -> None:
+    def _analyze_terminator(self, term: Terminator) -> None:
         """Analyze terminator for uses"""
         if isinstance(term, BranchTerminator):
             self._use_operand(term.operand1)
@@ -250,7 +251,7 @@ class LivenessAnalyzer:
         return "\n".join(lines)
 
 
-def example_liveness_analysis():
+def example_liveness_analysis() -> None:
     """Example: Liveness analysis for simple function"""
     from ir_types import Constant, IRBuilder, VariableValue
 

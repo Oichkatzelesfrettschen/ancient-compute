@@ -78,7 +78,7 @@ def fourmilab_to_instructions(cards: list[FourmilabCard]) -> list[Any]:
     return translate_fourmilab(cards)
 
 
-def run_fourmilab_deck(source: str, output_callback=None) -> Engine:
+def run_fourmilab_deck(source: str, output_callback: Any = None) -> Engine:
     """Parse, translate, and run a Fourmilab card deck.
 
     Args:

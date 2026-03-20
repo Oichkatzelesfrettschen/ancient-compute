@@ -51,7 +51,7 @@ class MachineAdapter(ABC):
 
 
 class DEMachineAdapter(MachineAdapter):
-    def __init__(self, machine):
+    def __init__(self, machine: Any) -> None:
         self.machine = machine
 
     def get_cycle_count(self) -> int:
@@ -119,9 +119,9 @@ class AEMachineAdapter(MachineAdapter):
 class ScheutzAdapter(MachineAdapter):
     """Adapter for ScheutzDifferenceEngine."""
 
-    def __init__(self, machine):
+    def __init__(self, machine: Any) -> None:
         self.machine = machine
-        self._cranks = 0
+        self._cranks: int = 0
 
     def get_cycle_count(self) -> int:
         return self._cranks
@@ -162,11 +162,11 @@ class LudgateAdapter(MachineAdapter):
     Arithmetic operations are triggered explicitly via machine.add/multiply/etc.
     """
 
-    def __init__(self, machine):
+    def __init__(self, machine: Any) -> None:
         self.machine = machine
 
     def get_cycle_count(self) -> int:
-        return self.machine.state.cycle_count
+        return int(self.machine.state.cycle_count)
 
     def get_current_phase(self) -> MechanicalPhase | None:
         return None
@@ -206,11 +206,11 @@ class TorresQuevedoAdapter(MachineAdapter):
     Arithmetic is triggered explicitly via machine.add/subtract/multiply/divide.
     """
 
-    def __init__(self, machine):
+    def __init__(self, machine: Any) -> None:
         self.machine = machine
 
     def get_cycle_count(self) -> int:
-        return self.machine.state.cycle_count
+        return int(self.machine.state.cycle_count)
 
     def get_current_phase(self) -> MechanicalPhase | None:
         return None
@@ -246,7 +246,7 @@ class TorresQuevedoAdapter(MachineAdapter):
 class ZuseZ1Adapter(MachineAdapter):
     """Adapter for ZuseZ1."""
 
-    def __init__(self, machine):
+    def __init__(self, machine: Any) -> None:
         self.machine = machine
 
     def get_cycle_count(self) -> int:
@@ -278,9 +278,9 @@ class ZuseZ1Adapter(MachineAdapter):
 
 
 class CurtaAdapter(MachineAdapter):
-    def __init__(self, curta):
+    def __init__(self, curta: Any) -> None:
         self.curta = curta
-        self.turns = 0
+        self.turns: int = 0
 
     def get_cycle_count(self) -> int:
         return self.turns

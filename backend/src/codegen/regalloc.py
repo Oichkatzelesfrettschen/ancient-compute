@@ -203,7 +203,7 @@ class LinearScanAllocator:
         return allocation.print_allocation()
 
 
-def example_register_allocation():
+def example_register_allocation() -> None:
     """Example: Register allocation for simple function"""
     from ir_types import Constant, IRBuilder, VariableValue
 

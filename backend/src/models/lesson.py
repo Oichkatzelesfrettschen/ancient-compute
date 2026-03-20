@@ -75,7 +75,7 @@ class Lesson(Base):
         "CodeSubmission", back_populates="lesson", cascade="all, delete-orphan"
     )
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<Lesson {self.slug}>"
 
 
@@ -106,7 +106,7 @@ class LessonProgress(Base):
     user = relationship("User", back_populates="lesson_progress")
     lesson = relationship("Lesson", back_populates="progress")
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<LessonProgress user={self.user_id} lesson={self.lesson_id}>"
 
 
@@ -142,5 +142,5 @@ class CodeSubmission(Base):
     user = relationship("User", back_populates="code_submissions")
     lesson = relationship("Lesson", back_populates="submissions")
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<CodeSubmission user={self.user_id} lesson={self.lesson_id}>"

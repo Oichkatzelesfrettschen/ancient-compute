@@ -59,5 +59,5 @@ class Era(Base):
         order_by="Module.sequence_order",
     )
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<Era {self.label} ({self.start_year} - {self.end_year})>"
