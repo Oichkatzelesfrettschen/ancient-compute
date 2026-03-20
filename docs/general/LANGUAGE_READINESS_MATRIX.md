@@ -21,15 +21,12 @@
 | Python (Babbage IR) | FULL | FULL | N/A | N/A | N/A | GREEN | READY |
 | Haskell | FULL | FULL | N/A | N/A | N/A | GREEN | READY |
 | LISP (sbcl) | FULL | FULL | N/A | N/A | N/A | GREEN | READY |
-| IDRIS2 (Babbage IR stub) | FULL | FULL | N/A | N/A | N/A | GREEN | READY* |
+| IDRIS2 (idris2 0.8.0) | FULL | N/A | N/A | N/A | N/A | GREEN | READY |
 | System F (Babbage IR) | FULL | FULL | N/A | N/A | N/A | GREEN | READY |
 | ALGOL68 (a68g 3.10.12) | FULL | N/A | N/A | N/A | N/A | GREEN | READY |
 | C++ (g++ 15.2.1) | FULL | N/A | N/A | N/A | N/A | GREEN | READY |
 | MicroPython 1.27.0 | FULL | N/A | N/A | N/A | N/A | GREEN | READY |
 | Java | STUB | FULL | N/A | N/A | N/A | BLOCKED | NOT READY |
-
-*IDRIS2: real execution (idris2 binary) deferred until AUR build completes;
-currently uses Babbage IR compilation path.
 
 ## Gate Test Files
 
@@ -39,7 +36,7 @@ currently uses Babbage IR compilation path.
 | Gate 1 | test_babbage_abi_contract.py | PASSING | 3 tests |
 | Gate 2 | test_c_freestanding_subset.py | PASSING | 6 tests |
 | Gate 2 | test_c_gate2_programs.py | PASSING | 20+ tests |
-| Gate 3 | test_gate3_language_contracts.py | PASSING | 10 tests |
+| Gate 3 | test_gate3_language_contracts.py | PASSING | 32 tests |
 | Gate 3 | test_c_gate3_contract.py | PASSING | 6 tests |
 | Gate 3 | test_python_gate3_contract.py | PASSING | 6 tests |
 | Gate 3 | test_haskell_service.py | PASSING | 8 tests |
@@ -62,8 +59,10 @@ currently uses Babbage IR compilation path.
 - **LISP**: Now uses real SBCL 2.6.2 execution (sbcl --script). Upgraded from
   Babbage IR compilation path on 2026-03-20. Gate 3: 11/11 tests pass.
   Note: function names that clash with SB-ALIEN (e.g. 'double') must be avoided.
-- **IDRIS2**: Babbage IR path is complete and Gate 3 passes.  The idris2 binary
-  (AUR build) when available will upgrade to real execution in idris2_service.py.
+- **IDRIS2**: Now uses real idris2 0.8.0 type-checking (idris2 --check). Upgraded
+  from Babbage IR stub on 2026-03-20. Gate 3: 6/6 tests pass. The idris2 binary
+  was built from AUR (chez-scheme bootstrap), packaged with makepkg --nocheck
+  (chez/channels009 skipped -- a non-critical concurrency test).
 - **Gate 0/1 are GREEN**: Assembler and ABI conformance tests pass.
 - **Gate 2 is GREEN**: C freestanding subset end-to-end; 4 code-gen bugs fixed
   (emitter label addresses, trailing labels, comparison encoding, return terminator).

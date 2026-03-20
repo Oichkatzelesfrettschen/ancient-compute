@@ -5,9 +5,12 @@ that exercise their core paradigm features.  Gate 3 criterion (per
 docs/general/LANGUAGE_READINESS_MATRIX.md):
   'Compile + execute round-trip; paradigm-specific contract'
 
-For LISP, IDRIS, and System F the round-trip terminates at the IR stage
-(the services produce an IR program and return SUCCESS).  For Haskell the
-full pipeline is exercised (IR -> codegen -> assembler -> machine_code).
+For System F the round-trip terminates at the IR stage (the service produces
+an IR program and returns SUCCESS).  For Haskell the full pipeline is
+exercised (IR -> codegen -> assembler -> machine_code).  For LISP, real
+SBCL 2.6.2 execution is used (sbcl --script).  For IDRIS2, real idris2 0.8.0
+type-checking is used (idris2 --check); these tests are skipped if idris2 is
+not installed.
 
 This file satisfies the Gate 3 deferred-work item in DEFERRED_WORK.md.
 """
@@ -15,6 +18,9 @@ This file satisfies the Gate 3 deferred-work item in DEFERRED_WORK.md.
 from __future__ import annotations
 
 import asyncio
+import os
+
+import pytest
 
 # ---------------------------------------------------------------------------
 # helpers
@@ -209,39 +215,41 @@ class TestHaskellContract:
 # =============================================================================
 
 
+@pytest.mark.skipif(
+    not os.path.exists("/usr/bin/idris2"),
+    reason="idris2 not installed at /usr/bin/idris2",
+)
 class TestIDRISContract:
     """IDRIS2 paradigm contract: module + type annotations + definitions.
 
-    The IDRIS compiler targets a module-centric grammar (module Name body).
-    Gate 3 verifies that well-formed module declarations compile without error.
-    More advanced dependent-type features are deferred to Gate 4.
+    Gate 3 verifies that well-formed Idris2 programs type-check via
+    idris2 --check.  All programs must be complete (no unresolved names,
+    no type signatures without implementations) since real idris2 enforces
+    full type-checking, not just parsing.
     """
 
     def test_idris_module_constant(self):
-        """Module with a named constant definition."""
-        _ok_idris("module Main\nanswer = 42")
+        """Module with a named integer constant."""
+        _ok_idris("module Main\n\nanswer : Int\nanswer = 42")
 
-    def test_idris_module_type_annotation(self):
-        """Module with a type annotation declaration."""
-        _ok_idris("module Main\nadd : Int")
+    def test_idris_module_identity(self):
+        """Module with a typed identity function."""
+        _ok_idris("module Main\n\nf : Int -> Int\nf x = x")
 
-    def test_idris_module_function_application(self):
-        """Module with a function definition that applies another name."""
-        _ok_idris("module Main\nresult = compute x")
+    def test_idris_module_const_function(self):
+        """Module with a two-argument function (const -- ignores second arg)."""
+        _ok_idris("module Main\n\ng : Int -> Int -> Int\ng x y = x")
 
     def test_idris_module_let_in(self):
         """Module with a let-in expression."""
-        _ok_idris("module Main\nf = let x = 42 in x")
+        _ok_idris("module Main\n\nf : Int\nf = let x = 42 in x")
 
     def test_idris_module_two_declarations(self):
         """Module with two declarations (type + definition)."""
-        _ok_idris("module Main\nf : Int\nf = 0")
+        _ok_idris("module Main\n\nf : Int\nf = 0")
 
     def test_idris_rejected_syntax_error(self):
         """Source with unrecoverable syntax produces COMPILE_ERROR."""
-        # Completely invalid: just an operator with no operands
-        # The PLY parser cannot build any AST from this
-        # (triggers p_error and returns None -> service raises)
         _err_idris("module !!!")
 
 
