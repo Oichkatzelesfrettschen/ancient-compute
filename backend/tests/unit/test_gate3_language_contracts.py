@@ -121,7 +121,8 @@ class TestLISPContract:
 
     def test_lisp_let_binding(self):
         """let binds a local variable used in the body."""
-        _ok_lisp("(defun double (x) (let ((two 2)) (* x two)))")
+        # Note: 'double' conflicts with SB-ALIEN:DOUBLE in SBCL; use 'mul-two' instead.
+        _ok_lisp("(defun mul-two (x) (let ((two 2)) (* x two)))")
 
     def test_lisp_cond_two_way(self):
         """cond with one test clause and a t-else clause."""

@@ -1,50 +1,95 @@
-# Ancient Compute - LISP Language Service
+"""LISP Language Service -- runs Common Lisp source via SBCL 2.6.2.
 
+SBCL is installed at /usr/bin/sbcl (Steel Bank Common Lisp 2.6.2).
+Empirically verified:
+  sbcl --script file.lisp  -- execute; exit 0 on success, exit 1 on error
+  stderr contains backtrace on syntax/runtime errors.
+
+Gate 3 contract: execute well-formed programs (ExecutionStatus.SUCCESS)
+and reject malformed ones (ExecutionStatus.COMPILE_ERROR).
+"""
+
+from __future__ import annotations
+
+import asyncio
+import os
+import tempfile
 import time
 
-from backend.src.compilers.lisp_compiler import LispCompiler
-from backend.src.compilers.lisp_lexer import lexer as lisp_lex
-from backend.src.compilers.lisp_parser import parser
+from ..base_executor import ExecutionResult, ExecutionStatus  # re-exported for tests
 
-from ..base_executor import BaseExecutor, ExecutionResult, ExecutionStatus
+_SBCL = "/usr/bin/sbcl"
+_DEFAULT_TIMEOUT = 10.0
 
 
-class LISPService(BaseExecutor):
-    """LISP language service executor -- compiles LISP to Babbage IR."""
+class LISPService:
+    """Executes Common Lisp programs via SBCL 2.6.2."""
 
-    def __init__(self) -> None:
-        super().__init__("lisp", "ancient-compute-lisp", timeout=10)
-
-    def _get_command(self, code_path: str) -> str:
-        """Get execution command for LISP"""
-        return f"sbcl --script {code_path}"
+    def __init__(self, timeout: float = _DEFAULT_TIMEOUT) -> None:
+        self.timeout = timeout
 
     async def execute(self, code: str, input_data: str = "") -> ExecutionResult:
-        """Compile LISP code to Babbage IR and return compilation results."""
-        start = time.monotonic()
-        try:
-            ast = parser.parse(code, lexer=lisp_lex)
-            if ast is None:
-                raise ValueError("LISP parse error: no AST produced")
-            compiler = LispCompiler()
-            program = compiler.compile(ast)
+        """Run LISP source via sbcl --script.
 
-            elapsed = time.monotonic() - start
-            func_names = list(program.functions.keys()) if hasattr(program, "functions") else []
-            return ExecutionResult(
-                status=ExecutionStatus.SUCCESS,
-                stdout=(
-                    f"Compiled {len(func_names)} function(s): "
-                    f"{', '.join(func_names) or '(top-level)'}"
-                ),
-                stderr="",
-                execution_time=elapsed,
-            )
-        except Exception as e:
-            elapsed = time.monotonic() - start
-            return ExecutionResult(
-                status=ExecutionStatus.COMPILE_ERROR,
-                stdout="",
-                stderr=str(e),
-                execution_time=elapsed,
-            )
+        Returns SUCCESS on exit 0, COMPILE_ERROR on non-zero exit.
+        """
+        start = time.monotonic()
+
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".lisp", delete=False, encoding="utf-8"
+        ) as fh:
+            fh.write(code)
+            tmp_path = fh.name
+
+        try:
+            try:
+                proc = await asyncio.create_subprocess_exec(
+                    _SBCL,
+                    "--script",
+                    tmp_path,
+                    stdin=asyncio.subprocess.DEVNULL,
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE,
+                )
+                try:
+                    stdout_bytes, stderr_bytes = await asyncio.wait_for(
+                        proc.communicate(),
+                        timeout=self.timeout,
+                    )
+                except TimeoutError:
+                    proc.kill()
+                    await proc.wait()
+                    elapsed = time.monotonic() - start
+                    return ExecutionResult(
+                        status=ExecutionStatus.TIMEOUT,
+                        stdout="",
+                        stderr="Execution timed out",
+                        execution_time=elapsed,
+                        exit_code=-1,
+                    )
+
+                elapsed = time.monotonic() - start
+                stdout = stdout_bytes.decode(errors="replace")
+                stderr = stderr_bytes.decode(errors="replace")
+                rc = proc.returncode if proc.returncode is not None else -1
+
+                status = ExecutionStatus.SUCCESS if rc == 0 else ExecutionStatus.COMPILE_ERROR
+                return ExecutionResult(
+                    status=status,
+                    stdout=stdout,
+                    stderr=stderr,
+                    execution_time=elapsed,
+                    exit_code=rc,
+                )
+
+            except FileNotFoundError:
+                elapsed = time.monotonic() - start
+                return ExecutionResult(
+                    status=ExecutionStatus.COMPILE_ERROR,
+                    stdout="",
+                    stderr="sbcl not found at /usr/bin/sbcl",
+                    execution_time=elapsed,
+                    exit_code=-1,
+                )
+        finally:
+            os.unlink(tmp_path)
