@@ -59,6 +59,9 @@ currently uses Babbage IR compilation path.
 
 - **Java**: Compiler exists (java_compiler.py) but service returns stub message.
   JVM seccomp profile complexity defers this past Gate 3.  See DEFERRED_WORK.md.
+- **LISP**: Now uses real SBCL 2.6.2 execution (sbcl --script). Upgraded from
+  Babbage IR compilation path on 2026-03-20. Gate 3: 11/11 tests pass.
+  Note: function names that clash with SB-ALIEN (e.g. 'double') must be avoided.
 - **IDRIS2**: Babbage IR path is complete and Gate 3 passes.  The idris2 binary
   (AUR build) when available will upgrade to real execution in idris2_service.py.
 - **Gate 0/1 are GREEN**: Assembler and ABI conformance tests pass.
