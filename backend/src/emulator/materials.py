@@ -5,6 +5,13 @@ Loads material properties from sim_schema.yaml and provides typed access
 to mechanical, thermal, and electromagnetic properties for all 5 construction
 materials. Property values sourced from engineering handbooks (Shigley's,
 ASM, Eurocode, copper.org). Valid for 10-40 C ambient.
+
+Citations:
+- SHIGLEY-2001: Shigley, J.E. & Mischke, C.R. (2001). "Mechanical
+  Engineering Design." 6th ed. McGraw-Hill. ISBN 0-07-365939-8.
+  Appendix A (material property tables).
+- TIMOSHENKO-1956: Timoshenko, S.P. (1956). "Strength of Materials."
+  Van Nostrand (elastic modulus and yield data for cast iron/bronze).
 """
 
 from __future__ import annotations

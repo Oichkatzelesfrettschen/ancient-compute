@@ -9,6 +9,23 @@ Key equations:
 - PV limit (plain bearing): P*V < PV_limit  (~10 MPa.m/s for lubricated bronze-on-steel)
 - Hamrock-Dowson EHL: h_c = 2.65 * R * U^0.7 * G^0.54 * W'^(-0.13)
 - Lambda ratio: lambda = h_min / sqrt(Ra_1^2 + Ra_2^2); lambda > 3 for full-film
+
+Uncertainty notes:
+- ARCHARD_K values span +/-50% across literature for identical material pairs;
+  the values used here are mid-range from Shigley Table 12-1.
+- slide_per_mesh_mm (0.5): typical range 0.3-0.8 for involute spur gears
+  (Shigley Eq.13-30 sliding velocity approximation).
+- pressure_viscosity_coeff (20 GPa^-1): typical mineral oil at 40C;
+  range 15-25 GPa^-1 per Hamrock Table 3.2.
+
+Citations:
+- SHIGLEY-2001: Shigley, J.E. & Mischke, C.R. (2001). "Mechanical
+  Engineering Design." 6th ed. McGraw-Hill. ISBN 0-07-365939-8.
+- HAMROCK-2004: Hamrock, B.J., Schmid, S.R., & Jacobson, B.O. (2004).
+  "Fundamentals of Fluid Film Lubrication." 2nd ed. Marcel Dekker.
+  ISBN 0-8247-5371-2.
+- ARCHARD-1953: Archard, J.F. (1953). "Contact and Rubbing of Flat
+  Surfaces." J. Appl. Phys. 24:981-988.
 """
 
 from __future__ import annotations

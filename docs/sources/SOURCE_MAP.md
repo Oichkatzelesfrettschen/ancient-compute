@@ -48,6 +48,8 @@ spec documents.
 | TIMOSHENKO-1956 | Strength of Materials | Timoshenko, S.P. (1956). "Strength of Materials." Van Nostrand. |
 | INCROPERA-2002 | Heat Transfer | Incropera, F.P. & DeWitt, D.P. (2002). "Fundamentals of Heat and Mass Transfer." 5th ed. Wiley. |
 | CAMERON-1966 | Lubrication | Cameron, A. (1966). "The Principles of Lubrication." Longmans. |
+| NORTON-2012 | Design of Machinery | Norton, R.L. (2012). "Design of Machinery." 5th ed. McGraw-Hill. ISBN 978-0-07-352935-7. |
+| ASTM-G82-98 | Galvanic Corrosion Guide | ASTM International (1998). "Standard Guide for Development and Use of a Galvanic Series." ASTM G82-98 (Reapproved 2014). |
 
 ### Historical Computing
 

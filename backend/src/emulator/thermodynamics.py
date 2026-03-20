@@ -10,6 +10,12 @@ Key equations (Shigley Ch.12-13):
 - Thermal expansion: delta_L = alpha * L * delta_T
 - Dissimilar-metal clearance: delta = (alpha_1*L_1 - alpha_2*L_2) * delta_T
 - Thermal time constant: tau = m * c_p / (h * A)
+
+Citations:
+- SHIGLEY-2001: Shigley, J.E. & Mischke, C.R. (2001). "Mechanical
+  Engineering Design." 6th ed. McGraw-Hill. ISBN 0-07-365939-8.
+- INCROPERA-2002: Incropera, F.P. & DeWitt, D.P. (2002). "Fundamentals
+  of Heat and Mass Transfer." 5th ed. Wiley. ISBN 0-471-38650-2.
 """
 
 from __future__ import annotations

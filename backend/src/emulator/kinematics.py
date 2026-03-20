@@ -9,6 +9,14 @@ component. Includes:
 - Main shaft rotation model
 
 All equations are annotated with Shigley's chapter/equation references.
+Lewis form factor Y is validated for tooth counts N >= 12 (below N=12 the
+polynomial fit diverges from tabulated values).
+
+Citations:
+- SHIGLEY-2001: Shigley, J.E. & Mischke, C.R. (2001). "Mechanical
+  Engineering Design." 6th ed. McGraw-Hill. ISBN 0-07-365939-8.
+- NORTON-2012: Norton, R.L. (2012). "Design of Machinery." 5th ed.
+  McGraw-Hill. ISBN 978-0-07-352935-7.
 """
 
 from __future__ import annotations

@@ -12,6 +12,12 @@ Acceptance criteria:
 - Shaft deflection < L/10000
 - Fatigue life > 10^8 cycles
 - Buckling SF >= 3.0 for vertical supports
+
+Citations:
+- SHIGLEY-2001: Shigley, J.E. & Mischke, C.R. (2001). "Mechanical
+  Engineering Design." 6th ed. McGraw-Hill. ISBN 0-07-365939-8.
+- PETERSON-1974: Peterson, R.E. (1974). "Stress Concentration Factors."
+  Wiley. ISBN 0-471-68329-9.
 """
 
 from __future__ import annotations

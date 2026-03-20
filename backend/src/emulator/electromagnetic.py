@@ -9,9 +9,14 @@ Key equations:
 - Eddy current loss: P = (pi^2 * B^2 * d^2 * f^2 * V) / (6 * rho_e)
 - At B=50 uT (Earth's field), f=0.5 Hz (30 RPM): P << 1 mW
 
-Galvanic series (SCE reference):
+Galvanic series (SCE reference, per ASTM G82-98):
   Brass: -0.30V, Steel: -0.60V, Bronze: -0.25V, Cast Iron: -0.55V
   Risk threshold: >0.25V potential difference
+
+Citations:
+- ASTM-G82-98: ASTM International (1998). "Standard Guide for
+  Development and Use of a Galvanic Series for Predicting Galvanic
+  Corrosion Performance." ASTM G82-98 (Reapproved 2014).
 """
 
 from __future__ import annotations
