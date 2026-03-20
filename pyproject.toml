@@ -70,6 +70,13 @@ warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
 ignore_missing_imports = true
+explicit_package_bases = true
+
+[[tool.mypy.overrides]]
+# PyYAML ships without bundled stubs; suppress import-untyped until
+# types-PyYAML is added to dev requirements (tracked in DEFERRED_WORK.md).
+module = "yaml"
+ignore_missing_imports = true
 
 # Python version policy:
 #   Target runtime: Python 3.11 (minimum tested and supported version).

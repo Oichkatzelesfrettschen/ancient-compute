@@ -135,7 +135,10 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                 status_code=429,
                 content={
                     "error": "Rate limit exceeded",
-                    "message": f"Too many requests. Maximum {max_requests} requests per {window} seconds.",
+                    "message": (
+                        f"Too many requests. Maximum {max_requests} requests"
+                        f" per {window} seconds."
+                    ),
                     "retry_after": retry_after,
                 },
                 headers={"Retry-After": str(retry_after)},

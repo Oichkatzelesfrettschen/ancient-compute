@@ -11,7 +11,8 @@ Architecture:
 
 Operation:
   - Key press closes circuit
-  - Current flows through Plugboard -> Rotors (R -> M -> L) -> Reflector -> Rotors (L -> M -> R) -> Plugboard -> Lamp
+  - Current flows: Plugboard -> Rotors (R->M->L) -> Reflector
+                   -> Rotors (L->M->R) -> Plugboard -> Lamp
   - Rightmost rotor steps before each character encipherment
   - Middle/Left rotors step based on notch positions (turnover)
 

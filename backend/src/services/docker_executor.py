@@ -89,7 +89,10 @@ class AssemblyExecutor(BaseExecutor):
 
     def _get_command(self, code_path: str) -> str:
         """Get execution command for Assembly."""
-        return "/bin/bash -c 'nasm -f elf64 /workspace/main.asm -o /tmp/main.o && ld /tmp/main.o -o /tmp/main && /tmp/main'"
+        return (
+            "/bin/bash -c 'nasm -f elf64 /workspace/main.asm -o /tmp/main.o"
+            " && ld /tmp/main.o -o /tmp/main && /tmp/main'"
+        )
 
 
 class SystemFExecutor(BaseExecutor):

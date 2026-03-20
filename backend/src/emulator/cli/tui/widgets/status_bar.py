@@ -24,4 +24,7 @@ class StatusBar(Widget):
         barrel = snap.get("barrel", {}).get("active", "IDLE")
         pc = snap.get("pc", "-")
         running = "RUN" if snap.get("running", False) else "HALT"
-        return f" PC={pc}  Clock={clock:.1f}s  Barrel={barrel}  [{running}]  [S]tep [R]un [B]reak [Q]uit"
+        return (
+            f" PC={pc}  Clock={clock:.1f}s  Barrel={barrel}"
+            f"  [{running}]  [S]tep [R]un [B]reak [Q]uit"
+        )

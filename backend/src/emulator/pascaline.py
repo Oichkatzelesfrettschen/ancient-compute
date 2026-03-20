@@ -164,7 +164,8 @@ class PascalineEmulator:
         # A proper implementation for nines complement with end-around carry:
         # 1. Set wheels to operand (e.g., 50)
         # 2. Add complement (e.g., 989)
-        # 3. Read current wheel values. If any carry propagated out of the last wheel, add 1 to units wheel.
+        # 3. Read current wheel values. If carry propagated out of the last wheel,
+        #    add 1 to units wheel.
 
         # Let's make `_add_to_wheel` return if a carry happened from its position.
 

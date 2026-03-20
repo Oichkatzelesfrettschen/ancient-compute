@@ -1,7 +1,7 @@
 # Ancient Compute - Makefile
 # Common development tasks for cross-platform development
 
-.PHONY: help setup dev test build clean install-hooks lint format docker-up docker-down test-active test-unit test-physics verify-simulation links-check links-check-full archive-audit db-init db-migrate db-rollback db-reset verify docs-check status twin-verify bom-validate
+.PHONY: help setup dev test build clean install-hooks lint format docker-up docker-down test-active test-unit test-physics verify-simulation links-check links-check-full archive-audit db-init db-migrate db-rollback db-reset verify docs-check status twin-verify bom-validate mypy-strict mypy-report
 
 # Default target
 help:
@@ -47,6 +47,8 @@ help:
 	@echo "  make status          - Generate project status dashboard"
 	@echo "  make twin-verify     - Run hardware twin golden trace tests"
 	@echo "  make bom-validate    - Validate Bill of Materials"
+	@echo "  make mypy-strict     - mypy strict summary (non-blocking)"
+	@echo "  make mypy-report     - mypy strict full report by file"
 	@echo ""
 	@echo "Utilities:"
 	@echo "  make clean           - Clean build artifacts"
@@ -368,4 +370,16 @@ twin-verify:
 bom-validate:
 	@echo "Validating Bill of Materials..."
 	@PYTHONPATH=. python3 tools/validate_bom.py
+
+# --- mypy Strict Mode (non-blocking report) ---
+mypy-strict:
+	@echo "=== mypy strict mode report (non-blocking) ==="
+	@cd backend && python3 -m mypy src/ --strict --ignore-missing-imports 2>&1 | tail -5 || true
+	@echo ""
+	@echo "Run 'make mypy-report' for full output."
+
+mypy-report:
+	@echo "=== mypy full report ==="
+	@cd backend && python3 -m mypy src/ --strict --ignore-missing-imports 2>&1 | \
+	  grep -E '^src/|Found [0-9]+ error' | sort | uniq -c | sort -rn | head -40 || true
 

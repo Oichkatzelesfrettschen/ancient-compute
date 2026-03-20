@@ -136,13 +136,13 @@ async def readiness_check():
 
 
 @app.get("/metrics")
-async def metrics():
+async def metrics() -> Response:
     UPTIME.set(time.time() - START_TIME)
     return Response(content=generate_latest().decode("utf-8"), media_type=CONTENT_TYPE_LATEST)
 
 
 @app.get("/")
-async def root():
+async def root() -> dict[str, object]:
     uptime = int(time.time() - START_TIME)
     return {
         "service": "Ancient Compute API",

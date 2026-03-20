@@ -100,7 +100,10 @@ class DockerManager:
             return BackendInfo(
                 backend_type=ExecutionBackend.DOCKER,
                 available=True,
-                reason=f"Docker connected (API version: {self.docker_client.version()['ApiVersion']})",
+                reason=(
+                    "Docker connected"
+                    f" (API version: {self.docker_client.version()['ApiVersion']})"
+                ),
                 capabilities=[
                     "c",
                     "python",

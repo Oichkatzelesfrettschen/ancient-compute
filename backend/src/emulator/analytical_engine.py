@@ -34,7 +34,8 @@ Program Control:
 
 Timing Model:
   - Each instruction has a cost in abstract time units
-  - NOP: 0, ADD: 8, SUB: 8, MULT: 400, DIV: 750, SQRT: 250, RDCRD: 30, WRPCH: 30, WRPRN: 2, CALL: 8, RET: 4, PUSH: 4, POP: 4
+  - NOP: 0, ADD: 8, SUB: 8, MULT: 400, DIV: 750, SQRT: 250
+  - RDCRD: 30, WRPCH: 30, WRPRN: 2, CALL: 8, RET: 4, PUSH: 4, POP: 4
   - Used for performance analysis and historical accuracy
 
 References:
@@ -393,7 +394,8 @@ class Engine:
             self.mill_counter -= 1
 
         elif op == MicroOp.COMPARE_MILL_BUFFERS:
-            # For division, compare current dividend part (mill_result_buffer) with divisor (mill_operand_buffer)
+            # For division, compare current dividend part (mill_result_buffer)
+            # with divisor (mill_operand_buffer)
             self.flags["GREATER"] = (
                 self.mill_remainder_buffer > self.mill_operand_buffer
             )  # Compare remainder buffer with operand buffer
