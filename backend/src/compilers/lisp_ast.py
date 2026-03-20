@@ -1,7 +1,6 @@
 # Ancient Compute - LISP AST
 
 
-
 class ASTNode:
     pass
 

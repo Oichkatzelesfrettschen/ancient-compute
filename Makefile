@@ -143,7 +143,7 @@ lint:
 	@echo "Running linters..."
 	@echo "Linting backend..."
 	cd backend && ruff check src/ tests/
-	cd backend && mypy src/
+	python3 -m mypy backend/src/
 	@echo "Linting frontend..."
 	cd frontend && pnpm lint
 
@@ -157,7 +157,7 @@ format:
 
 type-check:
 	@echo "Running type checkers..."
-	cd backend && mypy src/
+	python3 -m mypy backend/src/
 	cd frontend && pnpm check
 
 # Build
@@ -343,7 +343,7 @@ verify:
 	@PYTHONPATH=. python3 tools/validate_opcodes.py 2>&1 || (echo "FAIL: opcode sync"; exit 1)
 	@echo ""
 	@echo "--- mypy summary (non-blocking) ---"
-	@cd backend && python3 -m mypy src/ --ignore-missing-imports 2>&1 | tail -1 || true
+	@python3 -m mypy backend/src/ 2>&1 | tail -1 || true
 	@echo ""
 	@echo "=== Verification PASSED ==="
 
