@@ -6,6 +6,9 @@ import click
 from rich.console import Console
 
 from ...analytical_engine import Engine
+from ...simulation.bridge import SimulationBridge
+from ...simulation.engine import SimulationEngine
+from ...simulation.state import SimulationConfig
 from ..assembler.fourmilab import parse_fourmilab_source, translate_fourmilab
 from ..formatter.state import format_state
 from ..formatter.trace import format_trace_json, format_trace_table
@@ -51,7 +54,14 @@ def run_cmd(program, trace, dump, physics, fmt, trace_format, machine):
         _run_historical(machine, program)
         return
 
-    engine = Engine(output_callback=capture)
+    physical_engine = None
+    if physics:
+        cfg = SimulationConfig(rpm=30.0)
+        phys = SimulationEngine(cfg)
+        physical_engine = SimulationBridge(phys)
+        console.print("[dim]Physics coupling enabled (rpm=30, wear+thermal+lubrication)[/]")
+
+    engine = Engine(output_callback=capture, physical_engine=physical_engine)
 
     try:
         if fmt == "fourmilab":
@@ -76,6 +86,18 @@ def run_cmd(program, trace, dump, physics, fmt, trace_format, machine):
         sys.exit(1)
 
     console.print(f"[dim]Completed. Clock: {engine.clock_time}s[/]")
+
+    if physics and physical_engine is not None:
+        report = physical_engine.physics_report()
+        console.print("\n[bold]Physics Report:[/]")
+        console.print(f"  Simulated time: {report['simulated_time_s']:.4f}s")
+        console.print(f"  Temperature:    {report['temperature_C']:.1f}C")
+        console.print(f"  Shaft deflection: {report['shaft_deflection_mm']:.4f}mm")
+        console.print(f"  Max bearing clearance: {report['max_bearing_clearance_mm']:.4f}mm")
+        console.print(f"  Lubrication regime: {report['lubrication_regime']}")
+        console.print(f"  Energy consumed: {report['energy_consumed_J']:.2f}J")
+        if report["failed"]:
+            console.print(f"  [red]MECHANICAL FAILURE: {report['failure_reason']}[/]")
 
     if dump:
         console.print(format_state(engine))

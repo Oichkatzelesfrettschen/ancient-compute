@@ -28,15 +28,28 @@ console = Console()
 def deck_cmd(note, n_count, physics):
     """Run a Lovelace card deck (Note B, C, D, or G)."""
     if note == "g":
-        _run_note_g(n_count)
+        _run_note_g(n_count, physics=physics)
     elif note in ("b", "c", "d"):
         _run_lovelace_note(note, n_count)
     else:
         console.print(f"[red]Unknown note: {note}[/]")
 
 
-def _run_note_g(n_count: int) -> None:
-    """Run Note G (Bernoulli numbers)."""
+def _run_note_g(n_count: int, *, physics: bool = False) -> None:
+    """Run Note G (Bernoulli numbers).
+
+    physics=True is accepted for forward compatibility but Note G uses a
+    state-dict execution path that bypasses the Engine. Full physics coupling
+    (opcode-by-opcode thermal/wear accumulation) requires migrating the deck
+    runner to Engine-based execution; tracked in DEFERRED_WORK.md.
+    """
+    if physics:
+        console.print(
+            "[dim]Note: Note G deck uses direct state execution; physics"
+            " coupling is deferred. Use 'run --physics' with a .basm program"
+            " for full mechanical simulation.[/]"
+        )
+
     console.print(f"[bold green]Note G:[/] Computing {n_count} Bernoulli number(s)")
     results = run_note_g_exact(n_count)
     for i, b in enumerate(results, 1):
