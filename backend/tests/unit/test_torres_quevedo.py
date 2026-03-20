@@ -153,3 +153,89 @@ class TestTorresTypewriter:
         )
         assert _close(results[0].to_float(), 5.0)
         assert _close(results[1].to_float(), 6.0)
+
+
+class TestFloatingPointEdgeCases:
+    """FloatingPointNumber precision and sign boundary tests."""
+
+    def test_fp_point_one_round_trips(self):
+        # 0.1 cannot be represented exactly in binary, but TQ FP should round-trip
+        # within the 8-digit decimal mantissa tolerance.
+        fp = FloatingPointNumber.from_float(0.1)
+        assert _close(fp.to_float(), 0.1, tol=1e-6)
+
+    def test_fp_very_small_value(self):
+        # 1e-7 is near the representable lower bound (2-digit exponent: 10^-99)
+        fp = FloatingPointNumber.from_float(1e-7)
+        assert _close(fp.to_float(), 1e-7, tol=1e-4)
+
+    def test_fp_mantissa_at_lower_bound(self):
+        # Mantissa is normalized to [0.1, 1.0); value 0.1 should have mantissa=0.1, exp=1
+        fp = FloatingPointNumber.from_float(0.1)
+        assert 0.0 <= fp.mantissa < 1.0
+
+    def test_fp_negative_zero_is_zero(self):
+        # -0.0 in Python should round-trip to 0.0 via TQ FP
+        fp = FloatingPointNumber.from_float(-0.0)
+        # Result is either 0.0 or -0.0; either is acceptable as a zero value
+        assert abs(fp.to_float()) < 1e-12
+
+    def test_fp_large_integer_precision(self):
+        # 99_999_999.0 is the max 8-digit integer; round-trip tolerance 1e-3
+        fp = FloatingPointNumber.from_float(99_999_999.0)
+        assert _close(fp.to_float(), 99_999_999.0, tol=1e-3)
+
+
+class TestTorresArithmeticEdgeCases:
+    """Arithmetic edge cases: negative results, negatives-product, chain ops."""
+
+    def test_subtract_larger_from_smaller_gives_negative(self):
+        t = TorresQuevedo()
+        t.load_register(0, FloatingPointNumber.from_float(2.0))
+        t.load_register(1, FloatingPointNumber.from_float(5.0))
+        result = t.subtract(0, 1, dest=2)
+        assert result.to_float() < 0
+        assert _close(abs(result.to_float()), 3.0)
+
+    def test_multiply_negative_by_positive_is_negative(self):
+        t = TorresQuevedo()
+        t.load_register(0, FloatingPointNumber.from_float(-3.0))
+        t.load_register(1, FloatingPointNumber.from_float(4.0))
+        result = t.multiply(0, 1, dest=2)
+        assert result.to_float() < 0
+        assert _close(abs(result.to_float()), 12.0)
+
+    def test_multiply_both_negative_is_positive(self):
+        t = TorresQuevedo()
+        t.load_register(0, FloatingPointNumber.from_float(-3.0))
+        t.load_register(1, FloatingPointNumber.from_float(-4.0))
+        result = t.multiply(0, 1, dest=2)
+        assert result.to_float() > 0
+        assert _close(result.to_float(), 12.0)
+
+    def test_chain_negative_intermediate(self):
+        # (2 - 5) * 3 = -9
+        t = TorresQuevedo()
+        t.load_register(0, FloatingPointNumber.from_float(2.0))
+        t.load_register(1, FloatingPointNumber.from_float(5.0))
+        t.load_register(2, FloatingPointNumber.from_float(3.0))
+        t.subtract(0, 1, dest=3)  # R3 = -3
+        result = t.multiply(3, 2, dest=4)  # R4 = -9
+        assert _close(abs(result.to_float()), 9.0)
+        assert result.to_float() < 0
+
+    def test_divide_result_less_than_one(self):
+        # 1 / 4 = 0.25
+        t = TorresQuevedo()
+        t.load_register(0, FloatingPointNumber.from_float(1.0))
+        t.load_register(1, FloatingPointNumber.from_float(4.0))
+        result = t.divide(0, 1, dest=2)
+        assert _close(result.to_float(), 0.25)
+
+    def test_add_negative_to_positive(self):
+        # 10 + (-3) = 7
+        t = TorresQuevedo()
+        t.load_register(0, FloatingPointNumber.from_float(10.0))
+        t.load_register(1, FloatingPointNumber.from_float(-3.0))
+        result = t.add(0, 1, dest=2)
+        assert _close(result.to_float(), 7.0)

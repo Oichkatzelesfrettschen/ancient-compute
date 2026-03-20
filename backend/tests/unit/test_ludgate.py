@@ -137,3 +137,83 @@ class TestLudgateProgram:
         m.reset()
         assert m.state.accumulator == 0
         assert m.state.cycle_count == 0
+
+
+class TestIrishMultiplyEdgeCases:
+    """Edge cases in Irish logarithm multiplication."""
+
+    def test_multiply_nine_by_nine(self):
+        # 9 * 9 = 81: combined index = 4+4 = 8, antilog[8] = 6 -> tens carry
+        m = LudgateMachine()
+        assert m.irish_multiply(9, 9) == 81
+
+    def test_multiply_nine_by_eight(self):
+        # 9 * 8 = 72: combined 4+6 = 10, triggers direct product path
+        m = LudgateMachine()
+        assert m.irish_multiply(9, 8) == 72
+
+    def test_multiply_all_nines_two_digit(self):
+        # 99 * 9 = 891
+        m = LudgateMachine()
+        assert m.irish_multiply(99, 9) == 891
+
+    def test_multiply_large_both_nines(self):
+        # 99 * 99 = 9801
+        m = LudgateMachine()
+        assert m.irish_multiply(99, 99) == 9801
+
+    def test_multiply_zero_with_large(self):
+        # 0 * 999 = 0 (all-zero short-circuit)
+        m = LudgateMachine()
+        assert m.irish_multiply(0, 999) == 0
+        assert m.irish_multiply(999, 0) == 0
+
+    def test_multiply_both_negative(self):
+        # (-7) * (-8) = 56 (sign-magnitude: both negative -> positive)
+        m = LudgateMachine()
+        assert m.irish_multiply(-7, -8) == 56
+
+    def test_multiply_identity(self):
+        # a * 1 = a for multi-digit a
+        m = LudgateMachine()
+        assert m.irish_multiply(123, 1) == 123
+
+    def test_multiply_commutative(self):
+        # irish_multiply must be commutative for arbitrary pairs
+        m = LudgateMachine()
+        for a, b in [(37, 42), (99, 12), (5, 0), (0, 5)]:
+            assert m.irish_multiply(a, b) == m.irish_multiply(b, a), \
+                f"Commutativity failed for {a} * {b}"
+
+
+class TestLudgateStoreEdgeCases:
+    """Store boundary and negative value handling."""
+
+    def test_store_negative_value(self):
+        # Ludgate store holds signed integers (negative allowed)
+        m = LudgateMachine()
+        m.store_value(0, -100)
+        assert m.load_value(0) == -100
+
+    def test_store_last_column(self):
+        m = LudgateMachine()
+        m.store_value(191, 42)
+        assert m.load_value(191) == 42
+
+    def test_store_first_and_last(self):
+        m = LudgateMachine()
+        m.store_value(0, 111)
+        m.store_value(191, 222)
+        assert m.load_value(0) == 111
+        assert m.load_value(191) == 222
+
+    def test_divide_negative_quotient(self):
+        # 10 / -3: quotient and remainder satisfy q * divisor + r == dividend
+        m = LudgateMachine()
+        q, r = m.divide(10, -3)
+        assert q * (-3) + r == 10
+
+    def test_subtract_to_negative(self):
+        m = LudgateMachine()
+        result = m.subtract(3, 10)
+        assert result == -7

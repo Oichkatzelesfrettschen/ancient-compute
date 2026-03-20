@@ -213,3 +213,131 @@ class TestZuseZ1Program:
         z = ZuseZ1()
         z.run([("imm", 42.0)])
         assert _close(z.state.accumulator.to_float(), 42.0)
+
+
+class TestZuseFloatEdgeCases:
+    """ZuseFloat boundary values and sign-magnitude edge cases."""
+
+    def test_from_float_half(self):
+        # 0.5 is the minimum normalized mantissa value (mantissa = 0.5, exp = 0)
+        zf = ZuseFloat.from_float(0.5)
+        assert _close(zf.to_float(), 0.5)
+
+    def test_from_float_minus_half(self):
+        zf = ZuseFloat.from_float(-0.5)
+        assert _close(abs(zf.to_float()), 0.5)
+        assert zf.to_float() < 0
+
+    def test_add_negative_and_positive(self):
+        # 3.0 + (-1.0) = 2.0 via ZuseFloat arithmetic
+        a = ZuseFloat.from_float(3.0)
+        b = ZuseFloat.from_float(-1.0)
+        result = a + b
+        assert _close(result.to_float(), 2.0)
+
+    def test_subtract_to_negative(self):
+        # 2.0 - 5.0 = -3.0
+        a = ZuseFloat.from_float(2.0)
+        b = ZuseFloat.from_float(5.0)
+        result = a - b
+        assert _close(abs(result.to_float()), 3.0)
+        assert result.to_float() < 0
+
+    def test_mul_by_zero(self):
+        # a * 0 = 0 for any a
+        a = ZuseFloat.from_float(7.0)
+        z = ZuseFloat(0)
+        result = a * z
+        assert result.is_zero()
+
+    def test_zero_mul_by_value(self):
+        # 0 * a = 0
+        z = ZuseFloat(0)
+        a = ZuseFloat.from_float(7.0)
+        result = z * a
+        assert result.is_zero()
+
+    def test_negative_times_negative_is_positive(self):
+        a = ZuseFloat.from_float(-2.0)
+        b = ZuseFloat.from_float(-3.0)
+        result = a * b
+        assert _close(result.to_float(), 6.0)
+
+    def test_word_zero_is_canonical_zero(self):
+        zf = ZuseFloat(0)
+        assert zf.word == 0
+        assert zf.is_zero()
+        assert zf.to_float() == 0.0
+
+    def test_22_bit_limit_not_exceeded_for_boundary_values(self):
+        for val in [0.5, 1.0, 2.0, 0.125, 64.0]:
+            zf = ZuseFloat.from_float(val)
+            assert 0 <= zf.word < (1 << 22), f"Word overflow for {val}"
+
+
+class TestZuseZ1ArithmeticEdgeCases:
+    """Z1 machine-level arithmetic edge cases."""
+
+    def test_sub_to_negative_via_memory(self):
+        z = ZuseZ1()
+        z.store(0, ZuseFloat.from_float(2.0))
+        z.store(1, ZuseFloat.from_float(5.0))
+        z.load(0)
+        z.sub_memory(1)
+        assert _close(abs(z.state.accumulator.to_float()), 3.0)
+        assert z.state.accumulator.to_float() < 0
+
+    def test_store_and_reload_negative(self):
+        z = ZuseZ1()
+        z.store(0, ZuseFloat.from_float(-7.5))
+        z.load(0)
+        assert _close(abs(z.state.accumulator.to_float()), 7.5)
+        assert z.state.accumulator.to_float() < 0
+
+    def test_mul_gives_negative_result(self):
+        z = ZuseZ1()
+        z.store(0, ZuseFloat.from_float(-3.0))
+        z.store(1, ZuseFloat.from_float(4.0))
+        z.load(0)
+        z.mul_memory(1)
+        assert _close(abs(z.state.accumulator.to_float()), 12.0)
+        assert z.state.accumulator.to_float() < 0
+
+    def test_chain_mul_add(self):
+        # (2 * 3) + 4 = 10
+        z = ZuseZ1()
+        z.store(0, ZuseFloat.from_float(2.0))
+        z.store(1, ZuseFloat.from_float(3.0))
+        z.store(2, ZuseFloat.from_float(4.0))
+        z.load(0)
+        z.mul_memory(1)       # acc = 6
+        z.add_memory(2)       # acc = 10
+        assert _close(z.state.accumulator.to_float(), 10.0)
+
+    def test_program_multiply_and_output(self):
+        # Program: load addr 0, mul addr 1, output
+        z = ZuseZ1()
+        z.store(0, ZuseFloat.from_float(6.0))
+        z.store(1, ZuseFloat.from_float(7.0))
+        results = z.run([
+            ("load", 0),
+            ("mul", 1),
+            ("output",),
+        ])
+        assert len(results) == 1
+        assert _close(results[0], 42.0)
+
+    def test_program_store_accumulator_then_reload(self):
+        z = ZuseZ1()
+        z.run([("imm", 99.0)])
+        z.store_accumulator(10)
+        z.load(10)
+        assert _close(z.state.accumulator.to_float(), 99.0)
+
+    def test_tape_multi_value_sequence(self):
+        # Reading multiple values from tape into accumulator
+        z = ZuseZ1()
+        z.state.tape_input = [1.0, 2.0, 3.0]
+        for expected in [1.0, 2.0, 3.0]:
+            z.read_tape()
+            assert _close(z.state.accumulator.to_float(), expected)
