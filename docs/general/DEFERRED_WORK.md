@@ -28,9 +28,9 @@ in production and a JVM seccomp profile can be validated.
 ### Gate 3: Language Promotion (LISP, IDRIS2, SystemF, Java)
 
 **STATUS**: RESOLVED 2026-03-20.
-9 languages at Gate 3: LISP, Haskell, IDRIS2 (Babbage IR stub; real execution
-pending idris2 AUR build), SystemF (Babbage IR), ALGOL68 (a68g), C (Babbage IR),
-C++ (g++), Python (Babbage IR), MicroPython.  1620 unit tests passing.
+9 languages at Gate 3: LISP (SBCL 2.6.2 real execution), Haskell, IDRIS2 (idris2
+0.8.0 real type-checking via --check), SystemF (Babbage IR), ALGOL68 (a68g), C
+(Babbage IR), C++ (g++), Python (Babbage IR), MicroPython.  1722 unit tests passing.
 Java language service remains a stub (see Java section above).
 
 ---
@@ -279,4 +279,4 @@ line-too-long: 109 instances, E702 multiple-statements: 142 instances).
 
 ---
 
-*Last validated: 2026-03-20 (mypy sprint complete: 0 errors; infrastructure coverage sprint complete: 1722 unit tests)*
+*Last validated: 2026-03-20 (IDRIS2 upgraded to real idris2 0.8.0; 1722 unit tests passing, 0 mypy errors)*

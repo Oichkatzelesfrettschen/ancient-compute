@@ -1,8 +1,8 @@
 # Project Status Dashboard
 
-**Auto-generated**: 2026-03-20 18:23 UTC
+**Auto-generated**: 2026-03-20 20:47 UTC
 **Branch**: `main`
-**Last commit**: `a14d594 fix: run mypy from project root in Makefile so explicit_package_bases takes effect`
+**Last commit**: `0ca6fa0 feat: upgrade IDRIS2 service from Babbage IR stub to real idris2 0.8.0 execution`
 
 > Regenerate with: `make status`
 
@@ -14,7 +14,7 @@
 |--------|-------|
 | Unit tests collected | 2141 |
 | Collection errors | 0 |
-| Python source lines (backend/src/) | 38,227 |
+| Python source lines (backend/src/) | 38,330 |
 | Active docs (non-archive .md) | 197 |
 
 ## Phase Status
