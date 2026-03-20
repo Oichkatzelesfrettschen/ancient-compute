@@ -38,8 +38,6 @@ ignore = [
     "E203",   # whitespace before ':', conflicts with black
     "B008",   # do not perform function calls in default arguments (FastAPI Depends)
     "SIM108", # ternary operator -- style preference
-    # --- pre-existing debt; requires line-by-line review ---
-    "E501",   # line-too-long: requires line-by-line review
 ]
 
 [tool.ruff.lint.isort]

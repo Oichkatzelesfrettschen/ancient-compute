@@ -1,8 +1,8 @@
 # Project Status Dashboard
 
-**Auto-generated**: 2026-03-20 22:30 UTC
+**Auto-generated**: 2026-03-20 22:57 UTC
 **Branch**: `main`
-**Last commit**: `41cdd3e feat: AE completeness buildout -- close all 48 P0/P1/P2 gaps (1797 tests)`
+**Last commit**: `fd77d35 fix: AE DIV fixed-point arithmetic -- Note G now computes correct Bernoulli numbers`
 
 > Regenerate with: `make status`
 
@@ -14,7 +14,7 @@
 |--------|-------|
 | Unit tests collected | 2218 |
 | Collection errors | 0 |
-| Python source lines (backend/src/) | 39,191 |
+| Python source lines (backend/src/) | 39,169 |
 | Active docs (non-archive .md) | 199 |
 
 ## Phase Status

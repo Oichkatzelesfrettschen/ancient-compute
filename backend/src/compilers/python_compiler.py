@@ -418,7 +418,8 @@ class PythonCompiler:
 
         if not isinstance(stmt.iter, Call) or stmt.iter.func != "range":
             raise NotImplementedError(
-                f"for loop only supports range() or a named list variable; got {type(stmt.iter).__name__}"
+                "for loop only supports range() or a named list variable; "
+                f"got {type(stmt.iter).__name__}"
             )
 
         argc = len(stmt.iter.args)

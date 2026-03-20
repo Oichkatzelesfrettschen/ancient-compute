@@ -9,21 +9,19 @@ have no activation timeline live in [WISHLIST.md](WISHLIST.md).
 
 ## Active
 
-### ruff: pre-existing violations (per-sprint cleanup)
-
-**WHY**: The ignored ruff rules in `pyproject.toml` represent pre-existing
-instances that require line-by-line review.  Bulk auto-fix risks changing
-semantics (e.g., E741 ambiguous variable names in physics code where `l`
-means length).
-
-**WHAT**: `pyproject.toml [tool.ruff.lint] ignore` lists the ignored rules.
-UP042 (10 `str+Enum` sites, migrate to `StrEnum`) was added 2026-03-20.
-
-**WHEN**: Address one rule per sprint.
+*No active deferrals.*
 
 ---
 
 ## Resolved
+
+### ruff E501 line-too-long -- RESOLVED 2026-03-20
+
+Fixed 2 long lines in `python_compiler.py` and `ae_execution_service.py`.
+Removed `E501` from `pyproject.toml` ignore list.  All remaining ignored
+rules (E203, B008, SIM108) are legitimate style preferences, not debt.
+
+---
 
 ### mypy: 0 errors -- RESOLVED 2026-03-20
 
