@@ -240,6 +240,50 @@ CLI `run` command when the physics validation suite (35 dimension checks +
 
 ---
 
+## Code Quality
+
+### mypy: 737 errors across 98 files
+
+**WHY**: The mypy error count is too large for a single debt resolution cycle.
+Each module requires individual review to add correct type annotations without
+changing runtime behavior.
+
+**WHAT**: `mypy --strict backend/src/` reports ~737 errors.  The verify target
+now includes a non-blocking mypy summary to track progress.
+
+**WHEN**: Dedicate a full sprint to type annotation.  Start with the most-imported
+modules (types.py, materials.py, analytical_engine.py) and expand outward.
+
+---
+
+### ruff: 434 pre-existing violations (23 rules)
+
+**WHY**: The 23 ignored ruff rules in `pyproject.toml` represent 434 instances
+that require line-by-line review.  Bulk auto-fix would risk changing semantics
+(e.g., E741 ambiguous variable names in physics code where `l` means length).
+
+**WHAT**: `pyproject.toml [tool.ruff.lint] ignore` lists 23 rules with instance
+counts.  Violations are stable (no new ones added since 2nd debt resolution).
+
+**WHEN**: Address one rule per sprint, starting with the most impactful (E501
+line-too-long: 109 instances, E702 multiple-statements: 142 instances).
+
+---
+
+### Test coverage: docker_manager, caches, CLI/TUI
+
+**WHY**: These modules have zero or near-zero test coverage.  docker_manager
+requires a running Docker daemon; execution_cache/query_cache require Redis;
+CLI/TUI require interactive terminal or Textual test harness.
+
+**WHAT**: Untested modules: `docker_manager.py`, `execution_cache.py`,
+`query_cache.py`, `rate_limiting.py`, `metrics.py`, `cli/app.py`, `cli/tui/`.
+
+**WHEN**: After API stabilization (post-Gate 2).  CLI/TUI tests should use
+Textual's built-in test framework (`textual.testing`).
+
+---
+
 ## How to Re-Activate a Deferred Item
 
 1. Verify the triggering condition is met.

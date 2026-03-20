@@ -81,7 +81,7 @@ class AEMachineAdapter(MachineAdapter):
         return None
 
     def get_column_values(self) -> list[int]:
-        return []
+        return [int(col.to_decimal()) for col in self.engine.memory[:50]]
 
     def get_register_values(self) -> dict[str, Any]:
         return {k: v.to_decimal() for k, v in self.engine.registers.items()}

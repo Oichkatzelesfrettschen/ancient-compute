@@ -1,7 +1,7 @@
 # Ancient Compute - Makefile
 # Common development tasks for cross-platform development
 
-.PHONY: help setup dev test build clean install-hooks lint format docker-up docker-down test-active test-unit test-physics verify-simulation links-check links-check-full archive-audit db-init db-migrate db-rollback db-reset verify status twin-verify bom-validate
+.PHONY: help setup dev test build clean install-hooks lint format docker-up docker-down test-active test-unit test-physics verify-simulation links-check links-check-full archive-audit db-init db-migrate db-rollback db-reset verify docs-check status twin-verify bom-validate
 
 # Default target
 help:
@@ -43,6 +43,7 @@ help:
 	@echo ""
 	@echo "Verification:"
 	@echo "  make verify          - Reproduce CI checks locally (lint + format + tests + BOM + opcodes)"
+	@echo "  make docs-check      - Validate documentation (YAML + links)"
 	@echo "  make status          - Generate project status dashboard"
 	@echo "  make twin-verify     - Run hardware twin golden trace tests"
 	@echo "  make bom-validate    - Validate Bill of Materials"
@@ -339,7 +340,19 @@ verify:
 	@echo "[6/6] Opcode sync check..."
 	@PYTHONPATH=. python3 tools/validate_opcodes.py 2>&1 || (echo "FAIL: opcode sync"; exit 1)
 	@echo ""
+	@echo "--- mypy summary (non-blocking) ---"
+	@cd backend && python3 -m mypy src/ --ignore-missing-imports 2>&1 | tail -1 || true
+	@echo ""
 	@echo "=== Verification PASSED ==="
+
+# --- Documentation Validation ---
+docs-check:
+	@echo "=== Documentation Validation ==="
+	@echo "[1/2] YAML syntax check..."
+	@python3 -c "import yaml; yaml.safe_load(open('docs/hardware/OPCODES.yaml'))" && echo "OPCODES.yaml OK" || echo "OPCODES.yaml ERR"
+	@echo "[2/2] Active link validation..."
+	@python3 scripts/VALIDATE_LINKS.py --scope active 2>&1 || (echo "WARN: link issues"; true)
+	@echo "=== Docs Validation Complete ==="
 
 # --- Status Dashboard ---
 status:
