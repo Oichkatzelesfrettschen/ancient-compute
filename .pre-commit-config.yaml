@@ -42,7 +42,7 @@ repos:
     rev: v0.9.10
     hooks:
       - id: ruff
-        args: ['--fix', '--exit-non-zero-on-fix']
+        args: ['--fix']
         # Lint + import sort (replaces flake8, isort, pylint per ADR 0001)
 
   - repo: https://github.com/pre-commit/mirrors-mypy

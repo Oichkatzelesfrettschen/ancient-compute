@@ -30,7 +30,7 @@ services:
     environment:
       POSTGRES_DB: ancient_compute
       POSTGRES_USER: ${DB_USER:-ancient}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-development_password}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
       POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --locale=C"
     volumes:
       - postgres-data:/var/lib/postgresql/data
@@ -54,9 +54,9 @@ services:
     container_name: ancient-backend
     environment:
       <<: *common-variables
-      DATABASE_URL: postgresql://${DB_USER:-ancient}:${DB_PASSWORD:-development_password}@postgres:5432/ancient_compute
+      DATABASE_URL: postgresql://${DB_USER:-ancient}:${DB_PASSWORD:?Set DB_PASSWORD in .env}@postgres:5432/ancient_compute
       REDIS_URL: redis://redis:6379
-      SECRET_KEY: ${SECRET_KEY:-development-secret-key-change-in-production}
+      SECRET_KEY: ${SECRET_KEY:?Set SECRET_KEY in .env}
     volumes:
       - ./backend:/app
     networks:

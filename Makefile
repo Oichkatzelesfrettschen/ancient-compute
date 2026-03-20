@@ -57,7 +57,7 @@ help:
 setup:
 	@echo "Setting up Ancient Compute development environment..."
 	@echo "Installing backend dependencies..."
-	cd backend && python3 -m venv venv && . venv/bin/activate && pip install -r requirements.txt
+	cd backend && python3 -m venv venv && . venv/bin/activate && pip install -r requirements.txt && pip install -e .
 	@echo "Installing frontend dependencies..."
 	cd frontend && pnpm install
 	@echo "Installing pre-commit hooks..."
