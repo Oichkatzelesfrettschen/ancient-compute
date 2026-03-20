@@ -241,6 +241,7 @@ def compute_natural_convection_h_W_m2K(
     g = 9.81  # m/s^2
     Ra = g * beta * abs(delta_T) * char_length_m**3 / (nu_air**2) * Pr_air
 
+    Nu: float
     if geometry == "horizontal_plate_up":
         if Ra < 1e7:
             Nu = 0.54 * Ra**0.25

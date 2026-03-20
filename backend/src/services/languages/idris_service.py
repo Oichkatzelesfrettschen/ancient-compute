@@ -8,7 +8,7 @@ from ..base_executor import BaseExecutor, ExecutionResult, ExecutionStatus
 class IDRISService(BaseExecutor):
     """IDRIS language service executor -- compiles Idris source to Babbage IR."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__("idris", "ancient-compute-idris", timeout=10)
 
     def _get_command(self, code_path: str) -> str:

@@ -149,7 +149,7 @@ class LISPTypeSystem:
         """Initialize type system"""
         self.symbol_types: dict[str, LISPType] = {}
 
-    def infer_type_from_literal(self, value) -> LISPType:
+    def infer_type_from_literal(self, value: object) -> LISPType:
         """Infer type from literal value"""
         if isinstance(value, int):
             return self.INT

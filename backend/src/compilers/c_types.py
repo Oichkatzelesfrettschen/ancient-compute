@@ -39,7 +39,7 @@ class CType:
         elif self.kind == CTypeKind.ARRAY:
             return f"{self.base_type}[{self.size}]"
         else:
-            return self.kind.value
+            return str(self.kind.value)
 
     def is_integral(self) -> bool:
         """Check if type is integral."""
@@ -75,6 +75,7 @@ class CType:
         elif self.kind == CTypeKind.POINTER:
             return 8  # 64-bit address
         elif self.kind == CTypeKind.ARRAY:
+            assert self.base_type is not None
             elem_size = self.base_type.get_size_bytes()
             return elem_size * (self.size or 1)
         elif self.kind == CTypeKind.VOID:
@@ -199,6 +200,7 @@ class BabbageTypeMapper:
         elif c_type.is_pointer():
             return "ptr"  # Pointer (address)
         elif c_type.is_array():
+            assert c_type.base_type is not None
             elem_type = self.c_type_to_babbage_ir_type(c_type.base_type)
             return f"array({elem_type})"
         elif c_type.is_void():

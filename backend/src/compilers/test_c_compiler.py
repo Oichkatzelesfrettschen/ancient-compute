@@ -245,7 +245,7 @@ class TestCTypeSystem:
         """Test pointer type creation."""
         type_sys = CTypeSystem()
         base = type_sys.make_type("int")
-        ptr = type_sys.make_pointer_type(base)
+        ptr = type_sys.make_pointer_type(base)  # type: ignore[arg-type]
 
         assert ptr.is_pointer()
         assert ptr.base_type == base
@@ -254,7 +254,7 @@ class TestCTypeSystem:
         """Test array type creation."""
         type_sys = CTypeSystem()
         base = type_sys.make_type("int")
-        arr = type_sys.make_array_type(base, 10)
+        arr = type_sys.make_array_type(base, 10)  # type: ignore[arg-type]
 
         assert arr.is_array()
         assert arr.size == 10
@@ -266,7 +266,7 @@ class TestCTypeSystem:
         int1 = type_sys.make_type("int")
         int2 = type_sys.make_type("int")
 
-        assert type_sys.is_assignable(int1, int2)
+        assert type_sys.is_assignable(int1, int2)  # type: ignore[arg-type]
 
     def test_type_assignable_int_to_float(self) -> None:
         """Test type assignability: int to float."""
@@ -275,7 +275,7 @@ class TestCTypeSystem:
         int_type = type_sys.make_type("int")
         float_type = type_sys.make_type("float")
 
-        assert type_sys.is_assignable(float_type, int_type)
+        assert type_sys.is_assignable(float_type, int_type)  # type: ignore[arg-type]
 
     def test_type_promotion_int_float(self) -> None:
         """Test type promotion: int + float → float."""
@@ -284,7 +284,7 @@ class TestCTypeSystem:
         int_type = type_sys.make_type("int")
         float_type = type_sys.make_type("float")
 
-        result = type_sys.get_common_type(int_type, float_type)
+        result = type_sys.get_common_type(int_type, float_type)  # type: ignore[arg-type]
         assert result.is_floating()
 
 

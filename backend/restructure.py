@@ -3,10 +3,9 @@
 Ancient Compute - Backend Restructuring Script
 Fixes the package structure issues identified in the architectural review
 """
-import os
 import shutil
-from pathlib import Path
 import sys
+from pathlib import Path
 
 
 def restructure_backend():

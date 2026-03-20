@@ -14,7 +14,7 @@ from pydantic import BaseModel
 
 from backend.src.emulator.debugger import BreakpointType, Debugger
 from backend.src.emulator.machine import DEMachine
-from backend.src.emulator.timing import MechanicalPhase
+from backend.src.emulator.types import MechanicalPhase
 
 # Router
 router = APIRouter(prefix="/emulator", tags=["emulator"])
@@ -116,7 +116,7 @@ class StateResponse(BaseModel):
 @router.post("/initialize")
 async def initialize_emulator(
     state: EmulatorState = Depends(get_emulator_state),
-):
+) -> Any:
     """Initialize a new emulator instance"""
     try:
         state.emulator = DEMachine()
@@ -132,7 +132,7 @@ async def initialize_emulator(
 @router.post("/reset")
 async def reset_emulator(
     state: EmulatorState = Depends(get_emulator_state),
-):
+) -> Any:
     """Reset emulator to initial state"""
     try:
         state.emulator = DEMachine()
@@ -145,7 +145,7 @@ async def reset_emulator(
 @router.get("/state")
 async def get_state(
     state: EmulatorState = Depends(get_emulator_state),
-):
+) -> Any:
     """Get current emulator state"""
     if state.emulator is None:
         raise HTTPException(status_code=400, detail="Emulator not initialized")
@@ -174,7 +174,7 @@ async def get_state(
 async def execute_polynomial(
     request: ExecuteRequest,
     state: EmulatorState = Depends(get_emulator_state),
-):
+) -> Any:
     """Execute polynomial evaluation. Returns results as they are computed."""
     # Initialize if needed
     if state.emulator is None:
@@ -210,7 +210,7 @@ async def execute_polynomial(
 
 
 @router.get("/results")
-async def get_results():
+async def get_results() -> Any:
     """Get previous execution results"""
     # Note: In a real application, this would be stored in session
     return {"success": True, "results": []}
@@ -221,14 +221,14 @@ async def get_results():
 # ============================================================================
 
 
-def _require_initialized(state: EmulatorState) -> tuple:
+def _require_initialized(state: EmulatorState) -> tuple[Any, Any]:
     """Raise 400 if emulator/debugger not initialized. Returns (emu, dbg)."""
     if state.emulator is None or state.debugger is None:
         raise HTTPException(status_code=400, detail="Emulator not initialized")
     return state.emulator, state.debugger
 
 
-def _machine_state_dict(emu: DEMachine) -> dict:
+def _machine_state_dict(emu: DEMachine) -> dict[str, Any]:
     """Build the standard machine state response dict."""
     return {
         "cycle": emu.cycle_count,
@@ -244,7 +244,7 @@ def _machine_state_dict(emu: DEMachine) -> dict:
 @router.post("/debug/step")
 async def debug_step(
     state: EmulatorState = Depends(get_emulator_state),
-):
+) -> Any:
     """Step through one mechanical cycle with debugger"""
     emu, dbg = _require_initialized(state)
     triggered = dbg.step_cycle()
@@ -259,7 +259,7 @@ async def debug_step(
 async def debug_continue(
     max_cycles: int | None = 1000,
     state: EmulatorState = Depends(get_emulator_state),
-):
+) -> Any:
     """Continue execution until breakpoint or max cycles"""
     emu, dbg = _require_initialized(state)
     result = dbg.continue_execution(max_cycles=max_cycles or 1000)
@@ -275,7 +275,7 @@ async def debug_continue(
 async def set_breakpoint(
     request: BreakpointRequest,
     state: EmulatorState = Depends(get_emulator_state),
-):
+) -> Any:
     """Set a new breakpoint"""
     _, dbg = _require_initialized(state)
 
@@ -300,7 +300,7 @@ async def set_breakpoint(
 async def enable_breakpoint(
     breakpoint_id: int,
     state: EmulatorState = Depends(get_emulator_state),
-):
+) -> Any:
     """Enable a breakpoint"""
     _, dbg = _require_initialized(state)
     dbg.enable_breakpoint(breakpoint_id)
@@ -311,7 +311,7 @@ async def enable_breakpoint(
 async def disable_breakpoint(
     breakpoint_id: int,
     state: EmulatorState = Depends(get_emulator_state),
-):
+) -> Any:
     """Disable a breakpoint"""
     _, dbg = _require_initialized(state)
     dbg.disable_breakpoint(breakpoint_id)
@@ -322,7 +322,7 @@ async def disable_breakpoint(
 async def remove_breakpoint(
     breakpoint_id: int,
     state: EmulatorState = Depends(get_emulator_state),
-):
+) -> Any:
     """Remove a breakpoint"""
     _, dbg = _require_initialized(state)
     dbg.remove_breakpoint(breakpoint_id)
@@ -333,7 +333,7 @@ async def remove_breakpoint(
 async def define_variable(
     request: VariableRequest,
     state: EmulatorState = Depends(get_emulator_state),
-):
+) -> Any:
     """Define a debugger variable"""
     _, dbg = _require_initialized(state)
     dbg.define_variable(request.name, request.value)
@@ -345,7 +345,7 @@ async def set_variable(
     name: str,
     request: VariableRequest,
     state: EmulatorState = Depends(get_emulator_state),
-):
+) -> Any:
     """Update a debugger variable value"""
     _, dbg = _require_initialized(state)
     dbg.set_variable(name, request.value)

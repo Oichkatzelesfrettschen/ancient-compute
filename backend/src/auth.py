@@ -29,7 +29,7 @@ class TokenData(BaseModel):
 
     user_id: int
     username: str
-    email: str
+    email: str | None
     exp: datetime
 
 
@@ -83,10 +83,10 @@ def decode_token(token: str) -> TokenData:
     """
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
-        user_id: int = payload.get("sub")
-        username: str = payload.get("username")
-        email: str = payload.get("email")
-        exp: datetime = datetime.fromtimestamp(payload.get("exp"))
+        user_id: int | None = payload.get("sub")
+        username: str | None = payload.get("username")
+        email: str | None = payload.get("email")
+        exp: datetime = datetime.fromtimestamp(float(payload.get("exp") or 0))
 
         if user_id is None or username is None:
             raise HTTPException(status_code=401, detail="Invalid token: missing user data")
@@ -142,16 +142,16 @@ async def get_current_user(
 
     if db_user is not None:
         user = UserResponse(
-            id=db_user.id,
-            username=db_user.username,
-            email=db_user.email,
-            is_active=db_user.is_active,
+            id=db_user.id,  # type: ignore[arg-type]
+            username=db_user.username,  # type: ignore[arg-type]
+            email=db_user.email,  # type: ignore[arg-type]
+            is_active=db_user.is_active,  # type: ignore[arg-type]
         )
     else:
         user = UserResponse(
             id=token_data.user_id,
             username=token_data.username,
-            email=token_data.email,
+            email=token_data.email or "",
             is_active=True,
         )
 

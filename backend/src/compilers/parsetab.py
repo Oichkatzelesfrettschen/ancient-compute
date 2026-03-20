@@ -10,7 +10,7 @@ _lr_signature = 'LPAREN NUMBER RPAREN STRING SYMBOLexpression : atomexpression :
     
 _lr_action_items = {'LPAREN':([0,2,3,4,5,6,7,8,9,],[3,-1,-4,-5,-6,-7,3,-2,-3,]),'SYMBOL':([0,2,3,4,5,6,7,8,9,],[4,-1,-4,-5,-6,-7,4,-2,-3,]),'NUMBER':([0,2,3,4,5,6,7,8,9,],[5,-1,-4,-5,-6,-7,5,-2,-3,]),'STRING':([0,2,3,4,5,6,7,8,9,],[6,-1,-4,-5,-6,-7,6,-2,-3,]),'$end':([1,2,4,5,6,8,],[0,-1,-5,-6,-7,-2,]),'RPAREN':([2,3,4,5,6,7,8,9,],[-1,-4,-5,-6,-7,8,-2,-3,]),}
 
-_lr_action = {}
+_lr_action: dict[int, dict[str, int]] = {}
 for _k, _v in _lr_action_items.items():
    for _x,_y in zip(_v[0],_v[1]):
       if not _x in _lr_action:  _lr_action[_x] = {}
@@ -19,7 +19,7 @@ del _lr_action_items
 
 _lr_goto_items = {'expression':([0,7,],[1,9,]),'atom':([0,7,],[2,2,]),'elements':([3,],[7,]),}
 
-_lr_goto = {}
+_lr_goto: dict[int, dict[str, int]] = {}
 for _k, _v in _lr_goto_items.items():
    for _x, _y in zip(_v[0], _v[1]):
        if not _x in _lr_goto: _lr_goto[_x] = {}

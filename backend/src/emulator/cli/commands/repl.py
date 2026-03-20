@@ -22,7 +22,7 @@ Commands:
 
 
 @click.command("repl")
-def repl_cmd():
+def repl_cmd() -> None:
     """Launch an interactive engine REPL."""
     engine = Engine()
     console.print("[bold green]Babbage Analytical Engine REPL[/]")

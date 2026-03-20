@@ -7,10 +7,11 @@ Implements token bucket algorithm with Redis for distributed rate limiting.
 
 import time
 from collections.abc import Callable
+from typing import Any
 
-from fastapi import HTTPException, Request
+from fastapi import HTTPException, Request, Response
 from fastapi.responses import JSONResponse
-from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
 
 class RateLimiter:
@@ -20,8 +21,8 @@ class RateLimiter:
     For production, use Redis-backed rate limiting (see RedisRateLimiter).
     """
 
-    def __init__(self):
-        self.buckets = {}  # key -> (tokens, last_update)
+    def __init__(self) -> None:
+        self.buckets: dict[str, tuple[float, float]] = {}  # key -> (tokens, last_update)
         self.cleanup_interval = 3600  # Clean up old entries every hour
         self.last_cleanup = time.time()
 
@@ -29,7 +30,7 @@ class RateLimiter:
         """Generate rate limit key for identifier and route"""
         return f"ratelimit:{identifier}:{route}"
 
-    def _cleanup_old_entries(self):
+    def _cleanup_old_entries(self) -> None:
         """Remove old entries to prevent memory leaks"""
         current_time = time.time()
         if current_time - self.last_cleanup > self.cleanup_interval:
@@ -87,7 +88,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
     Applies rate limits based on client IP address and route.
     """
 
-    def __init__(self, app, limiter: RateLimiter | None = None):
+    def __init__(self, app: Any, limiter: RateLimiter | None = None) -> None:
         super().__init__(app)
         self.limiter = limiter or RateLimiter()
 
@@ -118,7 +119,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                 return limits
         return self.route_limits["default"]
 
-    async def dispatch(self, request: Request, call_next: Callable):
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         """Process request with rate limiting"""
         # Skip rate limiting for health checks and metrics
         if request.url.path in ["/health", "/ready", "/metrics"]:
@@ -153,7 +154,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         return response
 
 
-def rate_limit(max_requests: int, window_seconds: int):
+def rate_limit(max_requests: int, window_seconds: int) -> Callable[..., Any]:
     """
     Decorator for rate limiting specific endpoints.
 
@@ -169,8 +170,8 @@ def rate_limit(max_requests: int, window_seconds: int):
     """
     limiter = RateLimiter()
 
-    def decorator(func):
-        async def wrapper(request: Request, *args, **kwargs):
+    def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
+        async def wrapper(request: Request, *args: Any, **kwargs: Any) -> Any:
             identifier = request.client.host if request.client else "unknown"
             route = request.url.path
 

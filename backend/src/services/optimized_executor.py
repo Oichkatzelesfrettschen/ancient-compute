@@ -8,7 +8,7 @@ result caching and database query optimization.
 from typing import Any
 
 try:
-    from sqlalchemy.orm import Session  # type: ignore
+    from sqlalchemy.orm import Session
 except Exception:  # pragma: no cover - allow running without SQLAlchemy
     Session = Any  # type: ignore
 
@@ -31,7 +31,7 @@ class OptimizedExecutor:
         orchestrator: ExecutionOrchestrator | None = None,
         execution_cache: ExecutionCache | None = None,
         query_cache: QueryCache | None = None,
-    ):
+    ) -> None:
         """
         Initialize optimized executor.
 

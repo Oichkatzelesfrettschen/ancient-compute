@@ -10,7 +10,7 @@ class AbacusEmulator:
     def reset(self) -> None:
         self._value = 0
 
-    def state(self) -> dict:
+    def state(self) -> dict[str, object]:
         return {
             "value": self._value,
             "digits": self._digits(),

@@ -16,7 +16,7 @@ class ClayTokensEmulator:
         self._sealed = False
         self._impression = Counter()
 
-    def state(self) -> dict:
+    def state(self) -> dict[str, object]:
         return {
             "tokens": dict(self._tokens),
             "sealed": self._sealed,

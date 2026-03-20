@@ -14,7 +14,7 @@ console = Console()
 @click.command("step")
 @click.argument("program", type=click.Path(exists=True))
 @click.option("--breakpoint", "bp", type=int, default=None, help="Break at this PC address.")
-def step_cmd(program, bp):
+def step_cmd(program: str, bp: int | None) -> None:
     """Step through PROGRAM one instruction at a time."""
     engine = Engine()
 

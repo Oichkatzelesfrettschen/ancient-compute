@@ -49,7 +49,7 @@ class Exercise(Base):
     languages_supported = Column(JSON, nullable=False, default=list)  # ['python', 'haskell', ...]
 
     # Difficulty
-    difficulty = Column(Enum(DifficultyLevel), nullable=False, default=DifficultyLevel.BEGINNER)
+    difficulty = Column(Enum(DifficultyLevel), nullable=False, default=DifficultyLevel.BEGINNER)  # type: ignore[var-annotated]
 
     # Exercise content
     starter_code = Column(JSON, nullable=True)  # {language: code_string}

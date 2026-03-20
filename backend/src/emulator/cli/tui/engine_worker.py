@@ -8,6 +8,7 @@ via captured snapshots posted from the worker thread.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Any
 
 from textual.message import Message
 
@@ -21,13 +22,13 @@ class EngineSnapshot:
     pc: int
     clock_time: float
     running: bool
-    registers: dict
-    flags: dict
-    barrel: dict
+    registers: dict[str, Any]
+    flags: dict[str, Any]
+    barrel: dict[str, Any]
     mill_operand_buffer: float
     mill_result_buffer: float
     last_opcode: str
-    execution_trace: list
+    execution_trace: list[Any]
 
 
 class EngineStateUpdate(Message):
@@ -57,7 +58,7 @@ def make_snapshot(engine: Engine, last_opcode: str = "NOP") -> EngineSnapshot:
     )
 
 
-def snapshot_as_dict(snap: EngineSnapshot) -> dict:
+def snapshot_as_dict(snap: EngineSnapshot) -> dict[str, Any]:
     """Convert EngineSnapshot to dict for widget consumption."""
     return {
         "pc": snap.pc,

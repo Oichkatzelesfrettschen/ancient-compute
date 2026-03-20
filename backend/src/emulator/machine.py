@@ -30,7 +30,8 @@ from dataclasses import dataclass
 from backend.src.emulator.analytical_engine import Engine
 from backend.src.emulator.carry import AnticipatingCarriage
 from backend.src.emulator.columns import ColumnBank
-from backend.src.emulator.timing import MechanicalPhase, TimingController
+from backend.src.emulator.timing import TimingController
+from backend.src.emulator.types import BabbageNumber, MechanicalPhase
 
 
 @dataclass
@@ -40,7 +41,7 @@ class OperationResult:
     operation: str  # Operation name
     phase: MechanicalPhase  # Mechanical phase
     success: bool  # Operation succeeded
-    data: dict | None = None  # Optional result data
+    data: dict[str, object] | None = None  # Optional result data
     error: str | None = None  # Optional error message
 
 
@@ -140,7 +141,7 @@ class DEMachine:
             col_i_plus_1 = self.column_bank.columns[i + 1]
 
             # Add column i to column i+1
-            _add_success = col_i_plus_1.add_difference(
+            col_i_plus_1.add_difference(
                 [col_i_val % 10] * 31
             )  # Simplified: add single digit
 
@@ -182,8 +183,6 @@ class DEMachine:
 
         # Store primary result (column 0) back to analytical engine register A
         if len(column_values) > 0:
-            from backend.src.emulator.analytical_engine import BabbageNumber
-
             self.analytical_engine.registers["A"] = BabbageNumber(column_values[0])
 
         self._record_operation(
@@ -212,7 +211,7 @@ class DEMachine:
         operation: str,
         phase: MechanicalPhase,
         success: bool,
-        data: dict | None = None,
+        data: dict[str, object] | None = None,
         error: str | None = None,
     ) -> None:
         """Record operation for history and debugging."""
@@ -277,8 +276,6 @@ class DEMachine:
         """Reset DEMachine to initial state."""
         # Reset analytical engine state manually
         for reg in self.analytical_engine.registers:
-            from backend.src.emulator.analytical_engine import BabbageNumber
-
             self.analytical_engine.registers[reg] = BabbageNumber(0)
         self.analytical_engine.PC = 0
 

@@ -1,5 +1,7 @@
 """Trace panel widget: instruction history with color coding."""
 
+from typing import Any
+
 from textual.reactive import reactive
 from textual.widget import Widget
 
@@ -15,7 +17,7 @@ class TracePanel(Widget):
     }
     """
 
-    trace: reactive[list] = reactive([])
+    trace: reactive[list[Any]] = reactive([])
     max_lines: int = 12
 
     def render(self) -> str:

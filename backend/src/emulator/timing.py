@@ -35,7 +35,7 @@ class TimingEvent:
     phase: MechanicalPhase  # Current phase
     event_type: str  # Event name
     timestamp: int  # Cycle counter
-    payload: dict | None = None  # Additional data
+    payload: dict[str, object] | None = None  # Additional data
 
 
 @dataclass
@@ -79,7 +79,7 @@ class TimingController:
         self.is_rotating = False  # Currently rotating
         self.phase = self._get_phase_at_angle(0)
         self.events: list[TimingEvent] = []
-        self.event_callbacks: dict[int, list[Callable]] = {}  # angle → handlers
+        self.event_callbacks: dict[int, list[Callable[..., object]]] = {}  # angle -> handlers
         self.total_events = 0
 
     def _get_phase_at_angle(self, angle: int) -> MechanicalPhase:
@@ -191,7 +191,7 @@ class TimingController:
             for callback in self.event_callbacks[angle]:
                 callback(angle, self.phase)
 
-    def register_callback(self, angle: int, callback: Callable) -> None:
+    def register_callback(self, angle: int, callback: Callable[..., object]) -> None:
         """
         Register callback for specific angle.
 

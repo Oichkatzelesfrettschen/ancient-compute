@@ -14,10 +14,11 @@ References:
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 import yaml
 
-from .analytical_engine import BabbageNumber
+from .types import BabbageNumber
 
 _DOCS = Path(__file__).resolve().parents[3] / "docs/simulation"
 _NOTE_B_PATH = _DOCS / "NOTE_B_DECK.yaml"
@@ -42,7 +43,7 @@ def _exec_opcode(opcode: str, lhs: BabbageNumber, rhs: BabbageNumber) -> Babbage
     raise ValueError(f"Unsupported opcode: {opcode}")
 
 
-def _run_deck(deck: list[dict], state: dict[str, BabbageNumber]) -> dict[str, BabbageNumber]:
+def _run_deck(deck: list[dict[str, Any]], state: dict[str, BabbageNumber]) -> dict[str, BabbageNumber]:
     """Execute a list of deck steps against a variable state dict."""
     for step in deck:
         lhs = state.get(step["lhs"], BabbageNumber(0))

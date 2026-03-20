@@ -16,7 +16,7 @@ def get_tools() -> EngineTools:
 
 
 @router.post("/debug/step", response_model=dict[str, Any])
-async def debug_step(tools: EngineTools = Depends(get_tools)):
+async def debug_step(tools: EngineTools = Depends(get_tools)) -> Any:
     """Execute one instruction step."""
     return tools.step()
 
@@ -25,10 +25,10 @@ async def debug_step(tools: EngineTools = Depends(get_tools)):
 async def debug_command(
     cmd: DebuggerCommand,
     tools: EngineTools = Depends(get_tools),
-):
+) -> Any:
     """Execute debugger command."""
     if cmd.action == "reset":
-        tools.engine.__init__()
+        tools.engine.__init__()  # type: ignore[misc]
         return {"status": "reset"}
     elif cmd.action == "continue":
         for _ in range(100):
@@ -41,6 +41,6 @@ async def debug_command(
 
 
 @router.get("/performance", response_model=PerformanceReport)
-async def get_performance(tools: EngineTools = Depends(get_tools)):
+async def get_performance(tools: EngineTools = Depends(get_tools)) -> Any:
     """Get performance analysis report."""
     return tools.get_performance_report()

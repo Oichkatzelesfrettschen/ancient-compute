@@ -66,7 +66,7 @@ class ExecutionOrchestrator:
     interface for code execution, test case validation, and result handling.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize execution orchestrator with Docker manager."""
         self.docker_manager = DockerManager()
         self.language_config = LANGUAGE_CONFIG
@@ -280,7 +280,7 @@ class ExecutionOrchestrator:
         try:
             actual_json = json.loads(actual)
             expected_json = json.loads(expected)
-            return actual_json == expected_json
+            return bool(actual_json == expected_json)
         except (json.JSONDecodeError, TypeError):
             pass
 

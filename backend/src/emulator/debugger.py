@@ -14,7 +14,8 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from .adapter import MachineAdapter, MechanicalPhase
+from .adapter import MachineAdapter
+from .types import MechanicalPhase
 
 
 class BreakpointType(Enum):
@@ -245,7 +246,7 @@ class Debugger:
     (auto-wrapping with DEMachineAdapter for convenience).
     """
 
-    def __init__(self, adapter):
+    def __init__(self, adapter: Any) -> None:
         """Initialize debugger with a machine adapter or raw machine."""
         if isinstance(adapter, MachineAdapter):
             self.adapter = adapter
@@ -295,7 +296,7 @@ class Debugger:
             BreakpointType.VALUE_CHANGE, variable_name=variable_name
         )
 
-    def set_condition_breakpoint(self, condition_func: Callable) -> int:
+    def set_condition_breakpoint(self, condition_func: Callable[..., bool]) -> int:
         return self.breakpoint_manager.set_breakpoint(
             BreakpointType.CONDITION, condition_func=condition_func
         )

@@ -1,11 +1,12 @@
 """Rich-formatted trace output."""
 
 import json
+from typing import Any
 
 from rich.table import Table
 
 
-def format_trace_entry(entry: dict) -> str:
+def format_trace_entry(entry: dict[str, Any]) -> str:
     """Format a single trace entry as a compact string."""
     regs = "  ".join(f"{k}={v:.6g}" for k, v in entry.get("registers", {}).items())
     flags = "".join(k[0] for k, v in entry.get("flags", {}).items() if v)
@@ -15,7 +16,7 @@ def format_trace_entry(entry: dict) -> str:
     )
 
 
-def format_trace_table(trace: list[dict]) -> Table:
+def format_trace_table(trace: list[dict[str, Any]]) -> Table:
     """Return a Rich Table of the full execution trace."""
     tbl = Table(title="Execution Trace", show_header=True, header_style="bold cyan", expand=True)
     tbl.add_column("PC", style="bold yellow", width=5)
@@ -40,6 +41,6 @@ def format_trace_table(trace: list[dict]) -> Table:
     return tbl
 
 
-def format_trace_json(trace: list[dict]) -> str:
+def format_trace_json(trace: list[dict[str, Any]]) -> str:
     """Return trace as JSON string."""
     return json.dumps(trace, indent=2, default=str)

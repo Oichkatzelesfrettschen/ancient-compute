@@ -8,7 +8,7 @@ from ..base_executor import BaseExecutor, ExecutionResult, ExecutionStatus
 class SystemFService(BaseExecutor):
     """System F language service executor -- compiles System F to Babbage IR."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__("systemf", "ancient-compute-systemf", timeout=10)
 
     def _get_command(self, code_path: str) -> str:

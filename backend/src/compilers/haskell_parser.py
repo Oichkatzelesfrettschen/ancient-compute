@@ -69,7 +69,7 @@ class HaskellParser:
             while self.current_token.type == TokenType.NEWLINE:
                 self._advance()
 
-            if self.current_token.type == TokenType.EOF:
+            if self.current_token.type == TokenType.EOF:  # type: ignore[comparison-overlap]
                 break
 
             # Parse module declaration (optional)
@@ -168,7 +168,7 @@ class HaskellParser:
         name_token = self._expect(TokenType.IDENTIFIER)
         self._expect(TokenType.EQUALS)
 
-        constructors = []
+        constructors: list[DataConstructor] = []
         while self.current_token.type == TokenType.IDENTIFIER:
             const_name_token = self._expect(TokenType.IDENTIFIER)
             fields = []
@@ -197,7 +197,7 @@ class HaskellParser:
         methods = []
         while self.current_token.type != TokenType.DEDENT:
             self._skip_newlines()
-            if self.current_token.type == TokenType.DEDENT:
+            if self.current_token.type == TokenType.DEDENT:  # type: ignore[comparison-overlap]
                 break
 
             if self.current_token.type == TokenType.IDENTIFIER:
@@ -245,7 +245,7 @@ class HaskellParser:
             self._advance()
             patterns = self._parse_patterns()
             guard = None
-            if self.current_token.type == TokenType.PIPE:
+            if self.current_token.type == TokenType.PIPE:  # type: ignore[comparison-overlap]
                 self._advance()
                 guard = self._parse_expression()
             self._expect(TokenType.EQUALS)
@@ -331,7 +331,7 @@ class HaskellParser:
         tail = None
         while self.current_token.type == TokenType.COMMA:
             self._advance()
-            if self.current_token.type != TokenType.RBRACKET:
+            if self.current_token.type != TokenType.RBRACKET:  # type: ignore[comparison-overlap]
                 patterns.append(self._parse_pattern())
 
         if self.current_token.type == TokenType.CONS:
@@ -379,9 +379,9 @@ class HaskellParser:
                 expr = self._parse_expression()
                 bindings.append((name_token.value, expr))
 
-                if self.current_token.type == TokenType.IN:
+                if self.current_token.type == TokenType.IN:  # type: ignore[comparison-overlap]
                     break
-                elif self.current_token.type == TokenType.SEMICOLON:
+                elif self.current_token.type == TokenType.SEMICOLON:  # type: ignore[comparison-overlap]
                     self._advance()
                 else:
                     break
@@ -401,7 +401,7 @@ class HaskellParser:
             self._skip_newlines()
 
             branches = []
-            if self.current_token.type == TokenType.INDENT:
+            if self.current_token.type == TokenType.INDENT:  # type: ignore[comparison-overlap]
                 self._advance()
                 while self.current_token.type != TokenType.DEDENT:
                     self._skip_newlines()
@@ -448,8 +448,8 @@ class HaskellParser:
         if self.current_token.type == TokenType.BACKSLASH:
             self._advance()
 
-            params = []
-            while self.current_token.type == TokenType.IDENTIFIER:
+            params: list[str] = []
+            while self.current_token.type == TokenType.IDENTIFIER:  # type: ignore[comparison-overlap]
                 params.append(self._expect(TokenType.IDENTIFIER).value)
 
             self._expect(TokenType.ARROW)
@@ -615,14 +615,14 @@ class HaskellParser:
             self._advance()
 
             # Check for empty tuple ()
-            if self.current_token.type == TokenType.RPAREN:
+            if self.current_token.type == TokenType.RPAREN:  # type: ignore[comparison-overlap]
                 self._advance()
                 return Tuple(elements=[])
 
             expr = self._parse_expression()
 
             # Check for tuple
-            if self.current_token.type == TokenType.COMMA:
+            if self.current_token.type == TokenType.COMMA:  # type: ignore[comparison-overlap]
                 elements = [expr]
                 while self.current_token.type == TokenType.COMMA:
                     self._advance()
@@ -637,7 +637,7 @@ class HaskellParser:
             self._advance()
 
             # Check for empty list []
-            if self.current_token.type == TokenType.RBRACKET:
+            if self.current_token.type == TokenType.RBRACKET:  # type: ignore[comparison-overlap]
                 self._advance()
                 return HList(elements=[])
 
@@ -646,11 +646,11 @@ class HaskellParser:
 
             is_range = False
             while self.current_token.type in (TokenType.COMMA, TokenType.DOT):
-                if self.current_token.type == TokenType.COMMA:
+                if self.current_token.type == TokenType.COMMA:  # type: ignore[comparison-overlap]
                     self._advance()
                     if self.current_token.type != TokenType.RBRACKET:
                         elements.append(self._parse_expression())
-                elif self.current_token.type == TokenType.DOT:
+                elif self.current_token.type == TokenType.DOT:  # type: ignore[comparison-overlap]
                     # Check for range [a .. b]
                     if self._peek().type == TokenType.DOT:
                         self._advance()

@@ -587,6 +587,7 @@ class CParser:
         if not self._check(TokenType.RPAREN):
             while True:
                 param_type = self._parse_type()
+                assert param_type is not None, "Expected parameter type"
                 param_name = self._consume(TokenType.IDENT, "Expected parameter name").value
                 params.append(FunctionParameter(param_name, param_type))
 
@@ -667,6 +668,7 @@ class CParser:
         self._consume(TokenType.RPAREN, "Expected ')'")
 
         then_stmt = self._parse_statement()
+        assert then_stmt is not None, "Expected then branch statement"
         else_stmt = None
 
         if self._check(TokenType.ELSE):
@@ -683,6 +685,7 @@ class CParser:
         self._consume(TokenType.RPAREN, "Expected ')'")
 
         body = self._parse_statement()
+        assert body is not None, "Expected while body statement"
 
         return WhileStatement(condition, body)
 
@@ -707,6 +710,7 @@ class CParser:
         self._consume(TokenType.RPAREN, "Expected ')'")
 
         body = self._parse_statement()
+        assert body is not None, "Expected for body statement"
 
         return ForStatement(init, condition, increment, body)
 
@@ -728,6 +732,7 @@ class CParser:
 
         variables: list[Variable] = []
         name = self._consume(TokenType.IDENT, "Expected variable name").value
+        assert var_type is not None, "Expected variable type"
         variables.append(Variable(name, var_type, is_global=False))
 
         while self._check(TokenType.COMMA):
@@ -883,12 +888,10 @@ class CParser:
             return IntLiteral(value)
 
         if self._check(TokenType.FLOAT_LIT):
-            value = float(self._advance().value)
-            return FloatLiteral(value)
+            return FloatLiteral(float(self._advance().value))
 
         if self._check(TokenType.STR_LIT):
-            value = self._advance().value
-            return StringLiteral(value)
+            return StringLiteral(self._advance().value)
 
         if self._check(TokenType.IDENT):
             name = self._advance().value

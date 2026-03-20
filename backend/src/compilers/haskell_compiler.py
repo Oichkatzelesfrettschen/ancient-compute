@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass
+from typing import Any
 
 from backend.src.compilers.haskell_ast import (
     Application,
@@ -150,6 +151,8 @@ class HaskellCompiler:
 
     def _analyze_module(self, module: Module) -> None:
         """First pass: collect declarations and build type environment"""
+        assert self.symbol_table is not None
+        assert self.type_env is not None
         for stmt in module.declarations:
             if isinstance(stmt, TypeDecl):
                 # Parse type signature and store
@@ -226,6 +229,8 @@ class HaskellCompiler:
         self, equation: FunctionEquation, block: BasicBlock, param_names: list[str]
     ) -> None:
         """Compile single function equation"""
+        assert self.builder is not None
+        assert self.symbol_table is not None
         # Bind parameters
         for name, pattern in zip(param_names, equation.patterns):
             htype = HaskellType.var("a")
@@ -258,7 +263,7 @@ class HaskellCompiler:
             body_operand = self._compile_expression(equation.body, block)
             self.builder.emit_return(body_operand)
 
-    def _compile_expression(self, expr: Expr, block: BasicBlock):
+    def _compile_expression(self, expr: Expr, block: BasicBlock) -> Any:
         """Compile expression and return operand"""
         if isinstance(expr, Literal):
             return IRConstant(expr.value)
@@ -304,7 +309,7 @@ class HaskellCompiler:
         else:
             raise NotImplementedError(f"Expression type not supported: {type(expr).__name__}")
 
-    def _compile_binary_op(self, expr: BinOp, block: BasicBlock):
+    def _compile_binary_op(self, expr: BinOp, block: BasicBlock) -> Any:
         """Compile binary operation"""
         left_operand = self._compile_expression(expr.left, block)
         right_operand = self._compile_expression(expr.right, block)
@@ -335,7 +340,7 @@ class HaskellCompiler:
 
         return VariableValue(temp)
 
-    def _compile_unary_op(self, expr: UnaryOp, block: BasicBlock):
+    def _compile_unary_op(self, expr: UnaryOp, block: BasicBlock) -> Any:
         """Compile unary operation"""
         operand = self._compile_expression(expr.operand, block)
 
@@ -352,8 +357,9 @@ class HaskellCompiler:
 
         return VariableValue(temp)
 
-    def _compile_lambda(self, expr: Lambda, block: BasicBlock):
+    def _compile_lambda(self, expr: Lambda, block: BasicBlock) -> Any:
         """Compile lambda expression by lifting to a global function"""
+        assert self.builder is not None
         func_name = self._gen_temp("lambda")
         params = (
             list(expr.params)
@@ -382,11 +388,12 @@ class HaskellCompiler:
         self.builder = old_builder
         self.symbol_table = old_table
 
-        # Return function reference as constant
-        return IRConstant(func_name)
+        # Return function reference as constant (encode as pointer hash)
+        return IRConstant(float(abs(hash(func_name)) % (10**40)))
 
-    def _compile_application(self, expr: Application, block: BasicBlock):
+    def _compile_application(self, expr: Application, block: BasicBlock) -> Any:
         """Compile function application"""
+        assert self.symbol_table is not None
         _func_operand = self._compile_expression(expr.func, block)
         args = [self._compile_expression(arg, block) for arg in expr.args]
 
@@ -395,19 +402,22 @@ class HaskellCompiler:
 
         return VariableValue(temp)
 
-    def _compile_let(self, expr: Let, block: BasicBlock):
+    def _compile_let(self, expr: Let, block: BasicBlock) -> Any:
         """Compile let expression"""
+        assert self.builder is not None
         # Compile bindings
         for name, binding_expr in expr.bindings:
             binding_operand = self._compile_expression(binding_expr, block)
             block.instructions.append(Assignment(target=name, source=binding_operand))
+            assert self.symbol_table is not None
             self.symbol_table.define(name, HaskellType.var("a"), scope="local")
 
         # Compile body
         return self._compile_expression(expr.body, block)
 
-    def _compile_case(self, expr: Case, block: BasicBlock):
+    def _compile_case(self, expr: Case, block: BasicBlock) -> Any:
         """Compile case expression"""
+        assert self.builder is not None
         scrutinee_operand = self._compile_expression(expr.expr, block)
 
         # For MVP, compile as cascading if-then-else
@@ -444,8 +454,9 @@ class HaskellCompiler:
         # Fallback case
         return IRConstant(0)
 
-    def _compile_if(self, expr: IfThenElse, block: BasicBlock):
+    def _compile_if(self, expr: IfThenElse, block: BasicBlock) -> Any:
         """Compile if-then-else expression"""
+        assert self.builder is not None
         condition_operand = self._compile_expression(expr.condition, block)
 
         then_label = self._gen_label("if_then")
@@ -477,22 +488,25 @@ class HaskellCompiler:
         self.builder.current_block = self.builder.new_block(end_label)
         return VariableValue(result_temp)
 
-    def _compile_list(self, expr: HList, block: BasicBlock):
+    def _compile_list(self, expr: HList, block: BasicBlock) -> Any:
         """Compile list literal"""
+        assert self.builder is not None
         # For MVP, represent as first element (simplified)
         if expr.elements:
             return self._compile_expression(expr.elements[0], block)
         return IRConstant(0)
 
-    def _compile_tuple(self, expr: HTuple, block: BasicBlock):
+    def _compile_tuple(self, expr: HTuple, block: BasicBlock) -> Any:
         """Compile tuple literal"""
+        assert self.builder is not None
         # For MVP, represent as first element (simplified)
         if expr.elements:
             return self._compile_expression(expr.elements[0], block)
         return IRConstant(0)
 
-    def _compile_constructor(self, expr: Constructor, block: BasicBlock):
+    def _compile_constructor(self, expr: Constructor, block: BasicBlock) -> Any:
         """Compile constructor application"""
+        assert self.symbol_table is not None
         # For MVP, treat like function application
         args = [self._compile_expression(arg, block) for arg in expr.args]
         temp = self._gen_temp("constructor")

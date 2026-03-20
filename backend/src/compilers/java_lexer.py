@@ -247,18 +247,18 @@ class JavaLexer:
         self.tokens.append(Token(TokenType.EOF, "", self.line, self.column))
         return self.tokens
 
-    def _current_char(self) -> str | None:
-        """Get current character without advancing"""
+    def _current_char(self) -> str:
+        """Get current character without advancing, or empty string at end of input."""
         if self.pos < len(self.source):
             return self.source[self.pos]
-        return None
+        return ""
 
-    def _peek(self, offset: int = 1) -> str | None:
-        """Peek ahead"""
+    def _peek(self, offset: int = 1) -> str:
+        """Peek ahead, or empty string at end of input."""
         pos = self.pos + offset
         if pos < len(self.source):
             return self.source[pos]
-        return None
+        return ""
 
     def _advance(self) -> str:
         """Advance position and return character"""
@@ -388,7 +388,7 @@ class JavaLexer:
             return
 
         # Two-character operators
-        two_char = ch + (next_ch or "")
+        two_char = ch + next_ch
 
         if two_char == "==":
             self._advance()

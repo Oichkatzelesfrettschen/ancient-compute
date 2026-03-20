@@ -1,10 +1,12 @@
 """Rich-formatted engine state display."""
 
+from typing import Any
+
 from rich.table import Table
 from rich.text import Text
 
 
-def format_registers(engine) -> Table:
+def format_registers(engine: Any) -> Table:
     """Return a Rich Table showing register values."""
     tbl = Table(title="Registers", show_header=True, header_style="bold cyan")
     tbl.add_column("Reg", style="bold yellow", width=4)
@@ -14,7 +16,7 @@ def format_registers(engine) -> Table:
     return tbl
 
 
-def format_flags(engine) -> Table:
+def format_flags(engine: Any) -> Table:
     """Return a Rich Table showing flag values."""
     tbl = Table(title="Flags", show_header=True, header_style="bold cyan")
     tbl.add_column("Flag", style="bold yellow", width=8)
@@ -25,7 +27,7 @@ def format_flags(engine) -> Table:
     return tbl
 
 
-def format_memory(engine, start: int = 0, count: int = 16) -> Table:
+def format_memory(engine: Any, start: int = 0, count: int = 16) -> Table:
     """Return a Rich Table showing a memory window."""
     tbl = Table(
         title=f"Memory [{start}..{start + count - 1}]", show_header=True, header_style="bold cyan"
@@ -39,7 +41,7 @@ def format_memory(engine, start: int = 0, count: int = 16) -> Table:
     return tbl
 
 
-def format_state(engine) -> str:
+def format_state(engine: Any) -> str:
     """Return a plain-text state summary string."""
     lines = [
         f"PC: {engine.PC}  Clock: {engine.clock_time}s  Running: {engine.running}",

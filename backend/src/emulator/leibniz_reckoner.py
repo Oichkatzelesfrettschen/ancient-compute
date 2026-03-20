@@ -66,7 +66,7 @@ class LeibnizReckonerEmulator:
         self.carriage_position = 0
         self.turn_counter = 0
 
-    def state(self) -> dict:
+    def state(self) -> dict[str, object]:
         return {
             "accumulator": self.get_accumulator_value(),
             "carriage_position": self.carriage_position,

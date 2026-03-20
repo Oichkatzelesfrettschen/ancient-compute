@@ -1,3 +1,5 @@
+from typing import Any
+
 """
 Ancient Compute - Code Execution API Endpoints
 
@@ -129,7 +131,7 @@ async def submit_exercise_code(
     # Validate against test cases
     test_results, passed_tests, total_tests = await orchestrator.validate_test_cases(
         execution_result=execution_result,
-        test_cases=exercise.test_cases,
+        test_cases=exercise.test_cases,  # type: ignore[arg-type]
         exercise_language=request.language,
     )
 
@@ -167,10 +169,10 @@ async def submit_exercise_code(
     )
 
     if progress:
-        progress.attempts += 1
-        progress.best_score = max(progress.best_score or 0, score_percentage)
-        progress.is_completed = is_successful
-        progress.is_submitted = True
+        progress.attempts += 1  # type: ignore[assignment]
+        progress.best_score = max(progress.best_score or 0, score_percentage)  # type: ignore[arg-type]
+        progress.is_completed = is_successful  # type: ignore[assignment]
+        progress.is_submitted = True  # type: ignore[assignment]
     else:
         progress = ExerciseProgress(
             user_id=current_user_id,
@@ -186,9 +188,9 @@ async def submit_exercise_code(
     db.refresh(submission)
 
     return ExerciseSubmissionResponse(
-        submission_id=submission.id,
+        submission_id=submission.id,  # type: ignore[arg-type]
         exercise_id=exercise_id,
-        user_id=submission.user_id,
+        user_id=submission.user_id,  # type: ignore[arg-type]
         language=request.language,
         execution_result=CodeExecutionResult(
             status=execution_result.status.value,
@@ -197,7 +199,7 @@ async def submit_exercise_code(
             execution_time_ms=execution_result.execution_time * 1000,
             memory_used_mb=execution_result.memory_used,
             exit_code=execution_result.exit_code,
-            test_results=test_results,
+            test_results=test_results,  # type: ignore[arg-type]
             passed_tests=passed_tests,
             total_tests=total_tests,
             score_percentage=score_percentage,
@@ -206,7 +208,7 @@ async def submit_exercise_code(
         total_tests=total_tests,
         score_percentage=score_percentage,
         is_successful=is_successful,
-        submitted_at=submission.submitted_at,
+        submitted_at=submission.submitted_at,  # type: ignore[arg-type]
     )
 
 
@@ -257,7 +259,7 @@ async def validate_exercise_code(
     # Validate against test cases
     test_results, passed_tests, total_tests = await orchestrator.validate_test_cases(
         execution_result=execution_result,
-        test_cases=exercise.test_cases,
+        test_cases=exercise.test_cases,  # type: ignore[arg-type]
         exercise_language=request.language,
     )
 
@@ -271,7 +273,7 @@ async def validate_exercise_code(
         execution_time_ms=execution_result.execution_time * 1000,
         memory_used_mb=execution_result.memory_used,
         exit_code=execution_result.exit_code,
-        test_results=test_results,
+        test_results=test_results,  # type: ignore[arg-type]
         passed_tests=passed_tests,
         total_tests=total_tests,
         score_percentage=score_percentage,
@@ -286,7 +288,7 @@ async def get_exercise_submissions(
     exercise_id: int,
     db: Session = Depends(get_db),
     current_user: UserResponse = Depends(get_current_user),
-):
+) -> Any:
     """
     Get user's submission history for an exercise.
 
@@ -343,7 +345,7 @@ async def get_exercise_progress(
     exercise_id: int,
     db: Session = Depends(get_db),
     current_user: UserResponse = Depends(get_current_user),
-):
+) -> Any:
     """
     Get user's progress tracking for an exercise.
 

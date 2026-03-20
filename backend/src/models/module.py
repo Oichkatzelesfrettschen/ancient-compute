@@ -33,7 +33,7 @@ class Module(Base):
     slug = Column(String(100), unique=True, index=True, nullable=False)
     title = Column(String(255), nullable=False)
     description = Column(Text, nullable=False)
-    era_enum = Column(
+    era_enum = Column(  # type: ignore[var-annotated]
         Enum(ModuleEra), nullable=False, index=True
     )  # Kept for backward compatibility
 

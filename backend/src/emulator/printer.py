@@ -493,7 +493,7 @@ class PrinterStereotyperSystem:
             results.append(output)
         return results
 
-    def get_snapshot(self) -> dict:
+    def get_snapshot(self) -> dict[str, object]:
         """
         Get complete system state snapshot.
 

@@ -11,7 +11,7 @@ from ..base_executor import BaseExecutor, ExecutionResult, ExecutionStatus
 class LISPService(BaseExecutor):
     """LISP language service executor -- compiles LISP to Babbage IR."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__("lisp", "ancient-compute-lisp", timeout=10)
 
     def _get_command(self, code_path: str) -> str:

@@ -29,7 +29,7 @@ class PythonType:
     def __repr__(self) -> str:
         return f"PythonType({self.kind!r})"
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, PythonType):
             return False
         return self.kind == other.kind
@@ -69,7 +69,7 @@ class PythonTypeSystem:
         """Initialize type system"""
         pass
 
-    def infer_literal_type(self, value) -> PythonType:
+    def infer_literal_type(self, value: object) -> PythonType:
         """Infer type from literal value"""
         if isinstance(value, bool):  # bool before int (bool is subclass of int)
             return PythonType.bool()
@@ -173,7 +173,7 @@ class BabbageTypeMapper:
         return BabbageTypeMapper.TYPE_MAP.get(ptype.kind, "i64")
 
     @staticmethod
-    def default_value_for_type(ptype: PythonType):
+    def default_value_for_type(ptype: PythonType) -> int | float | bool | str | None:
         """Get default value for Python type"""
         if ptype.kind == "int":
             return 0

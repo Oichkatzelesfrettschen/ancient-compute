@@ -91,7 +91,7 @@ class CouplingFunctions:
         W_T = A - B * math.log10(T_K)
         nu_T_cSt = max(0.5, 10.0 ** (10.0**W_T) - 0.7)
         eta_T_Pa_s = (nu_T_cSt * density_kg_m3) / 1e6
-        return eta_T_Pa_s
+        return float(eta_T_Pa_s)
 
     @staticmethod
     def friction_heat_from_bearings(

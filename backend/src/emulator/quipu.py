@@ -10,7 +10,7 @@ class QuipuEmulator:
     def reset(self) -> None:
         self._records = []
 
-    def state(self) -> dict:
+    def state(self) -> dict[str, object]:
         return {
             "records": list(self._records),
         }

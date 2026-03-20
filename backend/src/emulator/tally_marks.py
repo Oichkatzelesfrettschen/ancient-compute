@@ -19,7 +19,7 @@ class TallyMarksEmulator:
             self.step(delta)
         return self._count
 
-    def state(self) -> dict:
+    def state(self) -> dict[str, object]:
         return {
             "count": self._count,
             "tally": self.render(),

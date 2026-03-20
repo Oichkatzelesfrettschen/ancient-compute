@@ -10,6 +10,8 @@ Four-phase pipeline:
 
 from __future__ import annotations
 
+from typing import Any
+
 from backend.src.compilers.java_ast import (
     BinaryOp,
     ClassDecl,
@@ -30,7 +32,6 @@ from backend.src.ir_types import (
     IRBuilder,
     IRType,
     Program,
-    Value,
     VariableValue,
 )
 
@@ -95,13 +96,15 @@ class JavaCompiler:
                 self._compile_stmt(stmt)
 
         # Ensure return if not present
+        assert self.ir_builder.current_block is not None
         if not self.ir_builder.current_block.terminator:
             self.ir_builder.emit_return(Constant(0))
 
         self.program.add_function(self.ir_builder.finalize())
 
-    def _compile_stmt(self, stmt) -> None:
+    def _compile_stmt(self, stmt: object) -> None:
         """Compile statement to IR"""
+        assert self.ir_builder is not None
         if isinstance(stmt, VarDeclStmt):
             var_name = stmt.name
             self.ir_builder.function.local_variables[var_name] = IRType.DEC50
@@ -117,10 +120,18 @@ class JavaCompiler:
             val = self._compile_expr(stmt.expr) if stmt.expr else Constant(0)
             self.ir_builder.emit_return(val)
 
-    def _compile_expr(self, expr: Expr) -> Value:
+    def _compile_expr(self, expr: Expr) -> Any:
         """Compile expression to IR"""
+        assert self.ir_builder is not None
         if isinstance(expr, Literal):
-            return Constant(expr.value)
+            v = expr.value
+            if isinstance(v, bool):
+                return Constant(1.0 if v else 0.0)
+            if isinstance(v, (int, float)):
+                return Constant(float(v))
+            if isinstance(v, str):
+                return Constant(float(abs(hash(v)) % (10**40)))
+            return Constant(0.0)
 
         if isinstance(expr, Variable):
             return self.symbol_table.get(expr.name, VariableValue(expr.name))
@@ -157,6 +168,6 @@ class JavaCompiler:
                     lines.append(f"    {block.terminator}")
         return "\n".join(lines)
 
-    def _new_tmp(self):
+    def _new_tmp(self) -> str:
         self.var_counter += 1
         return f"v{self.var_counter}"

@@ -217,18 +217,18 @@ class SystemFLexer:
         self._add_token(TokenType.EOF, "")
         return self.tokens
 
-    def current(self) -> str | None:
-        """Get current character"""
+    def current(self) -> str:
+        """Get current character, or empty string at end of input."""
         if self.pos < len(self.source):
             return self.source[self.pos]
-        return None
+        return ""
 
-    def peek(self, offset: int = 1) -> str | None:
-        """Peek at character at current position + offset"""
+    def peek(self, offset: int = 1) -> str:
+        """Peek at character at current position + offset, or empty string."""
         pos = self.pos + offset
         if pos < len(self.source):
             return self.source[pos]
-        return None
+        return ""
 
     def _advance(self) -> None:
         """Move to next character"""

@@ -1,5 +1,7 @@
 """Memory inspector widget: scrollable memory view with change highlighting."""
 
+from typing import Any
+
 from textual.reactive import reactive
 from textual.widget import Widget
 
@@ -15,9 +17,9 @@ class MemoryInspector(Widget):
     }
     """
 
-    memory_window: reactive[list] = reactive([])
+    memory_window: reactive[list[Any]] = reactive([])
     mem_start: reactive[int] = reactive(0)
-    changed_addrs: reactive[set] = reactive(set())
+    changed_addrs: reactive[set[int]] = reactive(set())
 
     def render(self) -> str:
         lines = [f"  Memory [{self.mem_start}..{self.mem_start + len(self.memory_window) - 1}]"]

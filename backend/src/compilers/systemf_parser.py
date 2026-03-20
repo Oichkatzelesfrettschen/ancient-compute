@@ -130,6 +130,7 @@ class SystemFParser:
         param_type = self._parse_type()
         self._expect(TokenType.FAT_ARROW)
         body = self._parse_expr()
+        assert body is not None
 
         return Lambda(param_name, param_type, body)
 
@@ -139,6 +140,7 @@ class SystemFParser:
         type_var = self._expect(TokenType.TYPE_VAR, TokenType.IDENTIFIER).value
         self._expect(TokenType.FAT_ARROW)
         body = self._parse_expr()
+        assert body is not None
 
         return TypeAbstraction(type_var, body)
 
@@ -146,10 +148,13 @@ class SystemFParser:
         """Parse if expression: if cond then e1 else e2"""
         self._expect(TokenType.IF)
         condition = self._parse_expr()
+        assert condition is not None
         self._expect(TokenType.THEN)
         then_expr = self._parse_expr()
+        assert then_expr is not None
         self._expect(TokenType.ELSE)
         else_expr = self._parse_expr()
+        assert else_expr is not None
 
         return IfExpr(condition, then_expr, else_expr)
 
@@ -161,8 +166,10 @@ class SystemFParser:
         var_type = self._parse_type()
         self._expect(TokenType.EQUALS)
         value_expr = self._parse_expr()
+        assert value_expr is not None
         self._expect(TokenType.IN)
         body_expr = self._parse_expr()
+        assert body_expr is not None
 
         return LetExpr(var_name, var_type, value_expr, body_expr)
 
@@ -228,6 +235,7 @@ class SystemFParser:
         if token.type == TokenType.LPAREN:
             self._advance()
             expr = self._parse_expr()
+            assert expr is not None
             self._expect(TokenType.RPAREN)
             return expr
 

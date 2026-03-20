@@ -16,7 +16,10 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from enum import Enum
 
+from backend.src.assembler.assembler import Assembler
+from backend.src.codegen.codegen import CodeGenerator
 from backend.src.compilers.haskell_compiler import HaskellCompiler
+from backend.src.ir_types import Program as IRProgram
 
 
 class ExecutionStatus(Enum):
@@ -80,8 +83,45 @@ class HaskellService:
                 assembly_time_ms=0,
             )
 
+    # Modules blocked for security; using them is a compile-time error.
+    _BLOCKED_IMPORTS: frozenset[str] = frozenset([
+        "System.IO.Unsafe",
+        "Foreign",
+        "Foreign.C",
+        "System.Posix",
+        "System.Exit",
+        "System.Process",
+    ])
+
+    def _check_blocked_imports(self, source: str) -> str | None:
+        """Return the first blocked module found in source, or None."""
+        for line in source.splitlines():
+            stripped = line.strip()
+            if stripped.startswith("import "):
+                parts = stripped.split()
+                if len(parts) >= 2:
+                    module = parts[1].rstrip(";")
+                    for blocked in self._BLOCKED_IMPORTS:
+                        if module == blocked or module.startswith(blocked + "."):
+                            return module
+        return None
+
     async def _compile_and_assemble(self, source: str) -> CompilationResult:
         """Compile Haskell source through full pipeline"""
+        blocked = self._check_blocked_imports(source)
+        if blocked:
+            return CompilationResult(
+                status=ExecutionStatus.COMPILE_ERROR,
+                output="",
+                errors=f"Blocked import: {blocked} is not allowed for security reasons",
+                ir="",
+                assembly="",
+                machine_code="",
+                compile_time_ms=0,
+                codegen_time_ms=0,
+                assembly_time_ms=0,
+            )
+
         loop = asyncio.get_event_loop()
 
         # Phase 1: Haskell compilation (in thread pool)
@@ -110,7 +150,8 @@ class HaskellService:
         codegen_start = time.time()
         try:
             codegen = CodeGenerator()
-            asm_code = await loop.run_in_executor(self.executor, lambda: codegen.generate(program))
+            program_result = await loop.run_in_executor(self.executor, lambda: codegen.generate_program(program))
+            asm_code = chr(10).join(r.get_assembly_text() for r in program_result.values())
             codegen_time = (time.time() - codegen_start) * 1000
 
         except Exception as e:
@@ -129,9 +170,9 @@ class HaskellService:
         # Phase 3: Assembly (in thread pool)
         assembly_start = time.time()
         try:
-            assembler = Assembler()
+            assembler = Assembler(asm_code)
             machine_code = await loop.run_in_executor(
-                self.executor, lambda: assembler.assemble(asm_code)
+                self.executor, assembler.assemble
             )
             assembly_time = (time.time() - assembly_start) * 1000
 
@@ -148,7 +189,7 @@ class HaskellService:
                 assembly_time_ms=(time.time() - assembly_start) * 1000,
             )
 
-        machine_code_hex = self._format_hex_dump(machine_code)
+        machine_code_hex = self._format_hex_dump(machine_code.get_hex_dump())
 
         return CompilationResult(
             status=ExecutionStatus.SUCCESS,
@@ -197,7 +238,7 @@ class HaskellService:
                 assembly_time_ms=0,
             )
 
-    async def get_capabilities(self) -> dict:
+    async def get_capabilities(self) -> dict[str, object]:
         """Get service capabilities"""
         return {
             "language": "Haskell",
@@ -218,7 +259,7 @@ class HaskellService:
             "supportsDebug": False,
         }
 
-    def _ir_to_string(self, program) -> str:
+    def _ir_to_string(self, program: IRProgram) -> str:
         """Format IR for display"""
         lines = []
         lines.append("=== Haskell Intermediate Representation ===\n")
@@ -227,8 +268,8 @@ class HaskellService:
             lines.append(f"Function: {func_name}")
             lines.append(f"  Parameters: {func.parameters}")
 
-            for block_name, block in func.basic_blocks.items():
-                lines.append(f"  Block: {block_name}")
+            for block in func.basic_blocks:
+                lines.append(f"  Block: {block.label}")
 
                 for instr in block.instructions:
                     lines.append(f"    {instr}")

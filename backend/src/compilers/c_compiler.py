@@ -36,6 +36,7 @@ from backend.src.compilers.c_ast import Assignment as AstAssignment
 from backend.src.compilers.c_ast import BinaryOp as AstBinaryOp
 from backend.src.compilers.c_ast import Function as AstFunction
 from backend.src.compilers.c_ast import Program as AstProgram
+from backend.src.compilers.c_ast import Type as AstType
 from backend.src.compilers.c_ast import UnaryOp as AstUnaryOp
 from backend.src.compilers.c_types import (
     BabbageTypeMapper,
@@ -151,13 +152,22 @@ class CCompiler:
 
         return self.ir_program
 
+    def _ast_type_to_ctype(self, ast_type: AstType) -> CType:
+        """Convert c_ast.Type to CType."""
+        base = self.type_system.make_type(ast_type.name) or CType(CTypeKind.INT)
+        if ast_type.array_size is not None:
+            return self.type_system.make_array_type(base, ast_type.array_size)
+        elif ast_type.is_pointer:
+            return self.type_system.make_pointer_type(base)
+        return base
+
     def _build_symbol_table(self, program: AstProgram) -> None:
         """Build symbol table from AST."""
         # First pass: collect all global declarations
         for decl in program.declarations:
             if isinstance(decl, GlobalDeclaration):
                 for var in decl.variables:
-                    self.global_symbols.define(var.name, var.type, is_global=True)
+                    self.global_symbols.define(var.name, self._ast_type_to_ctype(var.type), is_global=True)
             elif isinstance(decl, AstFunction):
                 func_type = CType(CTypeKind.FUNCTION)
                 self.global_symbols.define(decl.name, func_type, is_global=True, is_function=True)
@@ -183,7 +193,7 @@ class CCompiler:
 
         # Add parameters to symbol table
         for param in func.parameters:
-            func_scope.define(param.name, param.type, is_global=False)
+            func_scope.define(param.name, self._ast_type_to_ctype(param.type), is_global=False)
 
         # Create entry block
         _entry_block = self.builder.new_block("entry")
@@ -236,16 +246,19 @@ class CCompiler:
 
     def _compile_expression_statement(self, stmt: ExpressionStatement) -> None:
         """Compile expression statement."""
+        assert self.builder is not None
         self._compile_expression(stmt.expr)
 
     def _compile_variable_declaration(self, stmt: VariableDeclaration) -> None:
         """Compile variable declaration."""
+        assert self.builder is not None
         for var in stmt.variables:
             # Register variable in symbol table
-            self.current_scope.define(var.name, var.type)
+            self.current_scope.define(var.name, self._ast_type_to_ctype(var.type))
 
     def _compile_if_statement(self, stmt: IfStatement) -> None:
         """Compile if statement."""
+        assert self.builder is not None
         # Compile condition
         cond_val = self._compile_expression(stmt.condition)
 
@@ -274,6 +287,7 @@ class CCompiler:
 
     def _compile_while_statement(self, stmt: WhileStatement) -> None:
         """Compile while loop."""
+        assert self.builder is not None
         # Create loop structure
         loop_head_label = self._gen_label("while_head")
         loop_body_label = self._gen_label("while_body")
@@ -297,6 +311,7 @@ class CCompiler:
 
     def _compile_for_statement(self, stmt: ForStatement) -> None:
         """Compile for loop."""
+        assert self.builder is not None
         # Create scope for loop variables
         prev_scope = self.current_scope
         self.current_scope = self.current_scope.push_scope()
@@ -341,6 +356,7 @@ class CCompiler:
 
     def _compile_return_statement(self, stmt: ReturnStatement) -> None:
         """Compile return statement."""
+        assert self.builder is not None
         if stmt.value:
             return_value = self._compile_expression(stmt.value)
             self.builder.emit_return(return_value)
@@ -349,6 +365,7 @@ class CCompiler:
 
     def _compile_expression(self, expr: Expression) -> Operand:
         """Compile an expression to IR, returning an operand."""
+        assert self.builder is not None
         if isinstance(expr, IntLiteral):
             return Constant(float(expr.value), IRType.I64)
 
@@ -392,6 +409,7 @@ class CCompiler:
 
     def _compile_binary_op(self, expr: AstBinaryOp) -> Operand:
         """Compile binary operation."""
+        assert self.builder is not None
         left = self._compile_expression(expr.left)
         right = self._compile_expression(expr.right)
 
@@ -422,6 +440,7 @@ class CCompiler:
 
     def _compile_unary_op(self, expr: AstUnaryOp) -> Operand:
         """Compile unary operation."""
+        assert self.builder is not None
         operand = self._compile_expression(expr.operand)
 
         # Map C operator to IR operator
@@ -443,6 +462,7 @@ class CCompiler:
 
     def _compile_function_call(self, expr: FunctionCall) -> Operand:
         """Compile function call."""
+        assert self.builder is not None
         # Compile arguments
         args = []
         for arg in expr.args:
@@ -458,6 +478,7 @@ class CCompiler:
 
     def _compile_array_access(self, expr: ArrayAccess) -> Operand:
         """Compile array access."""
+        assert self.builder is not None
         # Get base array
         symbol = self.current_scope.lookup(expr.name)
         if not symbol or not symbol.c_type.is_array():
@@ -477,6 +498,7 @@ class CCompiler:
 
     def _compile_assignment(self, expr: AstAssignment) -> Operand:
         """Compile assignment expression."""
+        assert self.builder is not None
         # Compile right-hand side
         rhs = self._compile_expression(expr.value)
 

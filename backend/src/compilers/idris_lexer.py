@@ -1,5 +1,6 @@
 # Ancient Compute - IDRIS Lexer
 
+from typing import Any
 
 import ply.lex as lex
 
@@ -56,19 +57,19 @@ t_PIPE = "\\|"
 t_OPERATOR = "\\+|-|\\*|/|==|>|<|>=|<="
 
 
-def t_IDENTIFIER(t):
+def t_IDENTIFIER(t: Any) -> Any:
     r"[a-zA-Z_][a-zA-Z0-9_]*"
     t.type = keywords.get(t.value, "IDENTIFIER")
     return t
 
 
-def t_STRING(t):
+def t_STRING(t: Any) -> Any:
     r'"([^"\\]|\\.)*"'
     t.value = t.value[1:-1]
     return t
 
 
-def t_NUMBER(t):
+def t_NUMBER(t: Any) -> Any:
     r"-?\\d+(\\.\\d+)?"
     if "." in t.value:
         t.value = float(t.value)
@@ -80,7 +81,7 @@ def t_NUMBER(t):
 t_ignore = " \t\n"
 
 
-def t_error(t):
+def t_error(t: Any) -> None:
     print(f"Illegal character '{t.value[0]}'")
     t.lexer.skip(1)
 
@@ -94,10 +95,10 @@ class IDRIS2Lexer:
     Tests expect a class with `tokenize()` returning a list of tokens.
     """
 
-    def __init__(self, source: str):
+    def __init__(self, source: str) -> None:
         self.source = source
 
-    def tokenize(self) -> list:
+    def tokenize(self) -> list[Any]:
         lexer.input(self.source)
         toks = []
         while True:

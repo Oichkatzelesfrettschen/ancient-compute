@@ -29,6 +29,7 @@ References:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import Any
 
 # Irish logarithm table (Ludgate 1909, Table I).
 # Maps digit -> index for multiplication.
@@ -205,7 +206,7 @@ class LudgateMachine:
         """Append value to output tape."""
         self.state.output_tape.append(value)
 
-    def state_dict(self) -> dict:
+    def state_dict(self) -> dict[str, object]:
         """Return current state as a plain dict."""
         return {
             "accumulator": self.state.accumulator,
@@ -219,7 +220,7 @@ class LudgateMachine:
         self.state.program_pointer += 1
         self.state.cycle_count += 1
 
-    def run(self, program: list[tuple]) -> list[int]:
+    def run(self, program: list[tuple[Any, ...]]) -> list[int]:
         """Run a simple program: list of (op, a, b) tuples.
 
         Supported ops: 'add', 'sub', 'mult', 'div', 'print'

@@ -1,5 +1,7 @@
 # Ancient Compute - Analytical Engine Tools Integration
 
+from typing import Any
+
 from ..emulator.adapter import AEMachineAdapter
 from ..emulator.analytical_engine import Engine
 from ..emulator.debugger import Debugger
@@ -11,13 +13,13 @@ class EngineTools:
     Facade for interacting with Analytical Engine tools.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.engine = Engine()
         self.adapter = AEMachineAdapter(self.engine)
         self.debugger = Debugger(self.adapter)
         self.profiler = PerformanceAnalyzer(self.adapter)
 
-    def load_program(self, ir_program: str):
+    def load_program(self, ir_program: str) -> None:
         """Parse IR text and load into engine memory/instructions.
 
         Accepts Babbage assembly format (one instruction per line):
@@ -27,12 +29,12 @@ class EngineTools:
         """
         from ..emulator.analytical_engine import Instruction
 
-        self.engine.__init__()
+        self.engine.__init__()  # type: ignore[misc]
         lines = ir_program.strip().splitlines()
 
         # First pass: resolve labels
-        labels = {}
-        instruction_lines = []
+        labels: dict[str, int] = {}
+        instruction_lines: list[str] = []
         for line in lines:
             stripped = line.strip()
             if not stripped or stripped.startswith("#"):
@@ -46,21 +48,18 @@ class EngineTools:
         for line in instruction_lines:
             parts = line.split(None, 1)
             opcode = parts[0].upper()
-            operands = []
+            operands: list[str] = []
             if len(parts) > 1:
                 raw_operands = parts[1].split(",")
                 for op in raw_operands:
                     op = op.strip()
                     if op in labels:
-                        operands.append(labels[op])
+                        operands.append(str(labels[op]))
                     else:
-                        try:
-                            operands.append(int(op))
-                        except ValueError:
-                            operands.append(op)
+                        operands.append(op)
             self.engine.instruction_cards.append(Instruction(opcode, operands))
 
-    def step(self):
+    def step(self) -> dict[str, Any]:
         """Execute one step with debugging and profiling."""
         # 1. Debugger step (checks breakpoints)
         triggered = self.debugger.step()
@@ -73,5 +72,5 @@ class EngineTools:
 
         return {"triggered_breakpoints": triggered, "state": self.debugger.get_state()}
 
-    def get_performance_report(self):
+    def get_performance_report(self) -> Any:
         return self.profiler.get_report()

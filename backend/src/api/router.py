@@ -1,9 +1,9 @@
 # Ancient Compute Backend - Main API Router
-
 import json
 import logging
 import os
 from pathlib import Path
+from typing import Any
 
 from fastapi import APIRouter, Depends
 from fastapi.responses import PlainTextResponse
@@ -35,13 +35,13 @@ api_router.include_router(exercise_execution_router)
 
 
 @api_router.get("/status")
-async def get_status():
+async def get_status() -> Any:
     """Get API status"""
     return {"status": "operational", "version": "0.1.0", "service": "ancient-compute-api"}
 
 
 @api_router.get("/modules")
-async def list_modules(db: Session = Depends(get_db)):
+async def list_modules(db: Session = Depends(get_db)) -> Any:
     """List all published educational modules ordered chronologically."""
     modules = db.query(Module).filter(Module.is_published).order_by(Module.sequence_order).all()
     return {
@@ -62,7 +62,7 @@ async def list_modules(db: Session = Depends(get_db)):
 
 
 @api_router.get("/infra/minix/metrics")
-async def get_minix_metrics(arch: str = "i386"):
+async def get_minix_metrics(arch: str = "i386") -> Any:
     """Serve latest MINIX boot metrics if present.
 
     Looks under METRICS_DIR (default: metrics/minix) for `<arch>/boot_time.json`.
@@ -80,7 +80,7 @@ async def get_minix_metrics(arch: str = "i386"):
 
 
 @api_router.get("/infra/minix/runs")
-async def list_minix_runs(arch: str = "i386"):
+async def list_minix_runs(arch: str = "i386") -> Any:
     """List available MINIX run IDs with basic stats."""
     base = Path(os.getenv("METRICS_DIR", "metrics/minix")) / arch / "runs"
     if not base.exists():
@@ -107,7 +107,7 @@ async def list_minix_runs(arch: str = "i386"):
 
 
 @api_router.get("/infra/minix/run/{run_id}")
-async def get_minix_run(run_id: str, arch: str = "i386"):
+async def get_minix_run(run_id: str, arch: str = "i386") -> Any:
     """Get specific run metrics and file names."""
     base = Path(os.getenv("METRICS_DIR", "metrics/minix")) / arch / "runs" / run_id
     bt = base / "boot_time.json"
@@ -133,7 +133,7 @@ async def get_minix_run(run_id: str, arch: str = "i386"):
 
 
 @api_router.get("/infra/minix/summary")
-async def get_minix_summary(arch: str = "i386"):
+async def get_minix_summary(arch: str = "i386") -> Any:
     """Return summary.json if present."""
     base = Path(os.getenv("METRICS_DIR", "metrics/minix")) / arch
     summary = base / "summary.json"
@@ -148,7 +148,7 @@ async def get_minix_summary(arch: str = "i386"):
 
 
 @api_router.get("/infra/minix/resource")
-async def get_minix_resource(arch: str = "i386"):
+async def get_minix_resource(arch: str = "i386") -> Any:
     """Return latest resource_timeseries.csv as text, if present."""
     base = Path(os.getenv("METRICS_DIR", "metrics/minix")) / arch
     csv = base / "resource_timeseries.csv"
@@ -158,7 +158,7 @@ async def get_minix_resource(arch: str = "i386"):
 
 
 @api_router.get("/infra/minix/run/{run_id}/resource")
-async def get_minix_run_resource(run_id: str, arch: str = "i386"):
+async def get_minix_run_resource(run_id: str, arch: str = "i386") -> Any:
     """Return run-specific resource_timeseries.csv as text, if present."""
     base = Path(os.getenv("METRICS_DIR", "metrics/minix")) / arch / "runs" / run_id
     csv = base / "resource_timeseries.csv"
@@ -168,7 +168,7 @@ async def get_minix_run_resource(run_id: str, arch: str = "i386"):
 
 
 @api_router.get("/timeline")
-async def get_timeline(db: Session = Depends(get_db)):
+async def get_timeline(db: Session = Depends(get_db)) -> Any:
     """Get historical timeline eras with their modules."""
     eras = db.query(Era).filter(Era.is_published).order_by(Era.order).all()
     return {

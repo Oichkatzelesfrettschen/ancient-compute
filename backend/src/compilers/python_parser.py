@@ -61,7 +61,7 @@ class PythonParser:
             while self.current_token.type == TokenType.NEWLINE:
                 self._advance()
 
-            if self.current_token.type == TokenType.EOF:
+            if self.current_token.type == TokenType.EOF:  # type: ignore[comparison-overlap]
                 break
 
             stmt = self._parse_statement()
@@ -187,7 +187,7 @@ class PythonParser:
         self._expect(TokenType.DEDENT)
 
         # Handle elif/else
-        orelse = []
+        orelse: list[Stmt] = []
         while self.current_token.type in (TokenType.ELIF, TokenType.ELSE):
             if self.current_token.type == TokenType.ELIF:
                 self._advance()
@@ -253,7 +253,7 @@ class PythonParser:
         while self.current_token.type != TokenType.DEDENT:
             self._skip_newlines()
 
-            if self.current_token.type == TokenType.DEDENT:
+            if self.current_token.type == TokenType.DEDENT:  # type: ignore[comparison-overlap]
                 break
 
             stmt = self._parse_statement()
@@ -408,9 +408,9 @@ class PythonParser:
                 self._advance()
                 args = []
 
-                while self.current_token.type != TokenType.RPAREN:
+                while self.current_token.type != TokenType.RPAREN:  # type: ignore[comparison-overlap]
                     args.append(self._parse_expression())
-                    if self.current_token.type == TokenType.COMMA:
+                    if self.current_token.type == TokenType.COMMA:  # type: ignore[comparison-overlap]
                         self._advance()
 
                 self._expect(TokenType.RPAREN)
@@ -452,9 +452,9 @@ class PythonParser:
             return Constant(value=value)
 
         elif self.current_token.type == TokenType.STRING:
-            value = self.current_token.value
+            str_value = self.current_token.value
             self._advance()
-            return Constant(value=value)
+            return Constant(value=str_value)
 
         elif self.current_token.type == TokenType.TRUE:
             self._advance()

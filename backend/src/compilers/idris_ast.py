@@ -151,7 +151,7 @@ class Identifier(Expression):
 
 
 class Literal(Expression):
-    def __init__(self, value):
+    def __init__(self, value: int | float | str) -> None:
         self.value = value
 
 

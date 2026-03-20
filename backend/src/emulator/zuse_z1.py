@@ -28,6 +28,7 @@ References:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import Any
 
 # Z1 word format constants
 _SIGN_BITS = 1
@@ -96,7 +97,7 @@ class ZuseFloat:
         mantissa_val = 1.0 + mantissa_int / _MANTISSA_SCALE
         value = mantissa_val * (2.0**actual_exp)
 
-        return -value if sign else value
+        return float(-value if sign else value)
 
     def __repr__(self) -> str:
         return f"ZuseFloat({self.to_float():.8g}, word=0b{self.word:022b})"
@@ -232,7 +233,7 @@ class ZuseZ1:
         self.state.program_counter += 1
         self.state.cycle_count += 1
 
-    def run(self, program: list[tuple]) -> list[float]:
+    def run(self, program: list[tuple[Any, ...]]) -> list[float]:
         """Run a simple program: list of (op, ...) tuples.
 
         Supported ops:
@@ -267,7 +268,7 @@ class ZuseZ1:
             self.state.program_counter += 1
         return results
 
-    def state_dict(self) -> dict:
+    def state_dict(self) -> dict[str, object]:
         """Return current state as a plain dict."""
         return {
             "accumulator": self.state.accumulator.to_float(),

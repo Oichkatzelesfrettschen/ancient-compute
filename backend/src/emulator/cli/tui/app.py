@@ -28,7 +28,7 @@ from textual.timer import Timer
 from textual.widgets import Footer, Header
 
 from ...analytical_engine import Engine
-from .engine_worker import make_snapshot, snapshot_as_dict
+from .engine_worker import EngineSnapshot, make_snapshot, snapshot_as_dict
 from .widgets.animation_panel import AnimationPanel
 from .widgets.card_deck_view import CardDeckView
 from .widgets.memory_inspector import MemoryInspector
@@ -40,7 +40,7 @@ _ANIMATION_FPS = 8
 _ANIMATION_INTERVAL = 1.0 / _ANIMATION_FPS
 
 
-class BabbageApp(App):
+class BabbageApp(App[None]):
     """Textual TUI dashboard for the Babbage Analytical Engine."""
 
     TITLE = "Babbage Analytical Engine Emulator"
@@ -81,15 +81,12 @@ class BabbageApp(App):
         self._frame_idx = 0
         self._anim_timer: Timer | None = None
 
+        self._load_error: str | None = None
         if program:
             try:
                 self.engine.load_program(program)
             except Exception as exc:
                 self._load_error = str(exc)
-            else:
-                self._load_error = None
-        else:
-            self._load_error = None
 
     def compose(self) -> ComposeResult:
         yield Header()
@@ -167,7 +164,7 @@ class BabbageApp(App):
         snap = make_snapshot(self.engine, last_op)
         self._apply_snapshot(snap)
 
-    def _apply_snapshot(self, snap) -> None:
+    def _apply_snapshot(self, snap: EngineSnapshot) -> None:
         """Update all widgets from a snapshot."""
         snap_dict = snapshot_as_dict(snap)
 

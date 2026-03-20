@@ -34,14 +34,14 @@ from backend.src.compilers.haskell_types import (
 class TestHaskellLexer:
     """Test Haskell lexer tokenization"""
 
-    def test_lex_empty_source(self):
+    def test_lex_empty_source(self) -> None:
         """Empty source produces only EOF token"""
         lexer = HaskellLexer("")
         tokens = lexer.tokenize()
         assert len(tokens) == 1
         assert tokens[0].type == TokenType.EOF
 
-    def test_lex_keywords(self):
+    def test_lex_keywords(self) -> None:
         """Keywords are recognized"""
         source = "let in where if then else case of do"
         lexer = HaskellLexer(source)
@@ -57,7 +57,7 @@ class TestHaskellLexer:
         assert TokenType.OF in token_types
         assert TokenType.DO in token_types
 
-    def test_lex_identifiers(self):
+    def test_lex_identifiers(self) -> None:
         """Identifiers are recognized"""
         source = "foo bar baz_123 x'"
         lexer = HaskellLexer(source)
@@ -68,7 +68,7 @@ class TestHaskellLexer:
         assert "baz_123" in identifiers
         assert "x'" in identifiers
 
-    def test_lex_numbers(self):
+    def test_lex_numbers(self) -> None:
         """Numbers (integer and float) are recognized"""
         source = "42 3.14 0 999"
         lexer = HaskellLexer(source)
@@ -79,7 +79,7 @@ class TestHaskellLexer:
         assert "0" in numbers
         assert "999" in numbers
 
-    def test_lex_strings(self):
+    def test_lex_strings(self) -> None:
         """String literals are recognized"""
         source = '"hello" "world" "with spaces"'
         lexer = HaskellLexer(source)
@@ -89,7 +89,7 @@ class TestHaskellLexer:
         assert "world" in strings
         assert "with spaces" in strings
 
-    def test_lex_operators(self):
+    def test_lex_operators(self) -> None:
         """Operators are recognized"""
         source = "-> => :: | \\ + - * / %"
         lexer = HaskellLexer(source)
@@ -106,7 +106,7 @@ class TestHaskellLexer:
         assert TokenType.SLASH in token_types
         assert TokenType.PERCENT in token_types
 
-    def test_lex_parentheses(self):
+    def test_lex_parentheses(self) -> None:
         """Parentheses and brackets recognized"""
         source = "( ) [ ] { }"
         lexer = HaskellLexer(source)
@@ -119,7 +119,7 @@ class TestHaskellLexer:
         assert TokenType.LBRACE in token_types
         assert TokenType.RBRACE in token_types
 
-    def test_lex_comments_line(self):
+    def test_lex_comments_line(self) -> None:
         """Line comments are skipped"""
         source = "foo -- this is a comment\nbar"
         lexer = HaskellLexer(source)
@@ -128,7 +128,7 @@ class TestHaskellLexer:
         assert "foo" in identifiers
         assert "bar" in identifiers
 
-    def test_lex_comments_block(self):
+    def test_lex_comments_block(self) -> None:
         """Block comments are skipped"""
         source = "foo {- block comment -} bar"
         lexer = HaskellLexer(source)
@@ -137,7 +137,7 @@ class TestHaskellLexer:
         assert "foo" in identifiers
         assert "bar" in identifiers
 
-    def test_lex_indentation(self):
+    def test_lex_indentation(self) -> None:
         """INDENT/DEDENT tokens generated for indentation changes"""
         source = "let\n  x = 1\n  y = 2\nz = 3"
         lexer = HaskellLexer(source)
@@ -157,7 +157,7 @@ class TestHaskellLexer:
 class TestHaskellParser:
     """Test Haskell parser AST construction"""
 
-    def test_parse_empty_module(self):
+    def test_parse_empty_module(self) -> None:
         """Empty module parses successfully"""
         lexer = HaskellLexer("")
         tokens = lexer.tokenize()
@@ -166,7 +166,7 @@ class TestHaskellParser:
         assert module is not None
         assert len(module.declarations) == 0
 
-    def test_parse_type_declaration(self):
+    def test_parse_type_declaration(self) -> None:
         """Type declarations parse correctly"""
         source = "foo :: Int -> Int"
         lexer = HaskellLexer(source)
@@ -175,7 +175,7 @@ class TestHaskellParser:
         module = parser.parse()
         assert len(module.declarations) == 1
 
-    def test_parse_function_definition(self):
+    def test_parse_function_definition(self) -> None:
         """Function definition parses correctly"""
         source = "square x = x * x"
         lexer = HaskellLexer(source)
@@ -187,7 +187,7 @@ class TestHaskellParser:
         assert isinstance(func, FunctionDef)
         assert func.name == "square"
 
-    def test_parse_literal_expression(self):
+    def test_parse_literal_expression(self) -> None:
         """Literal expressions parse"""
         source = "x = 42"
         lexer = HaskellLexer(source)
@@ -198,7 +198,7 @@ class TestHaskellParser:
         assert isinstance(func, FunctionDef)
         assert len(func.equations) > 0
 
-    def test_parse_binary_operation(self):
+    def test_parse_binary_operation(self) -> None:
         """Binary operations parse with correct precedence"""
         source = "x = 1 + 2 * 3"
         lexer = HaskellLexer(source)
@@ -207,7 +207,7 @@ class TestHaskellParser:
         module = parser.parse()
         assert len(module.declarations) == 1
 
-    def test_parse_lambda(self):
+    def test_parse_lambda(self) -> None:
         """Lambda expressions parse"""
         source = "f = \\x -> x + 1"
         lexer = HaskellLexer(source)
@@ -217,7 +217,7 @@ class TestHaskellParser:
         func = module.declarations[0]
         assert isinstance(func, FunctionDef)
 
-    def test_parse_let_expression(self):
+    def test_parse_let_expression(self) -> None:
         """Let expressions parse"""
         source = "f = let x = 1 in x + 2"
         lexer = HaskellLexer(source)
@@ -226,7 +226,7 @@ class TestHaskellParser:
         module = parser.parse()
         assert len(module.declarations) == 1
 
-    def test_parse_case_expression(self):
+    def test_parse_case_expression(self) -> None:
         """Case expressions parse"""
         source = "f x = case x of\n  1 -> 2\n  2 -> 3"
         lexer = HaskellLexer(source)
@@ -235,7 +235,7 @@ class TestHaskellParser:
         module = parser.parse()
         assert len(module.declarations) == 1
 
-    def test_parse_if_then_else(self):
+    def test_parse_if_then_else(self) -> None:
         """If-then-else expressions parse"""
         source = "f x = if x > 0 then 1 else -1"
         lexer = HaskellLexer(source)
@@ -244,7 +244,7 @@ class TestHaskellParser:
         module = parser.parse()
         assert len(module.declarations) == 1
 
-    def test_parse_list_literal(self):
+    def test_parse_list_literal(self) -> None:
         """List literals parse"""
         source = "xs = [1, 2, 3]"
         lexer = HaskellLexer(source)
@@ -253,7 +253,7 @@ class TestHaskellParser:
         module = parser.parse()
         assert len(module.declarations) == 1
 
-    def test_parse_tuple_literal(self):
+    def test_parse_tuple_literal(self) -> None:
         """Tuple literals parse"""
         source = "p = (1, 2, 3)"
         lexer = HaskellLexer(source)
@@ -262,7 +262,7 @@ class TestHaskellParser:
         module = parser.parse()
         assert len(module.declarations) == 1
 
-    def test_parse_function_application(self):
+    def test_parse_function_application(self) -> None:
         """Function application parses"""
         source = "result = foo bar baz"
         lexer = HaskellLexer(source)
@@ -280,36 +280,36 @@ class TestHaskellParser:
 class TestHaskellTypeSystem:
     """Test Haskell type inference and unification"""
 
-    def test_type_int(self):
+    def test_type_int(self) -> None:
         """Integer type creation"""
         t = HaskellType.int()
         assert t.kind == "int"
         assert str(t) == "int"
 
-    def test_type_float(self):
+    def test_type_float(self) -> None:
         """Float type creation"""
         t = HaskellType.float()
         assert t.kind == "float"
 
-    def test_type_string(self):
+    def test_type_string(self) -> None:
         """String type creation"""
         t = HaskellType.string()
         assert t.kind == "string"
 
-    def test_type_variable(self):
+    def test_type_variable(self) -> None:
         """Type variable creation"""
         t = HaskellType.var("a")
         assert t.is_var()
         assert t.kind == "a"
 
-    def test_type_list(self):
+    def test_type_list(self) -> None:
         """List type creation"""
         elem_type = HaskellType.int()
         t = HaskellType.list(elem_type)
         assert t.is_list()
         assert t.args[0] == elem_type
 
-    def test_type_function(self):
+    def test_type_function(self) -> None:
         """Function type creation"""
         arg_type = HaskellType.int()
         ret_type = HaskellType.int()
@@ -317,45 +317,45 @@ class TestHaskellTypeSystem:
         assert t.is_function()
         assert len(t.args) == 2
 
-    def test_infer_literal_int(self):
+    def test_infer_literal_int(self) -> None:
         """Type inference for integer literal"""
         type_system = HaskellTypeSystem()
         t = type_system.infer_literal_type(42)
         assert t == HaskellType.int()
 
-    def test_infer_literal_float(self):
+    def test_infer_literal_float(self) -> None:
         """Type inference for float literal"""
         type_system = HaskellTypeSystem()
         t = type_system.infer_literal_type(3.14)
         assert t == HaskellType.float()
 
-    def test_infer_literal_string(self):
+    def test_infer_literal_string(self) -> None:
         """Type inference for string literal"""
         type_system = HaskellTypeSystem()
         t = type_system.infer_literal_type("hello")
         assert t == HaskellType.string()
 
-    def test_infer_literal_char(self):
+    def test_infer_literal_char(self) -> None:
         """Type inference for character literal"""
         type_system = HaskellTypeSystem()
         t = type_system.infer_literal_type("x")
         assert t == HaskellType.char()
 
-    def test_unify_same_types(self):
+    def test_unify_same_types(self) -> None:
         """Unifying identical types succeeds"""
         type_system = HaskellTypeSystem()
         t1 = HaskellType.int()
         t2 = HaskellType.int()
         assert type_system.unify(t1, t2)
 
-    def test_unify_different_types_fails(self):
+    def test_unify_different_types_fails(self) -> None:
         """Unifying different types fails"""
         type_system = HaskellTypeSystem()
         t1 = HaskellType.int()
         t2 = HaskellType.float()
         assert not type_system.unify(t1, t2)
 
-    def test_unify_type_variable(self):
+    def test_unify_type_variable(self) -> None:
         """Type variable unifies with concrete type"""
         type_system = HaskellTypeSystem()
         var = HaskellType.var("a")
@@ -363,57 +363,57 @@ class TestHaskellTypeSystem:
         assert type_system.unify(var, concrete)
         assert type_system.substitution["a"] == concrete
 
-    def test_unify_function_types(self):
+    def test_unify_function_types(self) -> None:
         """Function types unify correctly"""
         type_system = HaskellTypeSystem()
         int_to_int_1 = HaskellType.function(HaskellType.int(), HaskellType.int())
         int_to_int_2 = HaskellType.function(HaskellType.int(), HaskellType.int())
         assert type_system.unify(int_to_int_1, int_to_int_2)
 
-    def test_operation_type_addition(self):
+    def test_operation_type_addition(self) -> None:
         """Operation type for addition"""
         type_system = HaskellTypeSystem()
         t = type_system.operation_type("+", HaskellType.int(), HaskellType.int())
         assert t == HaskellType.int()
 
-    def test_operation_type_comparison(self):
+    def test_operation_type_comparison(self) -> None:
         """Operation type for comparison returns bool"""
         type_system = HaskellTypeSystem()
         t = type_system.operation_type("==", HaskellType.int(), HaskellType.int())
         assert t == HaskellType.bool()
 
-    def test_operation_type_mixed_numeric(self):
+    def test_operation_type_mixed_numeric(self) -> None:
         """Mixed int and float in operation returns float"""
         type_system = HaskellTypeSystem()
         t = type_system.operation_type("+", HaskellType.int(), HaskellType.float())
         assert t == HaskellType.float()
 
-    def test_babbage_type_int(self):
+    def test_babbage_type_int(self) -> None:
         """Int maps to i64 in Babbage"""
         t = HaskellType.int()
         babbage_t = BabbageTypeMapper.to_babbage_type(t)
         assert babbage_t == "i64"
 
-    def test_babbage_type_float(self):
+    def test_babbage_type_float(self) -> None:
         """Float maps to f64 in Babbage"""
         t = HaskellType.float()
         babbage_t = BabbageTypeMapper.to_babbage_type(t)
         assert babbage_t == "f64"
 
-    def test_babbage_type_string(self):
+    def test_babbage_type_string(self) -> None:
         """String maps to i64 (pointer) in Babbage"""
         t = HaskellType.string()
         babbage_t = BabbageTypeMapper.to_babbage_type(t)
         assert babbage_t == "i64"
 
-    def test_type_environment_binding(self):
+    def test_type_environment_binding(self) -> None:
         """Type environment binds and looks up types"""
         env = TypeEnvironment()
         t = HaskellType.int()
         env.bind("x", t)
         assert env.lookup("x") == t
 
-    def test_type_environment_scoping(self):
+    def test_type_environment_scoping(self) -> None:
         """Type environment supports nested scoping"""
         parent = TypeEnvironment()
         parent.bind("x", HaskellType.int())
@@ -434,7 +434,7 @@ class TestHaskellTypeSystem:
 class TestHaskellCompilerSimple:
     """Test simple Haskell compilation cases"""
 
-    def test_compile_empty(self):
+    def test_compile_empty(self) -> None:
         """Empty source compiles"""
         compiler = HaskellCompiler(verbose=False)
         source = ""
@@ -442,63 +442,63 @@ class TestHaskellCompilerSimple:
         assert program is not None
         assert len(program.functions) == 0
 
-    def test_compile_simple_function(self):
+    def test_compile_simple_function(self) -> None:
         """Simple function definition compiles"""
         compiler = HaskellCompiler(verbose=False)
         source = "square x = x * x"
         program = compiler.compile(source)
         assert "square" in program.functions
 
-    def test_compile_literal(self):
+    def test_compile_literal(self) -> None:
         """Function returning literal compiles"""
         compiler = HaskellCompiler(verbose=False)
         source = "answer = 42"
         program = compiler.compile(source)
         assert "answer" in program.functions
 
-    def test_compile_addition(self):
+    def test_compile_addition(self) -> None:
         """Function with addition compiles"""
         compiler = HaskellCompiler(verbose=False)
         source = "add x y = x + y"
         program = compiler.compile(source)
         assert "add" in program.functions
 
-    def test_compile_subtraction(self):
+    def test_compile_subtraction(self) -> None:
         """Function with subtraction compiles"""
         compiler = HaskellCompiler(verbose=False)
         source = "sub x y = x - y"
         program = compiler.compile(source)
         assert "sub" in program.functions
 
-    def test_compile_multiplication(self):
+    def test_compile_multiplication(self) -> None:
         """Function with multiplication compiles"""
         compiler = HaskellCompiler(verbose=False)
         source = "mult x y = x * y"
         program = compiler.compile(source)
         assert "mult" in program.functions
 
-    def test_compile_negation(self):
+    def test_compile_negation(self) -> None:
         """Function with unary negation compiles"""
         compiler = HaskellCompiler(verbose=False)
         source = "negate x = -x"
         program = compiler.compile(source)
         assert "negate" in program.functions
 
-    def test_compile_lambda(self):
+    def test_compile_lambda(self) -> None:
         """Lambda expression compiles"""
         compiler = HaskellCompiler(verbose=False)
         source = "apply f x = f x"
         program = compiler.compile(source)
         assert "apply" in program.functions
 
-    def test_compile_let(self):
+    def test_compile_let(self) -> None:
         """Let expression compiles"""
         compiler = HaskellCompiler(verbose=False)
         source = "f = let x = 5 in x + 1"
         program = compiler.compile(source)
         assert "f" in program.functions
 
-    def test_compile_if_then_else(self):
+    def test_compile_if_then_else(self) -> None:
         """If-then-else expression compiles"""
         compiler = HaskellCompiler(verbose=False)
         source = "abs x = if x >= 0 then x else -x"
@@ -509,7 +509,7 @@ class TestHaskellCompilerSimple:
 class TestHaskellCompilerIntegration:
     """Test integrated Haskell compilation pipelines"""
 
-    def test_compile_multiple_functions(self):
+    def test_compile_multiple_functions(self) -> None:
         """Multiple function definitions compile together"""
         compiler = HaskellCompiler(verbose=False)
         source = """
@@ -520,35 +520,35 @@ cube x = x * x * x
         assert "square" in program.functions
         assert "cube" in program.functions
 
-    def test_compile_function_with_guards(self):
+    def test_compile_function_with_guards(self) -> None:
         """Function definition with guards compiles"""
         compiler = HaskellCompiler(verbose=False)
         source = "f x = x + 1"
         program = compiler.compile(source)
         assert "f" in program.functions
 
-    def test_compile_comparison(self):
+    def test_compile_comparison(self) -> None:
         """Comparison operators compile"""
         compiler = HaskellCompiler(verbose=False)
         source = "isZero x = x == 0"
         program = compiler.compile(source)
         assert "isZero" in program.functions
 
-    def test_compile_chained_operations(self):
+    def test_compile_chained_operations(self) -> None:
         """Chained operations compile"""
         compiler = HaskellCompiler(verbose=False)
         source = "result = 1 + 2 * 3 - 4"
         program = compiler.compile(source)
         assert "result" in program.functions
 
-    def test_compile_nested_let(self):
+    def test_compile_nested_let(self) -> None:
         """Nested let expressions compile"""
         compiler = HaskellCompiler(verbose=False)
         source = "f = let x = 1 in let y = 2 in x + y"
         program = compiler.compile(source)
         assert "f" in program.functions
 
-    def test_compile_fibonacci(self):
+    def test_compile_fibonacci(self) -> None:
         """Fibonacci function compiles"""
         compiler = HaskellCompiler(verbose=False)
         source = """
@@ -563,21 +563,21 @@ fib n = fib (n - 1) + fib (n - 2)
 class TestHaskellCompilerErrorHandling:
     """Test Haskell compiler error handling"""
 
-    def test_compile_syntax_error(self):
+    def test_compile_syntax_error(self) -> None:
         """Syntax error raises exception"""
         compiler = HaskellCompiler(verbose=False)
         source = "f = x +"  # Incomplete expression
         with pytest.raises(RuntimeError, match="Compilation error"):
             compiler.compile(source)
 
-    def test_compile_unterminated_string(self):
+    def test_compile_unterminated_string(self) -> None:
         """Unterminated string raises exception"""
         compiler = HaskellCompiler(verbose=False)
         source = 'f = "unterminated'
         with pytest.raises(RuntimeError, match="Compilation error"):
             compiler.compile(source)
 
-    def test_compile_mismatched_parens(self):
+    def test_compile_mismatched_parens(self) -> None:
         """Mismatched parentheses raise exception"""
         compiler = HaskellCompiler(verbose=False)
         source = "f = (1 + 2"
@@ -588,35 +588,35 @@ class TestHaskellCompilerErrorHandling:
 class TestHaskellCompilerEdgeCases:
     """Test Haskell compiler edge cases"""
 
-    def test_compile_empty_function(self):
+    def test_compile_empty_function(self) -> None:
         """Empty function body compiles (returns 0)"""
         compiler = HaskellCompiler(verbose=False)
         source = "f = 0"
         program = compiler.compile(source)
         assert "f" in program.functions
 
-    def test_compile_many_parameters(self):
+    def test_compile_many_parameters(self) -> None:
         """Function with many parameters compiles"""
         compiler = HaskellCompiler(verbose=False)
         source = "f a b c d e = a + b + c + d + e"
         program = compiler.compile(source)
         assert "f" in program.functions
 
-    def test_compile_deep_nesting(self):
+    def test_compile_deep_nesting(self) -> None:
         """Deeply nested expressions compile"""
         compiler = HaskellCompiler(verbose=False)
         source = "f = if (if 1 == 1 then 2 else 3) == 2 then 4 else 5"
         program = compiler.compile(source)
         assert "f" in program.functions
 
-    def test_compile_long_chain(self):
+    def test_compile_long_chain(self) -> None:
         """Long operator chain compiles"""
         compiler = HaskellCompiler(verbose=False)
         source = "f = 1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9 + 10"
         program = compiler.compile(source)
         assert "f" in program.functions
 
-    def test_compile_expression_as_statement(self):
+    def test_compile_expression_as_statement(self) -> None:
         """Standalone expression as function body"""
         compiler = HaskellCompiler(verbose=False)
         source = "f = 42"

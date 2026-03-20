@@ -139,7 +139,7 @@ class SimulationBridge:
             energy_consumed_J=s.energy_consumed_J,
         )
 
-    def physics_report(self) -> dict:
+    def physics_report(self) -> dict[str, object]:
         """Generate a summary report of the physics state."""
         s = self._engine.state
         max_cl = max(s.bearing_clearances_mm) if s.bearing_clearances_mm else 0.0

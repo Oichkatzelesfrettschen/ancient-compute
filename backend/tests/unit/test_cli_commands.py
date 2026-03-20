@@ -5,7 +5,6 @@ subprocess or filesystem side effects except for temp files.
 """
 
 import os
-import tempfile
 
 import pytest
 from click.testing import CliRunner

@@ -10,7 +10,7 @@ console = Console()
 
 @click.command("tui")
 @click.argument("program", type=click.Path(exists=True), required=False)
-def tui_cmd(program):
+def tui_cmd(program: str | None) -> None:
     """Launch the Textual TUI dashboard, optionally loading PROGRAM."""
     try:
         from ..tui.app import BabbageApp

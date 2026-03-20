@@ -6,7 +6,7 @@ from ..base_executor import BaseExecutor, ExecutionResult, ExecutionStatus
 class JavaService(BaseExecutor):
     """Java language service executor"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__("java", "ancient-compute-java", timeout=15)
 
     def _get_command(self, code_path: str) -> str:

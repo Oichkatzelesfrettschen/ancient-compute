@@ -47,7 +47,7 @@ class Lesson(Base):
     slug = Column(String(100), index=True, nullable=False)
     title = Column(String(255), nullable=False)
 
-    lesson_type = Column(Enum(LessonType), nullable=False, index=True)
+    lesson_type = Column(Enum(LessonType), nullable=False, index=True)  # type: ignore[var-annotated]
     sequence_order = Column(Integer, nullable=False)
 
     # Content
@@ -56,7 +56,7 @@ class Lesson(Base):
     content_json = Column(JSON, nullable=True)  # Structured data for interactive/coding lessons
 
     # For coding lessons
-    language = Column(Enum(SupportedLanguage), nullable=True)
+    language = Column(Enum(SupportedLanguage), nullable=True)  # type: ignore[var-annotated]
     starter_code = Column(Text, nullable=True)
     solution_code = Column(Text, nullable=True)
     test_cases = Column(JSON, nullable=True)
@@ -127,7 +127,7 @@ class CodeSubmission(Base):
     )
 
     submitted_code = Column(Text, nullable=False)
-    language = Column(Enum(SupportedLanguage), nullable=False)
+    language = Column(Enum(SupportedLanguage), nullable=False)  # type: ignore[var-annotated]
 
     # Execution results
     passed_tests = Column(Integer, default=0, nullable=False)

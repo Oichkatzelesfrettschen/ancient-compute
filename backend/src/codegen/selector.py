@@ -12,6 +12,7 @@ Key responsibility:
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Any
 
 from backend.src.codegen.regalloc import AllocationMap
 from backend.src.ir_types import (
@@ -350,7 +351,7 @@ class InstructionSelector:
 
         return result
 
-    def select_terminator(self, term, label_map: dict) -> list[AsmInstruction]:
+    def select_terminator(self, term, label_map: dict[str, Any]) -> list[AsmInstruction]:  # type: ignore[no-untyped-def]
         """Select for block terminator"""
         result: list[AsmInstruction] = []
 

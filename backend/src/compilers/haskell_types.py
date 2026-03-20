@@ -11,6 +11,7 @@ Supports:
 
 from __future__ import annotations
 
+import builtins
 from dataclasses import dataclass
 from typing import Any
 
@@ -23,7 +24,7 @@ from typing import Any
 class HaskellType:
     """Represents a Haskell type"""
 
-    def __init__(self, kind: str, args: list | None = None) -> None:
+    def __init__(self, kind: str, args: builtins.list[HaskellType] | None = None) -> None:
         """
         Create a Haskell type
 
@@ -53,7 +54,7 @@ class HaskellType:
             return f"HaskellType({self.kind!r})"
         return f"HaskellType({self.kind!r}, {self.args!r})"
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: builtins.object) -> builtins.bool:
         if not isinstance(other, HaskellType):
             return False
         if self.kind != other.kind:
@@ -95,7 +96,7 @@ class HaskellType:
         return HaskellType("List", [elem_type])
 
     @staticmethod
-    def tuple(elem_types: list) -> HaskellType:
+    def tuple(elem_types: builtins.list[HaskellType]) -> HaskellType:
         return HaskellType("Tuple", elem_types)
 
     @staticmethod
@@ -103,21 +104,21 @@ class HaskellType:
         """Create function type: arg -> return"""
         return HaskellType("->", [arg_type, return_type])
 
-    def is_polymorphic(self) -> bool:
+    def is_polymorphic(self) -> builtins.bool:
         """Check if type contains type variables"""
         if len(self.kind) == 1 and self.kind.islower():
             return True
         return any(arg.is_polymorphic() for arg in self.args)
 
-    def is_var(self) -> bool:
+    def is_var(self) -> builtins.bool:
         """Check if this is a type variable"""
         return len(self.kind) == 1 and self.kind.islower() and len(self.args) == 0
 
-    def is_function(self) -> bool:
+    def is_function(self) -> builtins.bool:
         """Check if this is a function type"""
         return self.kind == "->"
 
-    def is_list(self) -> bool:
+    def is_list(self) -> builtins.bool:
         """Check if this is a list type"""
         return self.kind == "List"
 

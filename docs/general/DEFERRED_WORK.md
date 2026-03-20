@@ -194,18 +194,11 @@ the interaction model (keybindings, animation frame rate) is stable.
 
 ### `ancient-compute` Entry Point (system-wide install)
 
-**WHY**: The `ancient-compute` CLI entry point is registered in
-`backend/setup.py`.  However the project is not installed as a package in
-the development environment -- the backend runs via `PYTHONPATH` and
-`uvicorn`, not `pip install -e .`.
+**RESOLVED**: 2026-03-19 (Third Debt Resolution Phase 3)
 
-**WHAT**: `backend/setup.py` declares:
-  `ancient-compute = backend.src.emulator.cli.app:cli`
-Running `ancient-compute` from a terminal requires `pip install -e backend/`
-from the project root.
-
-**WHEN**: Activate as part of onboarding documentation; document the
-`pip install -e backend/` step in `docs/general/CLAUDE.md` dev setup.
+`make setup` now runs `pip install -e .` from the backend directory, so the
+`ancient-compute` CLI entry point is available system-wide after running
+`make setup`.  No further action required.
 
 ---
 
@@ -225,34 +218,40 @@ desktop-focused use case or interactive demo mode.
 
 ### Opcode-Coupled Physics Simulation (Note G with evolving physics)
 
-**WHY**: The simulation engine (`backend/src/emulator/simulation/`) supports
-physics-coupled execution but the coupling is not exercised in the Note G
-or Fourmilab deck runners.  Wiring physics evolution to every opcode step
-requires careful timestep management.
+**PARTIALLY RESOLVED**: 2026-03-19 (Fourth Debt Resolution Phase 3)
 
-**WHAT**: `SimulationBridge` in `simulation/bridge.py` exists.  The
-`run_fourmilab_deck` and `run_note_*` functions use plain `Engine()` without
-a `physical_engine`.
+`ancient-compute run --physics` now wires `SimulationBridge` to the `Engine`
+for all `.basm` programs, advancing the physics model per opcode and printing
+a full physics report (temperature, shaft deflection, lubrication regime,
+energy) after execution.
 
-**WHEN**: Re-activate as a "slow mode" flag on `run_fourmilab_deck` and the
-CLI `run` command when the physics validation suite (35 dimension checks +
-7 MC checks) is passing with the coupled timestep.
+**STILL DEFERRED**: The `deck --physics` path (Note G `run_note_g_exact`)
+uses a state-dict execution loop, not the `Engine` class, so `SimulationBridge`
+cannot intercept its opcodes.  The deck command prints an informational message
+noting that full physics coupling for the deck runner is deferred.
+
+**WHEN**: Re-activate the deck physics path when `run_note_g_exact` is
+refactored to use `Engine` with `instruction_cards` (tracked under Gate 2
+simulation integration).
 
 ---
 
 ## Code Quality
 
-### mypy: 737 errors across 98 files
+### mypy: ~974 errors across 118 files
 
 **WHY**: The mypy error count is too large for a single debt resolution cycle.
 Each module requires individual review to add correct type annotations without
 changing runtime behavior.
 
-**WHAT**: `mypy --strict backend/src/` reports ~737 errors.  The verify target
-now includes a non-blocking mypy summary to track progress.
+**WHAT**: `cd backend && mypy src/ --strict --ignore-missing-imports` reports
+~974 errors in 118 files (updated 2026-03-19; was 737 before `explicit_package_bases`
+and additional test files were added).  The verify target now includes a
+non-blocking mypy summary to track progress.
 
-**WHEN**: Dedicate a full sprint to type annotation.  Start with the most-imported
-modules (types.py, materials.py, analytical_engine.py) and expand outward.
+**WHEN**: Dedicate sprint(s) to type annotation.  Fourth Debt Resolution Sprints
+A-F target: physics/types, analytical_engine/barrels, CLI/TUI, compilers,
+services/API, and attr-defined/assignment/no-any-return cleanup.
 
 ---
 
@@ -272,14 +271,17 @@ line-too-long: 109 instances, E702 multiple-statements: 142 instances).
 
 ### Test coverage: docker_manager, caches, CLI/TUI
 
-**WHY**: These modules have zero or near-zero test coverage.  docker_manager
-requires a running Docker daemon; execution_cache/query_cache require Redis;
-CLI/TUI require interactive terminal or Textual test harness.
+**PARTIALLY RESOLVED**: 2026-03-19 (Fourth Debt Resolution Phase 5)
 
-**WHAT**: Untested modules: `docker_manager.py`, `execution_cache.py`,
-`query_cache.py`, `rate_limiting.py`, `metrics.py`, `cli/app.py`, `cli/tui/`.
+CLI command coverage added via `tests/unit/test_cli_commands.py` (15 tests)
+and assembler coverage via `tests/unit/test_cli_assembler.py` (21 tests).
+`SimulationBridge` covered by `tests/unit/test_simulation_bridge.py` (21 tests).
 
-**WHEN**: After API stabilization (post-Gate 2).  CLI/TUI tests should use
+**STILL DEFERRED**: `docker_manager.py` requires a running Docker daemon;
+`execution_cache.py`/`query_cache.py` require Redis; `rate_limiting.py`,
+`metrics.py`, and `cli/tui/` require integration test infrastructure.
+
+**WHEN**: After API stabilization (post-Gate 2).  TUI tests should use
 Textual's built-in test framework (`textual.testing`).
 
 ---
@@ -295,4 +297,4 @@ Textual's built-in test framework (`textual.testing`).
 
 ---
 
-*Last validated: 2026-03-19 (3rd Debt Resolution: mypy/ruff/coverage entries added)*
+*Last validated: 2026-03-19 (4th Debt Resolution: entry-point resolved, physics coupling partial, mypy count updated, CLI coverage partial)*

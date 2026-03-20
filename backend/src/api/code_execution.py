@@ -94,7 +94,7 @@ async def execute_code(
     request: ExecutionRequest,
     db: Session = Depends(get_db),
     current_user: UserResponse = Depends(get_current_user),
-):
+) -> Any:
     """
     Execute code in a sandboxed environment.
 
@@ -149,7 +149,7 @@ async def execute_code(
 
 
 @router.get("/languages")
-async def get_supported_languages():
+async def get_supported_languages() -> Any:
     """
     Get list of supported programming languages.
 
@@ -162,7 +162,7 @@ async def get_supported_languages():
 
 
 @router.get("/health")
-async def execution_service_health():
+async def execution_service_health() -> Any:
     """Health check for code execution service"""
     summary = language_status_summary()
     return {

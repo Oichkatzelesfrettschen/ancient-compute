@@ -17,13 +17,13 @@ class PerformanceMetrics:
     total_cycles: int = 0
     instruction_counts: dict[str, int] = field(default_factory=dict)
     memory_access_counts: dict[int, int] = field(default_factory=dict)
-    branch_stats: dict[str, dict[str, int]] = field(
+    branch_stats: dict[str, int] = field(
         default_factory=lambda: {"taken": 0, "not_taken": 0}
     )
 
 
 class PerformanceAnalyzer:
-    def __init__(self, adapter):
+    def __init__(self, adapter: Any) -> None:
         self.adapter = adapter
         self.metrics = PerformanceMetrics()
         self.history: list[dict[str, Any]] = []
@@ -52,7 +52,8 @@ class PerformanceAnalyzer:
         most_used_instr = None
         if self.metrics.instruction_counts:
             most_used_instr = max(
-                self.metrics.instruction_counts, key=self.metrics.instruction_counts.get
+                self.metrics.instruction_counts,
+                key=lambda k: self.metrics.instruction_counts.get(k, 0),
             )
 
         hot_memory = []

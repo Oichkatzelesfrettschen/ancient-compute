@@ -17,7 +17,7 @@ console = Console()
     "--output", "-o", type=click.Path(), default=None, help="Write trace to FILE instead of stdout."
 )
 @click.option("--format", "fmt", type=click.Choice(["json", "table"]), default="table")
-def trace_cmd(program, output, fmt):
+def trace_cmd(program: str, output: str | None, fmt: str) -> None:
     """Run PROGRAM and export its execution trace."""
     engine = Engine()
 

@@ -251,6 +251,10 @@ class JavaTypeSystem:
         if isinstance(t1, ReferenceType) and isinstance(t2, ReferenceType):
             if t1.name != t2.name:
                 return False
+            if t1.type_args is None and t2.type_args is None:
+                return True
+            if t1.type_args is None or t2.type_args is None:
+                return False
             if len(t1.type_args) != len(t2.type_args):
                 return False
             return all(self._types_equal(a1, a2) for a1, a2 in zip(t1.type_args, t2.type_args))

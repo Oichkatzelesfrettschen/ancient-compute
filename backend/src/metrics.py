@@ -175,7 +175,7 @@ class ExecutionContext:
 
     def __init__(self, language: str):
         self.language = language
-        self.start_time = None
+        self.start_time: float | None = None
         self.status = "error"  # Default to error, mark success explicitly
 
     async def __aenter__(self):
@@ -184,7 +184,7 @@ class ExecutionContext:
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        duration = time.time() - self.start_time
+        duration = time.time() - (self.start_time or 0.0)
         active_executions.labels(language=self.language).dec()
 
         if exc_type is not None:

@@ -8,6 +8,7 @@ code submissions. Uses content-addressable hashing for cache key generation.
 import hashlib
 import time
 from dataclasses import dataclass
+from typing import Any
 
 from .base_executor import ExecutionResult, ExecutionStatus
 
@@ -139,7 +140,7 @@ class ExecutionCache:
             del self._cache[key]
         return initial_size - len(self._cache)
 
-    def get_stats(self) -> dict[str, any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get cache statistics."""
         total_requests = self.hits + self.misses
         hit_rate = self.hits / total_requests if total_requests > 0 else 0

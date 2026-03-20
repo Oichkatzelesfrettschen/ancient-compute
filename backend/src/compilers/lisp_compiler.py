@@ -1,5 +1,7 @@
 # Ancient Compute - LISP Compiler
 
+from typing import Any
+
 from ..ir_types import (
     BranchTerminator,
     Constant,
@@ -12,9 +14,9 @@ from .lisp_ast import ASTNode, Number, SExpression, String, Symbol
 
 
 class LispCompiler:
-    def __init__(self):
+    def __init__(self) -> None:
         self.program = Program()
-        self.builder: IRBuilder = None
+        self.builder: IRBuilder | None = None
         self.tmp_counter = 0
 
     def compile(self, ast: ASTNode) -> Program:
@@ -24,7 +26,7 @@ class LispCompiler:
             self._compile_atom(ast)
         return self.program
 
-    def _compile_sexpression(self, sexp: SExpression):
+    def _compile_sexpression(self, sexp: SExpression) -> Any:
         if not sexp.children:
             return None
 
@@ -44,9 +46,11 @@ class LispCompiler:
             # Handle ((lambda ...) args)
             return self._compile_function_call(sexp)
 
-    def _compile_defun(self, sexp: SExpression):
+    def _compile_defun(self, sexp: SExpression) -> None:
+        assert isinstance(sexp.children[1], Symbol)
         func_name = sexp.children[1].value
-        params = [p.value for p in sexp.children[2].children]
+        assert isinstance(sexp.children[2], SExpression)
+        params = [p.value for p in sexp.children[2].children]  # type: ignore[attr-defined]
         body = sexp.children[3:]
 
         self.builder = IRBuilder(func_name, params)
@@ -60,10 +64,12 @@ class LispCompiler:
         self.builder.emit_return(last_result)
         self.program.add_function(self.builder.finalize())
 
-    def _compile_arithmetic(self, sexp: SExpression):
+    def _compile_arithmetic(self, sexp: SExpression) -> Any:
+        assert self.builder is not None
         op_map = {"+": "add", "-": "sub", "*": "mul", "/": "div"}
+        assert isinstance(sexp.children[0], Symbol)
         op_sym = sexp.children[0].value
-        op = op_map.get(op_sym)
+        op = op_map.get(op_sym, op_sym)
         args = sexp.children[1:]
 
         # IR currently supports binary ops. Lisp supports n-ary.
@@ -82,7 +88,7 @@ class LispCompiler:
 
         return current_val
 
-    def _compile_expression(self, expr):
+    def _compile_expression(self, expr: object) -> Any:
         if isinstance(expr, Number):
             return Constant(expr.value)
         elif isinstance(expr, Symbol):
@@ -96,12 +102,14 @@ class LispCompiler:
             str_hash = abs(hash(expr.value)) % (10**50)
             return Constant(str_hash)
 
-    def _compile_if(self, sexp: SExpression):
+    def _compile_if(self, sexp: SExpression) -> Any:
         # (if cond then else)
         condition = sexp.children[1]
         then_branch = sexp.children[2]
         else_branch = sexp.children[3] if len(sexp.children) > 3 else Number(0)
 
+        assert self.builder is not None
+        assert self.builder.current_block is not None
         entry_block = self.builder.current_block
 
         # Compile condition
@@ -140,8 +148,9 @@ class LispCompiler:
         self.builder.current_block = merge_block
         return VariableValue(result_var)
 
-    def _compile_let(self, sexp: SExpression):
+    def _compile_let(self, sexp: SExpression) -> Any:
         # (let ((var val) ...) body...)
+        assert isinstance(sexp.children[1], SExpression)
         bindings = sexp.children[1].children
         body = sexp.children[2:]
 
@@ -150,10 +159,13 @@ class LispCompiler:
 
         for binding in bindings:
             # binding is SExpression(Symbol(var), Expr(val))
+            assert isinstance(binding, SExpression)
+            assert isinstance(binding.children[0], Symbol)
             var_name = binding.children[0].value
             val_expr = binding.children[1]
 
             val_compiled = self._compile_expression(val_expr)
+            assert self.builder is not None
             self.builder.function.local_variables[var_name] = IRType.DEC50
             self.builder.emit_assignment(var_name, val_compiled)
 
@@ -163,7 +175,9 @@ class LispCompiler:
 
         return last_result
 
-    def _compile_function_call(self, sexp: SExpression):
+    def _compile_function_call(self, sexp: SExpression) -> Any:
+        assert self.builder is not None
+        assert isinstance(sexp.children[0], (Symbol, String))
         func_name = sexp.children[0].value
         args = [self._compile_expression(arg) for arg in sexp.children[1:]]
 
@@ -172,10 +186,10 @@ class LispCompiler:
 
         return VariableValue(target)
 
-    def _compile_atom(self, atom):
+    def _compile_atom(self, atom: object) -> None:
         # Top level atom? probably just return it if we are evaluating
         pass
 
-    def _new_tmp(self):
+    def _new_tmp(self) -> str:
         self.tmp_counter += 1
         return f"tmp_{self.tmp_counter}"

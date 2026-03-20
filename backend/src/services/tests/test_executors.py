@@ -10,12 +10,12 @@ from ..base_executor import ExecutionStatus
 
 @pytest.mark.asyncio
 @pytest.mark.skipif(
-    not pytest.config.getoption("--run-docker", default=False),
+    not pytest.config.getoption("--run-docker", default=False),  # type: ignore[attr-defined]
     reason="Docker tests require --run-docker flag",
 )
-async def test_c_hello_world():
+async def test_c_hello_world() -> None:
     """Test C hello world execution"""
-    from ..languages import CExecutor
+    from ..docker_executor import CExecutor
 
     executor = CExecutor()
     code = """
@@ -31,9 +31,9 @@ int main() {
 
 
 @pytest.mark.asyncio
-async def test_c_security_violation():
+async def test_c_security_violation() -> None:
     """Test C security violation detection"""
-    from ..languages import CExecutor
+    from ..docker_executor import CExecutor
 
     executor = CExecutor()
     code = """
@@ -49,9 +49,9 @@ int main() {
 
 
 @pytest.mark.asyncio
-async def test_python_security_violation():
+async def test_python_security_violation() -> None:
     """Test Python security violation detection"""
-    from ..languages import PythonExecutor
+    from ..docker_executor import PythonExecutor
 
     executor = PythonExecutor()
     code = """
@@ -63,7 +63,7 @@ print("Should not execute")
     assert "os" in result.stderr.lower()
 
 
-def test_get_executor():
+def test_get_executor() -> None:
     """Test executor factory function"""
     from ..languages import get_executor
 
@@ -79,7 +79,7 @@ def test_get_executor():
     assert invalid_executor is None
 
 
-def test_resource_limits():
+def test_resource_limits() -> None:
     """Test resource limit configuration"""
     from ..security.resource_limits import get_resource_limit
 
@@ -93,9 +93,9 @@ def test_resource_limits():
     assert python_limits.timeout_seconds == 5
 
 
-def test_source_filenames():
+def test_source_filenames() -> None:
     """Test source filename generation"""
-    from ..languages import CExecutor, HaskellExecutor, PythonExecutor
+    from ..docker_executor import CExecutor, HaskellExecutor, PythonExecutor
 
     assert CExecutor()._get_source_filename() == "main.c"
     assert PythonExecutor()._get_source_filename() == "main.py"

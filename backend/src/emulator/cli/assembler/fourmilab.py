@@ -30,6 +30,7 @@ Translation strategy:
 
 import re
 from dataclasses import dataclass
+from typing import Any
 
 from ...analytical_engine import Instruction
 
@@ -51,7 +52,7 @@ class FourmilabCard:
     line_num: int
     raw: str
     kind: str  # 'number', 'load', 'stor', 'op', 'branch', 'print', 'halt', 'comment'
-    payload: object  # kind-specific data
+    payload: Any  # kind-specific data: tuple[int,int], tuple[int,bool], str, or None
 
 
 def parse_fourmilab_source(source: str) -> list[FourmilabCard]:

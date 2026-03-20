@@ -5,10 +5,15 @@ Provides a unified interface for the Debugger to interact with different
 mechanical and analytical engines (DE2, AE, Curta).
 """
 
-from abc import ABC, abstractmethod
-from typing import Any
+from __future__ import annotations
 
-from .timing import MechanicalPhase
+from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING, Any
+
+from .types import MechanicalPhase
+
+if TYPE_CHECKING:
+    from .analytical_engine import Engine
 
 
 class MachineAdapter(ABC):
@@ -47,13 +52,13 @@ class DEMachineAdapter(MachineAdapter):
         self.machine = machine
 
     def get_cycle_count(self) -> int:
-        return self.machine.cycle_count
+        return int(self.machine.cycle_count)
 
     def get_current_phase(self) -> MechanicalPhase | None:
-        return self.machine.timing.phase
+        return self.machine.timing.phase  # type: ignore[no-any-return]
 
     def get_column_values(self) -> list[int]:
-        return self.machine.get_column_values()
+        return [int(v) for v in self.machine.get_column_values()]
 
     def get_register_values(self) -> dict[str, Any]:
         return {k: v.to_decimal() for k, v in self.machine.analytical_engine.registers.items()}
@@ -69,7 +74,7 @@ class DEMachineAdapter(MachineAdapter):
 
 
 class AEMachineAdapter(MachineAdapter):
-    def __init__(self, engine):
+    def __init__(self, engine: Engine) -> None:
         self.engine = engine
 
     def get_cycle_count(self) -> int:
@@ -222,7 +227,7 @@ class ZuseZ1Adapter(MachineAdapter):
         self.machine = machine
 
     def get_cycle_count(self) -> int:
-        return self.machine.state.program_counter
+        return int(self.machine.state.program_counter)
 
     def get_current_phase(self) -> MechanicalPhase | None:
         return None
@@ -261,7 +266,7 @@ class CurtaAdapter(MachineAdapter):
         return None
 
     def get_column_values(self) -> list[int]:
-        return self.curta.sliders
+        return [int(v) for v in self.curta.sliders]
 
     def get_register_values(self) -> dict[str, Any]:
         return {

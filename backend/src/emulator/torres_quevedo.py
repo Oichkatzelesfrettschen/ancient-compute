@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass, field
+from typing import Any
 
 _MANTISSA_DIGITS = 8
 _EXPONENT_DIGITS = 2
@@ -198,7 +199,7 @@ class TorresQuevedo:
         self.state.program_pointer += 1
         self.state.cycle_count += 1
 
-    def state_dict(self) -> dict:
+    def state_dict(self) -> dict[str, object]:
         """Return current state as a plain dict."""
         return {
             "registers": [r.to_float() for r in self.state.registers],
@@ -206,7 +207,7 @@ class TorresQuevedo:
             "typewriter_output": list(self.state.typewriter_output),
         }
 
-    def run(self, program: list[tuple]) -> list[FloatingPointNumber]:
+    def run(self, program: list[tuple[Any, ...]]) -> list[FloatingPointNumber]:
         """Run a simple program: list of (op, r1, r2, dest) tuples."""
         results = []
         for instr in program:

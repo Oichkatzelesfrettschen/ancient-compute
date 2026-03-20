@@ -37,9 +37,9 @@ class ReferenceType(Type):
     """Reference type: class name, interface"""
 
     name: str
-    type_args: list[Type] = None
+    type_args: list[Type] | None = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if self.type_args is None:
             self.type_args = []
 
@@ -57,9 +57,9 @@ class TypeParameter(Type):
     """Type parameter: T, U, K, V"""
 
     name: str
-    bounds: list[Type] = None
+    bounds: list[Type] | None = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if self.bounds is None:
             self.bounds = []
 

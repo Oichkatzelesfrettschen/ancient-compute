@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass
+from typing import Any
 
 from backend.src.compilers.python_ast import (
     Assign,
@@ -146,6 +147,7 @@ class PythonCompiler:
 
     def _analyze_module(self, module: Module) -> None:
         """First pass: collect all declarations and build symbol table"""
+        assert self.symbol_table is not None
         for stmt in module.body:
             if isinstance(stmt, FunctionDef):
                 self.symbol_table.define(
@@ -165,6 +167,8 @@ class PythonCompiler:
 
     def _compile_function(self, func_def: FunctionDef) -> Function:
         """Compile function definition"""
+        assert self.builder is not None
+        assert self.symbol_table is not None
         if self.verbose:
             print(f"[PYTHON COMPILER] Compiling function '{func_def.name}'...")
 
@@ -197,6 +201,7 @@ class PythonCompiler:
 
     def _compile_statement(self, stmt: Stmt, block: BasicBlock) -> None:
         """Compile statement to IR"""
+        assert self.builder is not None
         if isinstance(stmt, Assign):
             self._compile_assign(stmt, block)
 
@@ -228,6 +233,8 @@ class PythonCompiler:
 
     def _compile_assign(self, stmt: Assign, block: BasicBlock) -> None:
         """Compile assignment"""
+        assert self.builder is not None
+        assert self.symbol_table is not None
         value_operand = self._compile_expression(stmt.value, block)
 
         # Define/update symbol
@@ -241,12 +248,14 @@ class PythonCompiler:
             self.symbol_table.define(stmt.target, inferred_type, scope="local")
 
         # Emit assignment
+        assert self.builder.current_block is not None
         self.builder.current_block.instructions.append(
             Assignment(target=stmt.target, source=value_operand)
         )
 
     def _compile_return(self, stmt: Return, block: BasicBlock) -> None:
         """Compile return statement"""
+        assert self.builder is not None
         if stmt.value:
             value_operand = self._compile_expression(stmt.value, block)
             self.builder.emit_return(value_operand)
@@ -255,6 +264,7 @@ class PythonCompiler:
 
     def _compile_if(self, stmt: If, block: BasicBlock) -> None:
         """Compile if statement"""
+        assert self.builder is not None
         test_operand = self._compile_expression(stmt.test, block)
 
         true_label = self._gen_label("if_true")
@@ -262,6 +272,7 @@ class PythonCompiler:
         end_label = self._gen_label("if_end")
 
         # Emit branch
+        assert self.builder.current_block is not None
         self.builder.current_block.terminator = BranchTerminator(
             condition="nonzero",
             operand1=test_operand,
@@ -294,6 +305,7 @@ class PythonCompiler:
 
     def _compile_while(self, stmt: While, block: BasicBlock) -> None:
         """Compile while loop"""
+        assert self.builder is not None
         loop_label = self._gen_label("while_loop")
         end_label = self._gen_label("while_end")
 
@@ -305,6 +317,7 @@ class PythonCompiler:
         test_operand = self._compile_expression(stmt.test, loop_block)
 
         body_label = self._gen_label("while_body")
+        assert self.builder.current_block is not None
         self.builder.current_block.terminator = BranchTerminator(
             condition="nonzero",
             operand1=test_operand,
@@ -337,6 +350,8 @@ class PythonCompiler:
         - for i in range(n) / range(start, stop) / range(start, stop, step)
         - for x in var: desugared as range(len(var)) with x = var[i]
         """
+        assert self.builder is not None
+        assert self.symbol_table is not None
         if isinstance(stmt.iter, Name):
             # for x in var: -> for __i in range(len(var)): x = var[__i]; body
             iter_var = stmt.iter.id
@@ -358,7 +373,7 @@ class PythonCompiler:
                     target=cmp_temp, op="<", operand1=VariableValue(idx_var), operand2=len_operand
                 )
             )
-            self.builder.emit_branch(VariableValue(cmp_temp), body_label, end_label)
+            self.builder.emit_branch("nonzero", VariableValue(cmp_temp), None, body_label, end_label)
 
             body_block = self.builder.new_block(body_label)
             elem_temp = self._gen_temp("for_elem")
@@ -431,6 +446,7 @@ class PythonCompiler:
 
         # Initialize loop counter
         counter_temp = self._gen_temp("for_counter")
+        assert self.builder.current_block is not None
         self.builder.current_block.instructions.append(
             Assignment(target=counter_temp, source=start_operand)
         )
@@ -494,7 +510,7 @@ class PythonCompiler:
         # End block
         self.builder.current_block = self.builder.new_block(end_label)
 
-    def _compile_expression(self, expr: Expr, block: BasicBlock):
+    def _compile_expression(self, expr: Expr, block: BasicBlock) -> Any:
         """Compile expression and return operand"""
         if isinstance(expr, Constant):
             if expr.value is None:
@@ -525,7 +541,7 @@ class PythonCompiler:
         else:
             raise NotImplementedError(f"Expression type not supported: {type(expr).__name__}")
 
-    def _compile_binary_op(self, expr: BinOp, block: BasicBlock):
+    def _compile_binary_op(self, expr: BinOp, block: BasicBlock) -> Any:
         """Compile binary operation"""
         left_operand = self._compile_expression(expr.left, block)
         right_operand = self._compile_expression(expr.right, block)
@@ -558,7 +574,7 @@ class PythonCompiler:
 
         return VariableValue(temp)
 
-    def _compile_unary_op(self, expr: UnaryOp, block: BasicBlock):
+    def _compile_unary_op(self, expr: UnaryOp, block: BasicBlock) -> Any:
         """Compile unary operation"""
         operand = self._compile_expression(expr.operand, block)
 
@@ -575,7 +591,7 @@ class PythonCompiler:
 
         return VariableValue(temp)
 
-    def _compile_call(self, expr: Call, block: BasicBlock):
+    def _compile_call(self, expr: Call, block: BasicBlock) -> Any:
         """Compile function call"""
         args = [self._compile_expression(arg, block) for arg in expr.args]
 
@@ -584,7 +600,7 @@ class PythonCompiler:
 
         return VariableValue(temp)
 
-    def _compile_subscript(self, expr: Subscript, block: BasicBlock):
+    def _compile_subscript(self, expr: Subscript, block: BasicBlock) -> Any:
         """Compile array subscript: base[index] -> load(base + index)"""
         base_operand = self._compile_expression(expr.value, block)
         index_operand = self._compile_expression(expr.index, block)
@@ -598,7 +614,7 @@ class PythonCompiler:
         block.instructions.append(Load(target=temp, address=VariableValue(addr_temp)))
         return VariableValue(temp)
 
-    def _compile_attribute(self, expr: Attribute, block: BasicBlock):
+    def _compile_attribute(self, expr: Attribute, block: BasicBlock) -> Any:
         """Compile attribute access: value.attr -> load(value + field_offset)"""
         base_operand = self._compile_expression(expr.value, block)
         field_offset = IRConstant(hash(expr.attr) % 2000)

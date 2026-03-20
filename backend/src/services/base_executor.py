@@ -13,9 +13,9 @@ from typing import Any, TypedDict
 logger = logging.getLogger(__name__)
 
 try:
-    import docker  # type: ignore[import-not-found]
+    import docker
 except ImportError:  # pragma: no cover - Docker is optional in local environments
-    docker = None  # type: ignore[assignment]  # noqa: N816
+    docker = None  # noqa: N816
 
 
 class ExecutionStatus(Enum):
@@ -91,7 +91,7 @@ class BaseExecutor:
             return
         try:
             self.client.images.get(self.docker_image)
-        except docker.errors.ImageNotFound:  # type: ignore[attr-defined]
+        except docker.errors.ImageNotFound:
             logger.info("Building %s...", self.docker_image)
             self._build_image()
 
@@ -175,7 +175,7 @@ class BaseExecutor:
 
             try:
                 container = self.client.containers.run(**self._get_container_config(tmpdir))
-            except docker.errors.ImageNotFound:  # type: ignore[attr-defined]
+            except docker.errors.ImageNotFound:
                 return ExecutionResult(
                     status=ExecutionStatus.RUNTIME_ERROR,
                     stdout="",
@@ -186,7 +186,7 @@ class BaseExecutor:
                     ),
                     execution_time=time.time() - start_time,
                 )
-            except docker.errors.APIError as exc:  # type: ignore[attr-defined]
+            except docker.errors.APIError as exc:
                 return ExecutionResult(
                     status=ExecutionStatus.RUNTIME_ERROR,
                     stdout="",
@@ -243,7 +243,8 @@ class BaseExecutor:
             loop.run_in_executor(None, container.wait),
             timeout=self.timeout,
         )
-        return result.get("StatusCode", -1)
+        status_code = result.get("StatusCode", -1)
+        return int(status_code)
 
     def _get_source_filename(self) -> str:
         """Get source filename with appropriate extension"""

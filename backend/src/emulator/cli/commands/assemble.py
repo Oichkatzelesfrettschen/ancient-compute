@@ -17,7 +17,7 @@ console = Console()
     "--output", "-o", type=click.Path(), default=None, help="Write assembled output to FILE."
 )
 @click.option("--format", "fmt", type=click.Choice(["text", "json"]), default="text")
-def assemble_cmd(input_file, output, fmt):
+def assemble_cmd(input_file: str, output: str | None, fmt: str) -> None:
     """Assemble INPUT_FILE and display the instruction list."""
     try:
         instructions = assemble_file(input_file)

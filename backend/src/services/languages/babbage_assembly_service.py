@@ -143,7 +143,7 @@ class BabbageAssemblyService:
 if __name__ == "__main__":
     import asyncio
 
-    async def test_assembly():
+    async def test_assembly() -> None:
         """Test Babbage Assembly Service."""
         service = BabbageAssemblyService(timeout=10)
 

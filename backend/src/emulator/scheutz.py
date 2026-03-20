@@ -114,7 +114,7 @@ class ScheutzDifferenceEngine:
             results.append(self.crank())
         return results
 
-    def state_dict(self) -> dict:
+    def state_dict(self) -> dict[str, object]:
         """Return current state as a plain dict."""
         return {
             "registers": [float(r) for r in self.state.registers],

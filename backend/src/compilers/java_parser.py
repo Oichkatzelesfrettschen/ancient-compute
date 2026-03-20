@@ -72,7 +72,7 @@ class JavaParser:
         """Parse entire Java source file"""
         package_decl = None
         import_decls = []
-        type_decls = []
+        type_decls: list[ClassDecl | InterfaceDecl | EnumDecl | AnnotationDecl] = []
 
         if self._match(TokenType.PACKAGE):
             package_decl = self._parse_package_decl()
@@ -93,10 +93,10 @@ class JavaParser:
                 TokenType.ENUM,
                 TokenType.AT,
             ):
-                type_decls.append(self._parse_type_decl())
+                type_decls.append(self._parse_type_decl())  # type: ignore[arg-type]
             else:
                 if self._match(TokenType.CLASS, TokenType.INTERFACE, TokenType.ENUM):
-                    type_decls.append(self._parse_type_decl())
+                    type_decls.append(self._parse_type_decl())  # type: ignore[arg-type]
                 else:
                     self._advance()
 
@@ -173,11 +173,11 @@ class JavaParser:
             while self._consume(TokenType.COMMA):
                 interfaces.append(self._parse_type())
         self._expect(TokenType.LBRACE)
-        members = []
+        members: list[MethodDecl | FieldDecl | ConstructorDecl | ClassDecl] = []
         while (
             self.current_token.type != TokenType.RBRACE and self.current_token.type != TokenType.EOF
         ):
-            members.append(self._parse_class_member())
+            members.append(self._parse_class_member())  # type: ignore[arg-type]
         self._expect(TokenType.RBRACE)
         return ClassDecl(name, type_parameters, superclass, interfaces, modifiers, members)
 
@@ -191,11 +191,11 @@ class JavaParser:
             while self._consume(TokenType.COMMA):
                 extends.append(self._parse_type())
         self._expect(TokenType.LBRACE)
-        members = []
+        members: list[MethodDecl | FieldDecl] = []
         while (
             self.current_token.type != TokenType.RBRACE and self.current_token.type != TokenType.EOF
         ):
-            members.append(self._parse_interface_member())
+            members.append(self._parse_interface_member())  # type: ignore[arg-type]
         self._expect(TokenType.RBRACE)
         return InterfaceDecl(name, type_parameters, extends, modifiers, members)
 
@@ -219,13 +219,13 @@ class JavaParser:
             if not self._consume(TokenType.COMMA):
                 break
         self._consume(TokenType.SEMICOLON)
-        members = []
+        enum_members: list[MethodDecl | FieldDecl] = []
         while (
             self.current_token.type != TokenType.RBRACE and self.current_token.type != TokenType.EOF
         ):
-            members.append(self._parse_class_member())
+            enum_members.append(self._parse_class_member())  # type: ignore[arg-type]
         self._expect(TokenType.RBRACE)
-        return EnumDecl(name, interfaces, modifiers, constants, members)
+        return EnumDecl(name, interfaces, modifiers, constants, enum_members)
 
     def _parse_annotation_decl(self, modifiers: list[str]) -> AnnotationDecl:
         self._expect(TokenType.AT)
@@ -273,11 +273,11 @@ class JavaParser:
             self._expect(TokenType.RPAREN)
             exceptions = self._parse_throws()
             if self._match(TokenType.LBRACE):
-                body = self._parse_block_stmt()
+                method_body: BlockStmt | None = self._parse_block_stmt()
             else:
-                body = None
+                method_body = None
                 self._expect(TokenType.SEMICOLON)
-            return MethodDecl(name, return_type, parameters, body, [], modifiers, exceptions)
+            return MethodDecl(name, return_type, parameters, method_body, [], modifiers, exceptions)
         else:
             initializer = None
             if self._consume(TokenType.EQUAL):
@@ -419,7 +419,7 @@ class JavaParser:
     def _parse_for_stmt(self) -> Stmt:
         self._expect(TokenType.FOR)
         self._expect(TokenType.LPAREN)
-        initializer = None
+        initializer: VarDeclStmt | Expr | None = None
         if not self._match(TokenType.SEMICOLON):
             checkpoint = self.pos
             try:

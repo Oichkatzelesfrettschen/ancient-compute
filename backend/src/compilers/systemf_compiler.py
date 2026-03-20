@@ -4,6 +4,8 @@ System F to Babbage IR Compiler - Translates System F to language-agnostic IR
 
 from __future__ import annotations
 
+from typing import Any
+
 from backend.src.compilers.systemf_ast import (
     Application,
     Expr,
@@ -25,7 +27,6 @@ from backend.src.ir_types import (
     IRType,
     Program,
     UndefValue,
-    Value,
     VariableValue,
 )
 
@@ -57,10 +58,11 @@ class SystemFCompiler:
         self.ir_builder = IRBuilder("main", [])
         self.ir_builder.new_block("entry")
 
-        last_val = Constant(0)
+        last_val: Any = Constant(0)
         for expr in exprs:
             last_val = self._compile_expr(expr)
 
+        assert self.ir_builder.current_block is not None
         if not self.ir_builder.current_block.terminator:
             self.ir_builder.emit_return(last_val)
 
@@ -68,10 +70,15 @@ class SystemFCompiler:
 
         return self.program
 
-    def _compile_expr(self, expr: Expr) -> Value:
+    def _compile_expr(self, expr: Expr) -> Any:
         """Compile expression to IR"""
+        assert self.ir_builder is not None
         if isinstance(expr, Literal):
-            return Constant(expr.value)
+            if isinstance(expr.value, str):
+                return Constant(float(abs(hash(expr.value)) % (10**40)))
+            if isinstance(expr.value, (int, float)):
+                return Constant(float(expr.value))
+            return Constant(0.0)
 
         if isinstance(expr, Var):
             return self.symbol_table.get(expr.name, VariableValue(expr.name))
@@ -99,7 +106,7 @@ class SystemFCompiler:
             self.symbol_table = old_symbols
 
             # Return function reference (simplified)
-            return Constant(func_name, IRType.PTR)
+            return Constant(float(abs(hash(func_name)) % (10**40)), IRType.PTR)
 
         if isinstance(expr, TypeAbstraction):
             # Type abstraction erased at runtime
@@ -135,6 +142,7 @@ class SystemFCompiler:
             merge_label = self._new_tmp("merge")
 
             # Save current block to emit branch from it
+            assert self.ir_builder.current_block is not None
             cond_block = self.ir_builder.current_block
 
             # Build then block

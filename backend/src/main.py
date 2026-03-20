@@ -1,5 +1,6 @@
 import logging
 import time
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
@@ -13,6 +14,7 @@ from prometheus_client import (
     Gauge,
     generate_latest,
 )
+from starlette.middleware.base import RequestResponseEndpoint
 
 from .api.router import api_router
 from .api.tools_router import router as tools_router  # Import new router
@@ -33,17 +35,16 @@ def _get_or_create_counter(name: str, doc: str) -> Counter:
     try:
         return Counter(name, doc)
     except ValueError:
-        return (
-            REGISTRY._names_to_collectors.get(name + "_total")
-            or REGISTRY._names_to_collectors[name]
-        )
+        existing = REGISTRY._names_to_collectors.get(name + "_total") or REGISTRY._names_to_collectors[name]
+        return existing  # type: ignore[return-value]
 
 
 def _get_or_create_gauge(name: str, doc: str) -> Gauge:
     try:
         return Gauge(name, doc)
     except ValueError:
-        return REGISTRY._names_to_collectors[name]
+        existing = REGISTRY._names_to_collectors[name]
+        return existing  # type: ignore[return-value]
 
 
 REQUEST_COUNT = _get_or_create_counter("requests", "Total number of requests")
@@ -52,7 +53,7 @@ START_TIME = time.time()
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     logger.info("Ancient Compute Backend starting...")
     UPTIME.set(0)
     yield
@@ -88,7 +89,7 @@ app.add_middleware(
 
 
 @app.middleware("http")
-async def add_security_headers(request: Request, call_next):
+async def add_security_headers(request: Request, call_next: RequestResponseEndpoint) -> Response:
     response = await call_next(request)
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
@@ -102,14 +103,14 @@ app.add_middleware(RateLimitMiddleware, limiter=RateLimiter())
 
 
 @app.middleware("http")
-async def count_requests(request: Request, call_next):
+async def count_requests(request: Request, call_next: RequestResponseEndpoint) -> Response:
     REQUEST_COUNT.inc()
     response = await call_next(request)
     return response
 
 
 @app.exception_handler(Exception)
-async def unhandled_exception_handler(request: Request, exc: Exception):
+async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONResponse:
     """Return structured JSON for unhandled exceptions instead of bare 500."""
     logger.exception("Unhandled exception on %s %s", request.method, request.url.path)
     return JSONResponse(
@@ -125,12 +126,12 @@ app.include_router(tools_router, prefix="/api/v1/tools", tags=["tools"])
 
 # Health check endpoints (Same as before)
 @app.get("/health")
-async def health_check():
+async def health_check() -> dict[str, str]:
     return {"status": "healthy", "service": "ancient-compute-backend"}
 
 
 @app.get("/ready")
-async def readiness_check():
+async def readiness_check() -> dict[str, str]:
     # ... (Same logic as before)
     return {"status": "ready"}
 

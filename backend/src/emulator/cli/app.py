@@ -14,7 +14,7 @@ from .commands.tui_cmd import tui_cmd
 
 @click.group()
 @click.version_option(version="0.1.0", prog_name="ancient-compute")
-def cli():
+def cli() -> None:
     """Ancient Compute -- Babbage Analytical Engine emulator CLI.
 
     Run historical mechanical computer programs, explore execution traces,

@@ -27,28 +27,29 @@ from __future__ import annotations
 import re
 from fractions import Fraction
 from pathlib import Path
+from typing import Any
 
 import yaml
 
-from .analytical_engine import BabbageNumber
 from .bernoulli import ada_lovelace_bernoulli_series
+from .types import BabbageNumber
 
 _DECK_PATH = Path(__file__).resolve().parents[3] / "docs/simulation/NOTE_G_DECK.yaml"
 _TABLE_A2_PATH = Path(__file__).resolve().parents[3] / "docs/simulation/NOTE_G_TABLE_A2.yaml"
 
 
-def load_deck(path: Path | None = None) -> list[dict]:
+def load_deck(path: Path | None = None) -> list[dict[str, Any]]:
     deck_path = path or _DECK_PATH
     with open(deck_path, encoding="utf-8") as handle:
         data = yaml.safe_load(handle)
-    return data["deck"]
+    return data["deck"]  # type: ignore[no-any-return]
 
 
-def load_table_a2(path: Path | None = None) -> list[dict]:
+def load_table_a2(path: Path | None = None) -> list[dict[str, Any]]:
     deck_path = path or _TABLE_A2_PATH
     with open(deck_path, encoding="utf-8") as handle:
         data = yaml.safe_load(handle)
-    return data["deck"]
+    return data["deck"]  # type: ignore[no-any-return]
 
 
 def init_state(n: int) -> dict[str, BabbageNumber]:
@@ -62,7 +63,7 @@ def init_state(n: int) -> dict[str, BabbageNumber]:
 _TOKEN_RE = re.compile(r"^(?:(\d+))?(V\d+)$")
 
 
-def _parse_token(token: str) -> tuple:
+def _parse_token(token: str) -> tuple[int | None, str]:
     """Parse a token like '3V11' or 'V11'.
 
     Returns (version, var) where version=None means 'latest'.
@@ -117,7 +118,7 @@ def _resolve_operand(state: dict[str, BabbageNumber], token: str) -> BabbageNumb
     return BabbageNumber(float(token))
 
 
-def _apply_op(state: dict[str, BabbageNumber], step: dict) -> None:
+def _apply_op(state: dict[str, BabbageNumber], step: dict[str, Any]) -> None:
     lhs = _resolve_operand(state, step["lhs"])
     rhs = _resolve_operand(state, step["rhs"])
     value = _exec_opcode(step["opcode"], lhs, rhs)
@@ -125,7 +126,7 @@ def _apply_op(state: dict[str, BabbageNumber], step: dict) -> None:
         state[target] = value
 
 
-def _apply_op_versioned(state: dict[str, dict[int, BabbageNumber]], step: dict) -> None:
+def _apply_op_versioned(state: dict[str, dict[int, BabbageNumber]], step: dict[str, Any]) -> None:
     lhs = _get_value(state, step["lhs"])
     rhs = _get_value(state, step["rhs"])
     value = _exec_opcode(step["opcode"], lhs, rhs)

@@ -154,7 +154,7 @@ class ExecutorRegistry:
             return executor_class()
 
     @classmethod
-    def register_executor(cls, language: str, executor_class: type) -> None:
+    def register_executor(cls, language: str, executor_class: type[BaseExecutor]) -> None:
         """
         Register custom executor for language.
 
@@ -165,7 +165,7 @@ class ExecutorRegistry:
         cls._executors[language.lower()] = executor_class
 
     @classmethod
-    def list_supported_languages(cls) -> list:
+    def list_supported_languages(cls) -> list[str]:
         """Get list of supported languages."""
         return sorted(list(cls._executors.keys()))
 

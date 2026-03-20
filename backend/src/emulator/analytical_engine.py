@@ -44,6 +44,7 @@ References:
   - SMG Technical Description (DE2 comparison)
 """
 
+from collections.abc import Callable
 from typing import Any
 
 from .barrels import BarrelController, MicroOp
@@ -87,7 +88,7 @@ class Instruction:
     Operands: List of arguments (registers, addresses, immediates)
     """
 
-    def __init__(self, opcode, operands=None):
+    def __init__(self, opcode: str, operands: list[str] | None = None) -> None:
         self.opcode = opcode
         self.operands = operands if operands is not None else []
 
@@ -106,7 +107,7 @@ class Engine:
     - Punch card I/O simulation
     """
 
-    def __init__(self, physical_engine=None, output_callback=None):
+    def __init__(self, physical_engine: Any = None, output_callback: Callable[[str], None] | None = None) -> None:
         """Initialize empty engine.
 
         Args:
@@ -146,9 +147,9 @@ class Engine:
         self.clock_time = 0  # Simulated elapsed time
 
         # I/O: Punch cards and results
-        self.instruction_cards = []  # Loaded program
-        self.result_cards = []  # Output results
-        self.execution_trace = []  # Detailed execution trace
+        self.instruction_cards: list[Instruction] = []  # Loaded program
+        self.result_cards: list[dict[str, Any]] = []  # Output results
+        self.execution_trace: list[dict[str, Any]] = []  # Detailed execution trace
 
         # Flags: Condition codes from operations
         self.flags = {
@@ -161,11 +162,11 @@ class Engine:
         }
 
         # Control stacks: For subroutines and temporary storage
-        self.return_stack = []  # CALL/RET return addresses (max 16)
-        self.data_stack = []  # PUSH/POP temporary storage
+        self.return_stack: list[int] = []  # CALL/RET return addresses (max 16)
+        self.data_stack: list[BabbageNumber] = []  # PUSH/POP temporary storage
 
         # Debugging: Breakpoints and tracing
-        self.breakpoints = []  # Conditional breakpoints
+        self.breakpoints: list[Any] = []  # Conditional breakpoints
         self.trace_enabled = False  # Trace execution to console
         self.paused = False  # Execution paused at breakpoint
         self.interactive_mode = False  # Interactive debugging mode
@@ -174,7 +175,7 @@ class Engine:
         self.barrels = BarrelController()
 
         # Instruction handlers: Maps opcode to execution function
-        self._opcode_handlers = {
+        self._opcode_handlers: dict[str, Callable[..., Any]] = {
             "NOP": self._execute_NOP,
             "ADD": self._execute_ADD_micro,
             "SUB": self._execute_SUB_micro,
@@ -217,20 +218,20 @@ class Engine:
         else:
             print(msg)
 
-    def _get_register_value(self, reg_name):
+    def _get_register_value(self, reg_name: str) -> "BabbageNumber":
         """Get value of named register."""
         if reg_name in self.registers:
             return self.registers[reg_name]
         raise ValueError(f"Invalid register: {reg_name}")
 
-    def _set_register_value(self, reg_name, value):
+    def _set_register_value(self, reg_name: str, value: "BabbageNumber") -> None:
         """Set value of named register."""
         if reg_name in self.registers:
             self.registers[reg_name] = value
         else:
             raise ValueError(f"Invalid register: {reg_name}")
 
-    def _update_flags(self, value1, value2=None, comparison_result=None):
+    def _update_flags(self, value1: "BabbageNumber", value2: "BabbageNumber | None" = None, comparison_result: int | None = None) -> None:
         """Update condition flags based on operation result."""
         self.flags["ZERO"] = value1 == BabbageNumber(0)
         self.flags["SIGN"] = value1 < BabbageNumber(0)
@@ -244,7 +245,7 @@ class Engine:
             self.flags["LESS"] = False
             self.flags["EQUAL"] = False
 
-    def _get_operand_value(self, operand_str):
+    def _get_operand_value(self, operand_str: str) -> "BabbageNumber":
         """
         Resolve operand to value.
 
@@ -268,11 +269,11 @@ class Engine:
     # Arithmetic Operations (Mill)
     # ========================================================================
 
-    def _execute_NOP(self):
+    def _execute_NOP(self) -> None:
         """No operation (1 cycle, no effect)."""
         pass
 
-    def _execute_ADD_micro(self, reg_dest: str, operand_src: Any):
+    def _execute_ADD_micro(self, reg_dest: str, operand_src: Any) -> None:
         """Execute ADD using micro-ops (Hybrid Tier 1/3)."""
         self.barrels.select_barrel("ADD")
 
@@ -286,7 +287,7 @@ class Engine:
         self.registers[reg_dest] = self.mill_result_buffer
         self._update_flags(self.mill_result_buffer)
 
-    def _execute_SUB_micro(self, reg_dest: str, operand_src: Any):
+    def _execute_SUB_micro(self, reg_dest: str, operand_src: Any) -> None:
         """Execute SUB using micro-ops."""
         self.barrels.select_barrel("SUB")
 
@@ -299,7 +300,7 @@ class Engine:
         self.registers[reg_dest] = self.mill_result_buffer
         self._update_flags(self.mill_result_buffer)
 
-    def _execute_micro_op(self, op: MicroOp, reg_dest: str, operand_src: Any):
+    def _execute_micro_op(self, op: MicroOp, reg_dest: str | None, operand_src: Any) -> None:
         """Execute a single physical micro-operation, modifying engine state."""
         # This translates Barrel "studs" to mechanical actions.
         if op == MicroOp.LIFT_STORE_AXIS:
@@ -321,6 +322,7 @@ class Engine:
 
         elif op == MicroOp.ADVANCE_MILL:
             # This is where the actual arithmetic happens based on instruction context
+            assert reg_dest is not None
             current_mill_value = self.registers[reg_dest]  # First operand is in A or specified dest
 
             # Check if we are in a MULT context (using mill_product_accumulator)
@@ -338,6 +340,7 @@ class Engine:
                 self.mill_result_buffer = current_mill_value + self.mill_operand_buffer
 
         elif op == MicroOp.REVERSE_MILL:
+            assert reg_dest is not None
             current_mill_value = self.registers[reg_dest]
             if self.barrels.active_barrel == "DIV":
                 # Only subtract if GREATER or EQUAL (set by COMPARE_MILL_BUFFERS)
@@ -372,9 +375,11 @@ class Engine:
             self.mill_result_buffer = BabbageNumber(0)
 
         elif op == MicroOp.LOAD_MILL_ACCUMULATOR:
+            assert reg_dest is not None
             self.mill_product_accumulator = self.registers[reg_dest]
 
         elif op == MicroOp.STORE_MILL_ACCUMULATOR:
+            assert reg_dest is not None
             self.registers[reg_dest] = self.mill_product_accumulator
 
         elif op == MicroOp.SHIFT_MILL_LEFT:
@@ -445,6 +450,7 @@ class Engine:
 
         elif op == MicroOp.INIT_SQRT_GUESS:
             # First guess: x_0 = S / 2 (conceptual)
+            assert reg_dest is not None
             val = self.registers[reg_dest]
             self.mill_product_accumulator = val / BabbageNumber(2)
             self.mill_operand_buffer = val  # Keep original S in operand buffer
@@ -480,9 +486,11 @@ class Engine:
                 self.mill_sqrt_iterations = 0  # Reset for next SQRT
 
         elif op == MicroOp.STORE_SQRT_RESULT:
+            assert reg_dest is not None
             self.registers[reg_dest] = self.mill_product_accumulator
 
         elif op == MicroOp.BITWISE_AND:
+            assert reg_dest is not None
             val1 = self.registers[reg_dest]
             val2 = self._get_operand_value(operand_src)
             s1 = str(abs(val1.value)).zfill(50)
@@ -492,6 +500,7 @@ class Engine:
             self.mill_result_buffer.value = res if val1.value >= 0 else -res
 
         elif op == MicroOp.BITWISE_OR:
+            assert reg_dest is not None
             val1 = self.registers[reg_dest]
             val2 = self._get_operand_value(operand_src)
             s1 = str(abs(val1.value)).zfill(50)
@@ -501,6 +510,7 @@ class Engine:
             self.mill_result_buffer.value = res if val1.value >= 0 else -res
 
         elif op == MicroOp.BITWISE_XOR:
+            assert reg_dest is not None
             val1 = self.registers[reg_dest]
             val2 = self._get_operand_value(operand_src)
             s1 = str(abs(val1.value)).zfill(50)
@@ -510,6 +520,7 @@ class Engine:
             self.mill_result_buffer.value = res if val1.value >= 0 else -res
 
         elif op == MicroOp.COMPUTE_CHECKSUM:
+            assert reg_dest is not None
             val = self.registers[reg_dest]
             stored_checksum = val.value % 10
             s = str(abs(val.value // 10)).zfill(49)
@@ -533,7 +544,7 @@ class Engine:
         # Other MicroOps (Fetch, etc.) can be implemented here as needed
         # For now, FETCH_VAR_CARD is a symbolic trigger.
 
-    def _execute_MULT_micro(self, reg_dest: str, operand_src: Any):
+    def _execute_MULT_micro(self, reg_dest: str, operand_src: Any) -> None:
         """
         Execute MULT using micro-ops, leveraging repeated additions and shifts.
         """
@@ -554,7 +565,7 @@ class Engine:
         self.registers[reg_dest] = self.mill_product_accumulator
         self._update_flags(self.mill_product_accumulator)
 
-    def _execute_DIV_micro(self, reg_dest: str, operand_src: Any):
+    def _execute_DIV_micro(self, reg_dest: str, operand_src: Any) -> None:
         """
         Execute DIV using micro-ops, leveraging repeated subtractions and shifts.
         """
@@ -607,7 +618,7 @@ class Engine:
         self._set_register_value("D", self.mill_remainder_buffer)
         self._update_flags(self.mill_quotient_buffer)
 
-    def _execute_SQRT_micro(self, reg_dest):
+    def _execute_SQRT_micro(self, reg_dest: str) -> None:
         """Execute SQRT using micro-ops (Newton-Raphson)."""
         val = self.registers[reg_dest]
         if val.value < 0:
@@ -623,7 +634,7 @@ class Engine:
 
         self._update_flags(self.registers[reg_dest])
 
-    def _execute_LOAD_micro(self, reg_dest, address_src):
+    def _execute_LOAD_micro(self, reg_dest: str, address_src: str) -> None:
         """Execute LOAD using micro-ops."""
         self.barrels.select_barrel("LOAD")
 
@@ -640,7 +651,7 @@ class Engine:
         self.registers[reg_dest] = self.mill_result_buffer
         self._update_flags(self.registers[reg_dest])
 
-    def _execute_STOR_micro(self, reg_source, address_dest):
+    def _execute_STOR_micro(self, reg_source: str, address_dest: str) -> None:
         """Execute STOR using micro-ops."""
         if not (
             isinstance(address_dest, str)
@@ -660,7 +671,7 @@ class Engine:
             for op in ops:
                 self._execute_micro_op(op, reg_source, address_dest)
 
-    def _execute_SHL_micro(self, reg_dest, n_str):
+    def _execute_SHL_micro(self, reg_dest: str, n_str: str) -> None:
         n = int(n_str)
         self.mill_product_accumulator = self.registers[reg_dest]
         for _ in range(n):
@@ -671,7 +682,7 @@ class Engine:
         self.registers[reg_dest] = self.mill_product_accumulator
         self._update_flags(self.registers[reg_dest])
 
-    def _execute_SHR_micro(self, reg_dest, n_str):
+    def _execute_SHR_micro(self, reg_dest: str, n_str: str) -> None:
         n = int(n_str)
         self.mill_product_accumulator = self.registers[reg_dest]
         for _ in range(n):
@@ -682,7 +693,7 @@ class Engine:
         self.registers[reg_dest] = self.mill_product_accumulator
         self._update_flags(self.registers[reg_dest])
 
-    def _execute_AND_micro(self, reg_dest, operand_src):
+    def _execute_AND_micro(self, reg_dest: str, operand_src: str) -> None:
         self.barrels.select_barrel("AND")
         while self.barrels.active_barrel:
             for op in self.barrels.step():
@@ -690,7 +701,7 @@ class Engine:
         self.registers[reg_dest] = self.mill_result_buffer
         self._update_flags(self.registers[reg_dest])
 
-    def _execute_OR_micro(self, reg_dest, operand_src):
+    def _execute_OR_micro(self, reg_dest: str, operand_src: str) -> None:
         self.barrels.select_barrel("OR")
         while self.barrels.active_barrel:
             for op in self.barrels.step():
@@ -698,7 +709,7 @@ class Engine:
         self.registers[reg_dest] = self.mill_result_buffer
         self._update_flags(self.registers[reg_dest])
 
-    def _execute_XOR_micro(self, reg_dest, operand_src):
+    def _execute_XOR_micro(self, reg_dest: str, operand_src: str) -> None:
         self.barrels.select_barrel("XOR")
         while self.barrels.active_barrel:
             for op in self.barrels.step():
@@ -706,13 +717,13 @@ class Engine:
         self.registers[reg_dest] = self.mill_result_buffer
         self._update_flags(self.registers[reg_dest])
 
-    def _execute_CHKS_micro(self, reg_source):
+    def _execute_CHKS_micro(self, reg_source: str) -> None:
         self.barrels.select_barrel("CHKS")
         while self.barrels.active_barrel:
             for op in self.barrels.step():
                 self._execute_micro_op(op, reg_source, None)
 
-    def _execute_PLAY_micro(self, note, duration):
+    def _execute_PLAY_micro(self, note: str, duration: str) -> None:
         self.barrels.select_barrel("PLAY")
         # Store params for micro-op to consume
         self.mill_note_buffer = note
@@ -721,18 +732,18 @@ class Engine:
             for op in self.barrels.step():
                 self._execute_micro_op(op, None, None)
 
-    def _execute_SETMODE_micro(self, mode):
+    def _execute_SETMODE_micro(self, mode: str) -> None:
         self.barrels.select_barrel("SETMODE")
         self.mill_mode_buffer = mode
         while self.barrels.active_barrel:
             for op in self.barrels.step():
                 self._execute_micro_op(op, None, None)
 
-    def _execute_HALT(self):
+    def _execute_HALT(self) -> bool:
         self.running = False
         return False
 
-    def _execute_OIL(self):
+    def _execute_OIL(self) -> bool:
         """Perform maintenance: reset wear and friction states if physics is linked."""
         if self.physical_engine:
             # Reset wear volumes and reduce friction
@@ -744,7 +755,7 @@ class Engine:
             self._emit("MAINTENANCE: Engine oiled (no physical effect, physics not linked).")
         return False
 
-    def _execute_MULT(self, reg_dest, operand):
+    def _execute_MULT(self, reg_dest: str, operand: str) -> None:
         """
         Multiply: A = upper 50 digits, D = lower 50 digits (400 cycles).
 
@@ -783,7 +794,7 @@ class Engine:
         self._set_register_value("D", D_result)
         self._update_flags(D_result)  # Changed to D_result for flags
 
-    def _execute_DIV(self, reg_dest, operand):
+    def _execute_DIV(self, reg_dest: str, operand: str) -> None:
         """Divide: reg_dest /= operand with fixed-point scaling (750 cycles)."""
         val1 = self._get_register_value(reg_dest)
         val2 = self._get_operand_value(operand)
@@ -795,7 +806,7 @@ class Engine:
         self._set_register_value(reg_dest, result)
         self._update_flags(result)
 
-    def _execute_SQRT(self, reg_dest):
+    def _execute_SQRT(self, reg_dest: str) -> None:
         """
         Square root: reg_dest = sqrt(reg_dest) using Newton's method (250 cycles).
 
@@ -845,7 +856,7 @@ class Engine:
     # Memory Operations (Store)
     # ========================================================================
 
-    def _execute_LOAD(self, reg_dest, address):
+    def _execute_LOAD(self, reg_dest: str, address: str) -> None:
         """Load from store: reg_dest = memory[address] or immediate (15 cycles)."""
         if address.startswith("[") and address.endswith("]"):
             mem_address = int(address[1:-1])
@@ -860,7 +871,7 @@ class Engine:
             self._set_register_value(reg_dest, value)
         self._update_flags(self._get_register_value(reg_dest))
 
-    def _execute_STOR(self, reg_source, address):
+    def _execute_STOR(self, reg_source: str, address: str) -> None:
         """Store to store: memory[address] = reg_source (15 cycles)."""
         if address.startswith("[") and address.endswith("]"):
             mem_address = int(address[1:-1])
@@ -877,54 +888,54 @@ class Engine:
     # Control Flow (Sequencing)
     # ========================================================================
 
-    def _execute_JMP(self, address):
+    def _execute_JMP(self, address: str) -> bool:
         """Jump: PC = address unconditionally (4 cycles)."""
         self.PC = int(address)
         return True  # Indicate PC was modified
 
-    def _execute_JZ(self, address):
+    def _execute_JZ(self, address: str) -> bool:
         """Jump if zero: PC = address if ZERO flag set (4 cycles)."""
         if self.flags["ZERO"]:
             self.PC = int(address)
             return True
         return False
 
-    def _execute_JNZ(self, address):
+    def _execute_JNZ(self, address: str) -> bool:
         """Jump if not zero: PC = address if ZERO flag clear (4 cycles)."""
         if not self.flags["ZERO"]:
             self.PC = int(address)
             return True
         return False
 
-    def _execute_JLT(self, address):
+    def _execute_JLT(self, address: str) -> bool:
         """Jump if less than: PC = address if LESS flag set (4 cycles)."""
         if self.flags["LESS"]:
             self.PC = int(address)
             return True
         return False
 
-    def _execute_JGT(self, address):
+    def _execute_JGT(self, address: str) -> bool:
         """Jump if greater than: PC = address if GREATER flag set (4 cycles)."""
         if self.flags["GREATER"]:
             self.PC = int(address)
             return True
         return False
 
-    def _execute_JLE(self, address):
+    def _execute_JLE(self, address: str) -> bool:
         """Jump if less or equal: PC = address if LESS or EQUAL (4 cycles)."""
         if self.flags["LESS"] or self.flags["EQUAL"]:
             self.PC = int(address)
             return True
         return False
 
-    def _execute_JGE(self, address):
+    def _execute_JGE(self, address: str) -> bool:
         """Jump if greater or equal: PC = address if GREATER or EQUAL (4 cycles)."""
         if self.flags["GREATER"] or self.flags["EQUAL"]:
             self.PC = int(address)
             return True
         return False
 
-    def _execute_CMP(self, operand1, operand2):
+    def _execute_CMP(self, operand1: str, operand2: str) -> None:
         """Compare: set flags based on operand1 vs operand2 (4 cycles)."""
         val1 = self._get_operand_value(operand1)
         val2 = self._get_operand_value(operand2)
@@ -935,7 +946,7 @@ class Engine:
             comparison_result = -1
         self._update_flags(val1, val2, comparison_result)
 
-    def _execute_CALL(self, address):
+    def _execute_CALL(self, address: str) -> bool:
         """Call subroutine: push return address, jump to address (8 cycles)."""
         if len(self.return_stack) >= 16:
             raise OverflowError("Return stack overflow (max 16 levels)")
@@ -943,7 +954,7 @@ class Engine:
         self.PC = int(address)
         return True  # PC was modified
 
-    def _execute_RET(self):
+    def _execute_RET(self) -> bool:
         """Return from subroutine: pop return address, jump to it (4 cycles)."""
         if len(self.return_stack) == 0:
             raise IndexError("Return stack underflow")
@@ -954,12 +965,12 @@ class Engine:
     # Stack Operations
     # ========================================================================
 
-    def _execute_PUSH(self, reg_source):
+    def _execute_PUSH(self, reg_source: str) -> None:
         """Push register onto stack (4 cycles)."""
         value = self._get_register_value(reg_source)
         self.data_stack.append(value)
 
-    def _execute_POP(self, reg_dest):
+    def _execute_POP(self, reg_dest: str) -> None:
         """Pop value from stack into register (4 cycles)."""
         if not self.data_stack:
             raise IndexError("Data stack underflow")
@@ -970,7 +981,7 @@ class Engine:
     # I/O Operations (Ingress/Egress)
     # ========================================================================
 
-    def _execute_RDCRD(self, reg_dest, value=None):
+    def _execute_RDCRD(self, reg_dest: str, value: int | None = None) -> None:
         """Read punch card: load value from input card into register (30 cycles).
 
         If called with an explicit value (from operand), uses that value.
@@ -982,7 +993,7 @@ class Engine:
             return
 
         if not hasattr(self, "input_cards"):
-            self.input_cards = []
+            self.input_cards: list[int] = []
 
         if not self.input_cards:
             raise IndexError(
@@ -992,7 +1003,7 @@ class Engine:
         card_value = self.input_cards.pop(0)
         self._set_register_value(reg_dest, BabbageNumber(card_value))
 
-    def _execute_WRPCH(self, reg_source):
+    def _execute_WRPCH(self, reg_source: str) -> None:
         """Write punch card: output register value to result card (30 cycles)."""
         value = self._get_register_value(reg_source)
         self.result_cards.append(
@@ -1005,7 +1016,7 @@ class Engine:
         )
         self._emit(f"WRPCH: {value.to_decimal()}")
 
-    def _execute_WRPRN(self, reg_source):
+    def _execute_WRPRN(self, reg_source: str) -> None:
         """Write printer: output register value to printer (2 cycles)."""
         value = self._get_register_value(reg_source)
         self.result_cards.append(
@@ -1022,7 +1033,7 @@ class Engine:
     # Instruction Execution & Control
     # ========================================================================
 
-    def execute_instruction(self, instruction):
+    def execute_instruction(self, instruction: "Instruction") -> None:
         """
         Execute single instruction and update clock time.
 
@@ -1089,7 +1100,7 @@ class Engine:
         if not pc_modified:
             self.PC += 1
 
-    def load_program(self, filename):
+    def load_program(self, filename: str) -> None:
         """
         Load program from file with label resolution.
 
@@ -1146,7 +1157,7 @@ class Engine:
 
         self.instruction_cards = instructions
 
-    def run(self):
+    def run(self) -> None:
         """Execute loaded program until completion or error."""
         self.running = True
         while self.running and len(self.instruction_cards) > self.PC:
@@ -1161,7 +1172,7 @@ class Engine:
             else:
                 self.step_one_instruction()
 
-    def step_one_instruction(self):
+    def step_one_instruction(self) -> None:
         """Execute a single instruction with breakpoint and physical failure checking."""
         if len(self.instruction_cards) <= self.PC:
             self.running = False
@@ -1185,7 +1196,7 @@ class Engine:
             self._emit(f"Runtime Error at PC {self.PC}: {e}")
             self.running = False
 
-    def set_breakpoint(self, condition_type, target):
+    def set_breakpoint(self, condition_type: str, target: Any) -> None:
         """
         Set breakpoint for debugging.
 
@@ -1197,7 +1208,7 @@ class Engine:
         """
         self.breakpoints.append({"type": condition_type, "target": target, "enabled": True})
 
-    def check_breakpoints(self):
+    def check_breakpoints(self) -> None:
         """Check all breakpoints and pause if triggered."""
         for bp in self.breakpoints:
             if not bp["enabled"]:
@@ -1223,7 +1234,7 @@ class Engine:
                 self.paused = True
                 self._emit(f"Breakpoint hit: Memory[{bp['address']}]={bp['target']}")
 
-    def dump_state(self):
+    def dump_state(self) -> str:
         """Return human-readable state dump for debugging."""
         state = f"""
 --- EMULATOR STATE ---
@@ -1242,7 +1253,7 @@ Memory (first 10 words):
             state += f"  [{i}]: {self.memory[i].to_decimal()}\n"
         return state
 
-    def save_result_cards(self, filename):
+    def save_result_cards(self, filename: str) -> None:
         """Save result cards to file in punch card format."""
         with open(filename, "w") as f:
             for i, result_data in enumerate(self.result_cards):
@@ -1257,13 +1268,14 @@ Memory (first 10 words):
                 f.write(f"# Timestamp: Clock {clock_time}s\n")
                 f.write(f"\n{value.to_card_format()}\n\n")
 
-    def physics_report(self) -> dict:
+    def physics_report(self) -> dict[str, Any]:
         """Return physics simulation summary, or empty dict if no physics."""
         if self.physical_engine and hasattr(self.physical_engine, "physics_report"):
-            return self.physical_engine.physics_report()
+            result: dict[str, Any] = self.physical_engine.physics_report()
+            return result
         return {}
 
-    def save_trace(self, filename):
+    def save_trace(self, filename: str) -> None:
         """Save execution trace to JSON file.
 
         Each entry records: PC, opcode, operands, register values, flags,

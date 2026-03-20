@@ -42,7 +42,7 @@ class PascalineEmulator:
             wheel.sautoir_lifted = False
         self.nines_complement_mode = False
 
-    def state(self) -> dict:
+    def state(self) -> dict[str, object]:
         return {
             "value": self.get_value(),
             "digits": [w.value for w in self.wheels],

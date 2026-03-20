@@ -11,7 +11,7 @@ Represents the structure of parsed Haskell code with support for:
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, List
+from typing import Any
 
 # ============================================================================
 # Expressions
@@ -61,7 +61,7 @@ class UnaryOp(Expr):
 class Lambda(Expr):
     """Lambda expression: backslash param -> body"""
 
-    params: List[str]
+    params: list[str]
     body: Expr
 
 
@@ -70,14 +70,14 @@ class Application(Expr):
     """Function application: func arg"""
 
     func: Expr
-    args: List[Expr]
+    args: list[Expr]
 
 
 @dataclass
 class Let(Expr):
     """Let expression: let x = e1 in e2"""
 
-    bindings: List[tuple]  # List of (name, expr) tuples
+    bindings: list[tuple[str, Any]]  # List of (name, expr) tuples
     body: Expr
 
 
@@ -86,7 +86,7 @@ class Case(Expr):
     """Case expression: case expr of pattern -> expr ..."""
 
     expr: Expr
-    branches: List[CaseBranch]
+    branches: list[CaseBranch]
 
 
 @dataclass
@@ -111,7 +111,7 @@ class IfThenElse(Expr):
 class List(Expr):
     """List literal: [e1, e2, ...] or [e1 .. en]"""
 
-    elements: List[Expr]
+    elements: list[Expr]
     is_range: bool = False  # True if [start .. end]
 
 
@@ -119,7 +119,7 @@ class List(Expr):
 class Tuple(Expr):
     """Tuple literal: (e1, e2, ...)"""
 
-    elements: List[Expr]
+    elements: list[Expr]
 
 
 @dataclass
@@ -135,7 +135,7 @@ class Constructor(Expr):
     """Constructor application: Name args"""
 
     name: str
-    args: List[Expr]
+    args: list[Expr]
 
 
 # ============================================================================
@@ -169,21 +169,21 @@ class PatternConstructor(Pattern):
     """Constructor pattern: Name p1 p2"""
 
     name: str
-    patterns: List[Pattern]
+    patterns: list[Pattern]
 
 
 @dataclass
 class PatternTuple(Pattern):
     """Tuple pattern: (p1, p2, ...)"""
 
-    patterns: List[Pattern]
+    patterns: list[Pattern]
 
 
 @dataclass
 class PatternList(Pattern):
     """List pattern: [p1, p2, ...] or [h|t]"""
 
-    patterns: List[Pattern]
+    patterns: list[Pattern]
     tail: Pattern | None = None  # For [h|t] syntax
 
 
@@ -211,14 +211,14 @@ class FunctionDef(Stmt):
     """Function definition with pattern matching"""
 
     name: str
-    equations: List[FunctionEquation]  # Multiple equations for pattern matching
+    equations: list[FunctionEquation]  # Multiple equations for pattern matching
 
 
 @dataclass
 class FunctionEquation:
     """Single equation in function definition"""
 
-    patterns: List[Pattern]  # Argument patterns
+    patterns: list[Pattern]  # Argument patterns
     guard: Expr | None  # Optional guard
     body: Expr
 
@@ -236,7 +236,7 @@ class DataDecl(Stmt):
     """Data type declaration"""
 
     name: str
-    constructors: List[DataConstructor]
+    constructors: list[DataConstructor]
 
 
 @dataclass
@@ -244,7 +244,7 @@ class DataConstructor:
     """Single constructor in data declaration"""
 
     name: str
-    fields: List[str]  # Field types
+    fields: list[str]  # Field types
 
 
 @dataclass
@@ -260,7 +260,7 @@ class ClassDecl(Stmt):
     """Type class declaration"""
 
     name: str
-    methods: List[tuple]  # (name, type_sig) tuples
+    methods: list[tuple[str, Any]]  # (name, type_sig) tuples
 
 
 @dataclass
@@ -269,7 +269,7 @@ class InstanceDecl(Stmt):
 
     class_name: str
     type_name: str
-    definitions: List[tuple]  # (name, body) tuples
+    definitions: list[tuple[str, Any]]  # (name, body) tuples
 
 
 # ============================================================================
@@ -282,4 +282,4 @@ class Module:
     """Top-level module"""
 
     name: str | None  # Module name (if declared)
-    declarations: List[Stmt]  # Top-level declarations and definitions
+    declarations: list[Stmt]  # Top-level declarations and definitions

@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, Any, Optional
 
 try:
     # Only needed at runtime when DB paths are used
-    from sqlalchemy.orm import Session  # type: ignore
+    from sqlalchemy.orm import Session
 except Exception:  # pragma: no cover - environment without SQLAlchemy
     Session = Any  # type: ignore
 
@@ -59,7 +59,7 @@ class QueryCache:
         self.hits = 0
         self.misses = 0
 
-    def _generate_key(self, query_type: str, **kwargs) -> str:
+    def _generate_key(self, query_type: str, **kwargs: Any) -> str:
         """Generate cache key from query type and parameters."""
         params = "|".join(f"{k}={v}" for k, v in sorted(kwargs.items()))
         return f"{query_type}:{params}"
@@ -190,7 +190,7 @@ class QueryCache:
             entry = self._cache[key]
             if not entry.is_expired():
                 self.hits += 1
-                return entry.data
+                return entry.data  # type: ignore[no-any-return]
             else:
                 del self._cache[key]
 
@@ -208,7 +208,7 @@ class QueryCache:
         if exercises:
             self._store(key, exercises)
 
-        return exercises
+        return exercises  # type: ignore[no-any-return]
 
     def _store(self, key: str, data: Any) -> None:
         """Store data in cache."""
@@ -268,7 +268,7 @@ class QueryCache:
             del self._cache[key]
         return initial_size - len(self._cache)
 
-    def get_stats(self) -> dict[str, any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get cache statistics."""
         total_requests = self.hits + self.misses
         hit_rate = self.hits / total_requests if total_requests > 0 else 0

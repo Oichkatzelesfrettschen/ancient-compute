@@ -44,6 +44,8 @@ References:
 
 from __future__ import annotations
 
+from typing import Any
+
 from backend.src.emulator.analytical_engine import Engine
 from backend.src.emulator.cli.assembler.fourmilab import (
     FourmilabCard,
@@ -64,7 +66,7 @@ def parse_fourmilab_deck(source: str) -> list[FourmilabCard]:
     return parse_fourmilab_source(source)
 
 
-def fourmilab_to_instructions(cards: list[FourmilabCard]) -> list:
+def fourmilab_to_instructions(cards: list[FourmilabCard]) -> list[Any]:
     """Translate a list of FourmilabCards into engine Instruction objects.
 
     Args:

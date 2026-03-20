@@ -1,5 +1,7 @@
 """Card deck view widget: program listing with current instruction highlighted."""
 
+from typing import Any
+
 from textual.reactive import reactive
 from textual.widget import Widget
 
@@ -15,7 +17,7 @@ class CardDeckView(Widget):
     }
     """
 
-    instructions: reactive[list] = reactive([])
+    instructions: reactive[list[Any]] = reactive([])
     current_pc: reactive[int] = reactive(0)
 
     def render(self) -> str:

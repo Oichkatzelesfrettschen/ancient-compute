@@ -314,7 +314,7 @@ class Program:
 class IRBuilder:
     """Helper for constructing IR programs"""
 
-    def __init__(self, function_name: str, parameters: list[str] = None):
+    def __init__(self, function_name: str, parameters: list[str] | None = None):
         if parameters is None:
             parameters = []
         self.function = Function(function_name, parameters)
@@ -329,24 +329,29 @@ class IRBuilder:
 
     def emit_assignment(self, target: str, source: Operand) -> None:
         """Emit: target = source"""
+        assert self.current_block is not None
         self.current_block.add_instruction(Assignment(target, source))
 
     def emit_binary_op(self, op: str, target: str, op1: Operand, op2: Operand) -> None:
         """Emit: target = op op1, op2"""
+        assert self.current_block is not None
         self.current_block.add_instruction(BinaryOp(op, target, op1, op2))
 
     def emit_load(self, target: str, address: Operand) -> None:
         """Emit: target = load address"""
+        assert self.current_block is not None
         self.current_block.add_instruction(Load(target, address))
 
     def emit_store(self, value: Operand, address: Operand) -> None:
         """Emit: store value, address"""
+        assert self.current_block is not None
         self.current_block.add_instruction(Store(value, address))
 
     def emit_call(
         self, function_name: str, arguments: list[Operand], target: str | None = None
     ) -> None:
         """Emit: target = call function_name, arguments"""
+        assert self.current_block is not None
         self.current_block.add_instruction(Call(function_name, arguments, target))
 
     def emit_indirect_call(
@@ -356,22 +361,26 @@ class IRBuilder:
         target: str | None = None,
     ) -> None:
         """Emit: target = call function_pointer, arguments"""
+        assert self.current_block is not None
         self.current_block.add_instruction(IndirectCall(function_pointer, arguments, target))
 
     def emit_jump(self, label: str) -> None:
         """Emit: jump label (terminator)"""
+        assert self.current_block is not None
         self.current_block.set_terminator(JumpTerminator(label))
 
     def emit_branch(
         self, condition: str, op1: Operand, op2: Operand | None, true_label: str, false_label: str
     ) -> None:
         """Emit: branch condition op1, op2, true_label, false_label (terminator)"""
+        assert self.current_block is not None
         self.current_block.set_terminator(
             BranchTerminator(condition, op1, op2, true_label, false_label)
         )
 
     def emit_return(self, value: Operand | None = None) -> None:
         """Emit: return value (terminator)"""
+        assert self.current_block is not None
         self.current_block.set_terminator(ReturnTerminator(value))
 
     def finalize(self) -> Function:

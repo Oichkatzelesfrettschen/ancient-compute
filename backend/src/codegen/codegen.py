@@ -24,7 +24,7 @@ class CodeGenResult:
     function_name: str
     assembly_output: AssemblyOutput
     allocation_map: AllocationMap
-    liveness_info: dict  # For debugging
+    liveness_info: dict[str, object]  # For debugging
     warnings: list[str]
 
     def get_assembly_text(self) -> str:
@@ -49,7 +49,7 @@ class CodeGenerator:
     6. Output: Babbage assembly text
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.warnings: list[str] = []
 
     def generate_function(self, function: Function, verbose: bool = False) -> CodeGenResult:

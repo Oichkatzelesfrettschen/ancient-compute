@@ -381,7 +381,7 @@ class TestJavaParser:
         parser = JavaParser(tokens)
         cu = parser.parse()
         cls = cu.type_decls[0]
-        assert cls.superclass is not None
+        assert cls.superclass is not None  # type: ignore[union-attr]
 
     def test_parse_implements_clause(self) -> None:
         source = "class T implements Comparable {}"
@@ -390,7 +390,7 @@ class TestJavaParser:
         parser = JavaParser(tokens)
         cu = parser.parse()
         cls = cu.type_decls[0]
-        assert len(cls.interfaces) > 0
+        assert len(cls.interfaces) > 0  # type: ignore[union-attr]
 
     def test_parse_return_statement(self) -> None:
         source = """
@@ -570,7 +570,7 @@ class TestJavaTypeSystem:
         int_type = PrimitiveType("int")
         double_type = PrimitiveType("double")
         promoted = ts._promote_numeric_type(int_type, double_type)
-        assert promoted.name == "double"
+        assert promoted.name == "double"  # type: ignore[attr-defined]
 
 
 # ==============================================================================
@@ -771,7 +771,7 @@ class TestJavaIntegration:
 
         # Phase 3: Type check
         ts = JavaTypeSystem()
-        ts.register_symbol("Main", cu.type_decls[0])
+        ts.register_symbol("Main", cu.type_decls[0])  # type: ignore[arg-type]
 
         # Phase 4: Compile to IR
         compiler = JavaCompiler()

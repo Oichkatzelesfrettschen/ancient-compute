@@ -1,5 +1,7 @@
 """Animation panel widget: composite mechanical visualization."""
 
+from typing import Any
+
 from textual.reactive import reactive
 from textual.widget import Widget
 
@@ -21,7 +23,7 @@ class AnimationPanel(Widget):
     """
 
     frame_idx: reactive[int] = reactive(0)
-    snapshot: reactive[dict] = reactive({})
+    snapshot: reactive[dict[str, Any]] = reactive({})
 
     def render(self) -> str:
         snap = self.snapshot

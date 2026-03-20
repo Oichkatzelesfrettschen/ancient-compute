@@ -1,5 +1,7 @@
 """Status bar widget: cycle count, phase, engine state summary."""
 
+from typing import Any
+
 from textual.reactive import reactive
 from textual.widget import Widget
 
@@ -16,7 +18,7 @@ class StatusBar(Widget):
     }
     """
 
-    snapshot: reactive[dict] = reactive({})
+    snapshot: reactive[dict[str, Any]] = reactive({})
 
     def render(self) -> str:
         snap = self.snapshot

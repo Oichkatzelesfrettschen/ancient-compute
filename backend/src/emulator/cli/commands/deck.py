@@ -25,7 +25,7 @@ console = Console()
     help="Number of Bernoulli numbers to compute (note g), or iteration count.",
 )
 @click.option("--physics", is_flag=True, help="Enable physics coupling (note g only).")
-def deck_cmd(note, n_count, physics):
+def deck_cmd(note: str, n_count: int, physics: bool) -> None:
     """Run a Lovelace card deck (Note B, C, D, or G)."""
     if note == "g":
         _run_note_g(n_count, physics=physics)
@@ -64,7 +64,13 @@ def _run_lovelace_note(note: str, n: int) -> None:
         console.print("[red]lovelace_notes module not found. Run Phase 4 first.[/]")
         return
 
-    runners = {"b": run_note_b, "c": run_note_c, "d": run_note_d}
+    from collections.abc import Callable
+
+    runners: dict[str, Callable[[int], object]] = {
+        "b": run_note_b,
+        "c": run_note_c,
+        "d": run_note_d,
+    }
     runner = runners[note]
     console.print(f"[bold green]Note {note.upper()}:[/] Running with n={n}")
     result = runner(n)

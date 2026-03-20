@@ -1,5 +1,7 @@
 # Ancient Compute - IDRIS Compiler
 
+from typing import Any
+
 from ..ir_types import (
     BinaryOp,
     BranchTerminator,
@@ -26,12 +28,12 @@ from .idris_ast import (
 
 
 class IdrisCompiler:
-    def __init__(self):
+    def __init__(self) -> None:
         self.program = Program()
-        self.builder: IRBuilder = None
+        self.builder: IRBuilder | None = None
         self.tmp_counter = 0
 
-    def compile(self, ast) -> Program:
+    def compile(self, ast: object) -> Program:
         if isinstance(ast, Module):
             self._compile_module(ast)
         elif isinstance(ast, list):
@@ -39,36 +41,40 @@ class IdrisCompiler:
                 self._compile_decl(decl)
         return self.program
 
-    def _compile_module(self, module: Module):
+    def _compile_module(self, module: Module) -> None:
         for decl in module.body:
             self._compile_decl(decl)
 
-    def _compile_decl(self, decl):
+    def _compile_decl(self, decl: object) -> None:
         if isinstance(decl, FunctionDeclaration):
             self._compile_function_declaration(decl)
         elif isinstance(decl, TypeDeclaration):
             # Erase type declarations at runtime
             pass
 
-    def _compile_function_declaration(self, decl: FunctionDeclaration):
+    def _compile_function_declaration(self, decl: FunctionDeclaration) -> None:
         self.builder = IRBuilder(decl.name, decl.args)
         self.builder.function.local_variables = {p: IRType.DEC50 for p in decl.args}
         self.builder.new_block("entry")
 
         return_val = self._compile_expression(decl.body)
 
+        assert self.builder.current_block is not None
         if not self.builder.current_block.terminator:
             self.builder.emit_return(return_val)
         self.program.add_function(self.builder.finalize())
 
-    def _compile_expression(self, expr):
+    def _compile_expression(self, expr: object) -> Any:
         if isinstance(expr, Identifier):
             return VariableValue(expr.name)
         elif isinstance(expr, Var):
             # Var is a type-system variable reference; treat as a named value
             return VariableValue(expr.name)
         elif isinstance(expr, Literal):
-            return Constant(expr.value)
+            v = expr.value
+            if isinstance(v, str):
+                return Constant(float(abs(hash(v)) % (10**40)))
+            return Constant(float(v))
         elif isinstance(expr, FunctionApplication):
             return self._compile_function_application(expr)
         elif isinstance(expr, Let):
@@ -86,7 +92,8 @@ class IdrisCompiler:
         else:
             raise NotImplementedError(f"Idris expression type not supported: {type(expr).__name__}")
 
-    def _compile_function_application(self, app: FunctionApplication):
+    def _compile_function_application(self, app: FunctionApplication) -> Any:
+        assert self.builder is not None
         func_name = app.func.name if isinstance(app.func, Identifier) else "dynamic_call"
         args = [self._compile_expression(arg) for arg in app.args]
 
@@ -95,7 +102,8 @@ class IdrisCompiler:
 
         return VariableValue(target)
 
-    def _compile_let(self, let_expr: Let):
+    def _compile_let(self, let_expr: Let) -> Any:
+        assert self.builder is not None
         for binding in let_expr.bindings:
             if isinstance(binding, FunctionDeclaration):
                 # Simplified: handle as variable assignment if no args
@@ -105,13 +113,14 @@ class IdrisCompiler:
 
         return self._compile_expression(let_expr.body)
 
-    def _compile_case(self, case_expr: Case):
+    def _compile_case(self, case_expr: Case) -> Any:
         """Compile case expression as cascading equality branches.
 
         Each alternative is assumed to be a (pattern, body) pair.
         Patterns that are Literal nodes trigger equality checks; Identifier
         patterns bind the scrutinee to a variable (wildcard/default).
         """
+        assert self.builder is not None
         scrutinee = self._compile_expression(case_expr.expr)
         result_var = self._new_tmp()
         self.builder.function.local_variables[result_var] = IRType.DEC50
@@ -132,11 +141,14 @@ class IdrisCompiler:
 
             if isinstance(pat, Literal):
                 cond_tmp = self._new_tmp()
+                assert self.builder.current_block is not None
                 self.builder.current_block.instructions.append(
                     BinaryOp(
-                        op="eq", target=cond_tmp, operand1=scrutinee, operand2=Constant(pat.value)
+                        op="eq", target=cond_tmp, operand1=scrutinee,
+                        operand2=Constant(float(pat.value) if isinstance(pat.value, (int, float)) else float(abs(hash(pat.value)) % (10**40)))
                     )
                 )
+                assert self.builder.current_block is not None
                 self.builder.current_block.terminator = BranchTerminator(
                     condition="nonzero",
                     operand1=VariableValue(cond_tmp),
@@ -164,8 +176,8 @@ class IdrisCompiler:
             # Continue checking next alternative
             self.builder.current_block = (
                 self.builder.new_block(next_label)
-                if not any(b.label == next_label for b in self.builder.function.blocks)
-                else next(b for b in self.builder.function.blocks if b.label == next_label)
+                if not any(b.label == next_label for b in self.builder.function.basic_blocks)
+                else next(b for b in self.builder.function.basic_blocks if b.label == next_label)
             )
 
         # Fallback: return 0 if no alternative matched
@@ -175,7 +187,7 @@ class IdrisCompiler:
         self.builder.new_block(merge_label)
         return VariableValue(result_var)
 
-    def _compile_if_expr(self, expr: IfExpr):
+    def _compile_if_expr(self, expr: IfExpr) -> Any:
         """Compile if-then-else: branch on condition, merge at end."""
         then_label = self._new_tmp() + "_then"
         else_label = self._new_tmp() + "_else"
@@ -183,7 +195,8 @@ class IdrisCompiler:
         result_var = self._new_tmp() + "_if_result"
 
         cond = self._compile_expression(expr.condition)
-        self.builder.emit_branch(cond, then_label, else_label)
+        assert self.builder is not None
+        self.builder.emit_branch("nonzero", cond, None, then_label, else_label)
 
         self.builder.new_block(then_label)
         then_val = self._compile_expression(expr.then_expr)
@@ -198,8 +211,9 @@ class IdrisCompiler:
         self.builder.new_block(merge_label)
         return VariableValue(result_var)
 
-    def _compile_lambda(self, expr: Lambda):
+    def _compile_lambda(self, expr: Lambda) -> Any:
         """Compile lambda as a local anonymous function, returning its name."""
+        assert self.builder is not None
         fn_name = f"__lambda_{self._new_tmp()}"
         saved_builder = self.builder
 
@@ -214,7 +228,7 @@ class IdrisCompiler:
         self.builder = saved_builder
         return VariableValue(fn_name)
 
-    def _new_tmp(self):
+    def _new_tmp(self) -> str:
         self.tmp_counter += 1
         return f"t{self.tmp_counter}"
 
@@ -222,7 +236,7 @@ class IdrisCompiler:
 class IDRIS2Compiler(IdrisCompiler):
     """Extended Idris compiler that accepts source strings (lex+parse+compile)."""
 
-    def compile(self, source_or_ast) -> Program:
+    def compile(self, source_or_ast: object) -> Program:
         if isinstance(source_or_ast, str):
             from .idris_parser import IdrisParser
 

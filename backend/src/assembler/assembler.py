@@ -494,7 +494,7 @@ class Assembler:
 
         for instr in self.instructions:
             # Resolve operands
-            resolved_operands = []
+            resolved_operands: list[str | int] = []
             for operand in instr.operands:
                 if isinstance(operand, str):
                     # Could be register or label
@@ -516,7 +516,7 @@ class Assembler:
             # Encode instruction
             try:
                 machine_word = encoder.encode(
-                    instr.mnemonic, resolved_operands, self.symbol_table.symbols
+                    instr.mnemonic, resolved_operands, self.symbol_table.symbols  # type: ignore[arg-type]
                 )
                 self.machine_code.append(machine_word)
             except AssemblyError as e:

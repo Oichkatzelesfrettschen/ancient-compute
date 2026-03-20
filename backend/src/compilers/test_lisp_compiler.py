@@ -14,7 +14,7 @@ from .lisp_compiler import LispCompiler
 from .lisp_parser import parser
 
 
-def test_compile_defun():
+def test_compile_defun() -> None:
     code = """(defun my-func (a b)
                  (+ a b))"""
     ast = parser.parse(code)
@@ -35,7 +35,7 @@ def test_compile_defun():
     assert isinstance(entry_block.terminator.value, VariableValue)
 
 
-def test_compile_arithmetic():
+def test_compile_arithmetic() -> None:
     code = """(defun my-add (a b)
                  (+ a b))"""
     ast = parser.parse(code)
@@ -55,7 +55,7 @@ def test_compile_arithmetic():
     )
 
 
-def test_compile_nested_arithmetic():
+def test_compile_nested_arithmetic() -> None:
     code = """(defun my-nested-add (a b c)
                  (+ a (+ b c)))"""
     ast = parser.parse(code)
@@ -73,7 +73,7 @@ def test_compile_nested_arithmetic():
     assert len([instr for instr in entry_block.instructions if isinstance(instr, BinaryOp)]) == 2
 
 
-def test_compile_variables():
+def test_compile_variables() -> None:
     code = """(defun my-vars (a b)
                  a)"""
     ast = parser.parse(code)
@@ -89,7 +89,7 @@ def test_compile_variables():
     assert "b" in func.local_variables
 
 
-def test_compile_if():
+def test_compile_if() -> None:
     code = """(defun my-if (a b)
                  (if (> a b) a b))"""
     ast = parser.parse(code)
@@ -110,7 +110,7 @@ def test_compile_if():
     assert isinstance(entry_block.terminator, BranchTerminator)
 
 
-def test_compile_function_call():
+def test_compile_function_call() -> None:
     code = """(defun my-call (a b)
                  (my-add a b))"""
     ast = parser.parse(code)
@@ -131,7 +131,7 @@ def test_compile_function_call():
     )
 
 
-def test_compile_let():
+def test_compile_let() -> None:
     code = """(defun my-let ()
                  (let ((x 10) (y 20))
                     (+ x y)))"""

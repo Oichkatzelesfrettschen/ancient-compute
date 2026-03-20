@@ -241,7 +241,7 @@ class TimeEvent:
     phase: str  # "column_latch", "addition", "carry", "print", "stereo"
     component: str  # "column_0", "carry", "printer", "stereotyper"
     action: str  # "latch_open", "add_begin", "carry_execute", "strike", etc.
-    data: dict = field(default_factory=dict)  # component-specific data
+    data: dict[str, object] = field(default_factory=dict)  # component-specific data
 
 
 @dataclass
@@ -294,7 +294,7 @@ class StereotyperSnapshot:
     mold_image: dict[tuple[int, int], int] = field(
         default_factory=dict
     )  # (x,y) → raised (1) or flat (0)
-    completed_molds: list[dict] = field(default_factory=list)
+    completed_molds: list[dict[str, object]] = field(default_factory=list)
 
 
 @dataclass
@@ -306,7 +306,7 @@ class OperationResult:
     events: list[TimeEvent] = field(default_factory=list)
     column_values: list[int] = field(default_factory=list)  # 8 column values after cycle
     printed_lines: list[str] = field(default_factory=list)  # lines printed this cycle
-    extracted_mold: dict | None = None  # if mold was extracted
+    extracted_mold: dict[str, object] | None = None  # if mold was extracted
     error: str | None = None
     execution_time_ms: float = 0.0
 

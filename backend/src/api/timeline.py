@@ -1,3 +1,5 @@
+from typing import Any
+
 # Ancient Compute - Timeline Content Delivery Endpoints
 """
 FastAPI endpoints for serving the 12,500-year educational timeline.
@@ -25,7 +27,7 @@ router = APIRouter(prefix="/timeline", tags=["timeline"])
 
 
 @router.get("/eras", summary="List all historical eras")
-async def list_eras(db: Session = Depends(get_db)):
+async def list_eras(db: Session = Depends(get_db)) -> Any:
     """Get all 8 historical eras spanning 12,500 years of computational history.
 
     Returns eras in chronological order with metadata for UI visualization.
@@ -56,7 +58,7 @@ async def list_eras(db: Session = Depends(get_db)):
 
 
 @router.get("/eras/{era_id}", summary="Get era details with modules")
-async def get_era_detail(era_id: int, db: Session = Depends(get_db)):
+async def get_era_detail(era_id: int, db: Session = Depends(get_db)) -> Any:
     """Get detailed information about a specific era including all its modules.
 
     Args:
@@ -103,7 +105,7 @@ async def get_era_detail(era_id: int, db: Session = Depends(get_db)):
 
 
 @router.get("/modules", summary="List all modules")
-async def list_modules(db: Session = Depends(get_db)):
+async def list_modules(db: Session = Depends(get_db)) -> Any:
     """Get all educational modules across all eras."""
     modules = db.query(Module).order_by(Module.sequence_order).all()
 
@@ -128,7 +130,7 @@ async def list_modules(db: Session = Depends(get_db)):
 
 
 @router.get("/modules/{module_id}", summary="Get module details with lessons and exercises")
-async def get_module_detail(module_id: int, db: Session = Depends(get_db)):
+async def get_module_detail(module_id: int, db: Session = Depends(get_db)) -> Any:
     """Get detailed information about a specific module.
 
     Args:
@@ -184,7 +186,7 @@ async def get_module_detail(module_id: int, db: Session = Depends(get_db)):
 
 
 @router.get("/lessons/{lesson_id}", summary="Get lesson details with content")
-async def get_lesson_detail(lesson_id: int, db: Session = Depends(get_db)):
+async def get_lesson_detail(lesson_id: int, db: Session = Depends(get_db)) -> Any:
     """Get detailed lesson content including markdown and code examples.
 
     Args:
@@ -223,7 +225,7 @@ async def get_lesson_detail(lesson_id: int, db: Session = Depends(get_db)):
 
 
 @router.get("/exercises/{exercise_id}", summary="Get exercise details with test cases")
-async def get_exercise_detail(exercise_id: int, db: Session = Depends(get_db)):
+async def get_exercise_detail(exercise_id: int, db: Session = Depends(get_db)) -> Any:
     """Get detailed exercise content including problem statement and test cases.
 
     Args:
@@ -265,7 +267,7 @@ async def get_exercise_detail(exercise_id: int, db: Session = Depends(get_db)):
 
 
 @router.get("/full", summary="Get complete timeline with all content")
-async def get_full_timeline(db: Session = Depends(get_db)):
+async def get_full_timeline(db: Session = Depends(get_db)) -> Any:
     """Get the entire 12,500-year timeline with all eras, modules, lessons, and exercises.
 
     Warning: Large response - typically 1-5 MB. Consider fetching by era for performance.
@@ -361,7 +363,7 @@ async def get_full_timeline(db: Session = Depends(get_db)):
 
 
 @router.get("/metadata", summary="Get timeline metadata and statistics")
-async def get_timeline_metadata(db: Session = Depends(get_db)):
+async def get_timeline_metadata(db: Session = Depends(get_db)) -> Any:
     """Get summary statistics about the entire timeline.
 
     Useful for UI initialization and progress tracking.

@@ -27,7 +27,7 @@ Debugger commands:
 
 @click.command("debug")
 @click.argument("program", type=click.Path(exists=True))
-def debug_cmd(program):
+def debug_cmd(program: str) -> None:
     """Launch interactive debugger for PROGRAM."""
     engine = Engine()
 

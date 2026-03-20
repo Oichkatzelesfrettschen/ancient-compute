@@ -5,7 +5,7 @@ from .idris_compiler import IdrisCompiler
 from .idris_parser import parser
 
 
-def test_compile_function_declaration():
+def test_compile_function_declaration() -> None:
     # Remove type sig to avoid parser ambiguity without indentation
     code = """module Main
                  main = putStrLn "Hello, World!" """

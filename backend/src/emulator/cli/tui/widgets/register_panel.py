@@ -1,5 +1,7 @@
 """Register panel widget: shows A, B, C, D registers, flags, PC, clock."""
 
+from typing import Any
+
 from textual.reactive import reactive
 from textual.widget import Widget
 
@@ -15,7 +17,7 @@ class RegisterPanel(Widget):
     }
     """
 
-    snapshot: reactive[dict] = reactive({})
+    snapshot: reactive[dict[str, Any]] = reactive({})
 
     def render(self) -> str:
         snap = self.snapshot

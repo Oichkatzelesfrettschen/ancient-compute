@@ -30,9 +30,9 @@ class BackendInfo:
     backend_type: ExecutionBackend
     available: bool
     reason: str = ""
-    capabilities: list = None
+    capabilities: list[str] | None = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if self.capabilities is None:
             self.capabilities = []
 
@@ -43,19 +43,20 @@ class DockerManager:
     Singleton pattern ensures single Docker client instance.
     """
 
-    _instance = None
+    _instance: "DockerManager | None" = None
+    _initialized: bool = False
 
-    def __new__(cls):
+    def __new__(cls) -> "DockerManager":
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             cls._instance._initialized = False
         return cls._instance
 
-    def __init__(self):
+    def __init__(self) -> None:
         if self._initialized:
             return
 
-        self.docker_client = None
+        self.docker_client: Any | None = None
         self.docker_available = False
         self.restricted_python_available = False
         self.backends = self._initialize_backends()
@@ -171,8 +172,9 @@ class DockerManager:
         language = language.lower()
 
         # First choice: Docker (supports all languages)
+        docker_caps = self.backends[ExecutionBackend.DOCKER].capabilities
         if self.backends[ExecutionBackend.DOCKER].available:
-            if language in self.backends[ExecutionBackend.DOCKER].capabilities:
+            if docker_caps is not None and language in docker_caps:
                 return ExecutionBackend.DOCKER
 
         # Second choice for Python: RestrictedPython
@@ -208,13 +210,14 @@ class DockerManager:
 
         return "\n".join(lines)
 
-    def ensure_docker_image(self, image_name: str, dockerfile_path: str = None) -> bool:
+    def ensure_docker_image(self, image_name: str, dockerfile_path: str | None = None) -> bool:
         """
         Ensure a Docker image exists, build if necessary
         Returns True if image is available, False otherwise
         """
         if not self.docker_available:
             return False
+        assert self.docker_client is not None
 
         try:
             # Check if image exists
@@ -240,6 +243,7 @@ class DockerManager:
         """
         if not self.docker_available:
             return False
+        assert self.docker_client is not None
 
         try:
             # First try to get existing image

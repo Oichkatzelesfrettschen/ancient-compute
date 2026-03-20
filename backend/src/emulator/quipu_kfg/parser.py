@@ -5,15 +5,16 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 
 @dataclass(frozen=True)
 class KFGArtifact:
     investigator_num: str
-    khipu: dict
-    primary_cord: dict
+    khipu: dict[str, Any]
+    primary_cord: dict[str, Any]
     clusters: list[str]
-    cords: list[dict]
+    cords: list[dict[str, Any]]
 
 
 def load_kfg_normalized(path: Path) -> KFGArtifact:

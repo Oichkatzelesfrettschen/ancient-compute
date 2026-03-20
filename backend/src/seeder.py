@@ -32,6 +32,8 @@ def seed_database():
         if not db.query(Module).first():
             prehistory_era = db.query(Era).filter_by(name="Prehistory").first()
             ancient_era = db.query(Era).filter_by(name="Ancient").first()
+            assert prehistory_era is not None, "Prehistory era not found"
+            assert ancient_era is not None, "Ancient era not found"
 
             modules = [
                 Module(
@@ -60,6 +62,8 @@ def seed_database():
 
             prehistory_module = db.query(Module).filter_by(slug="prehistoric-computation").first()
             babylonian_module = db.query(Module).filter_by(slug="babylonian-mathematics").first()
+            assert prehistory_module is not None, "Prehistoric computation module not found"
+            assert babylonian_module is not None, "Babylonian mathematics module not found"
 
             lessons = [
                 Lesson(

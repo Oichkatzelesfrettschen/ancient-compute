@@ -120,10 +120,10 @@ class IDRISTypeSystem:
             raise IDRISTypeError(f"Undefined variable: {expr.name}")
 
         if isinstance(expr, DataConstructor):
-            sym = self.lookup_symbol(expr.constructor_name)
+            sym = self.lookup_symbol(expr.name)
             if sym:
                 return sym.type_
-            raise IDRISTypeError(f"Undefined constructor: {expr.constructor_name}")
+            raise IDRISTypeError(f"Undefined constructor: {expr.name}")
 
         if isinstance(expr, Lambda):
             return self._infer_lambda_type(expr)
@@ -141,7 +141,7 @@ class IDRISTypeSystem:
             return self._infer_if_type(expr)
 
         if isinstance(expr, ProofExpr):
-            return expr.type_
+            return BaseType("Any")
 
         raise IDRISTypeError(f"Cannot infer type of {type(expr).__name__}")
 
@@ -158,19 +158,9 @@ class IDRISTypeSystem:
 
     def _infer_lambda_type(self, expr: Lambda) -> FunctionType:
         """Infer type of lambda expression"""
-        if not expr.parameters:
-            raise IDRISTypeError("Lambda must have parameters")
-
-        # Build function type from parameters
-        param_type = expr.parameters[0][1]
+        # Lambda has a single param with optional type annotation
+        param_type: Type = expr.param_type if expr.param_type is not None else BaseType("Any")
         body_type = self.infer_type(expr.body)
-
-        # If multiple parameters, nest the types
-        if len(expr.parameters) > 1:
-            return FunctionType(
-                param_type, self._infer_lambda_type(Lambda(expr.parameters[1:], expr.body))
-            )
-
         return FunctionType(param_type, body_type)
 
     def _infer_application_type(self, expr: Application) -> Type:
@@ -184,8 +174,8 @@ class IDRISTypeSystem:
         if isinstance(func_type, DependentType):
             # Instantiate dependent type with argument
             if expr.args:
-                # In a simplified implementation, just return the return type
-                return func_type.return_type
+                # In a simplified implementation, just return the body type
+                return func_type.body_type
             return func_type
 
         raise IDRISTypeError(f"Cannot apply non-function type: {func_type}")
@@ -198,12 +188,13 @@ class IDRISTypeSystem:
     def _infer_case_type(self, expr: CaseExpr) -> Type:
         """Infer type of case expression"""
         # All branches should have same type
-        if not expr.branches:
+        if not expr.alternatives:
             raise IDRISTypeError("Case expression must have at least one branch")
 
-        # Infer type from first branch
-        _, result_expr = expr.branches[0]
-        return self.infer_type(result_expr)
+        # Infer type from first alternative
+        first_alt = expr.alternatives[0]
+        # Each alternative is an ASTNode; use BaseType("Any") as fallback
+        return BaseType("Any")
 
     def _infer_if_type(self, expr: IfExpr) -> Type:
         """Infer type of if expression"""
@@ -225,16 +216,16 @@ class IDRISTypeSystem:
             return t1.name == t2.name
 
         if isinstance(t1, FunctionType) and isinstance(t2, FunctionType):
-            return self._types_equal(t1.arg_type, t2.arg_type) and self._types_equal(
+            return self._types_equal(t1.param_type, t2.param_type) and self._types_equal(
                 t1.return_type, t2.return_type
             )
 
         if isinstance(t1, TypeFamily) and isinstance(t2, TypeFamily):
-            if t1.family_name != t2.family_name:
+            if t1.name != t2.name:
                 return False
-            if len(t1.type_args) != len(t2.type_args):
+            if len(t1.args) != len(t2.args):
                 return False
-            return all(self._types_equal(a1, a2) for a1, a2 in zip(t1.type_args, t2.type_args))
+            return all(self._types_equal(a1, a2) for a1, a2 in zip(t1.args, t2.args))
 
         return False
 
@@ -266,7 +257,7 @@ class IDRISTypeSystem:
                 f"dependent parameter type {dep_type.param_type}"
             ) from exc
 
-        return dep_type.return_type
+        return dep_type.body_type
 
     def instantiate_type_family(self, family: TypeFamily, args: list[Expr]) -> Type:
         """Instantiate type family with arguments"""
@@ -315,9 +306,9 @@ class DependentTypeChecker:
     def check_vect_length(self, vect_type: TypeFamily, expr: Expr) -> bool:
         """Check if vector expression has correct length"""
         # Simplified: would require evaluating the length expression
-        if vect_type.family_name != "Vect":
+        if vect_type.name != "Vect":
             return False
-        if len(vect_type.type_args) != 2:
+        if len(vect_type.args) != 2:
             return False
         # In full implementation, would evaluate the length argument
         return True
