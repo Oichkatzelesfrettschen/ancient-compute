@@ -131,6 +131,60 @@ materials:
     limit of all materials in this set, critical for counting mechanism
     springs undergoing 10^7+ cycles.
 
+- name: wrought_iron
+  designation: EN 10083-1 / DIN C10 (historical 1840s grade)
+  assignment: frame members, connecting rods, tie bars (AE historical material)
+  density_kg_m3: 7850
+  friction_coeff: 0.15
+  youngs_modulus_GPa: [200, 210]
+  poissons_ratio: 0.29
+  yield_strength_MPa: [180, 220]
+  ultimate_tensile_strength_MPa: [300, 400]
+  endurance_limit_MPa: [140, 160]
+  thermal_expansion_coeff_per_K: 11.5e-6
+  specific_heat_J_kgK: 486
+  thermal_conductivity_W_mK: 52
+  hardness_HB: [100, 130]
+  electrical_resistivity_ohm_m: 1.2e-7
+  magnetic_permeability_relative: 200
+  creep_threshold_C: 250
+  temperature_range_C: [10, 40]
+  source: >-
+    Timoshenko, S.P. (1956). Strength of Materials. Van Nostrand, Vol.1.
+    ASM Metals Handbook Vol.1 (1990) pp.695-698. EN 10083-1 Table 2 (C10 grade).
+  notes: >-
+    Wrought iron is ductile with fibrous grain structure (slag stringers).
+    Lower carbon than steel (~0.02-0.08 wt%), higher slag (0.1-0.2 wt%).
+    Babbage's AE frame was wrought iron per SMG technical description.
+    Yield varies by puddling quality; use lower bound for conservative design.
+
+- name: gun_metal
+  designation: BS 1400 LG2 / CuSn10Ni1 / CW405J
+  assignment: bearing bushings (AE alternative to phosphor bronze)
+  density_kg_m3: 8800
+  friction_coeff: 0.15
+  youngs_modulus_GPa: [100, 110]
+  poissons_ratio: 0.34
+  yield_strength_MPa: [150, 200]
+  ultimate_tensile_strength_MPa: [300, 350]
+  endurance_limit_MPa: [110, 140]
+  thermal_expansion_coeff_per_K: 18.0e-6
+  specific_heat_J_kgK: 376
+  thermal_conductivity_W_mK: 58
+  hardness_HB: [80, 100]
+  electrical_resistivity_ohm_m: 1.5e-7
+  magnetic_permeability_relative: 1.0
+  creep_threshold_C: 150
+  temperature_range_C: [10, 40]
+  source: >-
+    copper.org CDA Alloy Data Sheet LG2 (accessed 2026).
+    BS 1400:1985 Table 1 LG2 (leaded gunmetal). Shigley 11e Appendix A.
+  notes: >-
+    Gun metal (leaded tin bronze) was widely used in Victorian-era bearing
+    applications. Friction coeff (dry vs steel) 0.15; lubricated 0.08.
+    Lower yield than phosphor bronze but easier to cast; used in some
+    AE bearing locations per SMG analysis.
+
 # ---------------------------------------------------------------------------
 # Mechanisms
 # ---------------------------------------------------------------------------

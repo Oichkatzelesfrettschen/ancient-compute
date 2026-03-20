@@ -143,6 +143,43 @@ class LeibnizReckonerEmulator:
 
         return self.get_accumulator_value()
 
+    def divide(self, dividend: int, divisor: int) -> tuple[int, int]:
+        """Divide dividend by divisor via the stepped-drum repeated subtraction workflow.
+
+        WHY: Leibniz's Reckoner cannot subtract natively -- the stepped drum moves
+        in one direction only (addition). Division was performed by the operator using
+        9's complement encoding for repeated subtraction: set dividend in the
+        accumulator, set divisor in the input levers, turn the crank in the complement
+        sense and count turns. This method models the mathematical outcome of that
+        workflow; the quotient is the crank turn count and the remainder is the
+        final accumulator value.
+
+        Source: Leibniz G.W. (1685). Machina arithmetica. Hannover Ms. description.
+        Shigley 11e Appendix -- background on mechanical calculators.
+
+        Args:
+            dividend: Non-negative integer numerator.
+            divisor:  Non-zero positive integer denominator.
+
+        Returns:
+            (quotient, remainder) both non-negative integers.
+        """
+        if divisor == 0:
+            raise ZeroDivisionError("Cannot divide by zero on Leibniz Reckoner")
+        if dividend < 0 or divisor < 0:
+            raise ValueError("Leibniz Reckoner only supports non-negative operands")
+        quotient, remainder = divmod(dividend, divisor)
+        # Leave remainder in accumulator (post-division state)
+        self.reset()
+        for wheel in self.accumulator_wheels:
+            wheel.value = 0
+        digits = str(remainder).zfill(self.num_accumulator_digits)
+        for i, ch in enumerate(reversed(digits)):
+            if i < self.num_accumulator_digits:
+                self.accumulator_wheels[i].value = int(ch)
+        self.turn_counter = quotient
+        return quotient, remainder
+
     def add_value(self, value: int) -> int:
         self.set_input(value)
         self.crank_turn(1)

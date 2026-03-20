@@ -61,6 +61,14 @@ class SimulationState:
     total_sliding_distance_mm: float = 0.0
     galvanic_risk_accumulator: float = 0.0
 
+    # Oil degradation state
+    oil_age_hours: float = 0.0  # cumulative operating hours since last re-oil
+    oil_viscosity_factor: float = 1.0  # multiplier on base viscosity (1.0 = fresh)
+
+    # Cumulative fatigue (Miner's rule)
+    cumulative_fatigue_damage: float = 0.0  # Miner's D = sum(n_i / N_i); failure at 1.0
+    fatigue_failed: bool = False
+
     def copy(self) -> SimulationState:
         """Return a deep copy of this state."""
         return SimulationState(
@@ -87,6 +95,10 @@ class SimulationState:
             total_torque_Nm=self.total_torque_Nm,
             total_sliding_distance_mm=self.total_sliding_distance_mm,
             galvanic_risk_accumulator=self.galvanic_risk_accumulator,
+            oil_age_hours=self.oil_age_hours,
+            oil_viscosity_factor=self.oil_viscosity_factor,
+            cumulative_fatigue_damage=self.cumulative_fatigue_damage,
+            fatigue_failed=self.fatigue_failed,
         )
 
 

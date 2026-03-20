@@ -123,6 +123,7 @@ class TorresState:
     typewriter_output: list[str] = field(default_factory=list)
     cycle_count: int = 0
     program_pointer: int = 0
+    program_tape: list[tuple[Any, ...]] = field(default_factory=list)
 
 
 class TorresQuevedo:
@@ -194,8 +195,36 @@ class TorresQuevedo:
         self.state.typewriter_output.append(output)
         return output
 
+    def load_program(self, tape: list[tuple[Any, ...]]) -> None:
+        """Load a program tape and reset the program pointer.
+
+        WHY: step() needs a program_tape to dispatch from. Loading a program
+        here allows the MachineAdapter to drive execution via step() calls
+        one relay-cycle at a time.
+        """
+        self.state.program_tape = list(tape)
+        self.state.program_pointer = 0
+
     def step(self) -> None:
-        """Advance program pointer."""
+        """Execute one instruction from program_tape[program_pointer], then advance.
+
+        WHY: Fixes P1 -- the original step() was a PC-increment stub. One step
+        corresponds to one relay cycle: an instruction is selected and executed.
+        """
+        pp = self.state.program_pointer
+        if pp < len(self.state.program_tape):
+            instr = self.state.program_tape[pp]
+            op = instr[0]
+            if op == "add":
+                self.add(instr[1], instr[2], instr[3])
+            elif op == "sub":
+                self.subtract(instr[1], instr[2], instr[3])
+            elif op == "mul":
+                self.multiply(instr[1], instr[2], instr[3])
+            elif op == "div":
+                self.divide(instr[1], instr[2], instr[3])
+            elif op == "print":
+                self.typewriter_print(instr[1])
         self.state.program_pointer += 1
         self.state.cycle_count += 1
 

@@ -17,6 +17,7 @@ from backend.src.emulator.electromagnetic import EddyCurrentModel, GalvanicCorro
 from backend.src.emulator.materials import MaterialLibrary
 from backend.src.emulator.simulation.coupling import CouplingFunctions
 from backend.src.emulator.simulation.state import SimulationConfig, SimulationState
+from backend.src.emulator.structural import CumulativeFatigue
 from backend.src.emulator.thermodynamics import (
     FrictionHeatModel,
 )
@@ -82,6 +83,7 @@ class SimulationEngine:
         self.state = self._initial_state()
         self._failed = False
         self._failure_reason = ""
+        self._fatigue = CumulativeFatigue()
 
     def _initial_state(self) -> SimulationState:
         """Build initial state from config."""
@@ -176,10 +178,18 @@ class SimulationEngine:
         # 5. Temperature step (Crank-Nicolson via coupling)
         st.temperature_C = CouplingFunctions.thermal_step(st, cfg, Q_total)
 
-        # 6. Update oil viscosity from temperature
-        st.oil_viscosity_Pa_s = CouplingFunctions.viscosity_at_temperature(
+        # 6. Update oil viscosity from temperature + age degradation
+        # Accumulate oil age (dt [s] -> hours)
+        st.oil_age_hours += dt / 3600.0
+        # Apply OilDegradationModel: viscosity factor changes with age
+        from backend.src.emulator.tribology import OilDegradationModel  # noqa: PLC0415
+
+        st.oil_viscosity_factor = OilDegradationModel.viscosity_factor(st.oil_age_hours)
+        # Effective viscosity = temperature-corrected * age-degradation factor
+        st.oil_viscosity_Pa_s = CouplingFunctions.viscosity_with_degradation(
             0.1,
             st.temperature_C,
+            st.oil_viscosity_factor,
         )
 
         # 7. Lubrication film thickness and regime
@@ -218,6 +228,26 @@ class SimulationEngine:
             cfg,
             self.lib,
         )
+
+        # 12.5 Cumulative fatigue (Miner's rule)
+        # Estimate bending stress amplitude from shaft deflection and geometry
+        shaft_mat = self.lib.get(cfg.shaft_material)
+        Su_MPa = shaft_mat.ultimate_tensile_strength_MPa[0]
+        Se_MPa = (
+            shaft_mat.endurance_limit_MPa[0]
+            if shaft_mat.endurance_limit_MPa[0] > 0
+            else Su_MPa * 0.5
+        )
+        # Nominal bending stress: sigma = 32*M / (pi*d^3) where M ~ total_load * L/4
+        total_load_N = sum(st.bearing_loads_N)
+        M_Nm = total_load_N * (cfg.shaft_length_mm / 1e3) / 4.0
+        d_m = cfg.shaft_diameter_mm / 1e3
+        sigma_b_MPa = (32.0 * M_Nm) / (math.pi * d_m**3) / 1e6
+        cycles_this_step = cfg.rpm / 60.0 * cfg.dt_s
+        self._fatigue.add_cycles(int(max(1, cycles_this_step)), sigma_b_MPa, Se_MPa, Su_MPa)
+        st.cumulative_fatigue_damage = self._fatigue.damage
+        if self._fatigue.is_failed():
+            st.fatigue_failed = True
 
         # 13. Check failure limits
         self._check_failures()
@@ -394,6 +424,11 @@ class SimulationEngine:
             self._failure_reason = "gear_backlash"
             return
 
+        # Cumulative fatigue (Miner's rule)
+        if st.fatigue_failed:
+            self._failed = True
+            self._failure_reason = "cumulative_fatigue"
+
     @property
     def failed(self) -> bool:
         """Whether any failure limit has been exceeded."""
@@ -409,3 +444,4 @@ class SimulationEngine:
         self.state = self._initial_state()
         self._failed = False
         self._failure_reason = ""
+        self._fatigue = CumulativeFatigue()

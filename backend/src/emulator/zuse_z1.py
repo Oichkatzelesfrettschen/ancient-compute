@@ -139,6 +139,7 @@ class ZuseZ1State:
     lamp_panel: int = 0  # 22-bit lamp display state
     output_tape: list[float] = field(default_factory=list)
     tape_input: list[float] = field(default_factory=list)
+    program_tape: list[tuple[Any, ...]] = field(default_factory=list)
 
 
 class ZuseZ1:
@@ -228,26 +229,26 @@ class ZuseZ1:
         self._update_lamp_panel()
         return val
 
-    def step(self) -> None:
-        """Advance program counter by 1."""
-        self.state.program_counter += 1
-        self.state.cycle_count += 1
+    def load_program(self, program: list[tuple[Any, ...]]) -> None:
+        """Load a program into the program tape for step()-based execution.
 
-    def run(self, program: list[tuple[Any, ...]]) -> list[float]:
-        """Run a simple program: list of (op, ...) tuples.
-
-        Supported ops:
-          ('load', addr)        -- load memory[addr] into accumulator
-          ('store', addr)       -- store accumulator to memory[addr]
-          ('add', addr)         -- accumulator += memory[addr]
-          ('sub', addr)         -- accumulator -= memory[addr]
-          ('mul', addr)         -- accumulator *= memory[addr]
-          ('div', addr)         -- accumulator /= memory[addr]
-          ('imm', value)        -- load immediate float into accumulator
-          ('output',)           -- write accumulator to output tape
+        WHY: step() needs a program tape to dispatch from; load_program()
+        resets PC and stores the program so step() can execute one instruction
+        at a time instead of requiring run() to be used.
         """
-        results = []
-        for instr in program:
+        self.state.program_tape = list(program)
+        self.state.program_counter = 0
+
+    def step(self) -> None:
+        """Execute one instruction from program_tape[program_counter], then advance.
+
+        WHY: Fixes the P0 bug where step() was a stub that only incremented PC
+        without executing the instruction. Adapters that call step() in a loop
+        now correctly drive program execution one instruction at a time.
+        """
+        pc = self.state.program_counter
+        if pc < len(self.state.program_tape):
+            instr = self.state.program_tape[pc]
             op = instr[0]
             if op == "load":
                 self.load(instr[1])
@@ -264,9 +265,21 @@ class ZuseZ1:
             elif op == "imm":
                 self.state.accumulator = ZuseFloat.from_float(float(instr[1]))
             elif op == "output":
-                results.append(self.write_output())
-            self.state.program_counter += 1
-        return results
+                self.write_output()
+        self.state.program_counter += 1
+        self.state.cycle_count += 1
+
+    def run(self, program: list[tuple[Any, ...]]) -> list[float]:
+        """Run a program by loading it and stepping through to completion.
+
+        WHY: Delegates to load_program() + step() so that run() and step()
+        share a single dispatch path, eliminating the former double-increment
+        (run had its own program_counter += 1 AND step had another).
+        """
+        self.load_program(program)
+        while self.state.program_counter < len(self.state.program_tape):
+            self.step()
+        return list(self.state.output_tape)
 
     def state_dict(self) -> dict[str, object]:
         """Return current state as a plain dict."""

@@ -614,3 +614,64 @@ class NotchSensitivity:
         if Kf <= 0:
             return 0.0
         return Se_uncorrected_MPa / Kf
+
+
+class CumulativeFatigue:
+    """Miner's linear damage rule for cumulative fatigue.
+
+    D = sum(n_i / N_i) where n_i = cycles experienced at stress level i,
+    N_i = cycles to failure at stress level i (from Basquin S-N curve).
+    Failure when D >= 1.0.
+
+    WHY: Each AE operation imposes a different cyclic stress profile.
+    ADD vs MULT produce different load magnitudes and frequencies.
+    Without cycle counting, long-duration life prediction is unreliable.
+
+    Source: Shigley 9th ed. Eq. 6-71; Miner (1945) ASME J. Applied Mechanics.
+    """
+
+    def __init__(self) -> None:
+        self.damage: float = 0.0
+        self.cycle_log: list[tuple[float, int]] = []  # (stress_MPa, cycles)
+
+    def add_cycles(
+        self,
+        n_cycles: int,
+        stress_amplitude_MPa: float,
+        Se_MPa: float,
+        Su_MPa: float,
+    ) -> None:
+        """Accumulate fatigue damage for n_cycles at a given stress amplitude.
+
+        Uses Basquin S-N curve: N = (Su / sigma_a)^b where b ~ log(0.9*Su/Se) / log(1e6).
+        If stress_amplitude_MPa <= Se_MPa (below endurance limit), no damage accrues.
+
+        Args:
+            n_cycles: Number of cycles applied at this stress level.
+            stress_amplitude_MPa: Alternating stress amplitude [MPa].
+            Se_MPa: Corrected endurance limit [MPa].
+            Su_MPa: Ultimate tensile strength [MPa].
+        """
+        if stress_amplitude_MPa <= Se_MPa or Se_MPa <= 0 or Su_MPa <= 0:
+            return
+        # Basquin exponent: b = log(0.9*Su / Se) / log(1e6)
+        import math
+
+        ratio = (0.9 * Su_MPa) / Se_MPa
+        if ratio <= 1.0:
+            return
+        b = math.log10(ratio) / 6.0  # log10(1e6) = 6
+        # N_life at this stress amplitude (Basquin): sigma_a = (0.9*Su) * N^(-b)
+        # => N = ((0.9*Su) / sigma_a)^(1/b)
+        N_life = ((0.9 * Su_MPa) / stress_amplitude_MPa) ** (1.0 / b)
+        if N_life > 0:
+            self.damage += n_cycles / N_life
+        self.cycle_log.append((stress_amplitude_MPa, n_cycles))
+
+    def is_failed(self) -> bool:
+        """Return True when cumulative damage D >= 1.0 (Miner failure criterion)."""
+        return self.damage >= 1.0
+
+    def remaining_life_fraction(self) -> float:
+        """Fraction of fatigue life remaining: 1.0 = new, 0.0 = at failure."""
+        return max(0.0, 1.0 - self.damage)

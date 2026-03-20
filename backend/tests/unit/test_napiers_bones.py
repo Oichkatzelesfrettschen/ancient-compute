@@ -56,3 +56,48 @@ def test_zero_handling():
 
     nb.load_number(0)
     assert nb.multiply(55) == 0
+
+
+# Division tests
+def test_napier_divide_exact():
+    nb = NapiersBones()
+    q, r = nb.divide(100, 5)
+    assert q == 20
+    assert r == 0
+
+
+def test_napier_divide_with_remainder():
+    nb = NapiersBones()
+    q, r = nb.divide(17, 3)
+    assert q == 5
+    assert r == 2
+
+
+def test_napier_divide_by_one():
+    nb = NapiersBones()
+    q, r = nb.divide(999, 1)
+    assert q == 999
+    assert r == 0
+
+
+def test_napier_divide_self():
+    nb = NapiersBones()
+    q, r = nb.divide(42, 42)
+    assert q == 1
+    assert r == 0
+
+
+def test_napier_divide_large():
+    nb = NapiersBones()
+    q, r = nb.divide(123456, 789)
+    expected_q, expected_r = divmod(123456, 789)
+    assert q == expected_q
+    assert r == expected_r
+
+
+def test_napier_divide_by_zero():
+    nb = NapiersBones()
+    import pytest
+
+    with pytest.raises(ZeroDivisionError):
+        nb.divide(10, 0)

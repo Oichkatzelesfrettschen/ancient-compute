@@ -73,6 +73,7 @@ class LudgateState:
     program_pointer: int = 0
     cycle_count: int = 0
     output_tape: list[int] = field(default_factory=list)
+    program_tape: list[tuple[Any, ...]] = field(default_factory=list)
 
 
 class LudgateMachine:
@@ -215,8 +216,37 @@ class LudgateMachine:
             "store_size": _NUM_COLUMNS,
         }
 
+    def load_program(self, tape: list[tuple[Any, ...]]) -> None:
+        """Load a program tape and reset the program pointer.
+
+        WHY: step() needs a program_tape to dispatch from. Loading a program
+        here allows the MachineAdapter to drive execution via step() calls
+        instead of requiring the caller to use run() directly.
+        """
+        self.state.program_tape = list(tape)
+        self.state.program_pointer = 0
+
     def step(self) -> None:
-        """Advance program pointer (stub for MachineAdapter)."""
+        """Execute one instruction from program_tape[program_pointer], then advance.
+
+        WHY: Fixes P1 -- the original step() was a PC-increment stub that did
+        not dispatch any instruction. The perforated cylinder analogy: one cylinder
+        advance = one operation selected and executed.
+        """
+        pp = self.state.program_pointer
+        if pp < len(self.state.program_tape):
+            instr = self.state.program_tape[pp]
+            op = instr[0]
+            if op == "add":
+                self.add(instr[1], instr[2])
+            elif op == "sub":
+                self.subtract(instr[1], instr[2])
+            elif op == "mult":
+                self.multiply(instr[1], instr[2])
+            elif op == "div":
+                self.divide(instr[1], instr[2])
+            elif op == "print":
+                self.print_output(instr[1])
         self.state.program_pointer += 1
         self.state.cycle_count += 1
 

@@ -818,6 +818,80 @@ class TestBabbageNumberStress:
         assert delta <= 10 ** (-39)  # 1 ULP = 10^-40, allow 10x margin
 
 
+# ============================================================================
+# New Opcode and Breakpoint Tests (6 tests)
+# ============================================================================
+
+
+def test_engine_cmpz_zero():
+    """CMPZ on zero sets ZERO flag and clears LESS/GREATER."""
+    engine = Engine()
+    engine.registers["A"] = BabbageNumber(0)
+    engine.execute_instruction(Instruction("CMPZ", ["A"]))
+    assert engine.flags["ZERO"] is True
+    assert engine.flags["LESS"] is False
+    assert engine.flags["GREATER"] is False
+
+
+def test_engine_cmpz_positive():
+    """CMPZ on positive value sets GREATER flag."""
+    engine = Engine()
+    engine.registers["B"] = BabbageNumber(7)
+    engine.execute_instruction(Instruction("CMPZ", ["B"]))
+    assert engine.flags["GREATER"] is True
+    assert engine.flags["ZERO"] is False
+
+
+def test_engine_clr():
+    """CLR zeroes the target register and sets ZERO flag."""
+    engine = Engine()
+    engine.registers["A"] = BabbageNumber(42)
+    engine.execute_instruction(Instruction("CLR", ["A"]))
+    assert engine.registers["A"].to_decimal() == 0.0
+    assert engine.flags["ZERO"] is True
+
+
+def test_engine_br_jumps():
+    """BR unconditionally sets PC to target address."""
+    engine = Engine()
+    engine.PC = 0
+    engine.execute_instruction(Instruction("BR", ["77"]))
+    assert engine.PC == 77
+
+
+def test_engine_step_nop():
+    """STEP executes without error (card drum advance NOP)."""
+    engine = Engine()
+    engine.execute_instruction(Instruction("STEP"))
+    # No side effects; engine does not crash
+
+
+def test_engine_print_appends_result_card():
+    """PRINT adds a result card entry (same as WRPRN)."""
+    engine = Engine()
+    engine.registers["A"] = BabbageNumber(99)
+    engine.execute_instruction(Instruction("PRINT", ["A"]))
+    assert len(engine.result_cards) == 1
+    assert engine.result_cards[0]["value"].to_decimal() == 99.0
+
+
+def test_engine_register_breakpoint_triggers():
+    """Register breakpoint fires when register value matches target."""
+    engine = Engine()
+    engine.set_breakpoint("register", 5, reg="A")
+    engine.registers["A"] = BabbageNumber(5)
+    engine.check_breakpoints()
+    assert engine.paused is True
+
+
+def test_engine_register_breakpoint_no_crash_without_reg():
+    """Register breakpoint without 'reg' key does not raise KeyError."""
+    engine = Engine()
+    engine.breakpoints.append({"type": "register", "target": 5, "enabled": True})
+    engine.registers["A"] = BabbageNumber(5)
+    engine.check_breakpoints()  # Must not raise KeyError
+
+
 class TestBabbageNumberFuzz:
     """Seeded random fuzz testing for arithmetic operations."""
 

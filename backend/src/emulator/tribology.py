@@ -444,6 +444,62 @@ class TimeToFailure:
         return delta_c / h_per_hour
 
 
+class OilDegradationModel:
+    """Simplified mineral oil oxidation model for long-duration AE runs.
+
+    WHY: 19th-century mineral/tallow oil degrades via oxidation over weeks.
+    Viscosity rises ~30% over ~200 operating hours (early oxidation phase),
+    then falls as shear breakdown and varnish formation dominates. Without
+    this model, long-run simulations over-predict oil film thickness and
+    under-predict wear in the 100-500 hour regime.
+
+    Model: logistic rise to peak at OXIDATION_PEAK_HOURS, then exponential
+    decay. Factor is applied as a multiplier on the base 40-C viscosity in
+    CouplingFunctions.viscosity_at_temperature().
+
+    ASSUMPTION: Based on Hamrock-Dowson 2004 Table 2.1 mineral oil aging
+    data. Primary-source measurement from the working DE2 is deferred
+    (see DEFERRED_WORK.md). Use with +/-30% uncertainty.
+
+    Source:
+      Hamrock, B.J., Schmid, S.R., Jacobson B.O. (2004). Fundamentals of
+      Fluid Film Lubrication. 2nd ed. Marcel Dekker. ISBN 0-8247-5371-2.
+      Table 2.1 and Section 2.3 (mineral oil oxidation kinetics).
+    """
+
+    OXIDATION_PEAK_HOURS: float = 200.0  # hours to viscosity peak
+    PEAK_VISCOSITY_FACTOR: float = 1.30  # 30% increase at peak
+    SHEAR_DECAY_RATE: float = 0.002  # per hour after peak (exponential)
+
+    @classmethod
+    def viscosity_factor(cls, age_hours: float) -> float:
+        """Return viscosity multiplier for oil of given age.
+
+        Returns a value in (0, PEAK_VISCOSITY_FACTOR].
+        Fresh oil (age=0) -> 1.0; peak (age=200h) -> 1.30;
+        very old oil (age>>200h) decays back toward ~1.0.
+        """
+        if age_hours <= 0.0:
+            return 1.0
+        if age_hours <= cls.OXIDATION_PEAK_HOURS:
+            # Smooth cubic (logistic-like) rise from 1.0 to PEAK
+            t = age_hours / cls.OXIDATION_PEAK_HOURS
+            return 1.0 + (cls.PEAK_VISCOSITY_FACTOR - 1.0) * (3.0 * t**2 - 2.0 * t**3)
+        else:
+            excess = age_hours - cls.OXIDATION_PEAK_HOURS
+            return cls.PEAK_VISCOSITY_FACTOR * math.exp(-cls.SHEAR_DECAY_RATE * excess)
+
+    @classmethod
+    def apply_reoil(cls, oil_age_hours: float, oil_viscosity_factor: float) -> tuple[float, float]:
+        """Reset oil age and factor to fresh-oil values (re-oiling event).
+
+        Returns updated (oil_age_hours, oil_viscosity_factor).
+        """
+        _ = oil_age_hours  # consumed; returned as 0.0
+        _ = oil_viscosity_factor
+        return 0.0, 1.0
+
+
 # 19th-century achievable finishes
 PERIOD_SURFACE_FINISHES = [
     SurfaceFinishSpec(

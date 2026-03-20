@@ -94,6 +94,37 @@ class CouplingFunctions:
         return float(eta_T_Pa_s)
 
     @staticmethod
+    def viscosity_with_degradation(
+        eta_40_Pa_s: float,
+        temperature_C: float,
+        oil_viscosity_factor: float,
+        eta_100_Pa_s: float | None = None,
+        density_kg_m3: float = 870.0,
+    ) -> float:
+        """Temperature-dependent viscosity multiplied by oil degradation factor.
+
+        WHY: Couples OilDegradationModel (tribology.py) with the ASTM D341
+        viscosity-temperature model. Fresh oil (factor=1.0) gives the base
+        ASTM viscosity; degraded oil (factor>1.0 during oxidation peak) raises
+        effective viscosity and reduces film thickness prediction accuracy.
+
+        Args:
+            eta_40_Pa_s: Base dynamic viscosity at 40 C [Pa*s] (fresh oil).
+            temperature_C: Operating temperature [C].
+            oil_viscosity_factor: Degradation multiplier from OilDegradationModel.
+            eta_100_Pa_s: Reference viscosity at 100 C for two-point ASTM (optional).
+            density_kg_m3: Oil density [kg/m^3].
+
+        Returns:
+            Effective dynamic viscosity [Pa*s] accounting for both temperature
+            and oil age degradation.
+        """
+        base = CouplingFunctions.viscosity_at_temperature(
+            eta_40_Pa_s, temperature_C, eta_100_Pa_s, density_kg_m3
+        )
+        return float(base * oil_viscosity_factor)
+
+    @staticmethod
     def friction_heat_from_bearings(
         bearing_loads_N: list[float],
         shaft_diameter_mm: float,

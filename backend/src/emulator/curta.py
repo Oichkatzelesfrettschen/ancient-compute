@@ -40,6 +40,7 @@ class CurtaTypeI:
         self.counter_dial = 0  # 6 digits
         self.carriage_position = 0  # 0 to 5 (6 positions)
         self.crank_mode = CrankMode.ADD
+        self.bell_ringing = False  # Tens bell: signals result dial overflow/underflow
 
         # Physical limits
         self.MAX_RESULT = 10**11 - 1
@@ -108,15 +109,15 @@ class CurtaTypeI:
 
     def _add_result(self, value: int) -> None:
         self.result_dial += value
-        # Handle wrap-around (tens bell)
         if self.result_dial > self.MAX_RESULT:
             self.result_dial %= self.MAX_RESULT + 1
+            self.bell_ringing = True  # Tens bell: carry propagated out of MSB
 
     def _sub_result(self, value: int) -> None:
         self.result_dial -= value
         if self.result_dial < 0:
-            # Ten's complement wrap around
             self.result_dial += self.MAX_RESULT + 1
+            self.bell_ringing = True  # Tens bell: underflow/borrow propagated out of MSB
 
     def _add_counter(self, value: int) -> None:
         self.counter_dial += value
@@ -128,9 +129,51 @@ class CurtaTypeI:
         if self.counter_dial < 0:
             self.counter_dial += self.MAX_COUNTER + 1
 
+    def divide(self, dividend: int, divisor: int) -> tuple[int, int]:
+        """Divide using the Curta's crank-based repeated subtraction workflow.
+
+        WHY: Curta supports CrankMode.SUB via the reversing gear. Historical
+        division: load dividend into result dial, load divisor into sliders,
+        turn crank in SUB mode counting rotations until result would underflow,
+        then add 1 back (correction step). The counter dial accumulates the
+        quotient digit count; the result dial holds the remainder.
+
+        Source: Herzstark, C. (1948). Austrian patent AT177006. Contina AG
+        operator manual (1952) pp.12-15 (division procedure).
+
+        Args:
+            dividend: Non-negative integer numerator (must fit in 11-digit result).
+            divisor:  Non-zero positive integer denominator.
+
+        Returns:
+            (quotient, remainder) both non-negative integers.
+        """
+        if divisor == 0:
+            raise ZeroDivisionError("Cannot divide by zero")
+        if dividend < 0 or divisor < 0:
+            raise ValueError("Curta only supports non-negative operands for division")
+        if dividend > self.MAX_RESULT:
+            raise OverflowError(f"Dividend {dividend} exceeds 11-digit result dial")
+
+        self.clear_result()
+        self.clear_counter()
+        self.bell_ringing = False
+        self.result_dial = dividend
+        self.set_input(divisor)
+        self.set_crank_mode(CrankMode.SUBTRACT)
+        self.shift_carriage(0)
+
+        while self.result_dial >= divisor:
+            # Subtract without triggering tens bell (pre-check)
+            self.result_dial -= divisor
+            self.counter_dial += 1
+
+        return self.counter_dial, self.result_dial
+
     def clear_result(self) -> None:
         """Clear result dial (clearing lever)."""
         self.result_dial = 0
+        self.bell_ringing = False
 
     def clear_counter(self) -> None:
         """Clear revolution counter."""

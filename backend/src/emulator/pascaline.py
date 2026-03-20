@@ -79,13 +79,16 @@ class PascalineEmulator:
         # This function directly adds to the units wheel, and carries propagate.
         self._add_to_wheel(0, input_value)
 
-    def _add_to_wheel(self, position: int, amount: int) -> None:
-        """
-        Adds amount to wheel at position, handling sautoir carries.
-        This models the ripple carry mechanism.
+    def _add_to_wheel(self, position: int, amount: int) -> bool:
+        """Adds amount to wheel at position, handling sautoir carries.
+
+        Returns True if a carry propagated out of the most-significant wheel
+        (i.e., position >= num_digits -- the physical overflow/end-around carry).
+        WHY: The return value is needed by subtract() to detect the end-around
+        carry that Pascaline used to finalize 9's-complement subtraction.
         """
         if position >= self.num_digits:
-            return  # Overflow
+            return True  # Carry propagated past the MSB
 
         current_value = self.wheels[position].value
         new_value = current_value + amount
@@ -95,82 +98,54 @@ class PascalineEmulator:
         carry = new_value // 10
         if carry > 0:
             # Sautoir action: lift and then drop, kicking the next wheel.
-            # This is the "ripple" carry.
-            self.wheels[position].sautoir_lifted = True  # Indicate sautoir was lifted
-            self._add_to_wheel(position + 1, carry)
-            self.wheels[position].sautoir_lifted = False  # Sautoir drops after carry
+            self.wheels[position].sautoir_lifted = True
+            carry_out = self._add_to_wheel(position + 1, carry)
+            self.wheels[position].sautoir_lifted = False
+            return carry_out
+        return False
 
     def add(self, operand: int) -> int:
         """Adds operand to the current value of the accumulator."""
         s_op = str(operand)[::-1]  # Reverse to process units first
         for i, char in enumerate(s_op):
             if i < self.num_digits:
-                digit = int(char)
-                self._add_to_wheel(i, digit)
+                self._add_to_wheel(i, int(char))
         return self.get_value()
 
     def subtract(self, operand: int) -> int:
-        """Subtracts operand using the method of nines complements."""
+        """Subtracts operand using the method of nines complements.
+
+        WHY: Pascaline cannot subtract directly -- the stepped drum only moves
+        in one direction. Subtraction is performed via 9's complement addition
+        followed by end-around carry. If the carry propagates out of the MSB
+        the result is positive and the carry-out (the '1') is added back to
+        the units wheel (end-around carry). If no carry-out, the subtrahend
+        exceeded the minuend and the result remains in 9's-complement form.
+
+        Algorithm (Pascal 1642 / Babbage-era description):
+          1. Compute 9's complement of operand.
+          2. Add complement to accumulator via sautoir carry propagation.
+          3. If carry propagates out of MSB: add 1 to units (end-around carry).
+          4. If no carry-out: result is negative (stored as 9's complement).
+        """
         if not self.nines_complement_mode:
             raise RuntimeError("Nines complement mode not active for subtraction")
 
-        # 1. Compute nines complement of operand
         complement_operand = self._nines_complement(operand)
 
-        # 2. Add the complement
-        self.add(complement_operand)
+        # Add complement digit-by-digit, tracking carry-out from MSB
+        s_op = str(complement_operand)[::-1]
+        carry_out = False
+        for i, char in enumerate(s_op):
+            if i < self.num_digits:
+                co = self._add_to_wheel(i, int(char))
+                if co:
+                    carry_out = True
 
-        # 3. Handle end-around carry (add 1 to units if overflow)
-        # For nines complement, overflow is an end-around carry.
-        # If the highest wheel overflows, add 1 to the units wheel.
+        if carry_out:
+            # End-around carry: the result is positive, add 1 to units wheel
+            self._add_to_wheel(0, 1)
 
-        # This simplified model: if accumulator overflows MAX_VALUE, it implies
-        # an end-around carry in this context.
-        # A more granular simulation would require tracking the overflow state
-        # of the leftmost wheel explicitly.
-        # For now, let's assume we detect overflow implicitly and add 1.
-
-        # Simple check for 'overflow' when doing nines complement addition
-        # If the result of adding the complement is *larger* than it should be,
-        # it implies a carry out of the most significant digit.
-
-        # This is a bit tricky with integer arithmetic.
-        # Pascaline's mechanical behavior: If a carry leaves the most significant digit,
-        # it mechanically adds 1 to the least significant digit (end-around carry).
-        # We need to detect if `add(complement_operand)` caused such an 'overflow'.
-
-        # For simplicity, if num_digits maxes out, assume carry and add 1.
-        # This is not a precise sautoir-level model for end-around carry.
-        # A true Tier 1 would involve detecting the "carry-out" of the last wheel.
-        # For now, if the result exceeds the max representable number, we add 1.
-
-        # Max value before overflow (e.g. 999 for 3 digits)
-        _max_val = (10**self.num_digits) - 1
-
-        # If adding the complement resulted in a value > max_val, it's an end-around carry.
-        # E.g., 50 - 10 = 40. Complement of 10 (for 3 digits) is 989.
-        # 50 + 989 = 1039.
-        # This overflows. The '1' (thousands digit) is the carry.
-        # We take 039 + 1 = 40.
-
-        # This requires storing actual intermediate digits to detect carry out.
-        # Let's modify add to return if carry happened.
-        # Or, we calculate the actual expected overflow.
-
-        # For now, a simplified end-around carry check.
-        # If the result overflows the max representable for the number of digits,
-        # it means a carry occurred.
-
-        # A proper implementation for nines complement with end-around carry:
-        # 1. Set wheels to operand (e.g., 50)
-        # 2. Add complement (e.g., 989)
-        # 3. Read current wheel values. If carry propagated out of the last wheel,
-        #    add 1 to units wheel.
-
-        # Let's make `_add_to_wheel` return if a carry happened from its position.
-
-        # For now, a basic functional approximation.
-        # This needs to be refined for Tier 1.
         return self.get_value()
 
     def _nines_complement(self, number: int) -> int:

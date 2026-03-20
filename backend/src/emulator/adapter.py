@@ -14,6 +14,7 @@ from .types import MechanicalPhase
 
 if TYPE_CHECKING:
     from .analytical_engine import Engine
+    from .enigma import EnigmaMachine
     from .leibniz_reckoner import LeibnizReckonerEmulator
     from .napiers_bones import NapiersBones
     from .pascaline import PascalineEmulator
@@ -406,6 +407,64 @@ class LeibnizAdapter(MachineAdapter):
             "input_drums": [d.value for d in self.machine.input_drums],
             "carriage_position": self.machine.carriage_position,
             "turn_counter": self.machine.turn_counter,
+        }
+
+
+class EnigmaAdapter(MachineAdapter):
+    """Adapter for EnigmaMachine (Germany, 1918-1945).
+
+    step() enciphers the next character from the loaded input tape.
+    load_input(text) queues characters for step-by-step processing.
+    output_tape accumulates enciphered characters.
+    """
+
+    def __init__(self, machine: EnigmaMachine) -> None:
+        self.machine = machine
+        self._input_tape: list[str] = []
+        self._output_tape: list[str] = []
+        self._steps = 0
+
+    def load_input(self, text: str) -> None:
+        """Queue plaintext (or ciphertext) characters for encipherment."""
+        self._input_tape = [c for c in text.upper() if c.isalpha()]
+
+    def get_cycle_count(self) -> int:
+        return self._steps
+
+    def get_current_phase(self) -> MechanicalPhase | None:
+        return None
+
+    def get_column_values(self) -> list[int]:
+        # Expose current rotor positions as column values (0-25).
+        return [r.position for r in self.machine.rotors]
+
+    def get_register_values(self) -> dict[str, Any]:
+        return {f"R{i}": self.machine.rotors[i].position for i in range(len(self.machine.rotors))}
+
+    def get_memory_value(self, address: int) -> Any:
+        if 0 <= address < len(self.machine.rotors):
+            return self.machine.rotors[address].position
+        return 0
+
+    def step(self) -> None:
+        """Encipher one character from the input tape."""
+        if not self._input_tape:
+            return
+        char = self._input_tape.pop(0)
+        out = self.machine.encipher_char(char)
+        self._output_tape.append(out)
+        self._steps += 1
+
+    def get_output(self) -> str:
+        """Return all enciphered output so far as a string."""
+        return "".join(self._output_tape)
+
+    def get_snapshot(self) -> Any:
+        return {
+            "rotor_positions": [r.position for r in self.machine.rotors],
+            "input_remaining": len(self._input_tape),
+            "output_tape": "".join(self._output_tape),
+            "steps": self._steps,
         }
 
 

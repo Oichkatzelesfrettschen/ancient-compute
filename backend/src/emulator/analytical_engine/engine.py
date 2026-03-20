@@ -48,6 +48,7 @@ from collections.abc import Callable
 from typing import Any
 
 from ..barrels import BarrelController, MicroOp
+from ..printer import Printer
 from ..types import BabbageNumber as BabbageNumber  # explicit re-export for __init__.py
 
 
@@ -77,6 +78,11 @@ TIMING_TABLE = {
     "PUSH": 4,
     "POP": 4,
     "OIL": 100,
+    "CMPZ": 1,
+    "CLR": 1,
+    "BR": 4,
+    "STEP": 1,
+    "PRINT": 2,
 }
 
 
@@ -152,6 +158,7 @@ class Engine:
         self.instruction_cards: list[Instruction] = []  # Loaded program
         self.result_cards: list[dict[str, Any]] = []  # Output results
         self.execution_trace: list[dict[str, Any]] = []  # Detailed execution trace
+        self.printer = Printer()  # Mechanical printer (coupled to WRPRN/PRINT)
 
         # Flags: Condition codes from operations
         self.flags = {
@@ -217,6 +224,12 @@ class Engine:
             "MOV": self._execute_MOV,
             "ABS": self._execute_ABS,
             "NEG": self._execute_NEG,
+            # Historical opcode aliases and extensions
+            "CMPZ": self._execute_CMPZ,
+            "CLR": self._execute_CLR,
+            "BR": self._execute_BR,
+            "STEP": self._execute_STEP,
+            "PRINT": self._execute_PRINT,
         }
 
     def _emit(self, msg: str) -> None:
@@ -632,14 +645,21 @@ class Engine:
         self._update_flags(self.mill_quotient_buffer)
 
     def _execute_SQRT_micro(self, reg_dest: str) -> None:
-        """Execute SQRT using micro-ops (Newton-Raphson)."""
+        """Execute SQRT using micro-ops (Newton-Raphson, 25 barrel iterations).
+
+        WHY: SQRT uses its own CHECK_SQRT_CONVERGENCE micro-op to decide when
+        to loop (via step_index reset) and STORE_SQRT_RESULT to write the answer
+        back to reg_dest. The barrel runs until active_barrel becomes False,
+        which only happens after STORE_SQRT_RESULT completes. Any external
+        convergence check on reg_dest would terminate early (reg_dest is not
+        updated until the final step), so we let the barrel run to completion.
+        """
         val = self.registers[reg_dest]
         if val.value < 0:
             raise ValueError("Cannot take square root of negative number")
 
         self.barrels.select_barrel("SQRT")
 
-        # Micro-op execution loop
         while self.barrels.active_barrel:
             ops = self.barrels.step()
             for op in ops:
@@ -685,6 +705,47 @@ class Engine:
         result.value = -val.value
         self._set_register_value(reg_dest, result)
         self._update_flags(result)
+
+    def _execute_CMPZ(self, reg: str) -> None:
+        """CMPZ reg -- compare reg against zero, set flags (1 cycle).
+
+        WHY: Historical AE programs need a one-operand compare-against-zero
+        to test accumulators without loading an explicit zero constant.
+        Delegates to _execute_CMP to reuse flag-setting logic.
+        """
+        self._execute_CMP(reg, "0")
+
+    def _execute_CLR(self, reg: str) -> None:
+        """CLR reg -- load zero into reg, set flags (1 cycle).
+
+        WHY: Clears a Mill register to zero (Store axis feeds zero through ingress).
+        """
+        self._set_register_value(reg, BabbageNumber(0))
+        self._update_flags(BabbageNumber(0))
+
+    def _execute_BR(self, address: str) -> bool:
+        """BR addr -- unconditional branch (alias for JMP, 4 cycles).
+
+        WHY: Some historical AE program listings use BR instead of JMP
+        (Babbage's own notation varied; both appear in surviving manuscripts).
+        """
+        return self._execute_JMP(address)
+
+    def _execute_STEP(self) -> None:
+        """STEP -- advance the operation card drum by one position (1 cycle).
+
+        WHY: Babbage's AE had an explicit card-advance step between operations.
+        In the logical model this is a NOP; it records the event in the trace.
+        """
+        self._emit("STEP: card drum advance (logical NOP)")
+
+    def _execute_PRINT(self, reg: str) -> None:
+        """PRINT reg -- send register value to the printer (2 cycles).
+
+        WHY: Some AE assembly listings use PRINT as the high-level print mnemonic
+        rather than the internal WRPRN opcode. Delegates to WRPRN.
+        """
+        self._execute_WRPRN(reg)
 
     def _execute_LOAD_micro(self, reg_dest: str, address_src: str) -> None:
         """Execute LOAD using micro-ops."""
@@ -1069,7 +1130,13 @@ class Engine:
         self._emit(f"WRPCH: {value.to_decimal()}")
 
     def _execute_WRPRN(self, reg_source: str) -> None:
-        """Write printer: output register value to printer (2 cycles)."""
+        """Write printer: output register value to printer (2 cycles).
+
+        WHY: The Printer represents the mechanical output mechanism. Values are
+        clipped to the 8-digit printer range (0..99_999_999) since the physical
+        printer can only output non-negative 8-digit decimals. Negative results
+        and large values are stored faithfully in result_cards for post analysis.
+        """
         value = self._get_register_value(reg_source)
         self.result_cards.append(
             {
@@ -1079,6 +1146,10 @@ class Engine:
                 "clock_time": self.clock_time,
             }
         )
+        # Couple to the mechanical printer within its 8-digit range
+        int_val = int(value.to_decimal())
+        if 0 <= int_val <= 99_999_999:
+            self.printer.print_number(int_val)
         self._emit(f"WRPRN: {value.to_decimal()}")
 
     # ========================================================================
@@ -1104,7 +1175,7 @@ class Engine:
         handler = self._opcode_handlers.get(opcode_name)
         if handler:
             # Control flow instructions modify PC directly
-            if opcode_name in ["JMP", "JZ", "JNZ", "JLT", "JGT", "JLE", "JGE", "CALL", "RET"]:
+            if opcode_name in ["JMP", "JZ", "JNZ", "JLT", "JGT", "JLE", "JGE", "CALL", "RET", "BR"]:
                 pc_modified = handler(*operands)
             else:
                 handler(*operands)
@@ -1296,17 +1367,19 @@ class Engine:
             self._emit(f"Runtime Error at PC {self.PC}: {e}")
             self.running = False
 
-    def set_breakpoint(self, condition_type: str, target: Any) -> None:
+    def set_breakpoint(self, condition_type: str, target: Any, **kwargs: Any) -> None:
         """
         Set breakpoint for debugging.
 
         Types:
-          - address: Break at specific PC
+          - address: Break at specific PC (target = address int)
           - time: Break at clock time >= target
-          - register: Break when register value matches
-          - memory: Break when memory value matches
+          - register: Break when register value matches (pass reg="A")
+          - memory: Break when memory value matches (pass address=N)
         """
-        self.breakpoints.append({"type": condition_type, "target": target, "enabled": True})
+        bp: dict[str, Any] = {"type": condition_type, "target": target, "enabled": True}
+        bp.update(kwargs)
+        self.breakpoints.append(bp)
 
     def check_breakpoints(self) -> None:
         """Check all breakpoints and pause if triggered."""
@@ -1322,14 +1395,18 @@ class Engine:
                 self.paused = True
                 self._emit(f"Breakpoint hit: Clock={self.clock_time}s")
 
-            elif bp["type"] == "register" and self._get_register_value(bp["reg"]) == BabbageNumber(
-                bp["target"]
+            elif (
+                bp["type"] == "register"
+                and bp.get("reg") is not None
+                and self._get_register_value(bp["reg"]) == BabbageNumber(bp["target"])
             ):
                 self.paused = True
                 self._emit(f"Breakpoint hit: {bp['reg']}={bp['target']}")
 
-            elif bp["type"] == "memory" and self.memory[bp["address"]] == BabbageNumber(
-                bp["target"]
+            elif (
+                bp["type"] == "memory"
+                and bp.get("address") is not None
+                and self.memory[bp["address"]] == BabbageNumber(bp["target"])
             ):
                 self.paused = True
                 self._emit(f"Breakpoint hit: Memory[{bp['address']}]={bp['target']}")

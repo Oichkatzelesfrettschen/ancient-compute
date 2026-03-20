@@ -80,6 +80,33 @@ class NapiersBones:
 
         return [bone.get_row(multiplier) for bone in self.active_bones]
 
+    def divide(self, dividend: int, divisor: int) -> tuple[int, int]:
+        """Divide dividend by divisor using Napier's complementary method.
+
+        Returns (quotient, remainder). Historical: Napier described division
+        as a process of trial multiplication on the bones -- for each quotient
+        digit position (most to least significant), the operator selects the
+        multiplier q such that q * divisor <= partial_dividend, using the bones
+        to compute trial products. This method abstracts that manual shift-and-
+        trial process; the output is identical.
+
+        WHY: Napier's Rhabdologia (1617) Ch. III explicitly describes division
+        via the rods. This completes the four-operation set for the emulator.
+
+        Args:
+            dividend: Non-negative integer to divide.
+            divisor:  Non-zero positive integer divisor.
+
+        Returns:
+            (quotient, remainder) both non-negative integers.
+        """
+        if divisor == 0:
+            raise ZeroDivisionError("Cannot divide by zero")
+        if dividend < 0 or divisor < 0:
+            raise ValueError("Napier's Bones only support non-negative operands")
+        quotient, remainder = divmod(dividend, divisor)
+        return quotient, remainder
+
     def multiply_single_digit(self, multiplier: int) -> int:
         """
         Multiply currently loaded number by a single digit using diagonal addition.

@@ -30,15 +30,24 @@ class TestSchemaLoading:
         assert lib is not None
 
     def test_has_five_materials(self, lib):
-        assert len(lib) == 5
+        # 5 original + wrought_iron + gun_metal added in Phase 4 (P2 materials buildout)
+        assert len(lib) == 7
 
     def test_expected_material_names(self, lib):
-        expected = {"brass", "cast_iron", "phosphor_bronze", "spring_steel", "steel"}
+        expected = {
+            "brass",
+            "cast_iron",
+            "phosphor_bronze",
+            "spring_steel",
+            "steel",
+            "wrought_iron",
+            "gun_metal",
+        }
         assert set(lib.names()) == expected
 
     def test_all_materials_returns_list(self, lib):
         mats = lib.all_materials()
-        assert len(mats) == 5
+        assert len(mats) == 7
         assert all(isinstance(m, MaterialProperties) for m in mats)
 
     def test_contains_check(self, lib):
@@ -48,7 +57,7 @@ class TestSchemaLoading:
     def test_repr(self, lib):
         r = repr(lib)
         assert "MaterialLibrary" in r
-        assert "5 materials" in r
+        assert "7 materials" in r
 
     def test_missing_material_raises_key_error(self, lib):
         with pytest.raises(KeyError, match="Unknown material 'unobtanium'"):

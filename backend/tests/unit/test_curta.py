@@ -55,3 +55,55 @@ def test_overflow():
     # Input 999...
     # Turn crank
     pass  # Implementation uses modulo arithmetic, implicit test
+
+
+def test_curta_divide_exact():
+    curta = CurtaTypeI()
+    q, r = curta.divide(100, 5)
+    assert q == 20
+    assert r == 0
+
+
+def test_curta_divide_with_remainder():
+    curta = CurtaTypeI()
+    q, r = curta.divide(17, 3)
+    assert q == 5
+    assert r == 2
+
+
+def test_curta_divide_by_one():
+    curta = CurtaTypeI()
+    q, r = curta.divide(999, 1)
+    assert q == 999
+    assert r == 0
+
+
+def test_curta_divide_large():
+    curta = CurtaTypeI()
+    q, r = curta.divide(9999, 99)
+    expected_q, expected_r = divmod(9999, 99)
+    assert q == expected_q
+    assert r == expected_r
+
+
+def test_curta_divide_by_zero():
+    import pytest
+
+    curta = CurtaTypeI()
+    with pytest.raises(ZeroDivisionError):
+        curta.divide(10, 0)
+
+
+def test_curta_bell_rings_on_overflow():
+    curta = CurtaTypeI()
+    curta.set_input(1)
+    curta.result_dial = curta.MAX_RESULT  # Set to maximum
+    curta._add_result(1)  # This should wrap and ring the bell
+    assert curta.bell_ringing is True
+
+
+def test_curta_bell_clears_on_clear_result():
+    curta = CurtaTypeI()
+    curta.bell_ringing = True
+    curta.clear_result()
+    assert curta.bell_ringing is False
