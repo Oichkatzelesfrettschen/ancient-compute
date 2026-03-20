@@ -1,8 +1,8 @@
 # Project Status Dashboard
 
-**Auto-generated**: 2026-03-20 20:47 UTC
+**Auto-generated**: 2026-03-20 22:30 UTC
 **Branch**: `main`
-**Last commit**: `0ca6fa0 feat: upgrade IDRIS2 service from Babbage IR stub to real idris2 0.8.0 execution`
+**Last commit**: `41cdd3e feat: AE completeness buildout -- close all 48 P0/P1/P2 gaps (1797 tests)`
 
 > Regenerate with: `make status`
 
@@ -12,10 +12,10 @@
 
 | Metric | Value |
 |--------|-------|
-| Unit tests collected | 2141 |
+| Unit tests collected | 2218 |
 | Collection errors | 0 |
-| Python source lines (backend/src/) | 38,330 |
-| Active docs (non-archive .md) | 197 |
+| Python source lines (backend/src/) | 39,191 |
+| Active docs (non-archive .md) | 199 |
 
 ## Phase Status
 
