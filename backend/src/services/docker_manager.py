@@ -173,7 +173,11 @@ class DockerManager:
 
         # First choice: Docker (supports all languages)
         docker_caps = self.backends[ExecutionBackend.DOCKER].capabilities
-        if self.backends[ExecutionBackend.DOCKER].available and docker_caps is not None and language in docker_caps:
+        if (
+            self.backends[ExecutionBackend.DOCKER].available
+            and docker_caps is not None
+            and language in docker_caps
+        ):
             return ExecutionBackend.DOCKER
 
         # Second choice for Python: RestrictedPython

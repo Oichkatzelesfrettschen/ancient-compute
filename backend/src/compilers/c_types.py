@@ -146,7 +146,11 @@ class CTypeSystem:
             return True  # Allow int <-> float conversion
 
         # Pointer assignments
-        return target.is_pointer() and source.is_pointer() and self._types_equal(target.base_type, source.base_type)
+        return (
+            target.is_pointer()
+            and source.is_pointer()
+            and self._types_equal(target.base_type, source.base_type)
+        )
 
     def is_compatible(self, t1: CType, t2: CType) -> bool:
         """Check if two types are compatible."""

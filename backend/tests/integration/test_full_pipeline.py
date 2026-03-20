@@ -129,17 +129,7 @@ class TestFourmilabPipeline:
         from backend.src.emulator.fourmilab_compat import run_fourmilab_deck
 
         captured: list[str] = []
-        deck = (
-            "N000 +5\n"
-            "S000\n"
-            "N001 +3\n"
-            "S001\n"
-            "L000\n"
-            "L001\n"
-            "+\n"
-            "P\n"
-            "H\n"
-        )
+        deck = "N000 +5\n" "S000\n" "N001 +3\n" "S001\n" "L000\n" "L001\n" "+\n" "P\n" "H\n"
         run_fourmilab_deck(deck, output_callback=captured.append)
 
         combined = " ".join(captured)
@@ -415,14 +405,16 @@ class TestCardCompilerDeckPipeline:
         """A deck resembling Ada's Note G operations survives round-trip."""
         from card_compiler import round_trip
 
-        source = "\n".join([
-            "LOAD V1",
-            "LOAD V2",
-            "MUL",
-            "STORE V4",
-            "LOAD V3",
-            "SUB",
-            "STORE V5",
-            "HALT",
-        ])
+        source = "\n".join(
+            [
+                "LOAD V1",
+                "LOAD V2",
+                "MUL",
+                "STORE V4",
+                "LOAD V3",
+                "SUB",
+                "STORE V5",
+                "HALT",
+            ]
+        )
         assert round_trip(source)

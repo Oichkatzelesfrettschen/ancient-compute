@@ -12,8 +12,6 @@ from __future__ import annotations
 
 import asyncio
 
-import pytest
-
 
 def _run(code: str) -> object:
     from backend.src.services.languages.cpp_service import CppService
@@ -32,9 +30,7 @@ def _err(code: str) -> None:
     from backend.src.services.languages.cpp_service import ExecutionStatus
 
     r = _run(code)
-    assert r.status == ExecutionStatus.COMPILE_ERROR, (
-        f"Expected COMPILE_ERROR, got {r.status}"
-    )
+    assert r.status == ExecutionStatus.COMPILE_ERROR, f"Expected COMPILE_ERROR, got {r.status}"
 
 
 class TestCppContract:
@@ -102,10 +98,7 @@ class TestCppContract:
 
     def test_constexpr_function(self):
         """Compile-time constexpr function."""
-        _ok(
-            "constexpr int sq(int x) { return x * x; }\n"
-            "int main() { return sq(5) - 25; }"
-        )
+        _ok("constexpr int sq(int x) { return x * x; }\n" "int main() { return sq(5) - 25; }")
 
     def test_inheritance(self):
         """Base class and derived class with virtual method."""
@@ -131,19 +124,14 @@ class TestCppContract:
 
     def test_rejected_undeclared_variable(self):
         """Reference to undeclared variable is a compile error."""
-        _err(
-            "int main() {\n"
-            "    undeclared = 42;\n"
-            "    return 0;\n"
-            "}"
-        )
+        _err("int main() {\n" "    undeclared = 42;\n" "    return 0;\n" "}")
 
     def test_rejected_type_mismatch(self):
         """Passing wrong type to function is a compile error."""
         _err(
             "void takes_int(int x) {}\n"
             "int main() {\n"
-            "    takes_int(\"not an int\");\n"
+            '    takes_int("not an int");\n'
             "    return 0;\n"
             "}"
         )

@@ -11,7 +11,10 @@ from __future__ import annotations
 
 import pytest
 
-from backend.src.services.ae_execution_service import AEExecutionResult, AEExecutionService, AEExecutionStatus
+from backend.src.services.ae_execution_service import (
+    AEExecutionService,
+    AEExecutionStatus,
+)
 
 
 @pytest.fixture
@@ -89,7 +92,10 @@ class TestAEExecutionServiceCompileC:
         """Single-arg function: compile, load, execute."""
         code = "int identity(int x) { return x; }"
         result = svc.execute(code, language="c", entry_point="identity")
-        assert result.status in (AEExecutionStatus.SUCCESS, AEExecutionStatus.RUNTIME_ERROR), result.stderr
+        assert result.status in (
+            AEExecutionStatus.SUCCESS,
+            AEExecutionStatus.RUNTIME_ERROR,
+        ), result.stderr
         assert result.assembly_text != ""
 
     def test_compile_produces_assembly(self, svc: AEExecutionService) -> None:

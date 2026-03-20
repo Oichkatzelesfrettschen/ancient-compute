@@ -42,7 +42,9 @@ _MACHINE_CHOICES = click.Choice(
 @click.option(
     "--machine", type=_MACHINE_CHOICES, default="analytical-engine", help="Emulator machine type."
 )
-def run_cmd(program: str, trace: bool, dump: bool, physics: bool, fmt: str, trace_format: str, machine: str) -> None:
+def run_cmd(
+    program: str, trace: bool, dump: bool, physics: bool, fmt: str, trace_format: str, machine: str
+) -> None:
     """Execute PROGRAM on the Analytical Engine emulator."""
     output_lines = []
 

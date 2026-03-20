@@ -144,8 +144,14 @@ class IdrisCompiler:
                 assert self.builder.current_block is not None
                 self.builder.current_block.instructions.append(
                     BinaryOp(
-                        op="eq", target=cond_tmp, operand1=scrutinee,
-                        operand2=Constant(float(pat.value) if isinstance(pat.value, (int, float)) else float(abs(hash(pat.value)) % (10**40)))
+                        op="eq",
+                        target=cond_tmp,
+                        operand1=scrutinee,
+                        operand2=Constant(
+                            float(pat.value)
+                            if isinstance(pat.value, (int, float))
+                            else float(abs(hash(pat.value)) % (10**40))
+                        ),
                     )
                 )
                 assert self.builder.current_block is not None

@@ -84,14 +84,16 @@ class HaskellService:
             )
 
     # Modules blocked for security; using them is a compile-time error.
-    _BLOCKED_IMPORTS: frozenset[str] = frozenset([
-        "System.IO.Unsafe",
-        "Foreign",
-        "Foreign.C",
-        "System.Posix",
-        "System.Exit",
-        "System.Process",
-    ])
+    _BLOCKED_IMPORTS: frozenset[str] = frozenset(
+        [
+            "System.IO.Unsafe",
+            "Foreign",
+            "Foreign.C",
+            "System.Posix",
+            "System.Exit",
+            "System.Process",
+        ]
+    )
 
     def _check_blocked_imports(self, source: str) -> str | None:
         """Return the first blocked module found in source, or None."""
@@ -150,7 +152,9 @@ class HaskellService:
         codegen_start = time.time()
         try:
             codegen = CodeGenerator()
-            program_result = await loop.run_in_executor(self.executor, lambda: codegen.generate_program(program))
+            program_result = await loop.run_in_executor(
+                self.executor, lambda: codegen.generate_program(program)
+            )
             asm_code = chr(10).join(r.get_assembly_text() for r in program_result.values())
             codegen_time = (time.time() - codegen_start) * 1000
 
@@ -171,9 +175,7 @@ class HaskellService:
         assembly_start = time.time()
         try:
             assembler = Assembler(asm_code)
-            machine_code = await loop.run_in_executor(
-                self.executor, assembler.assemble
-            )
+            machine_code = await loop.run_in_executor(self.executor, assembler.assemble)
             assembly_time = (time.time() - assembly_start) * 1000
 
         except Exception as e:

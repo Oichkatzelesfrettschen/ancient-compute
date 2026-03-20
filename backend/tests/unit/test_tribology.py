@@ -29,6 +29,7 @@ from backend.src.emulator.tribology import (
 
 pytestmark = pytest.mark.physics
 
+
 @pytest.fixture
 def lib():
     return MaterialLibrary()

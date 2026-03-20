@@ -92,6 +92,7 @@ def test_assemble_json_output(runner, basm_file):
     result = runner.invoke(cli, ["assemble", basm_file, "--format", "json"])
     assert result.exit_code == 0
     import json
+
     data = json.loads(result.output)
     assert isinstance(data, list)
     assert len(data) == 3

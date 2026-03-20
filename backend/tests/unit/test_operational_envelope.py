@@ -7,6 +7,7 @@ from backend.src.emulator.simulation.state import SimulationConfig
 
 pytestmark = pytest.mark.physics
 
+
 class TestOperationalEnvelope:
     """Verify operational envelope sweep produces expected results."""
 

@@ -310,8 +310,8 @@ class TestZuseZ1ArithmeticEdgeCases:
         z.store(1, ZuseFloat.from_float(3.0))
         z.store(2, ZuseFloat.from_float(4.0))
         z.load(0)
-        z.mul_memory(1)       # acc = 6
-        z.add_memory(2)       # acc = 10
+        z.mul_memory(1)  # acc = 6
+        z.add_memory(2)  # acc = 10
         assert _close(z.state.accumulator.to_float(), 10.0)
 
     def test_program_multiply_and_output(self):
@@ -319,11 +319,13 @@ class TestZuseZ1ArithmeticEdgeCases:
         z = ZuseZ1()
         z.store(0, ZuseFloat.from_float(6.0))
         z.store(1, ZuseFloat.from_float(7.0))
-        results = z.run([
-            ("load", 0),
-            ("mul", 1),
-            ("output",),
-        ])
+        results = z.run(
+            [
+                ("load", 0),
+                ("mul", 1),
+                ("output",),
+            ]
+        )
         assert len(results) == 1
         assert _close(results[0], 42.0)
 

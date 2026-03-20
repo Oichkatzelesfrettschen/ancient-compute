@@ -17,9 +17,7 @@ class PerformanceMetrics:
     total_cycles: int = 0
     instruction_counts: dict[str, int] = field(default_factory=dict)
     memory_access_counts: dict[int, int] = field(default_factory=dict)
-    branch_stats: dict[str, int] = field(
-        default_factory=lambda: {"taken": 0, "not_taken": 0}
-    )
+    branch_stats: dict[str, int] = field(default_factory=lambda: {"taken": 0, "not_taken": 0})
 
 
 class PerformanceAnalyzer:

@@ -19,6 +19,7 @@ from backend.src.emulator.simulation.state import SimulationConfig
 
 pytestmark = pytest.mark.physics
 
+
 def _make_physics_engine(config=None):
     """Create an Engine with physics enabled."""
     if config is None:

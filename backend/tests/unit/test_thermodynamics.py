@@ -27,6 +27,7 @@ from backend.src.emulator.thermodynamics import (
 
 pytestmark = pytest.mark.physics
 
+
 @pytest.fixture
 def lib():
     return MaterialLibrary()

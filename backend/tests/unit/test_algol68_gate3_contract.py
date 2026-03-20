@@ -14,8 +14,6 @@ from __future__ import annotations
 
 import asyncio
 
-import pytest
-
 
 def _run(code: str) -> object:
     from backend.src.services.languages.algol68_service import ALGOL68Service
@@ -34,9 +32,7 @@ def _err(code: str) -> None:
     from backend.src.services.languages.algol68_service import ExecutionStatus
 
     r = _run(code)
-    assert r.status == ExecutionStatus.COMPILE_ERROR, (
-        f"Expected COMPILE_ERROR, got {r.status}"
-    )
+    assert r.status == ExecutionStatus.COMPILE_ERROR, f"Expected COMPILE_ERROR, got {r.status}"
 
 
 class TestALGOL68Contract:

@@ -182,8 +182,9 @@ class TestIrishMultiplyEdgeCases:
         # irish_multiply must be commutative for arbitrary pairs
         m = LudgateMachine()
         for a, b in [(37, 42), (99, 12), (5, 0), (0, 5)]:
-            assert m.irish_multiply(a, b) == m.irish_multiply(b, a), \
-                f"Commutativity failed for {a} * {b}"
+            assert m.irish_multiply(a, b) == m.irish_multiply(
+                b, a
+            ), f"Commutativity failed for {a} * {b}"
 
 
 class TestLudgateStoreEdgeCases:

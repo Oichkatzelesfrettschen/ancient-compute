@@ -141,9 +141,7 @@ class DEMachine:
             col_i_plus_1 = self.column_bank.columns[i + 1]
 
             # Add column i to column i+1
-            col_i_plus_1.add_difference(
-                [col_i_val % 10] * 31
-            )  # Simplified: add single digit
+            col_i_plus_1.add_difference([col_i_val % 10] * 31)  # Simplified: add single digit
 
         self._record_operation(
             "ADDITION",

@@ -3,6 +3,7 @@
 Ancient Compute - Backend Restructuring Script
 Fixes the package structure issues identified in the architectural review
 """
+
 import shutil
 import sys
 from pathlib import Path
@@ -63,7 +64,7 @@ def restructure_backend():
     setup_py = backend / "setup.py"
     if not setup_py.exists():
         print("Creating setup.py for package management...")
-        setup_content = '''from setuptools import setup, find_packages
+        setup_content = """from setuptools import setup, find_packages
 
 setup(
     name="ancient-compute-backend",
@@ -86,7 +87,7 @@ setup(
     author="Ancient Compute Team",
     description="Educational platform for learning computation history",
 )
-'''
+"""
         setup_py.write_text(setup_content)
         print("[SUCCESS] Created setup.py")
 
@@ -94,8 +95,12 @@ setup(
     services_init = src / "services" / "__init__.py" if (src / "services").exists() else None
     if services_init and services_init.exists():
         content = services_init.read_text()
-        if not content.strip() or content.strip() == '# Ancient Compute - Language Execution Services\n__version__ = "0.1.0"':
-            new_content = '''# Ancient Compute - Language Execution Services
+        if (
+            not content.strip()
+            or content.strip()
+            == '# Ancient Compute - Language Execution Services\n__version__ = "0.1.0"'
+        ):
+            new_content = """# Ancient Compute - Language Execution Services
 __version__ = "0.1.0"
 
 from .base_executor import BaseExecutor, ExecutionResult, ExecutionStatus
@@ -105,7 +110,7 @@ __all__ = [
     'ExecutionResult',
     'ExecutionStatus',
 ]
-'''
+"""
             services_init.write_text(new_content)
             print("[SUCCESS] Updated services/__init__.py")
 

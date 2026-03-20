@@ -8,6 +8,7 @@ from backend.src.emulator.simulation.state import SimulationConfig
 
 pytestmark = pytest.mark.physics
 
+
 def test_logic_physics_timing_coupling():
     """Verify that linked physics engine affects instruction timing."""
     # Setup physics engine

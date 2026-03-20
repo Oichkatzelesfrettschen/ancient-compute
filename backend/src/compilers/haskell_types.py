@@ -217,7 +217,9 @@ class HaskellTypeSystem:
             return False
 
         # Recursively unify arguments
-        return all(self.unify(arg1, arg2) for arg1, arg2 in zip(type1.args, type2.args, strict=False))
+        return all(
+            self.unify(arg1, arg2) for arg1, arg2 in zip(type1.args, type2.args, strict=False)
+        )
 
     def _deref(self, typ: HaskellType) -> HaskellType:
         """Dereference type variable"""

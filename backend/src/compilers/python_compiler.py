@@ -371,7 +371,9 @@ class PythonCompiler:
                     target=cmp_temp, op="<", operand1=VariableValue(idx_var), operand2=len_operand
                 )
             )
-            self.builder.emit_branch("nonzero", VariableValue(cmp_temp), None, body_label, end_label)
+            self.builder.emit_branch(
+                "nonzero", VariableValue(cmp_temp), None, body_label, end_label
+            )
 
             body_block = self.builder.new_block(body_label)
             elem_temp = self._gen_temp("for_elem")

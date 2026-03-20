@@ -13,8 +13,6 @@ from __future__ import annotations
 
 import asyncio
 
-import pytest
-
 
 def _run(code: str) -> object:
     from backend.src.services.languages.micropython_service import MicroPythonService
@@ -26,18 +24,14 @@ def _ok(code: str) -> None:
     from backend.src.services.languages.micropython_service import ExecutionStatus
 
     r = _run(code)
-    assert r.status == ExecutionStatus.SUCCESS, (
-        f"Expected SUCCESS: {r.stderr}"
-    )
+    assert r.status == ExecutionStatus.SUCCESS, f"Expected SUCCESS: {r.stderr}"
 
 
 def _err_compile(code: str) -> None:
     from backend.src.services.languages.micropython_service import ExecutionStatus
 
     r = _run(code)
-    assert r.status == ExecutionStatus.COMPILE_ERROR, (
-        f"Expected COMPILE_ERROR, got {r.status}"
-    )
+    assert r.status == ExecutionStatus.COMPILE_ERROR, f"Expected COMPILE_ERROR, got {r.status}"
 
 
 class TestMicroPythonContract:
@@ -70,23 +64,11 @@ class TestMicroPythonContract:
 
     def test_while_loop(self):
         """While loop with accumulator."""
-        _ok(
-            "s = 0\n"
-            "i = 1\n"
-            "while i <= 10:\n"
-            "    s += i\n"
-            "    i += 1\n"
-            "print(s)"
-        )
+        _ok("s = 0\n" "i = 1\n" "while i <= 10:\n" "    s += i\n" "    i += 1\n" "print(s)")
 
     def test_for_range_loop(self):
         """For loop over range()."""
-        _ok(
-            "total = 0\n"
-            "for i in range(5):\n"
-            "    total += i\n"
-            "print(total)"
-        )
+        _ok("total = 0\n" "for i in range(5):\n" "    total += i\n" "print(total)")
 
     def test_recursive_factorial(self):
         """Recursive factorial."""
@@ -104,12 +86,7 @@ class TestMicroPythonContract:
 
     def test_generator(self):
         """Generator function with yield."""
-        _ok(
-            "def gen(n):\n"
-            "    for i in range(n):\n"
-            "        yield i\n"
-            "print(list(gen(4)))"
-        )
+        _ok("def gen(n):\n" "    for i in range(n):\n" "        yield i\n" "print(list(gen(4)))")
 
     def test_closure(self):
         """Closure capturing outer variable."""

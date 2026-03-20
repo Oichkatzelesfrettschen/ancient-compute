@@ -19,6 +19,7 @@ from backend.src.emulator.timing import (
 
 pytestmark = pytest.mark.physics
 
+
 class TestTimingControllerInitialization:
     """Initialize TimingController and verify initial state."""
 

@@ -35,7 +35,10 @@ def _get_or_create_counter(name: str, doc: str) -> Counter:
     try:
         return Counter(name, doc)
     except ValueError:
-        existing = REGISTRY._names_to_collectors.get(name + "_total") or REGISTRY._names_to_collectors[name]
+        existing = (
+            REGISTRY._names_to_collectors.get(name + "_total")
+            or REGISTRY._names_to_collectors[name]
+        )
         return existing  # type: ignore[return-value]
 
 

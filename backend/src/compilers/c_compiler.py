@@ -167,7 +167,9 @@ class CCompiler:
         for decl in program.declarations:
             if isinstance(decl, GlobalDeclaration):
                 for var in decl.variables:
-                    self.global_symbols.define(var.name, self._ast_type_to_ctype(var.type), is_global=True)
+                    self.global_symbols.define(
+                        var.name, self._ast_type_to_ctype(var.type), is_global=True
+                    )
             elif isinstance(decl, AstFunction):
                 func_type = CType(CTypeKind.FUNCTION)
                 self.global_symbols.define(decl.name, func_type, is_global=True, is_function=True)

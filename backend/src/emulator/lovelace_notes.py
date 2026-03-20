@@ -43,7 +43,9 @@ def _exec_opcode(opcode: str, lhs: BabbageNumber, rhs: BabbageNumber) -> Babbage
     raise ValueError(f"Unsupported opcode: {opcode}")
 
 
-def _run_deck(deck: list[dict[str, Any]], state: dict[str, BabbageNumber]) -> dict[str, BabbageNumber]:
+def _run_deck(
+    deck: list[dict[str, Any]], state: dict[str, BabbageNumber]
+) -> dict[str, BabbageNumber]:
     """Execute a list of deck steps against a variable state dict."""
     for step in deck:
         lhs = state.get(step["lhs"], BabbageNumber(0))

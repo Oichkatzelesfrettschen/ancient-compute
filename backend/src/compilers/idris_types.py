@@ -191,8 +191,7 @@ class IDRISTypeSystem:
         if not expr.alternatives:
             raise IDRISTypeError("Case expression must have at least one branch")
 
-        # Infer type from first alternative
-        first_alt = expr.alternatives[0]
+        # Infer type from first alternative (always Any fallback for now)
         # Each alternative is an ASTNode; use BaseType("Any") as fallback
         return BaseType("Any")
 

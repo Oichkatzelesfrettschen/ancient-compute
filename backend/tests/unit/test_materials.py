@@ -15,6 +15,7 @@ from backend.src.emulator.materials import MaterialLibrary, MaterialProperties
 
 pytestmark = pytest.mark.physics
 
+
 @pytest.fixture
 def lib():
     """Load the material library from the default schema."""

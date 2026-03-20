@@ -202,4 +202,3 @@ class Program:
     """Complete C program (top-level declarations)."""
 
     declarations: list[Union[GlobalDeclaration, Function]] = field(default_factory=list)
-

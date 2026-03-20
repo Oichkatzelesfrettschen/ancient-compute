@@ -342,13 +342,17 @@ class HaskellLexer:
             self._advance()
 
         # Handle floating point
-        if (self.pos < len(self.source) and self.source[self.pos] == "."
-                and self.pos + 1 < len(self.source) and self.source[self.pos + 1].isdigit()):
+        if (
+            self.pos < len(self.source)
+            and self.source[self.pos] == "."
+            and self.pos + 1 < len(self.source)
+            and self.source[self.pos + 1].isdigit()
+        ):
+            value += self.source[self.pos]
+            self._advance()
+            while self.pos < len(self.source) and self.source[self.pos].isdigit():
                 value += self.source[self.pos]
                 self._advance()
-                while self.pos < len(self.source) and self.source[self.pos].isdigit():
-                    value += self.source[self.pos]
-                    self._advance()
 
         self.tokens.append(Token(TokenType.NUMBER, value, start_line, start_col))
 

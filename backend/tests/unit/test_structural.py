@@ -25,6 +25,7 @@ from backend.src.emulator.structural import (
 
 pytestmark = pytest.mark.physics
 
+
 @pytest.fixture
 def lib():
     return MaterialLibrary()

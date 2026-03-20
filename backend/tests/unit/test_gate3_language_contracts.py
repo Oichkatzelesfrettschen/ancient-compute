@@ -16,16 +16,13 @@ from __future__ import annotations
 
 import asyncio
 
-import pytest
-
-
 # ---------------------------------------------------------------------------
 # helpers
 # ---------------------------------------------------------------------------
 
 
 def _lisp(code: str) -> object:
-    from backend.src.services.languages.lisp_service import LISPService, ExecutionStatus
+    from backend.src.services.languages.lisp_service import LISPService
 
     result = asyncio.run(LISPService().execute(code))
     return result
@@ -60,9 +57,7 @@ def _err_lisp(code: str) -> None:
     from backend.src.services.languages.lisp_service import ExecutionStatus
 
     r = _lisp(code)
-    assert r.status == ExecutionStatus.COMPILE_ERROR, (
-        f"Expected COMPILE_ERROR, got {r.status}"
-    )
+    assert r.status == ExecutionStatus.COMPILE_ERROR, f"Expected COMPILE_ERROR, got {r.status}"
 
 
 def _ok_haskell(code: str) -> None:
@@ -77,9 +72,7 @@ def _err_haskell(code: str) -> None:
     from backend.src.services.languages.haskell_service import ExecutionStatus
 
     r = _haskell(code)
-    assert r.status == ExecutionStatus.COMPILE_ERROR, (
-        f"Expected COMPILE_ERROR, got {r.status}"
-    )
+    assert r.status == ExecutionStatus.COMPILE_ERROR, f"Expected COMPILE_ERROR, got {r.status}"
 
 
 def _ok_idris(code: str) -> None:
@@ -93,9 +86,7 @@ def _err_idris(code: str) -> None:
     from backend.src.services.languages.idris_service import ExecutionStatus
 
     r = _idris(code)
-    assert r.status == ExecutionStatus.COMPILE_ERROR, (
-        f"Expected COMPILE_ERROR, got {r.status}"
-    )
+    assert r.status == ExecutionStatus.COMPILE_ERROR, f"Expected COMPILE_ERROR, got {r.status}"
 
 
 def _ok_systemf(code: str) -> None:
@@ -109,9 +100,7 @@ def _err_systemf(code: str) -> None:
     from backend.src.services.languages.systemf_service import ExecutionStatus
 
     r = _systemf(code)
-    assert r.status == ExecutionStatus.COMPILE_ERROR, (
-        f"Expected COMPILE_ERROR, got {r.status}"
-    )
+    assert r.status == ExecutionStatus.COMPILE_ERROR, f"Expected COMPILE_ERROR, got {r.status}"
 
 
 # =============================================================================
@@ -144,25 +133,15 @@ class TestLISPContract:
 
     def test_lisp_cond_multi_clause(self):
         """cond with four clauses including nested comparison."""
-        _ok_lisp(
-            "(defun classify (x)"
-            " (cond ((> x 100) 3) ((> x 10) 2) ((> x 0) 1) (t 0)))"
-        )
+        _ok_lisp("(defun classify (x)" " (cond ((> x 100) 3) ((> x 10) 2) ((> x 0) 1) (t 0)))")
 
     def test_lisp_nested_if(self):
         """Nested if-else (equivalent to cond, tests deep nesting)."""
-        _ok_lisp(
-            "(defun max2 (a b)"
-            " (if (> a b) a b))"
-        )
+        _ok_lisp("(defun max2 (a b)" " (if (> a b) a b))")
 
     def test_lisp_recursive_fib(self):
         """Fibonacci via double recursion -- two recursive calls."""
-        _ok_lisp(
-            "(defun fib (n)"
-            " (if (< n 2) n"
-            "   (+ (fib (- n 1)) (fib (- n 2)))))"
-        )
+        _ok_lisp("(defun fib (n)" " (if (< n 2) n" "   (+ (fib (- n 1)) (fib (- n 2)))))")
 
     def test_lisp_lambda_in_mapcar(self):
         """Lambda expression passed to mapcar (higher-order function call)."""
@@ -171,10 +150,7 @@ class TestLISPContract:
     def test_lisp_multi_expr_body(self):
         """defun body with multiple expressions; last is return value."""
         _ok_lisp(
-            "(defun compute (x)"
-            " (let ((a (* x 2)))"
-            "   (let ((b (+ a 1)))"
-            "     (- b 1))))"
+            "(defun compute (x)" " (let ((a (* x 2)))" "   (let ((b (+ a 1)))" "     (- b 1))))"
         )
 
     def test_lisp_rejected_bare_symbol(self):
@@ -199,18 +175,11 @@ class TestHaskellContract:
 
     def test_haskell_pattern_match_base_case(self):
         """Factorial with 0-pattern base case and recursive case."""
-        _ok_haskell(
-            "fact :: Int -> Int\n"
-            "fact 0 = 1\n"
-            "fact n = n * fact (n - 1)"
-        )
+        _ok_haskell("fact :: Int -> Int\n" "fact 0 = 1\n" "fact n = n * fact (n - 1)")
 
     def test_haskell_higher_order_function(self):
         """applyTwice takes a function and applies it twice."""
-        _ok_haskell(
-            "applyTwice :: (Int -> Int) -> Int -> Int\n"
-            "applyTwice f x = f (f x)"
-        )
+        _ok_haskell("applyTwice :: (Int -> Int) -> Int -> Int\n" "applyTwice f x = f (f x)")
 
     def test_haskell_where_clause(self):
         """where clause introduces local bindings."""
@@ -231,9 +200,7 @@ class TestHaskellContract:
 
     def test_haskell_rejected_blocked_import(self):
         """Security gate: System.IO.Unsafe is blocked before compilation."""
-        _err_haskell(
-            "import System.IO.Unsafe\nmain = unsafePerformIO (return ())"
-        )
+        _err_haskell("import System.IO.Unsafe\nmain = unsafePerformIO (return ())")
 
 
 # =============================================================================

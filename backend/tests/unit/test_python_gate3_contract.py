@@ -23,8 +23,6 @@ from __future__ import annotations
 
 import asyncio
 
-import pytest
-
 
 def _run(code: str) -> object:
     from backend.src.services.languages.python_service import PythonService
@@ -44,9 +42,7 @@ def _err(code: str) -> None:
     from backend.src.services.languages.python_service import ExecutionStatus
 
     r = _run(code)
-    assert r.status == ExecutionStatus.COMPILE_ERROR, (
-        f"Expected COMPILE_ERROR, got {r.status}"
-    )
+    assert r.status == ExecutionStatus.COMPILE_ERROR, f"Expected COMPILE_ERROR, got {r.status}"
 
 
 class TestPythonContract:
@@ -112,12 +108,7 @@ class TestPythonContract:
 
     def test_recursion_factorial(self):
         """Recursive factorial function."""
-        _ok(
-            "def fact(n):\n"
-            "    if n <= 1:\n"
-            "        return 1\n"
-            "    return n * fact(n - 1)"
-        )
+        _ok("def fact(n):\n" "    if n <= 1:\n" "        return 1\n" "    return n * fact(n - 1)")
 
     def test_multiple_functions(self):
         """Two functions where one calls the other."""

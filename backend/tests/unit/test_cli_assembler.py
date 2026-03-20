@@ -7,7 +7,6 @@ Covers:
 - fourmilab: parse_fourmilab_source + translate_fourmilab
 """
 
-
 from backend.src.emulator.cli.assembler.parser import parse_source
 from backend.src.emulator.cli.assembler.syntax import tokenize_line
 

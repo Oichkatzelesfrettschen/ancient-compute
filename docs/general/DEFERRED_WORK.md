@@ -261,18 +261,18 @@ line-too-long: 109 instances, E702 multiple-statements: 142 instances).
 
 ### Test coverage: docker_manager, caches, CLI/TUI
 
-**PARTIALLY RESOLVED**: 2026-03-19 (Fourth Debt Resolution Phase 5)
+**RESOLVED**: 2026-03-20.
 
-CLI command coverage added via `tests/unit/test_cli_commands.py` (15 tests)
-and assembler coverage via `tests/unit/test_cli_assembler.py` (21 tests).
-`SimulationBridge` covered by `tests/unit/test_simulation_bridge.py` (21 tests).
+- `test_rate_limiting.py`: 25 tests (token bucket, middleware routing, client ID)
+- `test_docker_manager.py`: 16 tests (singleton, backend selection, container config,
+  status report) -- mocks Docker so no daemon required
+- `test_execution_cache.py`: 22 tests (CacheEntry, key generation, get/set/TTL,
+  hit/miss counters, eviction, cleanup)
+- `test_query_cache.py`: 17 tests (key gen, _store, invalidation, TTL, stats)
+- `test_metrics.py`: 22 tests (utility functions, ExecutionContext, middleware path skip)
 
-**STILL DEFERRED**: `docker_manager.py` requires a running Docker daemon;
-`execution_cache.py`/`query_cache.py` require Redis; `rate_limiting.py`,
-`metrics.py`, and `cli/tui/` require integration test infrastructure.
-
-**WHEN**: After API stabilization (post-Gate 2).  TUI tests should use
-Textual's built-in test framework (`textual.testing`).
+**STILL DEFERRED**: `cli/tui/` requires Textual's built-in test framework
+(`textual.testing`).  TUI tests deferred until Textual test infra is wired.
 
 ---
 

@@ -22,9 +22,9 @@ def _run(code: str) -> object:
 
 def _ok(code: str) -> None:
     result = _run(code)
-    assert result.status == ExecutionStatus.SUCCESS, (
-        f"Expected SUCCESS, got {result.status}. Errors:\n{result.stderr}"
-    )
+    assert (
+        result.status == ExecutionStatus.SUCCESS
+    ), f"Expected SUCCESS, got {result.status}. Errors:\n{result.stderr}"
     assert len(result.machine_code) > 0, "Machine code output is empty"
 
 
