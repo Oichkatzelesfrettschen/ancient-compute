@@ -1,8 +1,8 @@
 # Project Status Dashboard
 
-**Auto-generated**: 2026-03-20 17:49 UTC
+**Auto-generated**: 2026-03-20 18:23 UTC
 **Branch**: `main`
-**Last commit**: `1e55954 fix: clear all ruff violations (13 fixable + 2 manual) -- 0 violations`
+**Last commit**: `a14d594 fix: run mypy from project root in Makefile so explicit_package_bases takes effect`
 
 > Regenerate with: `make status`
 
