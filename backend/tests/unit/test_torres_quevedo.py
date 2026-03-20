@@ -1,6 +1,5 @@
 """Tests for the Torres y Quevedo electromechanical calculator emulator."""
 
-import math
 import pytest
 
 from backend.src.emulator.torres_quevedo import (
@@ -115,7 +114,7 @@ class TestTorresArithmetic:
         t.load_register(0, FloatingPointNumber.from_float(6.0))
         t.load_register(1, FloatingPointNumber.from_float(4.0))
         t.load_register(2, FloatingPointNumber.from_float(2.0))
-        t.add(0, 1, dest=3)      # R3 = 10
+        t.add(0, 1, dest=3)  # R3 = 10
         result = t.multiply(3, 2, dest=4)  # R4 = 20
         assert _close(result.to_float(), 20.0)
 
@@ -146,9 +145,11 @@ class TestTorresTypewriter:
         t = TorresQuevedo()
         t.load_register(0, FloatingPointNumber.from_float(3.0))
         t.load_register(1, FloatingPointNumber.from_float(2.0))
-        results = t.run([
-            ("add", 0, 1, 2),
-            ("mul", 0, 1, 3),
-        ])
+        results = t.run(
+            [
+                ("add", 0, 1, 2),
+                ("mul", 0, 1, 3),
+            ]
+        )
         assert _close(results[0].to_float(), 5.0)
         assert _close(results[1].to_float(), 6.0)

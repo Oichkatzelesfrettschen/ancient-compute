@@ -295,4 +295,4 @@ Textual's built-in test framework (`textual.testing`).
 
 ---
 
-*Last validated: 2026-03-05 (updated: CLI/TUI/emulator extensions added after Phase 7 buildout)*
+*Last validated: 2026-03-19 (3rd Debt Resolution: mypy/ruff/coverage entries added)*

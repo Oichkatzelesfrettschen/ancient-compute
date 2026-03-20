@@ -1,11 +1,11 @@
 """Animation panel widget: composite mechanical visualization."""
 
-from textual.widget import Widget
 from textual.reactive import reactive
+from textual.widget import Widget
 
-from ..animation.gear_wheels import render_gear
 from ..animation.barrel_rotation import render_barrel
 from ..animation.carry_propagation import render_carry
+from ..animation.gear_wheels import render_gear
 from ..animation.mill_operation import render_mill
 
 

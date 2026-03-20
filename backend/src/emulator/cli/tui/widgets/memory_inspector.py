@@ -1,7 +1,7 @@
 """Memory inspector widget: scrollable memory view with change highlighting."""
 
-from textual.widget import Widget
 from textual.reactive import reactive
+from textual.widget import Widget
 
 
 class MemoryInspector(Widget):

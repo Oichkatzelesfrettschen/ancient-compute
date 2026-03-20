@@ -38,6 +38,7 @@ _DIGITS = 15
 @dataclass
 class ScheutzState:
     """State of the Scheutz Difference Engine."""
+
     registers: list[Decimal] = field(default_factory=lambda: [Decimal(0)] * _NUM_REGISTERS)
     cycle_count: int = 0
     output_table: list[Decimal] = field(default_factory=list)

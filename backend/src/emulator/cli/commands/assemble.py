@@ -13,8 +13,9 @@ console = Console()
 
 @click.command("assemble")
 @click.argument("input_file", type=click.Path(exists=True))
-@click.option("--output", "-o", type=click.Path(), default=None,
-              help="Write assembled output to FILE.")
+@click.option(
+    "--output", "-o", type=click.Path(), default=None, help="Write assembled output to FILE."
+)
 @click.option("--format", "fmt", type=click.Choice(["text", "json"]), default="text")
 def assemble_cmd(input_file, output, fmt):
     """Assemble INPUT_FILE and display the instruction list."""
@@ -25,8 +26,10 @@ def assemble_cmd(input_file, output, fmt):
         sys.exit(1)
 
     if fmt == "json":
-        data = [{"pc": i, "opcode": instr.opcode, "operands": instr.operands}
-                for i, instr in enumerate(instructions)]
+        data = [
+            {"pc": i, "opcode": instr.opcode, "operands": instr.operands}
+            for i, instr in enumerate(instructions)
+        ]
         result = json.dumps(data, indent=2)
         if output:
             with open(output, "w", encoding="utf-8") as fh:

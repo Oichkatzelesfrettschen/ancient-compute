@@ -10,7 +10,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from textual.message import Message
-from textual.worker import Worker
 
 from ...analytical_engine import Engine
 
@@ -18,6 +17,7 @@ from ...analytical_engine import Engine
 @dataclass
 class EngineSnapshot:
     """Snapshot of engine state at one point in time."""
+
     pc: int
     clock_time: float
     running: bool

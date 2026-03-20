@@ -3,8 +3,6 @@
 Renders a named gear (mill, carry, timing) at a given rotation angle.
 """
 
-import math
-
 # 8-step rotation frames for a gear labeled with the given name
 _GEAR_TEMPLATE = [
     "   ___\n  / | \\\n | {name:^5} |\n  \\_|_/",

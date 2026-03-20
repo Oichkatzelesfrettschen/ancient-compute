@@ -1,7 +1,7 @@
 """Status bar widget: cycle count, phase, engine state summary."""
 
-from textual.widget import Widget
 from textual.reactive import reactive
+from textual.widget import Widget
 
 
 class StatusBar(Widget):

@@ -3,15 +3,12 @@
 import json
 
 from rich.table import Table
-from rich.text import Text
 
 
 def format_trace_entry(entry: dict) -> str:
     """Format a single trace entry as a compact string."""
     regs = "  ".join(f"{k}={v:.6g}" for k, v in entry.get("registers", {}).items())
-    flags = "".join(
-        k[0] for k, v in entry.get("flags", {}).items() if v
-    )
+    flags = "".join(k[0] for k, v in entry.get("flags", {}).items() if v)
     return (
         f"PC={entry['pc']:4d} | {entry['opcode']:8s} {' '.join(entry.get('operands', [])):<20s}"
         f"| [{flags or '-':6s}] | {regs}"

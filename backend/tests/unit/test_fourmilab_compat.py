@@ -1,18 +1,11 @@
 """Tests for the Fourmilab AE card deck compatibility layer."""
 
-import pytest
-
+from backend.src.emulator.analytical_engine import Engine
 from backend.src.emulator.fourmilab_compat import (
-    parse_fourmilab_deck,
     fourmilab_to_instructions,
+    parse_fourmilab_deck,
     run_fourmilab_deck,
 )
-from backend.src.emulator.cli.assembler.fourmilab import (
-    parse_fourmilab_source,
-    translate_fourmilab,
-)
-from backend.src.emulator.analytical_engine import Engine
-
 
 # ---------------------------------------------------------------------------
 # Parser tests
@@ -207,6 +200,7 @@ class TestRunFourmilabDeck:
 
     def test_example_add_file(self):
         from pathlib import Path
+
         path = Path(__file__).parents[3] / "docs/simulation/fourmilab_examples/add_two_numbers.ae"
         with open(path, encoding="utf-8") as fh:
             source = fh.read()

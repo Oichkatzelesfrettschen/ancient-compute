@@ -9,10 +9,21 @@ console = Console()
 
 
 @click.command("deck")
-@click.option("--note", type=click.Choice(["b", "c", "d", "g"], case_sensitive=False),
-              default="g", show_default=True, help="Which Lovelace note to run.")
-@click.option("--n", "n_count", type=int, default=3, show_default=True,
-              help="Number of Bernoulli numbers to compute (note g), or iteration count.")
+@click.option(
+    "--note",
+    type=click.Choice(["b", "c", "d", "g"], case_sensitive=False),
+    default="g",
+    show_default=True,
+    help="Which Lovelace note to run.",
+)
+@click.option(
+    "--n",
+    "n_count",
+    type=int,
+    default=3,
+    show_default=True,
+    help="Number of Bernoulli numbers to compute (note g), or iteration count.",
+)
 @click.option("--physics", is_flag=True, help="Enable physics coupling (note g only).")
 def deck_cmd(note, n_count, physics):
     """Run a Lovelace card deck (Note B, C, D, or G)."""
@@ -37,7 +48,7 @@ def _run_lovelace_note(note: str, n: int) -> None:
     try:
         from ...lovelace_notes import run_note_b, run_note_c, run_note_d
     except ImportError:
-        console.print(f"[red]lovelace_notes module not found. Run Phase 4 first.[/]")
+        console.print("[red]lovelace_notes module not found. Run Phase 4 first.[/]")
         return
 
     runners = {"b": run_note_b, "c": run_note_c, "d": run_note_d}

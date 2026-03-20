@@ -125,7 +125,10 @@ class ScheutzAdapter(MachineAdapter):
         return [int(r) for r in self.machine.state.registers]
 
     def get_register_values(self) -> dict[str, Any]:
-        return {f"D{i}": float(self.machine.state.registers[i]) for i in range(len(self.machine.state.registers))}
+        return {
+            f"D{i}": float(self.machine.state.registers[i])
+            for i in range(len(self.machine.state.registers))
+        }
 
     def get_memory_value(self, address: int) -> Any:
         if 0 <= address < len(self.machine.state.registers):

@@ -3,10 +3,10 @@
 import pytest
 
 from backend.src.emulator.lovelace_notes import (
-    run_note_b_mult,
-    run_note_b_div,
-    run_note_b_compound,
     run_note_b,
+    run_note_b_compound,
+    run_note_b_div,
+    run_note_b_mult,
     run_note_c,
     run_note_d,
 )
@@ -110,17 +110,22 @@ class TestNoteBCompound:
 
 
 class TestNoteC:
-    @pytest.mark.parametrize("n,expected", [
-        (1, 1),
-        (2, 3),
-        (3, 6),
-        (4, 10),
-        (5, 15),
-        (10, 55),
-    ])
+    @pytest.mark.parametrize(
+        "n,expected",
+        [
+            (1, 1),
+            (2, 3),
+            (3, 6),
+            (4, 10),
+            (5, 15),
+            (10, 55),
+        ],
+    )
     def test_triangular_number(self, n, expected):
         result = run_note_c(n)
-        assert _close(result, float(expected)), f"T({n}) expected {expected}, got {result.to_decimal()}"
+        assert _close(
+            result, float(expected)
+        ), f"T({n}) expected {expected}, got {result.to_decimal()}"
 
     def test_matches_python_sum(self):
         for n in range(1, 8):
@@ -161,10 +166,10 @@ class TestNoteD:
         for n in range(1, 5):
             a, b = 5.0, 2.0
             result = run_note_d(n, a=a, b=b)
-            expected = a**2 - (b * n)**2
-            assert _close(result, expected, tol=1e-4), (
-                f"n={n}: expected {expected}, got {result.to_decimal()}"
-            )
+            expected = a**2 - (b * n) ** 2
+            assert _close(
+                result, expected, tol=1e-4
+            ), f"n={n}: expected {expected}, got {result.to_decimal()}"
 
     def test_zero_n(self):
         # n=0: (a+0)(a-0) = a*a = a^2

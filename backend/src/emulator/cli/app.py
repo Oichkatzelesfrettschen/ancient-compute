@@ -2,13 +2,13 @@
 
 import click
 
+from .commands.assemble import assemble_cmd
+from .commands.debug import debug_cmd
+from .commands.deck import deck_cmd
+from .commands.repl import repl_cmd
 from .commands.run import run_cmd
 from .commands.step import step_cmd
-from .commands.debug import debug_cmd
 from .commands.trace import trace_cmd
-from .commands.repl import repl_cmd
-from .commands.assemble import assemble_cmd
-from .commands.deck import deck_cmd
 from .commands.tui_cmd import tui_cmd
 
 

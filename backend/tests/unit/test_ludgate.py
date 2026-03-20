@@ -2,7 +2,7 @@
 
 import pytest
 
-from backend.src.emulator.ludgate import LudgateMachine, _IRISH_LOG, _IRISH_ANTILOG
+from backend.src.emulator.ludgate import _IRISH_ANTILOG, _IRISH_LOG, LudgateMachine
 
 
 class TestIrishLogTable:
@@ -41,9 +41,7 @@ class TestIrishLogTable:
 class TestIrishMultiply:
     """Verify all 10x10 multiplication pairs via Irish logarithms."""
 
-    @pytest.mark.parametrize("a,b", [
-        (a, b) for a in range(1, 10) for b in range(1, 10)
-    ])
+    @pytest.mark.parametrize("a,b", [(a, b) for a in range(1, 10) for b in range(1, 10)])
     def test_single_digit_multiply(self, a, b):
         m = LudgateMachine()
         assert m.irish_multiply(a, b) == a * b
@@ -117,10 +115,12 @@ class TestLudgateArithmetic:
 class TestLudgateProgram:
     def test_run_simple_program(self):
         m = LudgateMachine()
-        results = m.run([
-            ("add", 3, 4),
-            ("mult", 2, 5),
-        ])
+        results = m.run(
+            [
+                ("add", 3, 4),
+                ("mult", 2, 5),
+            ]
+        )
         assert results[0] == 7
         assert results[1] == 10
 

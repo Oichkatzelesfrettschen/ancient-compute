@@ -13,7 +13,6 @@ References:
 
 from __future__ import annotations
 
-from fractions import Fraction
 from pathlib import Path
 
 import yaml
@@ -122,15 +121,15 @@ def run_note_c(n: int) -> BabbageNumber:
     deck = data["deck"]
 
     state = {f"V{i}": BabbageNumber(0) for i in range(10)}
-    state["V1"] = BabbageNumber(1)   # counter starts at 1
-    state["V2"] = BabbageNumber(n)   # upper limit
-    state["V4"] = BabbageNumber(1)   # constant for increment
+    state["V1"] = BabbageNumber(1)  # counter starts at 1
+    state["V2"] = BabbageNumber(n)  # upper limit
+    state["V4"] = BabbageNumber(1)  # constant for increment
 
     # Simulate the loop manually (the YAML deck represents one loop body;
     # we iterate n times as Ada's "backing" mechanism would).
     # ops: [0]=accumulate, [1]=increment, [2]=check, [3]=copy
-    op_accumulate = deck[0]   # V3 = V3 + V1
-    op_increment = deck[1]    # V1 = V1 + V4
+    op_accumulate = deck[0]  # V3 = V3 + V1
+    op_increment = deck[1]  # V1 = V1 + V4
 
     for _ in range(n):
         _run_deck([op_accumulate, op_increment], state)

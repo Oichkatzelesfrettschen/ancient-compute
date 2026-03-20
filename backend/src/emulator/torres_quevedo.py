@@ -48,16 +48,17 @@ class FloatingPointNumber:
     This is the first proposed floating-point format in computing history
     (Torres 1914), predating IEEE 754 by over 60 years.
     """
+
     mantissa: float = 0.0  # 8-digit decimal fraction in [0, 1)
-    exponent: int = 0      # signed 2-digit exponent
-    negative: bool = False # sign bit
+    exponent: int = 0  # signed 2-digit exponent
+    negative: bool = False  # sign bit
 
     def __post_init__(self) -> None:
         if abs(self.mantissa) >= 1.0 and self.mantissa != 0.0:
             raise ValueError(f"Mantissa must be in [0, 1): got {self.mantissa}")
 
     @classmethod
-    def from_float(cls, value: float) -> "FloatingPointNumber":
+    def from_float(cls, value: float) -> FloatingPointNumber:
         """Convert Python float to Torres floating-point."""
         if value == 0.0:
             return cls(0.0, 0, False)
@@ -65,7 +66,7 @@ class FloatingPointNumber:
         value = abs(value)
         # Normalize: find exponent such that 0.1 <= mantissa < 1.0
         exp = math.floor(math.log10(value)) + 1
-        mantissa = value / (10.0 ** exp)
+        mantissa = value / (10.0**exp)
         # Round mantissa to 8 decimal digits
         mantissa = round(mantissa, _MANTISSA_DIGITS)
         # Clamp exponent
@@ -76,7 +77,7 @@ class FloatingPointNumber:
         """Convert to Python float."""
         if self.mantissa == 0.0:
             return 0.0
-        val = self.mantissa * (10.0 ** self.exponent)
+        val = self.mantissa * (10.0**self.exponent)
         return -val if self.negative else val
 
     def __repr__(self) -> str:
@@ -114,6 +115,7 @@ def _fp_div(a: FloatingPointNumber, b: FloatingPointNumber) -> FloatingPointNumb
 @dataclass
 class TorresState:
     """State of the Torres y Quevedo electromechanical calculator."""
+
     registers: list[FloatingPointNumber] = field(
         default_factory=lambda: [FloatingPointNumber() for _ in range(_NUM_REGISTERS)]
     )

@@ -23,13 +23,12 @@ import threading
 
 from textual.app import App, ComposeResult
 from textual.binding import Binding
-from textual.containers import Horizontal, Vertical
+from textual.containers import Horizontal
 from textual.timer import Timer
-from textual.widgets import Footer, Header, Label
+from textual.widgets import Footer, Header
 
 from ...analytical_engine import Engine
-from ..assembler.parser import assemble_file
-from .engine_worker import EngineStateUpdate, make_snapshot, snapshot_as_dict
+from .engine_worker import make_snapshot, snapshot_as_dict
 from .widgets.animation_panel import AnimationPanel
 from .widgets.card_deck_view import CardDeckView
 from .widgets.memory_inspector import MemoryInspector
@@ -111,9 +110,9 @@ class BabbageApp(App):
 
     def action_step(self) -> None:
         """Execute one instruction."""
-        if self.engine.running and self.engine.PC < len(self.engine.instruction_cards):
+        if self.engine.running and len(self.engine.instruction_cards) > self.engine.PC:
             last_op = "NOP"
-            if self.engine.PC < len(self.engine.instruction_cards):
+            if len(self.engine.instruction_cards) > self.engine.PC:
                 last_op = self.engine.instruction_cards[self.engine.PC].opcode
             self.engine.step_one_instruction()
             self._post_snapshot(last_op)
@@ -150,10 +149,13 @@ class BabbageApp(App):
 
     def _run_background(self) -> None:
         """Background thread: run engine, posting snapshots periodically."""
-        while (self._running_bg and self.engine.running
-               and self.engine.PC < len(self.engine.instruction_cards)):
+        while (
+            self._running_bg
+            and self.engine.running
+            and len(self.engine.instruction_cards) > self.engine.PC
+        ):
             last_op = "NOP"
-            if self.engine.PC < len(self.engine.instruction_cards):
+            if len(self.engine.instruction_cards) > self.engine.PC:
                 last_op = self.engine.instruction_cards[self.engine.PC].opcode
             self.engine.step_one_instruction()
             # Post snapshot via call_from_thread for thread safety
@@ -198,8 +200,10 @@ class BabbageApp(App):
     def _refresh_memory(self) -> None:
         mem = self.query_one(MemoryInspector)
         start = mem.mem_start
-        window = [self.engine.memory[i].to_decimal()
-                  for i in range(start, min(start + 16, len(self.engine.memory)))]
+        window = [
+            self.engine.memory[i].to_decimal()
+            for i in range(start, min(start + 16, len(self.engine.memory)))
+        ]
         mem.memory_window = window
         mem.refresh()
 

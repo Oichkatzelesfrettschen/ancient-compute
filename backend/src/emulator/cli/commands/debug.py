@@ -5,8 +5,8 @@ import sys
 import click
 from rich.console import Console
 
-from ...analytical_engine import Engine
 from ...adapter import AEMachineAdapter
+from ...analytical_engine import Engine
 from ...debugger import Debugger
 from ..formatter.state import format_state
 
@@ -38,9 +38,11 @@ def debug_cmd(program):
         sys.exit(1)
 
     adapter = AEMachineAdapter(engine)
-    dbg = Debugger(adapter)
+    dbg = Debugger(adapter)  # noqa: F841 -- wiring pending; see DEFERRED_WORK.md
 
-    console.print(f"[bold green]Debugger[/] -- {program} ({len(engine.instruction_cards)} instructions)")
+    console.print(
+        f"[bold green]Debugger[/] -- {program} ({len(engine.instruction_cards)} instructions)"
+    )
     console.print("Type [cyan]help[/] for commands.\n")
 
     while True:
@@ -82,6 +84,7 @@ def debug_cmd(program):
             start = int(parts[1]) if len(parts) > 1 else 0
             n = int(parts[2]) if len(parts) > 2 else 8
             from ..formatter.state import format_memory
+
             console.print(format_memory(engine, start, n))
         elif raw in ("q", "quit"):
             break

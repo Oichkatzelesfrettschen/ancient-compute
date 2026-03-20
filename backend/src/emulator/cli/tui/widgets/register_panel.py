@@ -1,7 +1,7 @@
 """Register panel widget: shows A, B, C, D registers, flags, PC, clock."""
 
-from textual.widget import Widget
 from textual.reactive import reactive
+from textual.widget import Widget
 
 
 class RegisterPanel(Widget):

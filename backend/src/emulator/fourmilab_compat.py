@@ -44,12 +44,12 @@ References:
 
 from __future__ import annotations
 
+from backend.src.emulator.analytical_engine import Engine
 from backend.src.emulator.cli.assembler.fourmilab import (
+    FourmilabCard,
     parse_fourmilab_source,
     translate_fourmilab,
-    FourmilabCard,
 )
-from backend.src.emulator.analytical_engine import Engine
 
 
 def parse_fourmilab_deck(source: str) -> list[FourmilabCard]:

@@ -66,6 +66,7 @@ _DIGITS_PER_COLUMN = 20
 @dataclass
 class LudgateState:
     """State of the Ludgate Analytical Machine."""
+
     store: list[int] = field(default_factory=lambda: [0] * _NUM_COLUMNS)
     accumulator: int = 0
     program_pointer: int = 0

@@ -16,8 +16,13 @@ def render_mill(opcode: str, ingress: float, egress: float, frame_idx: int) -> s
     phase = frame_idx % 4
 
     op_sym = {
-        "ADD": "+", "SUB": "-", "MULT": "*", "DIV": "/",
-        "SQRT": "sqrt", "LOAD": "<-", "STOR": "->",
+        "ADD": "+",
+        "SUB": "-",
+        "MULT": "*",
+        "DIV": "/",
+        "SQRT": "sqrt",
+        "LOAD": "<-",
+        "STOR": "->",
     }.get(opcode, "?")
 
     # Four-phase animation: load -> engage -> operate -> egress

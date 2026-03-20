@@ -6,10 +6,9 @@ import click
 from rich.console import Console
 
 from ...analytical_engine import Engine
-from ..assembler.parser import assemble_file
 from ..assembler.fourmilab import parse_fourmilab_source, translate_fourmilab
 from ..formatter.state import format_state
-from ..formatter.trace import format_trace_table, format_trace_json
+from ..formatter.trace import format_trace_json, format_trace_table
 
 console = Console()
 
@@ -24,12 +23,22 @@ _MACHINE_CHOICES = click.Choice(
 @click.option("--trace", is_flag=True, help="Print execution trace after completion.")
 @click.option("--dump", is_flag=True, help="Dump engine state after completion.")
 @click.option("--physics", is_flag=True, help="Enable physics coupling.")
-@click.option("--format", "fmt", type=click.Choice(["basm", "fourmilab"]), default="basm",
-              help="Source format (default: basm).")
-@click.option("--trace-format", type=click.Choice(["table", "json"]), default="table",
-              help="Trace output format.")
-@click.option("--machine", type=_MACHINE_CHOICES, default="analytical-engine",
-              help="Emulator machine type.")
+@click.option(
+    "--format",
+    "fmt",
+    type=click.Choice(["basm", "fourmilab"]),
+    default="basm",
+    help="Source format (default: basm).",
+)
+@click.option(
+    "--trace-format",
+    type=click.Choice(["table", "json"]),
+    default="table",
+    help="Trace output format.",
+)
+@click.option(
+    "--machine", type=_MACHINE_CHOICES, default="analytical-engine", help="Emulator machine type."
+)
 def run_cmd(program, trace, dump, physics, fmt, trace_format, machine):
     """Execute PROGRAM on the Analytical Engine emulator."""
     output_lines = []
@@ -56,7 +65,9 @@ def run_cmd(program, trace, dump, physics, fmt, trace_format, machine):
         console.print(f"[bold red]Assembly error:[/] {exc}")
         sys.exit(1)
 
-    console.print(f"[bold green]Running[/] {program} ({len(engine.instruction_cards)} instructions)")
+    console.print(
+        f"[bold green]Running[/] {program} ({len(engine.instruction_cards)} instructions)"
+    )
 
     try:
         engine.run()
@@ -78,5 +89,7 @@ def run_cmd(program, trace, dump, physics, fmt, trace_format, machine):
 
 def _run_historical(machine: str, program: str) -> None:
     """Dispatch to a historical machine runner."""
-    console.print(f"[yellow]Historical machine '{machine}' not yet integrated in run command. "
-                  "Use the dedicated machine module directly.[/]")
+    console.print(
+        f"[yellow]Historical machine '{machine}' not yet integrated in run command. "
+        "Use the dedicated machine module directly.[/]"
+    )

@@ -27,7 +27,9 @@ def format_flags(engine) -> Table:
 
 def format_memory(engine, start: int = 0, count: int = 16) -> Table:
     """Return a Rich Table showing a memory window."""
-    tbl = Table(title=f"Memory [{start}..{start + count - 1}]", show_header=True, header_style="bold cyan")
+    tbl = Table(
+        title=f"Memory [{start}..{start + count - 1}]", show_header=True, header_style="bold cyan"
+    )
     tbl.add_column("Addr", style="bold yellow", width=6)
     tbl.add_column("Value", style="white")
     for i in range(start, min(start + count, len(engine.memory))):

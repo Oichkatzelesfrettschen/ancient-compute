@@ -27,7 +27,6 @@ References:
 
 from __future__ import annotations
 
-import struct
 from dataclasses import dataclass, field
 
 # Z1 word format constants
@@ -51,10 +50,11 @@ class ZuseFloat:
     The Z1 used sign-magnitude representation (unusual -- most machines
     used two's complement, but Zuse chose sign-magnitude for clarity).
     """
+
     word: int = 0  # raw 22-bit integer
 
     @classmethod
-    def from_float(cls, value: float) -> "ZuseFloat":
+    def from_float(cls, value: float) -> ZuseFloat:
         """Convert Python float to Z1 22-bit floating-point."""
         if value == 0.0:
             return cls(0)
@@ -64,8 +64,9 @@ class ZuseFloat:
 
         # Find exponent (base-2)
         import math
+
         exp = math.floor(math.log2(value))
-        mantissa_val = value / (2.0 ** exp) - 1.0  # hidden bit subtracted
+        mantissa_val = value / (2.0**exp) - 1.0  # hidden bit subtracted
 
         # Clamp exponent to 7-bit biased range
         stored_exp = exp + _EXPONENT_BIAS
@@ -75,7 +76,11 @@ class ZuseFloat:
         mantissa_int = int(round(mantissa_val * _MANTISSA_SCALE))
         mantissa_int = max(0, min(_MANTISSA_SCALE - 1, mantissa_int))
 
-        word = (sign << (_EXPONENT_BITS + _MANTISSA_BITS)) | (stored_exp << _MANTISSA_BITS) | mantissa_int
+        word = (
+            (sign << (_EXPONENT_BITS + _MANTISSA_BITS))
+            | (stored_exp << _MANTISSA_BITS)
+            | mantissa_int
+        )
         return cls(word & ((1 << _WORD_BITS) - 1))
 
     def to_float(self) -> float:
@@ -89,7 +94,7 @@ class ZuseFloat:
 
         actual_exp = stored_exp - _EXPONENT_BIAS
         mantissa_val = 1.0 + mantissa_int / _MANTISSA_SCALE
-        value = mantissa_val * (2.0 ** actual_exp)
+        value = mantissa_val * (2.0**actual_exp)
 
         return -value if sign else value
 
@@ -101,16 +106,16 @@ class ZuseFloat:
             return NotImplemented
         return abs(self.to_float() - other.to_float()) < 1e-6
 
-    def __add__(self, other: "ZuseFloat") -> "ZuseFloat":
+    def __add__(self, other: ZuseFloat) -> ZuseFloat:
         return ZuseFloat.from_float(self.to_float() + other.to_float())
 
-    def __sub__(self, other: "ZuseFloat") -> "ZuseFloat":
+    def __sub__(self, other: ZuseFloat) -> ZuseFloat:
         return ZuseFloat.from_float(self.to_float() - other.to_float())
 
-    def __mul__(self, other: "ZuseFloat") -> "ZuseFloat":
+    def __mul__(self, other: ZuseFloat) -> ZuseFloat:
         return ZuseFloat.from_float(self.to_float() * other.to_float())
 
-    def __truediv__(self, other: "ZuseFloat") -> "ZuseFloat":
+    def __truediv__(self, other: ZuseFloat) -> ZuseFloat:
         if other.to_float() == 0.0:
             raise ZeroDivisionError("Z1 division by zero")
         return ZuseFloat.from_float(self.to_float() / other.to_float())
@@ -122,6 +127,7 @@ class ZuseFloat:
 @dataclass
 class ZuseZ1State:
     """State of the Zuse Z1 mechanical binary computer."""
+
     memory: list[ZuseFloat] = field(default_factory=lambda: [ZuseFloat(0)] * _MEMORY_SIZE)
     # Accumulator register (the Z1 had a single main accumulator)
     accumulator: ZuseFloat = field(default_factory=ZuseFloat)
@@ -129,7 +135,7 @@ class ZuseZ1State:
     auxiliary: ZuseFloat = field(default_factory=ZuseFloat)
     program_counter: int = 0
     cycle_count: int = 0
-    lamp_panel: int = 0   # 22-bit lamp display state
+    lamp_panel: int = 0  # 22-bit lamp display state
     output_tape: list[float] = field(default_factory=list)
     tape_input: list[float] = field(default_factory=list)
 

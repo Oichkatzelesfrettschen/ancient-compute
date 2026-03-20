@@ -1,8 +1,8 @@
 # Project Status Dashboard
 
-**Auto-generated**: 2026-02-26 10:24 UTC
+**Auto-generated**: 2026-03-20 04:13 UTC
 **Branch**: `main`
-**Last commit**: `e9d9697 Add initial Alembic migration and test DB documentation (Phase 12)`
+**Last commit**: `ac9a463 fix: add docs-check, mypy reporting, fix AE adapter, update deferred work (3rd Debt Resolution Phase 7)`
 
 > Regenerate with: `make status`
 
@@ -12,10 +12,10 @@
 
 | Metric | Value |
 |--------|-------|
-| Unit tests collected | 1120 |
+| Unit tests collected | 1768 |
 | Collection errors | 0 |
-| Python source lines (backend/src/) | 32,886 |
-| Active docs (non-archive .md) | 209 |
+| Python source lines (backend/src/) | 36,606 |
+| Active docs (non-archive .md) | 196 |
 
 ## Phase Status
 
@@ -32,10 +32,8 @@
 
 ## Known Issues
 
-- 3 pre-existing test failures: leibniz_reckoner, 2x pascaline
-- 3 collection errors: test_tools_router.py, test_cross_language.py, test_phase4_w1_api.py
-- 33 pre-existing DB fixture errors (excluded from CI gate)
-- flake8/pylint overlap: consolidation to ruff planned
+- DB-dependent tests skip when no database is available (by design)
+- Linter: ruff replaces flake8+pylint+isort (consolidated)
 
 ## Links
 

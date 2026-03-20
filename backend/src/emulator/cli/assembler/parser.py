@@ -5,7 +5,7 @@ Pass 2: resolve label references in branch/call operands.
 """
 
 from ...analytical_engine import Instruction
-from .syntax import BRANCH_OPCODES, tokenize_line
+from .syntax import tokenize_line
 
 
 def parse_source(source: str) -> list[Instruction]:

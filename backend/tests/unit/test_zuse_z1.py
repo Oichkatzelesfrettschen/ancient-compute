@@ -1,6 +1,5 @@
 """Tests for the Zuse Z1 mechanical binary computer emulator."""
 
-import math
 import pytest
 
 from backend.src.emulator.zuse_z1 import ZuseFloat, ZuseZ1
@@ -200,11 +199,13 @@ class TestZuseZ1Program:
         z = ZuseZ1()
         z.store(0, ZuseFloat.from_float(5.0))
         z.store(1, ZuseFloat.from_float(3.0))
-        results = z.run([
-            ("load", 0),
-            ("add", 1),
-            ("output",),
-        ])
+        results = z.run(
+            [
+                ("load", 0),
+                ("add", 1),
+                ("output",),
+            ]
+        )
         assert len(results) == 1
         assert _close(results[0], 8.0)
 

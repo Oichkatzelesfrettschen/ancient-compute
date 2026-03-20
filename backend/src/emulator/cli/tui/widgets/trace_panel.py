@@ -1,7 +1,7 @@
 """Trace panel widget: instruction history with color coding."""
 
-from textual.widget import Widget
 from textual.reactive import reactive
+from textual.widget import Widget
 
 
 class TracePanel(Widget):
@@ -19,7 +19,7 @@ class TracePanel(Widget):
     max_lines: int = 12
 
     def render(self) -> str:
-        recent = self.trace[-self.max_lines:]
+        recent = self.trace[-self.max_lines :]
         lines = ["  Trace (recent):"]
         for entry in recent:
             ops = " ".join(str(o) for o in entry.get("operands", []))

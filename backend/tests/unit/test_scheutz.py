@@ -1,7 +1,8 @@
 """Tests for the Scheutz Difference Engine emulator."""
 
-import pytest
 from decimal import Decimal
+
+import pytest
 
 from backend.src.emulator.scheutz import ScheutzDifferenceEngine
 

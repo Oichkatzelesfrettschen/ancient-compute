@@ -47,9 +47,10 @@ _B_RE = re.compile(r"^B([+-]\d+)$")
 @dataclass
 class FourmilabCard:
     """A parsed Fourmilab card."""
+
     line_num: int
     raw: str
-    kind: str       # 'number', 'load', 'stor', 'op', 'branch', 'print', 'halt', 'comment'
+    kind: str  # 'number', 'load', 'stor', 'op', 'branch', 'print', 'halt', 'comment'
     payload: object  # kind-specific data
 
 
@@ -165,10 +166,14 @@ def translate_fourmilab(cards: list[FourmilabCard]) -> list[Instruction]:
             # Conditional branch: skip N cards forward/back from current card.
             # We use JNZ (skip if result != 0). Offset is relative to current card index.
             # Will be patched in a second pass.
-            instrs.append(Instruction("JNZ", ["__PATCH__", str(len(card_pc) - 1), str(card.payload)]))
+            instrs.append(
+                Instruction("JNZ", ["__PATCH__", str(len(card_pc) - 1), str(card.payload)])
+            )
         elif card.kind == "b":
             # Unconditional branch
-            instrs.append(Instruction("JMP", ["__PATCH__", str(len(card_pc) - 1), str(card.payload)]))
+            instrs.append(
+                Instruction("JMP", ["__PATCH__", str(len(card_pc) - 1), str(card.payload)])
+            )
         elif card.kind == "print":
             instrs.append(Instruction("WRPRN", ["A"]))
         elif card.kind == "halt":

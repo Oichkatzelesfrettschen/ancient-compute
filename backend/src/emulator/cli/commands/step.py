@@ -6,7 +6,6 @@ import click
 from rich.console import Console
 
 from ...analytical_engine import Engine
-from ..assembler.parser import assemble_file
 from ..formatter.state import format_state
 
 console = Console()
@@ -14,8 +13,7 @@ console = Console()
 
 @click.command("step")
 @click.argument("program", type=click.Path(exists=True))
-@click.option("--breakpoint", "bp", type=int, default=None,
-              help="Break at this PC address.")
+@click.option("--breakpoint", "bp", type=int, default=None, help="Break at this PC address.")
 def step_cmd(program, bp):
     """Step through PROGRAM one instruction at a time."""
     engine = Engine()
@@ -26,16 +24,18 @@ def step_cmd(program, bp):
         console.print(f"[bold red]Assembly error:[/] {exc}")
         sys.exit(1)
 
-    console.print(f"[bold green]Stepping[/] {program} ({len(engine.instruction_cards)} instructions)")
+    console.print(
+        f"[bold green]Stepping[/] {program} ({len(engine.instruction_cards)} instructions)"
+    )
     console.print("Press Enter to step, 'r' to run, 'q' to quit.")
 
-    while engine.running and engine.PC < len(engine.instruction_cards):
-        if bp is not None and engine.PC == bp:
+    while engine.running and len(engine.instruction_cards) > engine.PC:
+        if bp is not None and bp == engine.PC:
             console.print(f"[bold yellow]Breakpoint hit at PC={engine.PC}[/]")
 
         console.print(f"\n[bold]PC={engine.PC}[/] | {format_state(engine)}")
 
-        if engine.PC < len(engine.instruction_cards):
+        if len(engine.instruction_cards) > engine.PC:
             instr = engine.instruction_cards[engine.PC]
             console.print(f"  Next: [cyan]{instr.opcode}[/] {' '.join(instr.operands)}")
 

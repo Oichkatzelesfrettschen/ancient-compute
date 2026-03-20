@@ -55,6 +55,7 @@ def repl_cmd():
             start = int(parts[1]) if len(parts) > 1 else 0
             n = int(parts[2]) if len(parts) > 2 else 8
             from ..formatter.state import format_memory
+
             console.print(format_memory(engine, start, n))
             continue
 

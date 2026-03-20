@@ -1,7 +1,7 @@
 """Card deck view widget: program listing with current instruction highlighted."""
 
-from textual.widget import Widget
 from textual.reactive import reactive
+from textual.widget import Widget
 
 
 class CardDeckView(Widget):
