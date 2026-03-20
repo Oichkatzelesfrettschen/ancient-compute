@@ -260,7 +260,7 @@ All comprehensive project documentation is located in the `docs/` directory.
 - **[docs/general/AGENTS.md](docs/general/AGENTS.md)** - Multi-agent coordination system (5 specialized AI agents)
 - **[docs/general/CLAUDE.md](docs/general/CLAUDE.md)** - Development guide for Claude Code AI assistants
 - **[docs/general/GEMINI.md](docs/general/GEMINI.md)** - Development guide for Gemini Code AI assistants
-- **[docs/general/MULTI_AGENT_SYNTHESIS.md](docs/general/MULTI_AGENT_SYNTHESIS.md)** - Synthesis of all agent outputs, integration analysis
+- **[docs/general/AGENTS.md](docs/general/AGENTS.md)** - Synthesis of all agent outputs, integration analysis
 
 ### Technical Specifications
 - **[docs/specifications/LANGUAGE_SERVICE_ARCHITECTURE.md](docs/specifications/LANGUAGE_SERVICE_ARCHITECTURE.md)** - Polyglot-Systems-Architect: Multi-language execution architecture

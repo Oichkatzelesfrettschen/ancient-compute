@@ -19,7 +19,8 @@
    - [Curriculum & Learning](#curriculum--learning)
 5. [WebSocket API](#websocket-api)
 6. [Language Services](#language-services)
-7. [Examples](#examples)
+7. [CLI Reference](#cli-reference)
+8. [Examples](#examples)
 
 ---
 
@@ -639,6 +640,167 @@ Current version: **v1**
 
 ---
 
+## CLI Reference
+
+The `ancient-compute` CLI provides local emulator commands. Install with:
+
+```bash
+pip install -e backend/
+```
+
+Global usage: `ancient-compute [COMMAND] [OPTIONS] [ARGS]`
+
+---
+
+### run
+
+Execute a `.basm` or Fourmilab-format program on the Analytical Engine emulator.
+
+```
+ancient-compute run [OPTIONS] PROGRAM
+```
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `--trace` | off | Print execution trace after completion |
+| `--dump` | off | Dump full engine state after completion |
+| `--physics` | off | Enable physics coupling (stub; see DEFERRED_WORK.md) |
+| `--format [basm\|fourmilab]` | `basm` | Source format |
+| `--trace-format [table\|json]` | `table` | Trace output format |
+| `--machine [analytical-engine\|scheutz\|ludgate\|torres\|zuse]` | `analytical-engine` | Emulator machine type |
+
+**Example**:
+```bash
+ancient-compute run examples/add.basm --dump
+ancient-compute run examples/note_g.ae --format fourmilab --trace --trace-format json
+```
+
+---
+
+### step
+
+Interactive step-through execution. Press Enter to step, `r` to run, `q` to quit.
+
+```
+ancient-compute step [OPTIONS] PROGRAM
+```
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `--breakpoint INTEGER` | none | Break at this PC address |
+
+---
+
+### debug
+
+Interactive debugger with breakpoint management.
+
+```
+ancient-compute debug PROGRAM
+```
+
+**Debugger commands**:
+
+| Command | Description |
+|---------|-------------|
+| `s` / `step` | Execute one instruction |
+| `r` / `run` | Run to completion or next breakpoint |
+| `b <PC>` | Set breakpoint at address PC |
+| `bl` | List all breakpoints |
+| `bc` | Clear all breakpoints |
+| `p` | Print current state |
+| `m [start] [n]` | Print memory window (default: start=0, n=8) |
+| `q` / `quit` | Quit debugger |
+
+---
+
+### trace
+
+Run a program and export its full execution trace.
+
+```
+ancient-compute trace [OPTIONS] PROGRAM
+```
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `-o / --output PATH` | stdout | Write trace to file |
+| `--format [json\|table]` | `table` | Output format |
+
+---
+
+### assemble
+
+Assemble a `.basm` source file and display the instruction list.
+
+```
+ancient-compute assemble [OPTIONS] INPUT_FILE
+```
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `-o / --output PATH` | stdout | Write assembled output to file |
+| `--format [text\|json]` | `text` | Output format |
+
+**Example**:
+```bash
+ancient-compute assemble src/program.basm --format json -o out.json
+```
+
+---
+
+### deck
+
+Run a Lovelace card deck (Ada Lovelace's historical notes B, C, D, or G).
+
+```
+ancient-compute deck [OPTIONS]
+```
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `--note [b\|c\|d\|g]` | `g` | Which Lovelace note to run |
+| `--n INTEGER` | `3` | Number of Bernoulli numbers (note g) or iteration count |
+| `--physics` | off | Enable physics coupling (note g only; stub) |
+
+Note G computes Bernoulli numbers using the historical algorithm from Ada Lovelace's
+1843 translation of Menabrea's memoir.
+
+---
+
+### repl
+
+Interactive REPL for the Babbage Analytical Engine. Enter instructions directly.
+
+```
+ancient-compute repl
+```
+
+**REPL commands**:
+
+| Command | Description |
+|---------|-------------|
+| `OPCODE [operands]` | Execute one instruction (e.g. `LOAD A 42`) |
+| `.state` | Print current engine state |
+| `.mem [start] [n]` | Print memory window |
+| `.reset` | Reset engine to initial state |
+| `.help` | Show help |
+| `.quit` / Ctrl-D | Exit |
+
+---
+
+### tui
+
+Launch the Textual TUI dashboard. Requires `textual` package.
+
+```
+ancient-compute tui [PROGRAM]
+```
+
+`PROGRAM` is optional -- if omitted, the TUI opens with an empty engine state.
+
+---
+
 ## Support
 
 - **Documentation**: https://ancient-compute.com/docs
@@ -647,5 +809,5 @@ Current version: **v1**
 
 ---
 
-**Last Updated**: November 2, 2025
-**API Version**: 1.0
+**Last Updated**: 2026-03-19
+**API Version**: 1.1

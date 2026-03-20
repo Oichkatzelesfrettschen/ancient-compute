@@ -4,20 +4,20 @@
 
 1. `docs/general/MASTER_ROADMAP.md`
 2. `docs/general/TODO_TRACKER.md`
-3. `docs/general/PLANNING_CANONICAL_MAP.md`
-4. `docs/general/HARDWARE_LANGUAGE_BRINGUP_PLAN.md`
-5. `docs/archive/INDEX.md` (archived planning ledger)
-6. `docs/general/EXECUTION_RESCOPED_PLAN_2026-02.md`
-7. `docs/general/TEST_GATE_MATRIX.md`
-8. `docs/general/TEST_QUARANTINE.md`
-9. `docs/general/BABBAGE_ABI_RUNTIME_CONTRACT.md`
-10. `docs/general/FREESTANDING_C_SUBSET_PROFILE.md`
+3. `docs/general/HARDWARE_LANGUAGE_BRINGUP_PLAN.md`
+4. `docs/archive/INDEX.md` (archived planning ledger)
+5. `docs/general/TEST_GATE_MATRIX.md`
+6. `docs/general/TEST_QUARANTINE.md`
+7. `docs/general/BABBAGE_ABI_RUNTIME_CONTRACT.md`
+8. `docs/general/FREESTANDING_C_SUBSET_PROFILE.md`
+
+Note: PLANNING_CANONICAL_MAP.md, EXECUTION_RESCOPED_PLAN_2026-02.md, and DOCS_TAXONOMY.md were
+archived in Phase 9 docs consolidation. See docs/archive/INDEX.md.
 
 ## Taxonomy and Navigation
 
-1. `docs/general/DOCS_TAXONOMY.md`
-2. `docs/general/DOCUMENT_FINDER.md`
-3. `docs/general/SITE_MAP.md`
+1. `docs/general/DOCUMENT_INDEX.md`
+2. `docs/general/PROJECT_STRUCTURE.md`
 
 ## Major Documentation Domains
 

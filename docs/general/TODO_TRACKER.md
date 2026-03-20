@@ -8,10 +8,9 @@
 **Planning Context**:
 - Canonical strategy roadmap: `docs/general/MASTER_ROADMAP.md`
 - Canonical execution tracker: `docs/general/TODO_TRACKER.md`
-- Planning classification and archive policy: `docs/general/PLANNING_CANONICAL_MAP.md`
 - Hardware-first sequencing: `docs/general/HARDWARE_LANGUAGE_BRINGUP_PLAN.md`
-- Active wave ledger: `docs/general/EXECUTION_RESCOPED_PLAN_2026-02.md`
 - Active test gate policy: `docs/general/TEST_GATE_MATRIX.md`
+- Archived planning ledger: `docs/archive/INDEX.md`
 
 ---
 
