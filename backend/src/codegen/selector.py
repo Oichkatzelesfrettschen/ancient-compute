@@ -156,6 +156,15 @@ class InstructionSelector:
             "neg": "NEG",
             "min": "MIN",
             "max": "MAX",
+            # Comparison ops: emit SUB so result sign encodes relationship.
+            # For branch contexts these are bypassed by _emit_condition_branch
+            # in c_compiler.py; this fallback handles standalone boolean values.
+            "eq": "SUB",
+            "ne": "SUB",
+            "lt": "SUB",
+            "le": "SUB",
+            "gt": "SUB",
+            "ge": "SUB",
         }
 
         mnemonic = mnemonic_map.get(instr.op, instr.op.upper())
@@ -339,8 +348,16 @@ class InstructionSelector:
 
         if instr.value:
             value_op = self._get_operand(instr.value)
-            # Return value must be in A
-            if value_op.operand_type == "reg" and value_op.value != "A":
+            if value_op.operand_type == "immed":
+                # Constants must be loaded into A first
+                result.append(
+                    AsmInstruction(
+                        "LOAD",
+                        [AsmOperand("reg", "A"), value_op],
+                        comment="load return value into A",
+                    )
+                )
+            elif value_op.operand_type == "reg" and value_op.value != "A":
                 result.append(
                     AsmInstruction(
                         "MOV", [AsmOperand("reg", "A"), value_op], comment="move return value to A"
@@ -406,8 +423,10 @@ class InstructionSelector:
             )
 
         elif isinstance(term, ReturnTerminator):
-            # This should have been handled by Return instruction
-            result.append(AsmInstruction("RET", [], comment="return"))
+            # emit_return() now adds a Return instruction to block.instructions,
+            # which handles the actual RET emission.  ReturnTerminator is kept
+            # as a control-flow marker only; nothing to emit here.
+            pass
 
         return result
 

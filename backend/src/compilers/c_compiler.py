@@ -12,7 +12,6 @@ Compilation phases:
 
 from __future__ import annotations
 
-from backend.src.compilers.c_parser import CParser
 from backend.src.compilers.c_ast import (
     ArrayAccess,
     Block,
@@ -38,6 +37,7 @@ from backend.src.compilers.c_ast import Function as AstFunction
 from backend.src.compilers.c_ast import Program as AstProgram
 from backend.src.compilers.c_ast import Type as AstType
 from backend.src.compilers.c_ast import UnaryOp as AstUnaryOp
+from backend.src.compilers.c_parser import CParser
 from backend.src.compilers.c_types import (
     BabbageTypeMapper,
     CType,
@@ -201,9 +201,12 @@ class CCompiler:
         # Compile function body
         self._compile_statement(func.body)
 
-        # Ensure function ends with return
-        if not isinstance(func.body, Block) or not func.body.statements:
-            self.builder.emit_return()
+        # Always emit a fallthrough return at the end of the function.
+        # For functions where all paths return explicitly, this produces a
+        # dead RET that anchors any trailing empty labels (e.g., the end block
+        # of an if/else where all branches return).  The assembler requires
+        # that every referenced label have at least one following instruction.
+        self.builder.emit_return()
 
         # Get completed function
         ir_func = self.builder.finalize()
@@ -256,11 +259,31 @@ class CCompiler:
             # Register variable in symbol table
             self.current_scope.define(var.name, self._ast_type_to_ctype(var.type))
 
+    def _emit_condition_branch(
+        self, condition: Expression, true_label: str, false_label: str
+    ) -> None:
+        """Emit a branch terminator for a condition expression.
+
+        When the condition is a comparison BinaryOp (>, <, >=, <=, ==, !=),
+        the comparison operator is encoded directly in the BranchTerminator so
+        the code generator can emit CMP + the correct conditional jump without
+        needing an intermediate boolean value.  For all other expressions the
+        fallback is a non-zero test on the compiled value.
+        """
+        assert self.builder is not None
+        cmp_ops = {"==": "eq", "!=": "ne", "<": "lt", "<=": "le", ">": "gt", ">=": "ge"}
+        if isinstance(condition, AstBinaryOp) and condition.op in cmp_ops:
+            ir_op = cmp_ops[condition.op]
+            left = self._compile_expression(condition.left)
+            right = self._compile_expression(condition.right)
+            self.builder.emit_branch(ir_op, left, right, true_label, false_label)
+        else:
+            cond_val = self._compile_expression(condition)
+            self.builder.emit_branch("ne", cond_val, Constant(0), true_label, false_label)
+
     def _compile_if_statement(self, stmt: IfStatement) -> None:
         """Compile if statement."""
         assert self.builder is not None
-        # Compile condition
-        cond_val = self._compile_expression(stmt.condition)
 
         # Create then and else blocks
         then_label = self._gen_label("if_then")
@@ -268,8 +291,7 @@ class CCompiler:
         end_label = self._gen_label("if_end")
 
         # Emit conditional branch
-        # For now, simple comparison: if condition is non-zero, jump to then
-        self.builder.emit_branch("ne", cond_val, Constant(0), then_label, else_label)
+        self._emit_condition_branch(stmt.condition, then_label, else_label)
 
         # Compile then branch
         self.builder.new_block(then_label)
@@ -298,8 +320,7 @@ class CCompiler:
 
         # Loop header: evaluate condition
         self.builder.new_block(loop_head_label)
-        cond_val = self._compile_expression(stmt.condition)
-        self.builder.emit_branch("ne", cond_val, Constant(0), loop_body_label, loop_end_label)
+        self._emit_condition_branch(stmt.condition, loop_body_label, loop_end_label)
 
         # Loop body
         self.builder.new_block(loop_body_label)
@@ -316,9 +337,18 @@ class CCompiler:
         prev_scope = self.current_scope
         self.current_scope = self.current_scope.push_scope()
 
-        # Compile initialization
+        # Compile initialization -- may be an expression, declaration, or a
+        # Block produced by _parse_for_init_decl (e.g. "int i = 0").
+        # A Block is inlined flat here so its variables stay in the for-scope
+        # (not hidden in a nested scope that would end before the loop body).
         if stmt.init:
-            self._compile_expression(stmt.init)
+            if isinstance(stmt.init, Block):
+                for s in stmt.init.statements:
+                    self._compile_statement(s)
+            elif isinstance(stmt.init, Statement):
+                self._compile_statement(stmt.init)
+            else:
+                self._compile_expression(stmt.init)
 
         # Create loop structure
         loop_head_label = self._gen_label("for_head")
@@ -332,8 +362,7 @@ class CCompiler:
         # Loop header: evaluate condition
         self.builder.new_block(loop_head_label)
         if stmt.condition:
-            cond_val = self._compile_expression(stmt.condition)
-            self.builder.emit_branch("ne", cond_val, Constant(0), loop_body_label, loop_end_label)
+            self._emit_condition_branch(stmt.condition, loop_body_label, loop_end_label)
         else:
             self.builder.emit_jump(loop_body_label)
 

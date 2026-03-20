@@ -46,6 +46,7 @@ class CodeEmitter:
     def add_instruction(self, instr: AsmInstruction) -> None:
         """Add instruction to code"""
         self.instructions.append(instr)
+        self.current_address += 1
 
     def add_label(self, label: str) -> None:
         """Add label at current position"""
@@ -57,25 +58,32 @@ class CodeEmitter:
         self._assign_addresses()
 
         # Pass 2: Generate assembly text
+
+        # Build address → labels mapping (multiple labels may share an address)
+        addr_to_labels: dict[int, list[str]] = {}
+        for label, label_addr in self.labels.items():
+            addr_to_labels.setdefault(label_addr, []).append(label)
+
         asm_lines = []
         asm_lines.append(".global main")
         asm_lines.append(".text")
         asm_lines.append("")
 
         for addr, instr in enumerate(self.instructions):
-            # Check if label points to this instruction
-            label_at_addr = None
-            for label, label_addr in self.labels.items():
-                if label_addr == addr:
-                    label_at_addr = label
-                    break
-
-            if label_at_addr:
-                asm_lines.append(f"{label_at_addr}:")
+            # Emit all labels at this address
+            for lbl in addr_to_labels.get(addr, []):
+                asm_lines.append(f"{lbl}:")
 
             # Emit instruction
             instr_text = instr.to_asm_string()
             asm_lines.append(f"  {instr_text}")
+
+        # Emit any trailing labels that fall past the last instruction
+        # (e.g., the end-block of an if/else where all branches return).
+        last_instr_addr = len(self.instructions)
+        for trail_addr in sorted(a for a in addr_to_labels if a >= last_instr_addr):
+            for lbl in addr_to_labels[trail_addr]:
+                asm_lines.append(f"{lbl}:")
 
         assembly_text = "\n".join(asm_lines)
 
@@ -89,8 +97,8 @@ class CodeEmitter:
 
     def _assign_addresses(self) -> None:
         """Assign instruction addresses (pass 1)"""
-        # Update current_address for label assignment
-        self.current_address = len(self.instructions)
+        # Labels are assigned in add_label() as instructions are added;
+        # current_address is incremented by add_instruction() so nothing to do here.
 
     def print_assembly(self, output: AssemblyOutput) -> str:
         """Pretty-print assembly with addresses and comments"""

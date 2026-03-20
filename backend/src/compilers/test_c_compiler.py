@@ -9,7 +9,6 @@ Tests cover:
 
 import pytest
 
-from backend.src.compilers.c_parser import CParser
 from backend.src.compilers.c_ast import (
     CLexer,
     GlobalDeclaration,
@@ -17,6 +16,7 @@ from backend.src.compilers.c_ast import (
 )
 from backend.src.compilers.c_ast import Function as AstFunction
 from backend.src.compilers.c_compiler import CCompiler, SymbolTable
+from backend.src.compilers.c_parser import CParser
 from backend.src.compilers.c_types import (
     BabbageTypeMapper,
     CType,

@@ -159,7 +159,7 @@ class WhileStatement(Statement):
 class ForStatement(Statement):
     """For loop statement."""
 
-    init: Expression | None
+    init: Union[Expression, Statement, None]
     condition: Expression | None
     increment: Expression | None
     body: Statement

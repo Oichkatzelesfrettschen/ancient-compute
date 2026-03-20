@@ -379,8 +379,17 @@ class IRBuilder:
         )
 
     def emit_return(self, value: Operand | None = None) -> None:
-        """Emit: return value (terminator)"""
+        """Emit: return value (instruction + terminator).
+
+        The Return instruction carries the value through register allocation and
+        instruction selection.  The ReturnTerminator is set as a fallback control
+        flow marker; select_terminator treats it as a no-op so the instruction
+        always owns the RET emission.  This ensures the return survives even when
+        a subsequent emit_jump() overwrites the terminator (e.g., inside an if/else
+        branch where the compiler emits 'JMP end_label' after the return).
+        """
         assert self.current_block is not None
+        self.current_block.add_instruction(Return(value))
         self.current_block.set_terminator(ReturnTerminator(value))
 
     def finalize(self) -> Function:

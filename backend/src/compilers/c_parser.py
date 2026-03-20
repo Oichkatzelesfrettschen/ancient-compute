@@ -187,14 +187,45 @@ class CParser:
 
         return WhileStatement(condition, body)
 
+    def _parse_for_init_decl(self) -> Statement:
+        """Parse a for-loop init declaration: type name [= expr] [, name [= expr]]*.
+
+        Does NOT consume the trailing semicolon (that belongs to the for syntax).
+        Returns a Block of VariableDeclaration + optional Assignment statements.
+        """
+        var_type = self._parse_type()
+        assert var_type is not None, "Expected type in for-init declaration"
+
+        stmts: list[Statement] = []
+
+        while True:
+            name = self._consume(TokenType.IDENT, "Expected variable name").value
+            stmts.append(VariableDeclaration([Variable(name, var_type, is_global=False)]))
+            if self._check(TokenType.ASSIGN):
+                self._advance()  # consume '='
+                init_expr = self._parse_expression()
+                stmts.append(ExpressionStatement(Assignment(name, init_expr)))
+            if not self._check(TokenType.COMMA):
+                break
+            self._advance()  # consume ','
+
+        return Block(stmts) if len(stmts) > 1 else stmts[0]
+
     def _parse_for(self) -> ForStatement:
         """Parse a for loop."""
         self._consume(TokenType.FOR, "Expected 'for'")
         self._consume(TokenType.LPAREN, "Expected '('")
 
-        init = None
+        init: Union[Expression, Statement, None] = None
         if not self._check(TokenType.SEMICOLON):
-            init = self._parse_expression()
+            if (
+                self._check(TokenType.INT)
+                or self._check(TokenType.FLOAT)
+                or self._check(TokenType.VOID)
+            ):
+                init = self._parse_for_init_decl()
+            else:
+                init = self._parse_expression()
         self._consume(TokenType.SEMICOLON, "Expected ';'")
 
         condition = None
