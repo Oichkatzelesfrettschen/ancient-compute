@@ -331,9 +331,80 @@ class PythonCompiler:
         self.builder.current_block = self.builder.new_block(end_label)
 
     def _compile_for(self, stmt: For, block: BasicBlock) -> None:
-        """Compile for loop: for i in range(n), range(start, stop), range(start, stop, step)"""
+        """Compile for loop.
+
+        Supports:
+        - for i in range(n) / range(start, stop) / range(start, stop, step)
+        - for x in var: desugared as range(len(var)) with x = var[i]
+        """
+        if isinstance(stmt.iter, Name):
+            # for x in var: -> for __i in range(len(var)): x = var[__i]; body
+            iter_var = stmt.iter.id
+            idx_var = self._gen_temp("for_idx")
+            len_call = Call(func="len", args=[Name(id=iter_var)])
+            len_operand = self._compile_expression(len_call, block)
+
+            loop_label = self._gen_label("for_loop")
+            body_label = self._gen_label("for_body")
+            end_label = self._gen_label("for_end")
+
+            block.instructions.append(Assignment(target=idx_var, source=IRConstant(0)))
+            self.builder.emit_jump(loop_label)
+
+            loop_block = self.builder.new_block(loop_label)
+            cmp_temp = self._gen_temp("for_cmp")
+            loop_block.instructions.append(
+                BinaryOp(
+                    target=cmp_temp, op="<", operand1=VariableValue(idx_var), operand2=len_operand
+                )
+            )
+            self.builder.emit_branch(VariableValue(cmp_temp), body_label, end_label)
+
+            body_block = self.builder.new_block(body_label)
+            elem_temp = self._gen_temp("for_elem")
+            addr_temp = self._gen_temp("for_addr")
+            body_block.instructions.append(
+                BinaryOp(
+                    target=addr_temp,
+                    op="add",
+                    operand1=VariableValue(iter_var),
+                    operand2=VariableValue(idx_var),
+                )
+            )
+            body_block.instructions.append(Load(target=elem_temp, address=VariableValue(addr_temp)))
+            body_block.instructions.append(
+                Assignment(target=stmt.target, source=VariableValue(elem_temp))
+            )
+
+            self.break_labels.append(end_label)
+            self.continue_labels.append(loop_label)
+            for child in stmt.body:
+                self._compile_statement(child, body_block)
+            self.break_labels.pop()
+            self.continue_labels.pop()
+
+            if not body_block.terminator:
+                inc_temp = self._gen_temp("for_inc")
+                body_block.instructions.append(
+                    BinaryOp(
+                        target=inc_temp,
+                        op="+",
+                        operand1=VariableValue(idx_var),
+                        operand2=IRConstant(1),
+                    )
+                )
+                body_block.instructions.append(
+                    Assignment(target=idx_var, source=VariableValue(inc_temp))
+                )
+                self.builder.emit_jump(loop_label)
+
+            self.builder.current_block = self.builder.new_block(end_label)
+            return
+
         if not isinstance(stmt.iter, Call) or stmt.iter.func != "range":
-            raise NotImplementedError("Only 'for x in range(...)' is supported")
+            raise NotImplementedError(
+                f"for loop only supports range() or a named list variable; got {type(stmt.iter).__name__}"
+            )
 
         argc = len(stmt.iter.args)
         if argc == 1:

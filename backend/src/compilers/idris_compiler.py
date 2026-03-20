@@ -14,10 +14,14 @@ from .idris_ast import (
     FunctionApplication,
     FunctionDeclaration,
     Identifier,
+    IfExpr,
+    Lambda,
     Let,
     Literal,
     Module,
+    ProofExpr,
     TypeDeclaration,
+    Var,
 )
 
 
@@ -60,6 +64,9 @@ class IdrisCompiler:
     def _compile_expression(self, expr):
         if isinstance(expr, Identifier):
             return VariableValue(expr.name)
+        elif isinstance(expr, Var):
+            # Var is a type-system variable reference; treat as a named value
+            return VariableValue(expr.name)
         elif isinstance(expr, Literal):
             return Constant(expr.value)
         elif isinstance(expr, FunctionApplication):
@@ -68,6 +75,14 @@ class IdrisCompiler:
             return self._compile_let(expr)
         elif isinstance(expr, Case):
             return self._compile_case(expr)
+        elif isinstance(expr, IfExpr):
+            return self._compile_if_expr(expr)
+        elif isinstance(expr, Lambda):
+            return self._compile_lambda(expr)
+        elif isinstance(expr, ProofExpr):
+            # Proof terms (refl, cong, etc.) have no runtime value in the
+            # Babbage ISA -- return a zero constant as a placeholder.
+            return Constant(0)
         else:
             raise NotImplementedError(f"Idris expression type not supported: {type(expr).__name__}")
 
@@ -159,6 +174,45 @@ class IdrisCompiler:
 
         self.builder.new_block(merge_label)
         return VariableValue(result_var)
+
+    def _compile_if_expr(self, expr: IfExpr):
+        """Compile if-then-else: branch on condition, merge at end."""
+        then_label = self._new_tmp() + "_then"
+        else_label = self._new_tmp() + "_else"
+        merge_label = self._new_tmp() + "_merge"
+        result_var = self._new_tmp() + "_if_result"
+
+        cond = self._compile_expression(expr.condition)
+        self.builder.emit_branch(cond, then_label, else_label)
+
+        self.builder.new_block(then_label)
+        then_val = self._compile_expression(expr.then_expr)
+        self.builder.emit_assignment(result_var, then_val)
+        self.builder.emit_jump(merge_label)
+
+        self.builder.new_block(else_label)
+        else_val = self._compile_expression(expr.else_expr)
+        self.builder.emit_assignment(result_var, else_val)
+        self.builder.emit_jump(merge_label)
+
+        self.builder.new_block(merge_label)
+        return VariableValue(result_var)
+
+    def _compile_lambda(self, expr: Lambda):
+        """Compile lambda as a local anonymous function, returning its name."""
+        fn_name = f"__lambda_{self._new_tmp()}"
+        saved_builder = self.builder
+
+        self.builder = IRBuilder(fn_name, [expr.param])
+        self.builder.function.local_variables = {expr.param: IRType.DEC50}
+        self.builder.new_block("entry")
+        body_val = self._compile_expression(expr.body)
+        self.builder.emit_return(body_val)
+        fn = self.builder.finalize()
+        self.program.add_function(fn)
+
+        self.builder = saved_builder
+        return VariableValue(fn_name)
 
     def _new_tmp(self):
         self.tmp_counter += 1

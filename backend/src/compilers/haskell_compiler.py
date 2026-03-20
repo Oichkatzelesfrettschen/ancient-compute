@@ -34,6 +34,7 @@ from backend.src.compilers.haskell_ast import (
     Literal,
     Module,
     PatternLiteral,
+    TypeAnnotation,
     TypeDecl,
     UnaryOp,
     Variable,
@@ -294,6 +295,11 @@ class HaskellCompiler:
 
         elif isinstance(expr, Constructor):
             return self._compile_constructor(expr, block)
+
+        elif isinstance(expr, TypeAnnotation):
+            # Type annotation (expr :: type) -- just compile the inner expression;
+            # type info has no runtime representation in the Babbage ISA.
+            return self._compile_expression(expr.expr, block)
 
         else:
             raise NotImplementedError(f"Expression type not supported: {type(expr).__name__}")
