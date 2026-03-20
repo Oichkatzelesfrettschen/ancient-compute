@@ -77,7 +77,7 @@ class ScheutzDifferenceEngine:
     def crank(self) -> Decimal:
         """Execute one addition cycle.
 
-        Adds differences from highest to lowest (D6->D5, D5->D4, ..., D1->D0).
+        Adds differences from lowest to highest (D0+=D1, D1+=D2, ..., D5+=D6).
         Records D0 in the output table.
 
         Returns:

@@ -1,3 +1,4 @@
+# Provides 'ancient-compute' CLI entry point. Tool config lives in root pyproject.toml.
 from setuptools import setup, find_packages
 
 setup(

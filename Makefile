@@ -42,7 +42,7 @@ help:
 	@echo "  make docker-clean    - Remove Docker containers and volumes"
 	@echo ""
 	@echo "Verification:"
-	@echo "  make verify          - Reproduce CI checks locally (format + tests + shellcheck)"
+	@echo "  make verify          - Reproduce CI checks locally (lint + format + tests + BOM + opcodes)"
 	@echo "  make status          - Generate project status dashboard"
 	@echo "  make twin-verify     - Run hardware twin golden trace tests"
 	@echo "  make bom-validate    - Validate Bill of Materials"
@@ -322,18 +322,22 @@ physics-envelope:
 verify:
 	@echo "=== Local CI Verification ==="
 	@echo ""
-	@echo "[1/4] Backend linting (ruff)..."
+	@echo "[1/6] Backend linting (ruff)..."
 	@cd backend && ruff check src/ tests/ 2>&1 || (echo "FAIL: ruff"; exit 1)
-	@echo "[2/4] Backend formatting (black)..."
+	@echo "[2/6] Backend formatting (black)..."
 	@cd backend && python3 -m black --check --diff src/ tests/ 2>&1 || (echo "FAIL: black"; exit 1)
-	@echo "[3/4] Backend tests..."
+	@echo "[3/6] Backend tests..."
 	@cd backend && python3 -m pytest tests/unit/ -q \
 	  --ignore=backend/tests/integration/test_cross_language.py \
 	  --ignore=backend/tests/integration/test_phase4_w1_api.py \
 	  2>&1 || (echo "FAIL: pytest"; exit 1)
-	@echo "[4/4] Shell scripts (shellcheck)..."
+	@echo "[4/6] Shell scripts (shellcheck)..."
 	@find . -name "*.sh" -not -path "./.git/*" -not -path "./venv/*" \
 	  -exec shellcheck --severity=warning {} + 2>&1 || (echo "WARN: shellcheck issues"; true)
+	@echo "[5/6] BOM validation..."
+	@PYTHONPATH=. python3 tools/validate_bom.py 2>&1 || (echo "FAIL: BOM validation"; exit 1)
+	@echo "[6/6] Opcode sync check..."
+	@PYTHONPATH=. python3 tools/validate_opcodes.py 2>&1 || (echo "FAIL: opcode sync"; exit 1)
 	@echo ""
 	@echo "=== Verification PASSED ==="
 

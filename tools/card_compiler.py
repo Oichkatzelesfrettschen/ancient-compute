@@ -27,7 +27,8 @@ from pathlib import Path
 from typing import List, Optional
 
 
-# --- Opcodes (must match docs/hardware/OPCODES.yaml) ---
+# --- Opcodes ---
+# Canonical source: docs/hardware/OPCODES.yaml -- keep in sync
 
 class Opcode(Enum):
     ADD = 0x0
