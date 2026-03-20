@@ -165,6 +165,19 @@ class InstructionSelector:
             "le": "SUB",
             "gt": "SUB",
             "ge": "SUB",
+            # Symbol aliases emitted by Python compiler (arithmetic + comparisons).
+            "+": "ADD",
+            "-": "SUB",
+            "*": "MULT",
+            "/": "DIV",
+            "//": "DIV",
+            "%": "SUB",  # Modulo: closest Babbage fallback is SUB
+            "==": "SUB",
+            "!=": "SUB",
+            "<": "SUB",
+            "<=": "SUB",
+            ">": "SUB",
+            ">=": "SUB",
         }
 
         mnemonic = mnemonic_map.get(instr.op, instr.op.upper())
@@ -261,14 +274,39 @@ class InstructionSelector:
         ]
 
     def _select_call(self, instr: Call) -> list[AsmInstruction]:
-        """Select for: target = call func(args)"""
+        """Select for: target = call func(args).
+
+        Babbage ABI calling convention:
+          - First 4 arguments passed in registers A, B, C, D (left-to-right).
+          - Arguments 5+ are PUSHed right-to-left before the CALL instruction.
+          - Callee returns result in register A.
+          - Caller pops extra stack arguments after CALL (if any).
+
+        WHY: The AE Mill has 4 ingress axes (A/B/C/D).  Using registers for the
+        first 4 args directly maps to the Mill's physical ingress paths.  Extra
+        args use the data stack (Babbage's variable-card back-transfer path).
+        """
         result: list[AsmInstruction] = []
 
-        # Push arguments onto stack (reverse order)
-        for _i, arg in enumerate(instr.arguments):
-            _arg_op = self._get_operand(arg)
-            # In real implementation, would PUSH arg
-            # For now, just record the operation
+        _ARG_REGS = ["A", "B", "C", "D"]
+
+        # Arguments 5+ are pushed right-to-left (stack-based overflow).
+        overflow_args = instr.arguments[len(_ARG_REGS) :]
+        for arg in reversed(overflow_args):
+            arg_op = self._get_operand(arg)
+            result.append(AsmInstruction("PUSH", [arg_op], comment="push overflow arg"))
+
+        # First 4 args: move into A/B/C/D.
+        for reg_name, arg in zip(_ARG_REGS, instr.arguments, strict=False):
+            arg_op = self._get_operand(arg)
+            if not (arg_op.operand_type == "reg" and arg_op.value == reg_name):
+                result.append(
+                    AsmInstruction(
+                        "MOV",
+                        [AsmOperand("reg", reg_name), arg_op],
+                        comment=f"arg -> {reg_name}",
+                    )
+                )
 
         # CALL function_label
         result.append(
@@ -279,7 +317,13 @@ class InstructionSelector:
             )
         )
 
-        # Return value in A (Babbage convention)
+        # Pop stack-overflow args (caller cleanup).
+        for _ in overflow_args:
+            result.append(
+                AsmInstruction("POP", [AsmOperand("reg", "D")], comment="discard overflow arg")
+            )
+
+        # Return value in A (Babbage convention).
         if instr.target:
             target_reg = self.allocation.get_allocation(instr.target)
             if target_reg != "A":
@@ -392,14 +436,20 @@ class InstructionSelector:
                     )
                 )
 
-            # Conditional jump based on condition
+            # Conditional jump based on condition (symbol aliases for Python compiler).
             condition_map = {
-                "eq": "JZ",  # Result of CMP (A - B) == 0
+                "eq": "JZ",
+                "==": "JZ",
                 "ne": "JNZ",
-                "lt": "JLT",  # Result < 0
-                "gt": "JGT",  # Result > 0
-                "le": "JLE",  # Result <= 0
-                "ge": "JGE",  # Result >= 0
+                "!=": "JNZ",
+                "lt": "JLT",
+                "<": "JLT",
+                "gt": "JGT",
+                ">": "JGT",
+                "le": "JLE",
+                "<=": "JLE",
+                "ge": "JGE",
+                ">=": "JGE",
                 "zero": "JZ",
                 "nonzero": "JNZ",
             }

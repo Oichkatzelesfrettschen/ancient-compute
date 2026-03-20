@@ -107,7 +107,9 @@ class Engine:
     - Punch card I/O simulation
     """
 
-    def __init__(self, physical_engine: Any = None, output_callback: Callable[[str], None] | None = None) -> None:
+    def __init__(
+        self, physical_engine: Any = None, output_callback: Callable[[str], None] | None = None
+    ) -> None:
         """Initialize empty engine.
 
         Args:
@@ -209,6 +211,12 @@ class Engine:
             "PLAY": self._execute_PLAY_micro,
             "SETMODE": self._execute_SETMODE_micro,
             "OIL": self._execute_OIL,
+            # Mill operations present in assembler but missing from handlers.
+            # MOV: register-to-register or immediate-to-register copy (Store axis).
+            # ABS/NEG: unary sign operations on the Mill egress value.
+            "MOV": self._execute_MOV,
+            "ABS": self._execute_ABS,
+            "NEG": self._execute_NEG,
         }
 
     def _emit(self, msg: str) -> None:
@@ -231,7 +239,12 @@ class Engine:
         else:
             raise ValueError(f"Invalid register: {reg_name}")
 
-    def _update_flags(self, value1: "BabbageNumber", value2: "BabbageNumber | None" = None, comparison_result: int | None = None) -> None:
+    def _update_flags(
+        self,
+        value1: "BabbageNumber",
+        value2: "BabbageNumber | None" = None,
+        comparison_result: int | None = None,
+    ) -> None:
         """Update condition flags based on operation result."""
         self.flags["ZERO"] = value1 == BabbageNumber(0)
         self.flags["SIGN"] = value1 < BabbageNumber(0)
@@ -633,6 +646,45 @@ class Engine:
                 self._execute_micro_op(op, reg_dest, None)
 
         self._update_flags(self.registers[reg_dest])
+
+    def _execute_MOV(self, reg_dest: str, operand_src: str) -> None:
+        """MOV reg_dest, src -- copy register or immediate into reg_dest.
+
+        Physically: routes the Store axis value through the Mill ingress
+        and back out via egress without arithmetic (identity barrel).
+        Modelled here as a direct assignment to avoid unnecessary barrel
+        cycles while preserving the conceptual Store<->Mill transfer path.
+        """
+        val = self._get_operand_value(operand_src)
+        self._set_register_value(reg_dest, val)
+        self._update_flags(val)
+
+    def _execute_ABS(self, reg_dest: str) -> None:
+        """ABS reg_dest -- absolute value of reg_dest in-place.
+
+        Physically: the Mill run-up lever checks the sign digit; if negative,
+        the tens-complement mechanism inverts the number before egress.
+        """
+        val = self._get_register_value(reg_dest)
+        if val.value < 0:
+            result = BabbageNumber(0)
+            result.value = -val.value
+            self._set_register_value(reg_dest, result)
+            self._update_flags(result)
+        else:
+            self._update_flags(val)
+
+    def _execute_NEG(self, reg_dest: str) -> None:
+        """NEG reg_dest -- negate reg_dest in-place.
+
+        Physically: the Mill tens-complement mechanism inverts the sign digit
+        and propagates the complement through all 50 digit wheels.
+        """
+        val = self._get_register_value(reg_dest)
+        result = BabbageNumber(0)
+        result.value = -val.value
+        self._set_register_value(reg_dest, result)
+        self._update_flags(result)
 
     def _execute_LOAD_micro(self, reg_dest: str, address_src: str) -> None:
         """Execute LOAD using micro-ops."""
@@ -1099,6 +1151,54 @@ class Engine:
         # Increment PC only if not modified by jump/call/return
         if not pc_modified:
             self.PC += 1
+
+    def load_program_from_text(self, text: str) -> None:
+        """Load Babbage assembly from a string (same format as load_program).
+
+        Enables programmatic loading without a temporary file -- the missing
+        link between the codegen pipeline (which produces assembly text) and
+        the Engine execution loop.
+
+        Args:
+            text: Babbage assembly source (comments, labels, instructions).
+        """
+        instructions: list[Instruction] = []
+        labels: dict[str, int] = {}
+        program_lines: list[tuple[int, str, str]] = []
+
+        for line_num, line in enumerate(text.splitlines(), 0):
+            original_line = line.strip()
+            line = line.split("#")[0].strip()
+            if not line:
+                continue
+            program_lines.append((line_num, line, original_line))
+
+        # Pass 1: collect labels
+        current_address = 0
+        for _ln, line, _orig in program_lines:
+            if ":" in line:
+                label_name = line.split(":")[0].strip()
+                labels[label_name] = current_address
+                line = line.split(":", 1)[1].strip()
+                if not line:
+                    continue
+            parts = line.split()
+            if not parts:
+                continue
+            # Skip assembler directives (e.g. .global, .text) -- not Babbage opcodes.
+            if parts[0].startswith("."):
+                continue
+            # Strip trailing commas from operand tokens so "MOV A, 42" works.
+            operands = [p.rstrip(",") for p in parts[1:]] if len(parts) > 1 else []
+            instructions.append(Instruction(parts[0], operands))
+            current_address += 1
+
+        # Pass 2: resolve label references
+        for instr in instructions:
+            instr.operands = [str(labels[op]) if op in labels else op for op in instr.operands]
+
+        self.PC = 0
+        self.instruction_cards = instructions
 
     def load_program(self, filename: str) -> None:
         """
