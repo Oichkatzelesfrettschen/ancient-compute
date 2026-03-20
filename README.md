@@ -207,8 +207,7 @@ ancient_compute/
 ├── content/           # Educational curriculum content (modules, synthesis)
 ├── scripts/           # Utility scripts for development, build, and deployment
 ├── config/            # Configuration files for various environments
-├── tools/             # Development tools (e.g., todo_report.py)
-└── shared/            # Shared utilities and libraries (e.g., common data models)
+└── tools/             # Development tools and experiment scripts
 ```
 
 ## Educational Modules
