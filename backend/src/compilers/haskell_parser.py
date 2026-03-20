@@ -248,7 +248,7 @@ class HaskellParser:
             self._skip_newlines()
             if self.current_token.type == TokenType.INDENT:
                 self._advance()
-                if self.current_token.type == TokenType.WHERE:
+                if self.current_token.type == TokenType.WHERE:  # type: ignore[comparison-overlap]
                     # Skip everything in the where block until the matching DEDENT
                     while self.current_token.type not in (TokenType.DEDENT, TokenType.EOF):
                         self._advance()

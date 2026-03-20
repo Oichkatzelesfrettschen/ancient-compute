@@ -31,7 +31,7 @@ class SupportedLanguage(str, enum.Enum):
     SYSTEMF = "systemf"
 
 
-class Lesson(Base):
+class Lesson(Base):  # type: ignore[misc]
     """Individual lesson within a module.
 
     Can be reading material, interactive visualization, or coding exercise.
@@ -79,7 +79,7 @@ class Lesson(Base):
         return f"<Lesson {self.slug}>"
 
 
-class LessonProgress(Base):
+class LessonProgress(Base):  # type: ignore[misc]
     """Tracks a user's progress through a specific lesson.
 
     Records completion, time spent, and attempts for coding lessons.
@@ -110,7 +110,7 @@ class LessonProgress(Base):
         return f"<LessonProgress user={self.user_id} lesson={self.lesson_id}>"
 
 
-class CodeSubmission(Base):
+class CodeSubmission(Base):  # type: ignore[misc]
     """Records code submissions for coding lessons.
 
     Stores user's code, execution results, and feedback.

@@ -20,7 +20,7 @@ from sqlalchemy.sql import func
 from ..database import Base
 
 
-class Era(Base):
+class Era(Base):  # type: ignore[misc]
     """Historical era containing modules about a period in computational history.
 
     Represents a major timespan from the 12,500-year timeline.

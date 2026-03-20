@@ -48,7 +48,7 @@ from collections.abc import Callable
 from typing import Any
 
 from ..barrels import BarrelController, MicroOp
-from ..types import BabbageNumber
+from ..types import BabbageNumber as BabbageNumber  # explicit re-export for __init__.py
 
 
 class MechanicalFailureError(Exception):

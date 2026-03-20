@@ -9,8 +9,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-# Lexer re-exports for backward compatibility
-from .c_lexer import CLexer, Token, TokenType  # noqa: F401
+# Lexer re-exports for backward compatibility (explicit re-export satisfies mypy --strict)
+from .c_lexer import CLexer as CLexer
+from .c_lexer import Token as Token
+from .c_lexer import TokenType as TokenType
 
 # AST Node definitions
 

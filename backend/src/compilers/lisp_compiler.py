@@ -155,7 +155,7 @@ class LispCompiler:
         clauses = sexp.children[1:]
         return self._cond_clauses(list(clauses))
 
-    def _cond_clauses(self, clauses: list) -> Any:
+    def _cond_clauses(self, clauses: list[ASTNode]) -> Any:
         """Recursively lower cond clauses to if-else IR."""
         if not clauses:
             return Constant(0)

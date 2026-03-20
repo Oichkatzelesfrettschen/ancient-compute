@@ -19,7 +19,7 @@ class ModuleEra(str, enum.Enum):
     CONTEMPORARY = "contemporary"  # 1950 AD - present
 
 
-class Module(Base):
+class Module(Base):  # type: ignore[misc]
     """Educational module covering a specific period or concept.
 
     Each module represents a major section of the 12,500-year curriculum.
@@ -71,7 +71,7 @@ class Module(Base):
         return f"<Module {self.slug}>"
 
 
-class ModuleProgress(Base):
+class ModuleProgress(Base):  # type: ignore[misc]
     """Tracks a user's progress through a specific module.
 
     Records completion status, time spent, and overall progress.

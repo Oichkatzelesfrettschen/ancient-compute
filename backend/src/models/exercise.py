@@ -24,7 +24,7 @@ class DifficultyLevel(str, enum.Enum):
     ADVANCED = "advanced"
 
 
-class Exercise(Base):
+class Exercise(Base):  # type: ignore[misc]
     """Hands-on coding exercise within a module.
 
     Provides scaffolded practice for programming concepts introduced
@@ -84,7 +84,7 @@ class Exercise(Base):
         return f"<Exercise {self.slug}>"
 
 
-class ExerciseProgress(Base):
+class ExerciseProgress(Base):  # type: ignore[misc]
     """Tracks a user's progress on a specific exercise.
 
     Records attempts, best score, completion, and time spent.
@@ -118,7 +118,7 @@ class ExerciseProgress(Base):
         return f"<ExerciseProgress user={self.user_id} exercise={self.exercise_id}>"
 
 
-class ExerciseSubmission(Base):
+class ExerciseSubmission(Base):  # type: ignore[misc]
     """Records a code submission for an exercise.
 
     Stores the submitted code, language, and execution results.

@@ -6,7 +6,7 @@ from sqlalchemy.sql import func
 from ..database import Base
 
 
-class User(Base):
+class User(Base):  # type: ignore[misc]
     """User model for learners in the Ancient Compute platform.
 
     Tracks user identity, authentication, and learning progress.
