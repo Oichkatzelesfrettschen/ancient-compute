@@ -495,7 +495,7 @@ class Engine:
             val2 = self._get_operand_value(operand_src)
             s1 = str(abs(val1.value)).zfill(50)
             s2 = str(abs(val2.value)).zfill(50)
-            res = int("".join(str(int(d1) & int(d2)) for d1, d2 in zip(s1, s2)))
+            res = int("".join(str(int(d1) & int(d2)) for d1, d2 in zip(s1, s2, strict=False)))
             self.mill_result_buffer = BabbageNumber(0)
             self.mill_result_buffer.value = res if val1.value >= 0 else -res
 
@@ -505,7 +505,7 @@ class Engine:
             val2 = self._get_operand_value(operand_src)
             s1 = str(abs(val1.value)).zfill(50)
             s2 = str(abs(val2.value)).zfill(50)
-            res = int("".join(str(int(d1) | int(d2)) for d1, d2 in zip(s1, s2)))
+            res = int("".join(str(int(d1) | int(d2)) for d1, d2 in zip(s1, s2, strict=False)))
             self.mill_result_buffer = BabbageNumber(0)
             self.mill_result_buffer.value = res if val1.value >= 0 else -res
 
@@ -515,7 +515,7 @@ class Engine:
             val2 = self._get_operand_value(operand_src)
             s1 = str(abs(val1.value)).zfill(50)
             s2 = str(abs(val2.value)).zfill(50)
-            res = int("".join(str(int(d1) ^ int(d2)) for d1, d2 in zip(s1, s2)))
+            res = int("".join(str(int(d1) ^ int(d2)) for d1, d2 in zip(s1, s2, strict=False)))
             self.mill_result_buffer = BabbageNumber(0)
             self.mill_result_buffer.value = res if val1.value >= 0 else -res
 
@@ -1128,7 +1128,7 @@ class Engine:
 
         # Pass 1: Identify labels and store instructions
         current_instruction_address = 0
-        for line_num, line, original_line in program_lines:
+        for _line_num, line, _original_line in program_lines:
             if ":" in line:
                 label_name = line.split(":")[0].strip()
                 labels[label_name] = current_instruction_address
@@ -1146,7 +1146,7 @@ class Engine:
             current_instruction_address += 1
 
         # Pass 2: Resolve label references
-        for i, instruction in enumerate(instructions):
+        for _i, instruction in enumerate(instructions):
             new_operands = []
             for operand in instruction.operands:
                 if operand in labels:

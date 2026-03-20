@@ -141,9 +141,8 @@ class JavaParser:
             self._advance()
             name += "." + self._expect(TokenType.IDENTIFIER, TokenType.TYPE_NAME).value
         is_on_demand = False
-        if self._consume(TokenType.DOT):
-            if self._consume(TokenType.STAR):
-                is_on_demand = True
+        if self._consume(TokenType.DOT) and self._consume(TokenType.STAR):
+            is_on_demand = True
         self._expect(TokenType.SEMICOLON)
         return ImportDecl(name, is_static, is_on_demand)
 

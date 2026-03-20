@@ -420,7 +420,7 @@ class TestConcurrentUserWorkflows:
             by_user[user].append(sub)
 
         assert len(by_user) == 3
-        for user_id, user_subs in by_user.items():
+        for _user_id, user_subs in by_user.items():
             assert len(user_subs) >= 3
 
 

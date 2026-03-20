@@ -225,7 +225,7 @@ class IDRISTypeSystem:
                 return False
             if len(t1.args) != len(t2.args):
                 return False
-            return all(self._types_equal(a1, a2) for a1, a2 in zip(t1.args, t2.args))
+            return all(self._types_equal(a1, a2) for a1, a2 in zip(t1.args, t2.args, strict=False))
 
         return False
 
@@ -308,7 +308,5 @@ class DependentTypeChecker:
         # Simplified: would require evaluating the length expression
         if vect_type.name != "Vect":
             return False
-        if len(vect_type.args) != 2:
-            return False
         # In full implementation, would evaluate the length argument
-        return True
+        return len(vect_type.args) == 2

@@ -76,9 +76,8 @@ class JavaCompiler:
     def _compile_class_decl(self, decl: ClassDecl) -> None:
         """Compile class declaration to IR"""
         for member in decl.members:
-            if isinstance(member, MethodDecl):
-                if member.body is not None:
-                    self._compile_method(member)
+            if isinstance(member, MethodDecl) and member.body is not None:
+                self._compile_method(member)
 
     def _compile_method(self, method_decl: MethodDecl) -> None:
         """Compile method to IR"""

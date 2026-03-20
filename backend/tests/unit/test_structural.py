@@ -11,8 +11,6 @@ import math
 
 import pytest
 
-pytestmark = pytest.mark.physics
-
 from backend.src.emulator.materials import MaterialLibrary
 from backend.src.emulator.structural import (
     BucklingAnalysis,
@@ -25,6 +23,7 @@ from backend.src.emulator.structural import (
     StressConcentration,
 )
 
+pytestmark = pytest.mark.physics
 
 @pytest.fixture
 def lib():
@@ -74,8 +73,8 @@ class TestShaftDeflection:
         assert d < limit, f"Deflection {d:.4f} mm >= limit {limit:.4f} mm"
 
     def test_moment_of_inertia_positive(self):
-        I = ShaftAnalysis.moment_of_inertia_m4(50.0)
-        assert I > 0
+        moi = ShaftAnalysis.moment_of_inertia_m4(50.0)
+        assert moi > 0
 
 
 # -- Gear Tooth Stress --
@@ -177,14 +176,14 @@ class TestFatigueAnalysis:
 
 class TestBucklingAnalysis:
     def test_euler_load_positive(self):
-        I = BucklingAnalysis.rectangular_section_I_mm4(25.0, 25.0)
-        P = BucklingAnalysis.euler_critical_load_N(200.0, I, 600.0, 0.5)
+        moi = BucklingAnalysis.rectangular_section_I_mm4(25.0, 25.0)
+        P = BucklingAnalysis.euler_critical_load_N(200.0, moi, 600.0, 0.5)
         assert P > 0
 
     def test_slenderness_ratio_positive(self):
-        I = BucklingAnalysis.rectangular_section_I_mm4(25.0, 25.0)
+        moi = BucklingAnalysis.rectangular_section_I_mm4(25.0, 25.0)
         A = BucklingAnalysis.rectangular_section_area_mm2(25.0, 25.0)
-        sr = BucklingAnalysis.slenderness_ratio(600.0, 0.5, I, A)
+        sr = BucklingAnalysis.slenderness_ratio(600.0, 0.5, moi, A)
         assert sr > 0
 
     def test_column_support_sf_above_3(self, lib):
@@ -192,10 +191,10 @@ class TestBucklingAnalysis:
         steel = lib.get("steel")
         w = 25.0
         h = 25.0
-        I = BucklingAnalysis.rectangular_section_I_mm4(w, h)
+        moi = BucklingAnalysis.rectangular_section_I_mm4(w, h)
         P_cr = BucklingAnalysis.euler_critical_load_N(
             steel.youngs_modulus_GPa[0],
-            I,
+            moi,
             600.0,
             0.5,
         )
@@ -205,9 +204,9 @@ class TestBucklingAnalysis:
         assert sf >= 3.0, f"Buckling SF={sf:.1f} < 3.0"
 
     def test_longer_column_lower_critical_load(self):
-        I = BucklingAnalysis.rectangular_section_I_mm4(25.0, 25.0)
-        P_short = BucklingAnalysis.euler_critical_load_N(200.0, I, 300.0, 0.5)
-        P_long = BucklingAnalysis.euler_critical_load_N(200.0, I, 600.0, 0.5)
+        moi = BucklingAnalysis.rectangular_section_I_mm4(25.0, 25.0)
+        P_short = BucklingAnalysis.euler_critical_load_N(200.0, moi, 300.0, 0.5)
+        P_long = BucklingAnalysis.euler_critical_load_N(200.0, moi, 600.0, 0.5)
         assert P_long < P_short
 
     def test_sf_infinite_for_zero_load(self):
@@ -256,10 +255,10 @@ class TestStructuralIntegration:
         assert sf_fatigue >= 2.0
 
         # Buckling
-        I = BucklingAnalysis.rectangular_section_I_mm4(25.0, 25.0)
+        moi = BucklingAnalysis.rectangular_section_I_mm4(25.0, 25.0)
         P_cr = BucklingAnalysis.euler_critical_load_N(
             steel.youngs_modulus_GPa[0],
-            I,
+            moi,
             600.0,
             0.5,
         )

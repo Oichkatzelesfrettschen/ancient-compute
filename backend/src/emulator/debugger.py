@@ -197,9 +197,8 @@ class BreakpointManager:
                     if bp.trigger_on_change is not None and current_value != bp.trigger_on_change:
                         hit = True
                     bp.trigger_on_change = current_value
-            elif bp.breakpoint_type == BreakpointType.CONDITION:
-                if bp.condition_func and bp.condition_func(snapshot):
-                    hit = True
+            elif bp.breakpoint_type == BreakpointType.CONDITION and bp.condition_func and bp.condition_func(snapshot):
+                hit = True
 
             if hit:
                 bp.hit_count += 1

@@ -153,7 +153,7 @@ class CService:
                 print("[C SERVICE] Phase 2: IR → Assembly code generation...")
 
             assembly_outputs = []
-            for func_name, ir_func in ir_program.functions.items():
+            for _func_name, ir_func in ir_program.functions.items():
                 codegen_result = self.code_generator.generate_function(ir_func)
                 assembly_text = codegen_result.get_assembly_text()
                 assembly_outputs.append(assembly_text)

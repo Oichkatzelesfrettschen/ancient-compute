@@ -61,7 +61,7 @@ class HaskellType:
             return False
         if len(self.args) != len(other.args):
             return False
-        return all(a == b for a, b in zip(self.args, other.args))
+        return all(a == b for a, b in zip(self.args, other.args, strict=False))
 
     def __hash__(self) -> int:
         return hash((self.kind, tuple(self.args)))
@@ -217,11 +217,7 @@ class HaskellTypeSystem:
             return False
 
         # Recursively unify arguments
-        for arg1, arg2 in zip(type1.args, type2.args):
-            if not self.unify(arg1, arg2):
-                return False
-
-        return True
+        return all(self.unify(arg1, arg2) for arg1, arg2 in zip(type1.args, type2.args, strict=False))
 
     def _deref(self, typ: HaskellType) -> HaskellType:
         """Dereference type variable"""
@@ -272,9 +268,8 @@ class HaskellTypeSystem:
                 return HaskellType.int()
 
         # List concatenation
-        if op == "++":
-            if left.is_list() and right.is_list():
-                return left
+        if op == "++" and left.is_list() and right.is_list():
+            return left
 
         return TypeVariable.fresh()
 

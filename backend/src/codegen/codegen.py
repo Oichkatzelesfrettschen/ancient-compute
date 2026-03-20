@@ -159,11 +159,10 @@ class CodeGenerator:
             result = self.generate_function(function, verbose=verbose)
             results[func_name] = result
 
-            if result.warnings:
-                if verbose:
-                    print(f"[CODEGEN] Warnings for {func_name}:")
-                    for warning in result.warnings:
-                        print(f"[CODEGEN]   {warning}")
+            if result.warnings and verbose:
+                print(f"[CODEGEN] Warnings for {func_name}:")
+                for warning in result.warnings:
+                    print(f"[CODEGEN]   {warning}")
 
         return results
 

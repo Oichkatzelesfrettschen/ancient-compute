@@ -105,14 +105,8 @@ class CTypeSystem:
         if name in self.type_cache:
             return self.type_cache[name]
 
-        if name == "int":
-            return self.INT_TYPE
-        elif name == "float":
-            return self.FLOAT_TYPE
-        elif name == "void":
-            return self.VOID_TYPE
-
-        return None
+        type_map = {"int": self.INT_TYPE, "float": self.FLOAT_TYPE, "void": self.VOID_TYPE}
+        return type_map.get(name)
 
     def make_pointer_type(self, base: CType) -> CType:
         """Create a pointer type."""
@@ -152,12 +146,7 @@ class CTypeSystem:
             return True  # Allow int <-> float conversion
 
         # Pointer assignments
-        if target.is_pointer() and source.is_pointer():
-            # Pointer to same type
-            if self._types_equal(target.base_type, source.base_type):
-                return True
-
-        return False
+        return target.is_pointer() and source.is_pointer() and self._types_equal(target.base_type, source.base_type)
 
     def is_compatible(self, t1: CType, t2: CType) -> bool:
         """Check if two types are compatible."""
@@ -227,9 +216,8 @@ class BabbageTypeMapper:
         if source_type == "ptr":
             if target_type == "i64":
                 return "ptr_to_int"
-        elif target_type == "ptr":
-            if source_type == "i64":
-                return "int_to_ptr"
+        elif target_type == "ptr" and source_type == "i64":
+            return "int_to_ptr"
 
         return None
 

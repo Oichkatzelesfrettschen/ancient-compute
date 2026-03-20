@@ -13,8 +13,6 @@ import math
 
 import pytest
 
-pytestmark = pytest.mark.physics
-
 from backend.src.emulator.kinematics import (
     CamAnalysis,
     CamFollower,
@@ -30,6 +28,7 @@ from backend.src.emulator.kinematics import (
 )
 from backend.src.emulator.materials import MaterialLibrary
 
+pytestmark = pytest.mark.physics
 
 @pytest.fixture
 def lib():
@@ -347,28 +346,28 @@ class TestHertzianContact:
         assert Cp > 0
 
     def test_geometry_factor_positive(self):
-        I = HertzianContact.geometry_factor_I(20, 60)
-        assert I > 0
+        I_geom = HertzianContact.geometry_factor_I(20, 60)
+        assert I_geom > 0
 
     def test_contact_stress_positive(self):
         Cp = HertzianContact.elastic_coefficient(97.0, 0.34, 97.0, 0.34)
-        I = HertzianContact.geometry_factor_I(20, 60)
+        I_geom = HertzianContact.geometry_factor_I(20, 60)
         sigma = HertzianContact.contact_stress_MPa(
             100.0,
             1.05,
             1.0,
             15.0,
             50.0,
-            I,
+            I_geom,
             Cp,
         )
         assert sigma > 0
 
     def test_contact_stress_proportional_to_sqrt_force(self):
         Cp = HertzianContact.elastic_coefficient(97.0, 0.34, 97.0, 0.34)
-        I = HertzianContact.geometry_factor_I(20, 60)
-        s1 = HertzianContact.contact_stress_MPa(100.0, 1.0, 1.0, 15.0, 50.0, I, Cp)
-        s2 = HertzianContact.contact_stress_MPa(400.0, 1.0, 1.0, 15.0, 50.0, I, Cp)
+        I_geom = HertzianContact.geometry_factor_I(20, 60)
+        s1 = HertzianContact.contact_stress_MPa(100.0, 1.0, 1.0, 15.0, 50.0, I_geom, Cp)
+        s2 = HertzianContact.contact_stress_MPa(400.0, 1.0, 1.0, 15.0, 50.0, I_geom, Cp)
         assert s2 == pytest.approx(2.0 * s1, rel=0.01)
 
     def test_pitting_sf_infinite_for_zero_stress(self):

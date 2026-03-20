@@ -14,7 +14,7 @@ def test_note_g_bernoulli_series_matches_ada_convention():
     """Oracle series uses Ada's convention: B_{2k-1} = modern B_{2k}."""
     results = run_series(4)
     expected = [1 / 6, -1 / 30, 1 / 42, -1 / 30]
-    for r, e in zip(results, expected):
+    for r, e in zip(results, expected, strict=True):
         assert abs(r.to_decimal() - e) < 1e-10, f"{r.to_decimal()} != {e}"
 
 

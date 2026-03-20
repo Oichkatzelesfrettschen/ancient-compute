@@ -161,7 +161,7 @@ class CouplingFunctions:
         ds_mm = (math.pi * config.shaft_diameter_mm * config.rpm / 60.0) * config.dt_s
 
         increments = []
-        for i, load in enumerate(state.bearing_loads_N):
+        for _i, load in enumerate(state.bearing_loads_N):
             # Use running-in K if applicable
             K = RunningInWear.wear_coefficient(
                 state.total_sliding_distance_mm,

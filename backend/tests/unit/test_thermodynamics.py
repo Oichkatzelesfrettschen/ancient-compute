@@ -12,8 +12,6 @@ import math
 
 import pytest
 
-pytestmark = pytest.mark.physics
-
 from backend.src.emulator.materials import MaterialLibrary
 from backend.src.emulator.thermodynamics import (
     FrictionHeatModel,
@@ -27,6 +25,7 @@ from backend.src.emulator.thermodynamics import (
     compute_thermal_time_constant_s,
 )
 
+pytestmark = pytest.mark.physics
 
 @pytest.fixture
 def lib():

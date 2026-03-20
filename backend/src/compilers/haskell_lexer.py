@@ -342,8 +342,8 @@ class HaskellLexer:
             self._advance()
 
         # Handle floating point
-        if self.pos < len(self.source) and self.source[self.pos] == ".":
-            if self.pos + 1 < len(self.source) and self.source[self.pos + 1].isdigit():
+        if (self.pos < len(self.source) and self.source[self.pos] == "."
+                and self.pos + 1 < len(self.source) and self.source[self.pos + 1].isdigit()):
                 value += self.source[self.pos]
                 self._advance()
                 while self.pos < len(self.source) and self.source[self.pos].isdigit():

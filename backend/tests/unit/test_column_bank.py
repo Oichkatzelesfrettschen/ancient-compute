@@ -252,9 +252,9 @@ def test_column_bank_sequential_operations():
     bank = ColumnBank()
 
     # Add different values to each column sequentially
-    for step in range(3):
+    for _step in range(3):
         diff_rows = []
-        for col_idx in range(8):
+        for _col_idx in range(8):
             diff = [0] * 31
             diff[0] = 1  # Add 1 to position 0 of each column
             diff_rows.append(diff)
@@ -505,7 +505,7 @@ def test_column_bank_difference_engine_cycle():
     # Column 1: Δf (first difference - incremented by Δ²f)
     # Column 0: f (function value - incremented by Δf)
 
-    for step in range(3):
+    for _step in range(3):
         # Create difference row based on mechanical timing
         diff_rows = []
         for i in range(8):

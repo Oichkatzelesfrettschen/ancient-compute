@@ -141,12 +141,18 @@ class EnigmaMachine:
 
     def __init__(
         self,
-        rotors: list[str] = ["I", "II", "III"],
+        rotors: list[str] = None,
         reflector: str = "B",
-        ring_settings: list[int] = [0, 0, 0],
-        plugboard_connections: list[str] = [],
+        ring_settings: list[int] = None,
+        plugboard_connections: list[str] = None,
     ):
 
+        if plugboard_connections is None:
+            plugboard_connections = []
+        if ring_settings is None:
+            ring_settings = [0, 0, 0]
+        if rotors is None:
+            rotors = ["I", "II", "III"]
         self.rotors = []
         # Rotors are typically listed Left-to-Right in config strings, but physically
         # the signal goes Right -> Middle -> Left -> Reflector

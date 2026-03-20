@@ -414,7 +414,7 @@ class TestDataTypeValidation:
             "language": "python",
         }
 
-        for field, value in data.items():
+        for _field, value in data.items():
             assert isinstance(value, str)
             assert len(value) > 0
 
@@ -428,7 +428,7 @@ class TestDataTypeValidation:
             "per_page": 10,
         }
 
-        for field, value in data.items():
+        for _field, value in data.items():
             assert isinstance(value, (int, float))
             assert value >= 0
 
@@ -440,7 +440,7 @@ class TestDataTypeValidation:
             "is_complete": True,
         }
 
-        for field, value in data.items():
+        for _field, value in data.items():
             assert isinstance(value, bool)
 
     def test_array_fields_validation(self):
@@ -454,7 +454,7 @@ class TestDataTypeValidation:
             "achievements": ["first_solution", "streak_7"],
         }
 
-        for field, value in data.items():
+        for _field, value in data.items():
             assert isinstance(value, list)
 
 
@@ -484,7 +484,7 @@ class TestTimeFormatContract:
         }
 
         # Validate positive numbers
-        for field, value in data.items():
+        for _field, value in data.items():
             assert isinstance(value, (int, float))
             assert value >= 0
 

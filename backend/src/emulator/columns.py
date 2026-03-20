@@ -281,7 +281,7 @@ class ColumnBank:
         if len(difference_rows) != 8:
             raise ValueError(f"Expected 8 difference rows, got {len(difference_rows)}")
 
-        for i, col in enumerate(self.columns):
+        for i, _col in enumerate(self.columns):
             if len(difference_rows[i]) != 31:
                 raise ValueError(f"Row {i}: expected 31 digits, got {len(difference_rows[i])}")
 
@@ -289,9 +289,8 @@ class ColumnBank:
         for i, col in enumerate(self.columns):
             col.add_difference(difference_rows[i])
             # Carry propagates to next column
-            if i < 7:
-                if col.get_carry_out():
-                    self.columns[i + 1].set_carry_in(True)
+            if i < 7 and col.get_carry_out():
+                self.columns[i + 1].set_carry_in(True)
 
     def get_all_values(self) -> list[int]:
         """

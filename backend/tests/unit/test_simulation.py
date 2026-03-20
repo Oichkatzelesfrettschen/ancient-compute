@@ -8,12 +8,12 @@ import math
 
 import pytest
 
-pytestmark = pytest.mark.physics
-
 from backend.src.emulator.materials import MaterialLibrary
 from backend.src.emulator.simulation.coupling import CouplingFunctions
 from backend.src.emulator.simulation.engine import SimulationEngine, SimulationResult, StepResult
 from backend.src.emulator.simulation.state import SimulationConfig, SimulationState
+
+pytestmark = pytest.mark.physics
 
 # ---------------------------------------------------------------------------
 # Fixtures

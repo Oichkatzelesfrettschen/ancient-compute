@@ -11,10 +11,9 @@ Validates:
 
 import pytest
 
-pytestmark = pytest.mark.physics
-
 from backend.src.emulator.materials import MaterialLibrary, MaterialProperties
 
+pytestmark = pytest.mark.physics
 
 @pytest.fixture
 def lib():

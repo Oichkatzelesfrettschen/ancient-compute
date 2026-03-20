@@ -473,7 +473,7 @@ def test_digit_column_alternating_digits():
 def test_digit_column_sequential_addition():
     """Test sequential additions accumulate."""
     col = DigitColumn(0, 0)
-    for i in range(10):
+    for _i in range(10):
         diff = [1] + [0] * 30
         col.add_difference(diff)
     assert col.get_value_as_int() == 10

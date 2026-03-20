@@ -49,7 +49,7 @@ class TestExecutionCachePerformance:
         counter = [0]
 
         def set_items():
-            for i in range(100):
+            for _i in range(100):
                 counter[0] += 1
                 cache.set("python", f"code_{counter[0]}", result)
 
@@ -287,7 +287,7 @@ class TestConcurrentAccess:
         cache = QueryCache()
 
         # Simulate concurrent-like access pattern
-        for round_num in range(10):
+        for _round_num in range(10):
             for i in range(50):
                 key = f"exercise:{i % 10}"
                 if i % 2 == 0:

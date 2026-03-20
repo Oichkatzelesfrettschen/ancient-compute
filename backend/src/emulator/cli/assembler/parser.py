@@ -26,7 +26,7 @@ def parse_source(source: str) -> list[Instruction]:
             addr += 1
 
     # Pass 2: resolve labels in branch operands
-    for instr_idx, opcode, operands in pending:
+    for instr_idx, _opcode, operands in pending:
         resolved = []
         for op in operands:
             if op in labels:

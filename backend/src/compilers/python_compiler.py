@@ -227,9 +227,8 @@ class PythonCompiler:
             if self.break_labels:
                 self.builder.emit_jump(self.break_labels[-1])
 
-        elif isinstance(stmt, Continue):
-            if self.continue_labels:
-                self.builder.emit_jump(self.continue_labels[-1])
+        elif isinstance(stmt, Continue) and self.continue_labels:
+            self.builder.emit_jump(self.continue_labels[-1])
 
     def _compile_assign(self, stmt: Assign, block: BasicBlock) -> None:
         """Compile assignment"""

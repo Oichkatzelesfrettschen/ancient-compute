@@ -9,8 +9,6 @@ Validates:
 
 import pytest
 
-pytestmark = pytest.mark.physics
-
 from backend.src.emulator.electromagnetic import (
     EddyCurrentModel,
     GalvanicCorrosionMatrix,
@@ -18,6 +16,7 @@ from backend.src.emulator.electromagnetic import (
 )
 from backend.src.emulator.materials import MaterialLibrary
 
+pytestmark = pytest.mark.physics
 
 @pytest.fixture
 def lib():

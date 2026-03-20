@@ -1,7 +1,6 @@
-from typing import Any
-
-# Ancient Compute - Timeline Content Delivery Endpoints
 """
+Ancient Compute - Timeline Content Delivery Endpoints
+
 FastAPI endpoints for serving the 12,500-year educational timeline.
 
 Provides full content delivery for:
@@ -11,6 +10,8 @@ Provides full content delivery for:
 - 150+ coding exercises with test cases
 - User progress tracking
 """
+
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session

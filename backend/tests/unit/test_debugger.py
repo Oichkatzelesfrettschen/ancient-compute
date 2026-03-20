@@ -239,7 +239,8 @@ class TestBreakpointManager:
 
     def test_set_condition_breakpoint(self):
         """Test setting condition breakpoint."""
-        condition = lambda snapshot: snapshot.cycle_count > 5
+        def condition(snapshot):
+            return snapshot.cycle_count > 5
         bm = BreakpointManager()
         bp_id = bm.set_breakpoint(BreakpointType.CONDITION, condition_func=condition)
         assert bm.breakpoints[bp_id].condition_func is condition
@@ -579,7 +580,8 @@ class TestDebuggerPolynomialEvaluation:
         """Test condition breakpoint checking state."""
         machine = DEMachine()
         debugger = Debugger(machine)
-        condition = lambda snapshot: snapshot.ae_accumulator > 0
+        def condition(snapshot):
+            return snapshot.ae_accumulator > 0
         _bp_id = debugger.set_condition_breakpoint(condition)
         breakpoints = debugger.list_breakpoints()
         assert len(breakpoints) == 1

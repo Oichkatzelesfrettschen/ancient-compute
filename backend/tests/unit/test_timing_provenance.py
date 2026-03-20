@@ -1,13 +1,13 @@
 """Tests for valve timing provenance and configuration loading."""
 
-import pytest
-
-pytestmark = pytest.mark.physics
 from pathlib import Path
 
+import pytest
 import yaml
 
 from backend.src.emulator.simulation.state import SimulationConfig
+
+pytestmark = pytest.mark.physics
 
 TIMING_YAML = (
     Path(__file__).parent.parent.parent.parent / "docs" / "simulation" / "TIMING_PROVISIONAL.yaml"

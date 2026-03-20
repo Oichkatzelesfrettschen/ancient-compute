@@ -243,7 +243,7 @@ class QueryCache:
 
         # Simple prefix matching for patterns like "exercise:*"
         prefix = pattern.rstrip("*")
-        keys_to_delete = [k for k in self._cache.keys() if k.startswith(prefix)]
+        keys_to_delete = [k for k in self._cache if k.startswith(prefix)]
         for key in keys_to_delete:
             del self._cache[key]
 

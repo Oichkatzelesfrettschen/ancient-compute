@@ -1,12 +1,12 @@
-import pytest
-
-pytestmark = pytest.mark.physics
 import math
+
+import pytest
 
 from backend.src.emulator.analytical_engine import Engine, Instruction, MechanicalFailureError
 from backend.src.emulator.simulation.engine import SimulationEngine
 from backend.src.emulator.simulation.state import SimulationConfig
 
+pytestmark = pytest.mark.physics
 
 def test_logic_physics_timing_coupling():
     """Verify that linked physics engine affects instruction timing."""

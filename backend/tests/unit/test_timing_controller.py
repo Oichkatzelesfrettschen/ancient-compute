@@ -10,7 +10,6 @@ Test structure: 60 tests covering initialization, phase management, rotation, ev
 
 import pytest
 
-pytestmark = pytest.mark.physics
 from backend.src.emulator.timing import (
     MechanicalPhase,
     TimingController,
@@ -18,6 +17,7 @@ from backend.src.emulator.timing import (
     TimingSequence,
 )
 
+pytestmark = pytest.mark.physics
 
 class TestTimingControllerInitialization:
     """Initialize TimingController and verify initial state."""

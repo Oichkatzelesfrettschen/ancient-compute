@@ -1,5 +1,3 @@
-from typing import Any
-
 """
 Ancient Compute - Code Execution API Endpoints
 
@@ -8,6 +6,7 @@ to language services for polyglot code execution in Docker containers.
 """
 
 from datetime import datetime
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel

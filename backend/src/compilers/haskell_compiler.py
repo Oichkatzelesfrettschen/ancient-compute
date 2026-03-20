@@ -232,7 +232,7 @@ class HaskellCompiler:
         assert self.builder is not None
         assert self.symbol_table is not None
         # Bind parameters
-        for name, pattern in zip(param_names, equation.patterns):
+        for name, _pattern in zip(param_names, equation.patterns, strict=False):
             htype = HaskellType.var("a")
             self.symbol_table.define(name, htype, scope="parameter")
 

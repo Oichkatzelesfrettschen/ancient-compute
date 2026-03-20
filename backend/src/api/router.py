@@ -9,14 +9,14 @@ from fastapi import APIRouter, Depends
 from fastapi.responses import PlainTextResponse
 from sqlalchemy.orm import Session
 
-logger = logging.getLogger(__name__)
-
 from ..database import get_db
 from ..models import Era, Module
 from .code_execution import router as code_execution_router
 from .emulator import router as emulator_router
 from .execution import router as exercise_execution_router
 from .timeline import router as timeline_router
+
+logger = logging.getLogger(__name__)
 
 # Create main API router
 api_router = APIRouter()

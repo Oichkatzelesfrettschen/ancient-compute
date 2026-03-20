@@ -340,7 +340,7 @@ def compute_engine_thermal_model(
     # Per-stage efficiency: sqrt(total) for 2 stages
     eta_per_stage = math.sqrt(efficiency)
     transmitted = total_power_W
-    for i, stage in enumerate(gear_train.get("stages", [])):
+    for i, _stage in enumerate(gear_train.get("stages", [])):
         q = FrictionHeatModel.gear_mesh_heat_W(transmitted, eta_per_stage)
         sources.append(HeatSource(f"gear_stage_{i}", q, "gear"))
         transmitted *= eta_per_stage

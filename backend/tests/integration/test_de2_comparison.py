@@ -237,11 +237,11 @@ class TestDE2StructuralFeasibility:
         L_m = span_mm / 1000.0
         E_Pa = E_GPa * 1e9
         d_m = d_mm / 1000.0
-        I = math.pi * d_m**4 / 64.0
+        moi = math.pi * d_m**4 / 64.0
 
         # Estimate 500N radial load
         F = 500.0
-        delta_m = F * L_m**3 / (48 * E_Pa * I)
+        delta_m = F * L_m**3 / (48 * E_Pa * moi)
         delta_mm = delta_m * 1000.0
 
         limit_mm = span_mm / 10000.0  # L/10000 criterion

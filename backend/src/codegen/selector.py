@@ -256,7 +256,7 @@ class InstructionSelector:
         result: list[AsmInstruction] = []
 
         # Push arguments onto stack (reverse order)
-        for i, arg in enumerate(instr.arguments):
+        for _i, arg in enumerate(instr.arguments):
             _arg_op = self._get_operand(arg)
             # In real implementation, would PUSH arg
             # For now, just record the operation

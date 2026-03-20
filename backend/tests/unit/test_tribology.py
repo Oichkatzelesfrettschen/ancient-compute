@@ -12,8 +12,6 @@ import math
 
 import pytest
 
-pytestmark = pytest.mark.physics
-
 from backend.src.emulator.materials import MaterialLibrary
 from backend.src.emulator.tribology import (
     ARCHARD_K_LUBRICATED_BRASS_ON_STEEL,
@@ -29,6 +27,7 @@ from backend.src.emulator.tribology import (
     WearModel,
 )
 
+pytestmark = pytest.mark.physics
 
 @pytest.fixture
 def lib():

@@ -66,7 +66,7 @@ class TestPolynomialEvaluationIntegration:
 
         # Verify results match
         assert len(results) == len(expected)
-        for i, (result, exp) in enumerate(zip(results, expected)):
+        for i, (result, exp) in enumerate(zip(results, expected, strict=False)):
             assert result == exp, f"f({i+1}) expected {exp}, got {result}"
 
     def test_polynomial_cycle_count(self):

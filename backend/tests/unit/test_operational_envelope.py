@@ -2,11 +2,10 @@
 
 import pytest
 
-pytestmark = pytest.mark.physics
-
 from backend.src.emulator.simulation.engine import SimulationEngine
 from backend.src.emulator.simulation.state import SimulationConfig
 
+pytestmark = pytest.mark.physics
 
 class TestOperationalEnvelope:
     """Verify operational envelope sweep produces expected results."""

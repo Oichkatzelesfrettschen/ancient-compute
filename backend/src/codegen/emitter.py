@@ -62,8 +62,7 @@ class CodeEmitter:
         asm_lines.append(".text")
         asm_lines.append("")
 
-        addr = 0
-        for instr in self.instructions:
+        for addr, instr in enumerate(self.instructions):
             # Check if label points to this instruction
             label_at_addr = None
             for label, label_addr in self.labels.items():
@@ -77,8 +76,6 @@ class CodeEmitter:
             # Emit instruction
             instr_text = instr.to_asm_string()
             asm_lines.append(f"  {instr_text}")
-
-            addr += 1
 
         assembly_text = "\n".join(asm_lines)
 

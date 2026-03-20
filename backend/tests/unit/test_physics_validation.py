@@ -21,8 +21,6 @@ import math
 
 import pytest
 
-pytestmark = pytest.mark.physics
-
 # -- Module 1: Materials ---------------------------------------------------
 # -- Module 4: Electromagnetic ---------------------------------------------
 from backend.src.emulator.electromagnetic import (
@@ -66,6 +64,8 @@ from backend.src.emulator.tribology import (
     PVAnalysis,
     WearModel,
 )
+
+pytestmark = pytest.mark.physics
 
 # ---------------------------------------------------------------------------
 # Shared fixtures -- realistic parameters from sim_schema.yaml
@@ -697,8 +697,8 @@ class TestPhysicalPlausibility:
         """50 mm dia x 1500 mm steel shaft: I ~ 0.007 kg.m2.
         Must be in [0.001, 0.1] kg.m2 range.
         """
-        I = main_shaft.moment_of_inertia_kg_m2
-        assert 0.001 <= I <= 0.1, f"Shaft MOI {I:.6f} kg.m2 outside [0.001, 0.1]"
+        moi = main_shaft.moment_of_inertia_kg_m2
+        assert 0.001 <= moi <= 0.1, f"Shaft MOI {moi:.6f} kg.m2 outside [0.001, 0.1]"
 
 
 # ===================================================================

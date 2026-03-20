@@ -51,10 +51,10 @@ class ShaftAnalysis:
         """
         L_m = span_mm / 1000.0
         E_Pa = youngs_modulus_GPa * 1e9
-        I = ShaftAnalysis.moment_of_inertia_m4(diameter_mm)
-        if E_Pa <= 0 or I <= 0:
+        moi = ShaftAnalysis.moment_of_inertia_m4(diameter_mm)
+        if E_Pa <= 0 or moi <= 0:
             return float("inf")
-        delta_m = force_N * L_m**3 / (48.0 * E_Pa * I)
+        delta_m = force_N * L_m**3 / (48.0 * E_Pa * moi)
         return delta_m * 1000.0  # convert to mm
 
     @staticmethod
@@ -529,13 +529,13 @@ class ShaftCriticalSpeed:
         d_m = diameter_mm / 1000.0
         L_m = length_mm / 1000.0
         E_Pa = youngs_modulus_GPa * 1e9
-        I = math.pi * d_m**4 / 64.0
+        moi = math.pi * d_m**4 / 64.0
         A = math.pi * d_m**2 / 4.0
 
         if L_m <= 0 or A <= 0 or density_kg_m3 <= 0:
             return float("inf")
 
-        return (math.pi**2 / L_m**2) * math.sqrt(E_Pa * I / (density_kg_m3 * A))
+        return (math.pi**2 / L_m**2) * math.sqrt(E_Pa * moi / (density_kg_m3 * A))
 
     @staticmethod
     def critical_speed_rpm(omega_n_rad_s: float) -> float:

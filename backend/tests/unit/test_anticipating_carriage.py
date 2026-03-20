@@ -300,7 +300,7 @@ def test_anticipating_carriage_ripple_simulation():
     carries = [True, False, False, False, False, False, False, False]
 
     # Ripple carry across all 8 phases
-    for phase in range(8):
+    for _phase in range(8):
         carriage.set_carry_signals(carries)
         carries = carriage.anticipate_carries()
 
@@ -594,7 +594,7 @@ def test_anticipating_carriage_statistical_carries():
 
     carries_count = 0
 
-    for pattern in range(16):
+    for _pattern in range(16):
         # Alternating pattern
         carries = [bool(i % 2) for i in range(8)]
         carriage.set_carry_signals(carries)

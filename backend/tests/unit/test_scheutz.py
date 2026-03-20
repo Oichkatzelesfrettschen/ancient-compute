@@ -69,7 +69,7 @@ class TestScheutzQuadratic:
         results = engine.tabulate(5)
         # After n cranks, D0 should be n^2
         expected = [1, 4, 9, 16, 25]
-        for i, (r, e) in enumerate(zip(results, expected)):
+        for i, (r, e) in enumerate(zip(results, expected, strict=True)):
             assert r == Decimal(e), f"Step {i+1}: expected {e}, got {r}"
 
     def test_triangular_numbers(self):
@@ -79,7 +79,7 @@ class TestScheutzQuadratic:
         engine.load([0, 1, 1])
         results = engine.tabulate(5)
         expected = [1, 3, 6, 10, 15]
-        for r, e in zip(results, expected):
+        for r, e in zip(results, expected, strict=True):
             assert r == Decimal(e)
 
 
@@ -92,7 +92,7 @@ class TestScheutzHigherOrder:
         engine.load([0, 1, 6, 6])
         results = engine.tabulate(5)
         expected = [1, 8, 27, 64, 125]
-        for r, e in zip(results, expected):
+        for r, e in zip(results, expected, strict=True):
             assert r == Decimal(e), f"Expected {e}, got {r}"
 
     def test_cycle_count_increments(self):

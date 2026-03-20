@@ -481,12 +481,10 @@ class Assembler:
 
     def _pass1_resolve_symbols(self) -> None:
         """First pass: resolve labels and collect symbols."""
-        address = 0
-        for instr in self.instructions:
+        for address, instr in enumerate(self.instructions):
             # Register label at current address
             if instr.label:
                 self.symbol_table.define(instr.label, address)
-            address += 1
 
     def _pass2_emit_code(self) -> None:
         """Second pass: emit machine code for each instruction."""

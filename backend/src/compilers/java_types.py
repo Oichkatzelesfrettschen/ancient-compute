@@ -144,9 +144,8 @@ class JavaTypeSystem:
             return self._promote_numeric_type(left_type, right_type)
 
         # String concatenation
-        if expr.operator == "+":
-            if self._is_string_type(left_type) or self._is_string_type(right_type):
-                return ReferenceType("String")
+        if expr.operator == "+" and (self._is_string_type(left_type) or self._is_string_type(right_type)):
+            return ReferenceType("String")
 
         raise JavaTypeError(f"Unknown binary operator: {expr.operator}")
 
@@ -217,9 +216,8 @@ class JavaTypeSystem:
             return True
 
         # null can be assigned to any reference type
-        if isinstance(from_type, ReferenceType) and from_type.name == "null":
-            if isinstance(to_type, ReferenceType) or isinstance(to_type, ArrayType):
-                return True
+        if isinstance(from_type, ReferenceType) and from_type.name == "null" and isinstance(to_type, (ReferenceType, ArrayType)):
+            return True
 
         # Primitive type widening
         if isinstance(from_type, PrimitiveType) and isinstance(to_type, PrimitiveType):
@@ -229,9 +227,8 @@ class JavaTypeSystem:
                 return from_prec <= to_prec
 
         # Array covariance
-        if isinstance(from_type, ArrayType) and isinstance(to_type, ArrayType):
-            if from_type.dimensions == to_type.dimensions:
-                return self.is_assignable_to(from_type.element_type, to_type.element_type)
+        if isinstance(from_type, ArrayType) and isinstance(to_type, ArrayType) and from_type.dimensions == to_type.dimensions:
+            return self.is_assignable_to(from_type.element_type, to_type.element_type)
 
         # Reference type compatibility (simplified)
         if isinstance(from_type, ReferenceType) and isinstance(to_type, ReferenceType):
@@ -257,7 +254,7 @@ class JavaTypeSystem:
                 return False
             if len(t1.type_args) != len(t2.type_args):
                 return False
-            return all(self._types_equal(a1, a2) for a1, a2 in zip(t1.type_args, t2.type_args))
+            return all(self._types_equal(a1, a2) for a1, a2 in zip(t1.type_args, t2.type_args, strict=False))
 
         if isinstance(t1, ArrayType) and isinstance(t2, ArrayType):
             return t1.dimensions == t2.dimensions and self._types_equal(
@@ -279,7 +276,7 @@ class JavaTypeSystem:
                 return "void"
 
         # Reference types are pointers
-        if isinstance(type_, ReferenceType) or isinstance(type_, ArrayType):
+        if isinstance(type_, (ReferenceType, ArrayType)):
             return "ptr"
 
         return "ptr"
@@ -289,7 +286,7 @@ class JavaTypeSystem:
         if len(param_types) != len(arg_types):
             return False
 
-        for param_type, arg_type in zip(param_types, arg_types):
+        for param_type, arg_type in zip(param_types, arg_types, strict=False):
             if not self.is_assignable_to(arg_type, param_type):
                 return False
 

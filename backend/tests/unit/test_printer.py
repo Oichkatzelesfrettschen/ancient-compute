@@ -441,7 +441,7 @@ class TestStereotyperMoldManagement:
 
         assert stereo.get_mold_fullness() == 0.0
 
-        for i in range(25):
+        for _i in range(25):
             stereo.engrave_number(42)
 
         assert stereo.get_mold_fullness() == 0.5

@@ -7,8 +7,6 @@ increases, wear accumulates, and mechanical failure halts execution.
 
 import pytest
 
-pytestmark = pytest.mark.physics
-
 from backend.src.emulator.analytical_engine import (
     BabbageNumber,
     Engine,
@@ -19,6 +17,7 @@ from backend.src.emulator.simulation.bridge import SimulationBridge
 from backend.src.emulator.simulation.engine import SimulationEngine
 from backend.src.emulator.simulation.state import SimulationConfig
 
+pytestmark = pytest.mark.physics
 
 def _make_physics_engine(config=None):
     """Create an Engine with physics enabled."""
