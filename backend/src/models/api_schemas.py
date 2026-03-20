@@ -1,4 +1,4 @@
-from typing import Any, Union
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -31,18 +31,18 @@ class CompilationResult(BaseModel):
 
 class EmulatorState(BaseModel):
     pc: int
-    registers: dict[str, Union[int, float, str]]
-    memory_preview: dict[int, Union[int, float, str]]
+    registers: dict[str, int | float | str]
+    memory_preview: dict[int, int | float | str]
     flags: dict[str, bool]
     cycle_count: int
 
 
 class AnalyticalEngineSnapshot(BaseModel):
     pc: int
-    registers: dict[str, Union[int, float]]  # Assuming values are decimals
+    registers: dict[str, int | float]  # Assuming values are decimals
     flags: dict[str, bool]
     clock_time: int
-    barrel: dict[str, Union[str, int, None]]  # active, step
+    barrel: dict[str, str | int | None]  # active, step
     mill_operand_buffer: float
     mill_result_buffer: float
     active_store_address: int | None = None

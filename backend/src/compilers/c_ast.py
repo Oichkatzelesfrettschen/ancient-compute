@@ -8,7 +8,6 @@ re-exported from their respective submodules.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Union
 
 # Lexer re-exports for backward compatibility
 from .c_lexer import CLexer, Token, TokenType  # noqa: F401
@@ -159,7 +158,7 @@ class WhileStatement(Statement):
 class ForStatement(Statement):
     """For loop statement."""
 
-    init: Union[Expression, Statement, None]
+    init: Expression | Statement | None
     condition: Expression | None
     increment: Expression | None
     body: Statement
@@ -201,4 +200,4 @@ class GlobalDeclaration:
 class Program:
     """Complete C program (top-level declarations)."""
 
-    declarations: list[Union[GlobalDeclaration, Function]] = field(default_factory=list)
+    declarations: list[GlobalDeclaration | Function] = field(default_factory=list)

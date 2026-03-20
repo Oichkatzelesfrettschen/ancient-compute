@@ -18,7 +18,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Union
+from typing import Any
 
 import yaml
 
@@ -145,7 +145,7 @@ class MaterialLibrary:
         all_names = lib.names()          # -> ["brass", "steel", ...]
     """
 
-    def __init__(self, schema_path: Union[str, Path] | None = None) -> None:
+    def __init__(self, schema_path: str | Path | None = None) -> None:
         path = Path(schema_path) if schema_path else SCHEMA_PATH
         if not path.exists():
             raise FileNotFoundError(f"Schema file not found: {path}")

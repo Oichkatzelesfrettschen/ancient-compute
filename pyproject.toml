@@ -38,7 +38,6 @@ ignore = [
     "E203",   # whitespace before ':', conflicts with black
     "B008",   # do not perform function calls in default arguments (FastAPI Depends)
     "SIM108", # ternary operator -- style preference
-    "UP007",  # use X | Y for union types -- requires Python 3.10+
     # --- pre-existing debt; requires line-by-line review ---
     "E501",   # line-too-long: requires line-by-line review
 ]

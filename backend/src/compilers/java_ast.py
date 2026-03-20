@@ -11,7 +11,6 @@ Represents:
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Union
 
 # ==============================================================================
 # TYPES
@@ -88,7 +87,7 @@ class Expr:
 class Literal(Expr):
     """Literal value: 42, "hello", true"""
 
-    value: Union[int, float, str, bool, None]
+    value: int | float | str | bool | None
 
 
 @dataclass
@@ -190,7 +189,7 @@ class LambdaExpr(Expr):
     """Lambda expression: (x, y) -> x + y"""
 
     parameters: list[Parameter]
-    body: Union[Expr, list[Stmt]]
+    body: Expr | list[Stmt]
 
 
 @dataclass
@@ -265,7 +264,7 @@ class DoWhileStmt(Stmt):
 class ForStmt(Stmt):
     """For statement: for (init; cond; update) body"""
 
-    initializer: Union[VarDeclStmt, Expr] | None
+    initializer: VarDeclStmt | Expr | None
     condition: Expr | None
     update: Expr | None
     body: Stmt
@@ -425,7 +424,7 @@ class ClassDecl(Declaration):
     superclass: Type | None
     interfaces: list[Type]
     modifiers: list[str]
-    members: list[Union[MethodDecl, FieldDecl, ConstructorDecl, ClassDecl]]
+    members: list[MethodDecl | FieldDecl | ConstructorDecl | ClassDecl]
 
 
 @dataclass
@@ -436,7 +435,7 @@ class InterfaceDecl(Declaration):
     type_parameters: list[TypeParameter]
     extends: list[Type]
     modifiers: list[str]
-    members: list[Union[MethodDecl, FieldDecl]]
+    members: list[MethodDecl | FieldDecl]
 
 
 @dataclass
@@ -447,7 +446,7 @@ class EnumDecl(Declaration):
     interfaces: list[Type]
     modifiers: list[str]
     constants: list[EnumConstant]
-    members: list[Union[MethodDecl, FieldDecl]]
+    members: list[MethodDecl | FieldDecl]
 
 
 @dataclass
@@ -498,4 +497,4 @@ class CompilationUnit:
 
     package_decl: PackageDecl | None
     import_decls: list[ImportDecl]
-    type_decls: list[Union[ClassDecl, InterfaceDecl, EnumDecl, AnnotationDecl]]
+    type_decls: list[ClassDecl | InterfaceDecl | EnumDecl | AnnotationDecl]

@@ -5,8 +5,6 @@ Builds a C AST from a token stream produced by CLexer.
 
 from __future__ import annotations
 
-from typing import Union
-
 from .c_ast import (
     ArrayAccess,
     Assignment,
@@ -63,7 +61,7 @@ class CParser:
 
         return program
 
-    def _parse_declaration(self) -> Union[GlobalDeclaration, Function] | None:
+    def _parse_declaration(self) -> GlobalDeclaration | Function | None:
         """Parse a declaration (function or global variable)."""
         ret_type = self._parse_type()
         if not ret_type:
@@ -216,7 +214,7 @@ class CParser:
         self._consume(TokenType.FOR, "Expected 'for'")
         self._consume(TokenType.LPAREN, "Expected '('")
 
-        init: Union[Expression, Statement, None] = None
+        init: Expression | Statement | None = None
         if not self._check(TokenType.SEMICOLON):
             if (
                 self._check(TokenType.INT)

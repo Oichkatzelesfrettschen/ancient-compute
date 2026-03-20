@@ -1,6 +1,5 @@
 # Ancient Compute - LISP AST
 
-from typing import Union
 
 
 class ASTNode:
@@ -39,5 +38,5 @@ class SExpression(ASTNode):
         return f"SExpression({self.children})"
 
 
-Atom = Union[Symbol, Number, String]
-Expression = Union[Atom, SExpression]
+Atom = Symbol | Number | String
+Expression = Atom | SExpression

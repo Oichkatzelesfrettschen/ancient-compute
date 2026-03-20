@@ -15,8 +15,6 @@ Example: Vect n a (vector of length n containing type a)
 
 from __future__ import annotations
 
-from typing import Union
-
 from backend.src.compilers.idris_ast import (
     Application,
     BaseType,
@@ -145,7 +143,7 @@ class IDRISTypeSystem:
 
         raise IDRISTypeError(f"Cannot infer type of {type(expr).__name__}")
 
-    def _infer_literal_type(self, value: Union[int, float, str]) -> Type:
+    def _infer_literal_type(self, value: int | float | str) -> Type:
         """Infer type from literal value"""
         if isinstance(value, int):
             return BaseType("Nat")

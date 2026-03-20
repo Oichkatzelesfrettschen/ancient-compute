@@ -9,7 +9,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Union
 
 
 class IRType(str, Enum):
@@ -92,7 +91,7 @@ class UndefValue(Value):
 
 
 # Type alias for operands
-Operand = Union[Constant, RegisterValue, MemoryValue, VariableValue, UndefValue]
+Operand = Constant | RegisterValue | MemoryValue | VariableValue | UndefValue
 
 
 @dataclass
