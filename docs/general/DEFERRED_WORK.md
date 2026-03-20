@@ -228,20 +228,12 @@ simulation integration).
 
 ## Code Quality
 
-### mypy: ~974 errors across 118 files
+### mypy: RESOLVED 2026-03-20
 
-**WHY**: The mypy error count is too large for a single debt resolution cycle.
-Each module requires individual review to add correct type annotations without
-changing runtime behavior.
-
-**WHAT**: `cd backend && mypy src/ --strict --ignore-missing-imports` reports
-~974 errors in 118 files (updated 2026-03-19; was 737 before `explicit_package_bases`
-and additional test files were added).  The verify target now includes a
-non-blocking mypy summary to track progress.
-
-**WHEN**: Dedicate sprint(s) to type annotation.  Fourth Debt Resolution Sprints
-A-F target: physics/types, analytical_engine/barrels, CLI/TUI, compilers,
-services/API, and attr-defined/assignment/no-any-return cleanup.
+**STATUS**: `python -m mypy backend/src/` reports 0 errors across all files.
+The no-untyped-def and no-any-return rules were fixed in a dedicated sprint
+covering metrics, adapter, codegen, emulator, models, and assembler modules.
+Enigma implicit Optional parameters also fixed.
 
 ---
 
@@ -287,4 +279,4 @@ line-too-long: 109 instances, E702 multiple-statements: 142 instances).
 
 ---
 
-*Last validated: 2026-03-19 (4th Debt Resolution: entry-point resolved, physics coupling partial, mypy count updated, CLI coverage partial)*
+*Last validated: 2026-03-20 (mypy sprint complete: 0 errors; infrastructure coverage sprint complete: 1722 unit tests)*
