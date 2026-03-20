@@ -8,6 +8,7 @@ from .idris_ast import (
     FunctionApplication,
     FunctionDeclaration,
     Identifier,
+    Let,
     Literal,
     Module,
     TypeDeclaration,
@@ -30,13 +31,20 @@ def p_body(p: Any) -> None:
 
 
 def p_declaration_type(p: Any) -> None:
-    """declaration : IDENTIFIER COLON expression"""
+    """declaration : IDENTIFIER COLON atom"""
     p[0] = TypeDeclaration(p[1], p[3])
 
 
 def p_declaration_function(p: Any) -> None:
     """declaration : IDENTIFIER EQUALS expression"""
     p[0] = FunctionDeclaration(p[1], [], p[3])
+
+
+def p_expression_let_in(p: Any) -> None:
+    """expression : KEYWORD IDENTIFIER EQUALS expression KEYWORD expression"""
+    # KEYWORD[1]='let'  IDENTIFIER[2]  EQUALS[3]  expression[4]  KEYWORD[5]='in'  expression[6]
+    binding = FunctionDeclaration(p[2], [], p[4])
+    p[0] = Let([binding], p[6])
 
 
 def p_expression_application(p: Any) -> None:
@@ -98,16 +106,7 @@ class IdrisParser:
 
         result = parser.parse(self.source, lexer=ply_lexer)
         if result is None:
-            # PLY parser returned None -- wrap as single-element list for compiler
-            from .idris_ast import Identifier, TypeDeclaration
-
-            # Fallback: try to interpret as simple type annotation "name : type"
-            parts = self.source.strip().split(":")
-            if len(parts) == 2:
-                name = parts[0].strip()
-                type_name = parts[1].strip()
-                return [TypeDeclaration(name, Identifier(type_name))]
-            return []
+            raise ValueError("IDRIS2 parse error: source did not produce a valid AST")
         return result  # type: ignore[no-any-return]
 
 

@@ -3,6 +3,7 @@
 import time
 
 from backend.src.compilers.lisp_compiler import LispCompiler
+from backend.src.compilers.lisp_lexer import lexer as lisp_lex
 from backend.src.compilers.lisp_parser import parser
 
 from ..base_executor import BaseExecutor, ExecutionResult, ExecutionStatus
@@ -22,7 +23,7 @@ class LISPService(BaseExecutor):
         """Compile LISP code to Babbage IR and return compilation results."""
         start = time.monotonic()
         try:
-            ast = parser.parse(code)
+            ast = parser.parse(code, lexer=lisp_lex)
             if ast is None:
                 raise ValueError("LISP parse error: no AST produced")
             compiler = LispCompiler()

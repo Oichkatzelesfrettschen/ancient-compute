@@ -167,7 +167,6 @@ class PythonCompiler:
 
     def _compile_function(self, func_def: FunctionDef) -> Function:
         """Compile function definition"""
-        assert self.builder is not None
         assert self.symbol_table is not None
         if self.verbose:
             print(f"[PYTHON COMPILER] Compiling function '{func_def.name}'...")

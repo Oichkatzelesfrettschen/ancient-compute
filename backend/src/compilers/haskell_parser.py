@@ -65,8 +65,12 @@ class HaskellParser:
         declarations = []
 
         while self.current_token.type != TokenType.EOF:
-            # Skip newlines at top level
-            while self.current_token.type == TokenType.NEWLINE:
+            # Skip newlines and indent/dedent markers at top level
+            while self.current_token.type in (
+                TokenType.NEWLINE,
+                TokenType.INDENT,
+                TokenType.DEDENT,
+            ):
                 self._advance()
 
             if self.current_token.type == TokenType.EOF:  # type: ignore[comparison-overlap]
@@ -237,6 +241,26 @@ class HaskellParser:
         self._expect(TokenType.EQUALS)
         body = self._parse_expression()
         equations.append(FunctionEquation(patterns=patterns, guard=guard, body=body))
+
+        # Consume optional where clause: INDENT WHERE bindings... DEDENT
+        if self.current_token.type in (TokenType.NEWLINE, TokenType.INDENT):
+            saved_pos = self.pos
+            self._skip_newlines()
+            if self.current_token.type == TokenType.INDENT:
+                self._advance()
+                if self.current_token.type == TokenType.WHERE:
+                    # Skip everything in the where block until the matching DEDENT
+                    while self.current_token.type not in (TokenType.DEDENT, TokenType.EOF):
+                        self._advance()
+                    if self.current_token.type == TokenType.DEDENT:
+                        self._advance()
+                else:
+                    # Not a where clause -- restore position
+                    self.pos = saved_pos
+                    self.current_token = self.tokens[self.pos]
+            else:
+                self.pos = saved_pos
+                self.current_token = self.tokens[self.pos]
 
         self._skip_to_end_of_line()
 

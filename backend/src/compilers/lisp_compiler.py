@@ -36,6 +36,8 @@ class LispCompiler:
                 return self._compile_defun(sexp)
             elif first.value == "if":
                 return self._compile_if(sexp)
+            elif first.value == "cond":
+                return self._compile_cond(sexp)
             elif first.value == "let":
                 return self._compile_let(sexp)
             elif first.value in ["+", "-", "*", "/"]:
@@ -145,6 +147,58 @@ class LispCompiler:
         self.builder.emit_jump(merge_block.label)
 
         # Merge
+        self.builder.current_block = merge_block
+        return VariableValue(result_var)
+
+    def _compile_cond(self, sexp: SExpression) -> Any:
+        """Compile (cond (test1 e1) (test2 e2) ... (t else)) to nested if-else."""
+        clauses = sexp.children[1:]
+        return self._cond_clauses(list(clauses))
+
+    def _cond_clauses(self, clauses: list) -> Any:
+        """Recursively lower cond clauses to if-else IR."""
+        if not clauses:
+            return Constant(0)
+
+        clause = clauses[0]
+        assert isinstance(clause, SExpression)
+        test = clause.children[0]
+        expr_node = clause.children[1]
+
+        # t / otherwise / else / true is the unconditional else branch
+        if isinstance(test, Symbol) and test.value in ("t", "otherwise", "else", "true"):
+            return self._compile_expression(expr_node)
+
+        assert self.builder is not None
+        assert self.builder.current_block is not None
+        entry_block = self.builder.current_block
+
+        cond_val = self._compile_expression(test)
+
+        then_block = self.builder.new_block("cond_then")
+        else_block = self.builder.new_block("cond_else")
+        merge_block = self.builder.new_block("cond_merge")
+
+        result_var = self._new_tmp()
+
+        entry_block.set_terminator(
+            BranchTerminator("ne", cond_val, Constant(0), then_block.label, else_block.label)
+        )
+
+        # Then branch
+        self.builder.current_block = then_block
+        then_val = self._compile_expression(expr_node)
+        if then_val:
+            self.builder.emit_assignment(result_var, then_val)
+        self.builder.emit_jump(merge_block.label)
+
+        # Else branch: remaining cond clauses
+        self.builder.current_block = else_block
+        else_val = self._cond_clauses(clauses[1:])
+        if else_val:
+            self.builder.emit_assignment(result_var, else_val)
+        self.builder.emit_jump(merge_block.label)
+
         self.builder.current_block = merge_block
         return VariableValue(result_var)
 

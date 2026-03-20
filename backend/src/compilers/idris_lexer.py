@@ -70,7 +70,7 @@ def t_STRING(t: Any) -> Any:
 
 
 def t_NUMBER(t: Any) -> Any:
-    r"-?\\d+(\\.\\d+)?"
+    r"-?\d+(\.\d+)?"
     if "." in t.value:
         t.value = float(t.value)
     else:
