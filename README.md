@@ -4,8 +4,8 @@ A comprehensive educational platform teaching the complete 12,500-year history o
 
 **Status**: Phase 1 ✓ COMPLETE | Phase 2 → IN PROGRESS (assembly implemented; other language paths partial or stub) | Phase 3 → DESIGNED
 **Codebase**: ~28,000 lines total | Phase 1: 7,070 lines | Phase 2+: 10,270 lines | Phase 3: 10,660 lines
-**Tests**: 500+ tests | 100% pass rate | coverage improvement in progress (target: 90%)
-**Last Updated**: 2025-11-19
+**Tests**: 1377+ tests | 100% pass rate | coverage improvement in progress (target: 90%)
+**Last Updated**: 2026-03-19
 
 ## Strategic Vision
 
@@ -37,10 +37,10 @@ Developers who know C, Python, Assembly, Java, Haskell, IDRIS2, and LISP but lac
 
 - **Frontend**: SvelteKit, TypeScript, Monaco Editor, D3.js, Three.js
 - **Backend**: FastAPI, Python, SQLite, Redis
-- **Language Services**: Docker containers with gVisor isolation
-- **Build System**: Bazel for hermetic polyglot builds
+- **Language Services**: Docker containers with sandbox isolation
+- **Build System**: Make + Docker Compose
 - **Documentation**: XeLaTeX with pgfplots and TikZ
-- **Security**: 5-layer isolation (Docker, gVisor, seccomp-bpf, cgroups, read-only FS)
+- **Security**: Docker isolation (seccomp-bpf, cgroups, namespaces, read-only FS)
 
 ## Supported Languages
 
@@ -71,7 +71,7 @@ Canonical bring-up sequencing is documented in
 
 - Python 3.11+
 - Node.js 20+ with pnpm
-- Docker (with optional gVisor runtime for sandbox isolation)
+- Docker
 - Git
 - GNU Make
 
@@ -242,10 +242,9 @@ Multi-paradigm languages, modern type systems
 All code execution occurs in multi-layer sandboxed environments:
 
 1. Docker container isolation
-2. gVisor runtime (userspace kernel)
-3. Seccomp-bpf syscall filtering
-4. Cgroups v2 resource limits
-5. Read-only filesystem with tmpfs work directories
+2. Seccomp-bpf syscall filtering
+3. Cgroups v2 resource limits
+4. Read-only filesystem with tmpfs work directories
 
 ## Documentation
 
@@ -295,7 +294,7 @@ All comprehensive project documentation is located in the `docs/` directory.
 ### Phase 1: Foundation ✓ COMPLETE
 
 **Weeks 1-8**: All core components implemented
-- [x] Git + Bazel build system (cross-platform)
+- [x] Git + Make + Docker Compose build system (cross-platform)
 - [x] Docker Compose with PostgreSQL, Redis
 - [x] FastAPI backend with async/await, WebSockets
 - [x] SvelteKit frontend with Monaco editor, D3.js, Three.js
