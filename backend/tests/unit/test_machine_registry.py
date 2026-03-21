@@ -391,8 +391,9 @@ class TestMachinesAPI:
     def test_astrolabe_state_has_altitude(self, api_client: Any) -> None:
         """After loading and stepping, state snapshot includes altitude_deg."""
         api_client.post("/machines/astrolabe/reset")
-        api_client.post("/machines/astrolabe/load",
-                        json={"payload": {"date": "2026-03-20", "latitude": 0.0}})
+        api_client.post(
+            "/machines/astrolabe/load", json={"payload": {"date": "2026-03-20", "latitude": 0.0}}
+        )
         api_client.post("/machines/astrolabe/step")
         state_resp = api_client.get("/machines/astrolabe/state")
         snap = state_resp.json()["snapshot"]
@@ -423,8 +424,7 @@ class TestMachinesAPI:
         assert resp.status_code == 200
 
     def test_load_unknown_machine_404(self, api_client: Any) -> None:
-        resp = api_client.post("/machines/nonexistent/load",
-                               json={"payload": {}})
+        resp = api_client.post("/machines/nonexistent/load", json={"payload": {}})
         assert resp.status_code == 404
 
     def test_run_unknown_machine_404(self, api_client: Any) -> None:

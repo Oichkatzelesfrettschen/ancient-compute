@@ -172,5 +172,78 @@ main = print (quadratic 1 2 1 5)
     # assert "36" in result.stdout
 
 
+class TestHaskellServiceBlockedImports:
+    """Synchronous tests for blocked import detection (no Docker needed)."""
+
+    def test_blocked_imports_is_frozenset(self) -> None:
+        svc = HaskellService()
+        assert isinstance(svc._BLOCKED_IMPORTS, frozenset)
+
+    def test_unsafe_io_is_blocked(self) -> None:
+        svc = HaskellService()
+        assert "System.IO.Unsafe" in svc._BLOCKED_IMPORTS
+
+    def test_system_exit_is_blocked(self) -> None:
+        svc = HaskellService()
+        assert "System.Exit" in svc._BLOCKED_IMPORTS
+
+    def test_system_process_is_blocked(self) -> None:
+        svc = HaskellService()
+        assert "System.Process" in svc._BLOCKED_IMPORTS
+
+    def test_foreign_is_blocked(self) -> None:
+        svc = HaskellService()
+        assert "Foreign" in svc._BLOCKED_IMPORTS
+
+    def test_check_blocked_returns_module_name(self) -> None:
+        svc = HaskellService()
+        result = svc._check_blocked_imports("import System.IO.Unsafe\nmain = pure ()")
+        assert result == "System.IO.Unsafe"
+
+    def test_check_clean_returns_none(self) -> None:
+        svc = HaskellService()
+        result = svc._check_blocked_imports('main = putStrLn "hello"')
+        assert result is None
+
+    def test_check_clean_factorial_returns_none(self) -> None:
+        svc = HaskellService()
+        code = "factorial 0 = 1\nfactorial n = n * factorial (n - 1)\nmain = print (factorial 5)"
+        assert svc._check_blocked_imports(code) is None
+
+    def test_multiple_blocked_imports_detected(self) -> None:
+        svc = HaskellService()
+        code = "import System.Process\nimport System.Exit\nmain = pure ()"
+        result = svc._check_blocked_imports(code)
+        assert result is not None  # At least one blocked import detected
+
+    def test_at_least_six_imports_blocked(self) -> None:
+        svc = HaskellService()
+        assert len(svc._BLOCKED_IMPORTS) >= 6
+
+
+class TestHaskellServiceStructure:
+    """Verify service structural properties (no Docker needed)."""
+
+    def test_service_is_instantiable(self) -> None:
+        svc = HaskellService()
+        assert svc is not None
+
+    def test_service_has_execute_method(self) -> None:
+        svc = HaskellService()
+        assert hasattr(svc, "execute")
+
+    def test_execution_status_success_value(self) -> None:
+        assert ExecutionStatus.SUCCESS.value == "success"
+
+    def test_execution_status_compile_error_value(self) -> None:
+        assert ExecutionStatus.COMPILE_ERROR.value == "compile_error"
+
+    def test_execution_status_runtime_error_value(self) -> None:
+        assert ExecutionStatus.RUNTIME_ERROR.value == "runtime_error"
+
+    def test_execution_status_timeout_value(self) -> None:
+        assert ExecutionStatus.TIMEOUT.value == "timeout"
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

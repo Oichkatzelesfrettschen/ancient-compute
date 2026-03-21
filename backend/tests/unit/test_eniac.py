@@ -162,21 +162,25 @@ class TestStep:
     def test_step_executes_one_instruction(self):
         e = ENIAC()
         e.load_accumulator(0, Decimal("5"))
-        e.load_program([
-            ENIACInstruction(ENIACOp.LOAD, (1, "3")),
-            ENIACInstruction(ENIACOp.HALT),
-        ])
+        e.load_program(
+            [
+                ENIACInstruction(ENIACOp.LOAD, (1, "3")),
+                ENIACInstruction(ENIACOp.HALT),
+            ]
+        )
         e.step()
         assert e.get_accumulator(1) == Decimal("3")
         assert e.state.program_counter == 1
 
     def test_step_returns_true_while_running(self):
         e = ENIAC()
-        e.load_program([
-            ENIACInstruction(ENIACOp.LOAD, (0, "1")),
-            ENIACInstruction(ENIACOp.HALT),
-        ])
-        assert e.step() is True   # LOAD
+        e.load_program(
+            [
+                ENIACInstruction(ENIACOp.LOAD, (0, "1")),
+                ENIACInstruction(ENIACOp.HALT),
+            ]
+        )
+        assert e.step() is True  # LOAD
         assert e.step() is False  # HALT
 
     def test_step_on_halted_machine_returns_false(self):
@@ -187,11 +191,13 @@ class TestStep:
 
     def test_step_advances_cycle_count(self):
         e = ENIAC()
-        e.load_program([
-            ENIACInstruction(ENIACOp.LOAD, (0, "1")),
-            ENIACInstruction(ENIACOp.LOAD, (1, "2")),
-            ENIACInstruction(ENIACOp.HALT),
-        ])
+        e.load_program(
+            [
+                ENIACInstruction(ENIACOp.LOAD, (0, "1")),
+                ENIACInstruction(ENIACOp.LOAD, (1, "2")),
+                ENIACInstruction(ENIACOp.HALT),
+            ]
+        )
         e.step()
         assert e.state.cycle_count == 1
         e.step()
@@ -216,15 +222,17 @@ class TestEdgeCases:
         assert e.get_accumulator(0) == Decimal("12")
 
     def test_multiple_print_outputs(self):
-        e = _run([
-            ENIACInstruction(ENIACOp.LOAD, (0, "1")),
-            ENIACInstruction(ENIACOp.LOAD, (1, "2")),
-            ENIACInstruction(ENIACOp.LOAD, (2, "3")),
-            ENIACInstruction(ENIACOp.PRINT, (0,)),
-            ENIACInstruction(ENIACOp.PRINT, (1,)),
-            ENIACInstruction(ENIACOp.PRINT, (2,)),
-            ENIACInstruction(ENIACOp.HALT),
-        ])
+        e = _run(
+            [
+                ENIACInstruction(ENIACOp.LOAD, (0, "1")),
+                ENIACInstruction(ENIACOp.LOAD, (1, "2")),
+                ENIACInstruction(ENIACOp.LOAD, (2, "3")),
+                ENIACInstruction(ENIACOp.PRINT, (0,)),
+                ENIACInstruction(ENIACOp.PRINT, (1,)),
+                ENIACInstruction(ENIACOp.PRINT, (2,)),
+                ENIACInstruction(ENIACOp.HALT),
+            ]
+        )
         assert len(e.state.output_tape) == 3
         assert [float(v) for v in e.state.output_tape] == pytest.approx([1.0, 2.0, 3.0])
 
@@ -235,12 +243,15 @@ class TestEdgeCases:
             e.run()
 
     def test_clear_then_add(self):
-        e = _run([
-            ENIACInstruction(ENIACOp.LOAD, (0, "99")),
-            ENIACInstruction(ENIACOp.CLEAR, (0,)),
-            ENIACInstruction(ENIACOp.ADD, (0, 1)),
-            ENIACInstruction(ENIACOp.HALT),
-        ], accumulators={1: 42})
+        e = _run(
+            [
+                ENIACInstruction(ENIACOp.LOAD, (0, "99")),
+                ENIACInstruction(ENIACOp.CLEAR, (0,)),
+                ENIACInstruction(ENIACOp.ADD, (0, 1)),
+                ENIACInstruction(ENIACOp.HALT),
+            ],
+            accumulators={1: 42},
+        )
         assert e.get_accumulator(0) == Decimal("42")
 
     def test_div_fractional_result(self):
@@ -252,19 +263,23 @@ class TestEdgeCases:
         assert float(e.get_accumulator(2)) == pytest.approx(1 / 3, rel=1e-6)
 
     def test_reset_clears_output_tape(self):
-        e = _run([
-            ENIACInstruction(ENIACOp.LOAD, (0, "7")),
-            ENIACInstruction(ENIACOp.PRINT, (0,)),
-            ENIACInstruction(ENIACOp.HALT),
-        ])
+        e = _run(
+            [
+                ENIACInstruction(ENIACOp.LOAD, (0, "7")),
+                ENIACInstruction(ENIACOp.PRINT, (0,)),
+                ENIACInstruction(ENIACOp.HALT),
+            ]
+        )
         e.reset()
         assert e.state.output_tape == []
 
     def test_state_snapshot_output_tape(self):
-        e = _run([
-            ENIACInstruction(ENIACOp.LOAD, (0, "5")),
-            ENIACInstruction(ENIACOp.PRINT, (0,)),
-            ENIACInstruction(ENIACOp.HALT),
-        ])
+        e = _run(
+            [
+                ENIACInstruction(ENIACOp.LOAD, (0, "5")),
+                ENIACInstruction(ENIACOp.PRINT, (0,)),
+                ENIACInstruction(ENIACOp.HALT),
+            ]
+        )
         s = e.state_snapshot()
         assert s["output_tape"] == pytest.approx([5.0])

@@ -53,9 +53,7 @@ class TestAstrolabeEmulator:
         for lat in [-60, -30, 0, 30, 60]:
             for date in ["2026-03-20", "2026-06-21", "2026-09-23", "2026-12-21"]:
                 for time in ["06:00", "12:00", "18:00"]:
-                    q = AstrolabeQuery(
-                        latitude_deg=float(lat), date=date, time=time, target="sun"
-                    )
+                    q = AstrolabeQuery(latitude_deg=float(lat), date=date, time=time, target="sun")
                     alt = emu.read_altitude(q)
                     assert -90.0 <= alt <= 90.0
 
@@ -72,12 +70,8 @@ class TestAstrolabeEmulator:
 
     def test_solar_keyword_case_insensitive(self) -> None:
         emu = AstrolabeEmulator()
-        q_sun = AstrolabeQuery(
-            latitude_deg=51.5, date="2026-03-20", time="12:00", target="SUN"
-        )
-        q_solar = AstrolabeQuery(
-            latitude_deg=51.5, date="2026-03-20", time="12:00", target="Solar"
-        )
+        q_sun = AstrolabeQuery(latitude_deg=51.5, date="2026-03-20", time="12:00", target="SUN")
+        q_solar = AstrolabeQuery(latitude_deg=51.5, date="2026-03-20", time="12:00", target="Solar")
         alt_sun = emu.read_altitude(q_sun)
         alt_solar = emu.read_altitude(q_solar)
         assert math.isclose(alt_sun, alt_solar)
@@ -86,3 +80,59 @@ class TestAstrolabeEmulator:
         emu = AstrolabeEmulator()
         q = AstrolabeQuery(latitude_deg=48.8, date="2026-07-14", time="14:30", target="sun")
         assert emu.read_altitude(q) == emu.read_altitude(q)
+
+
+class TestAstrolabeQuery:
+    """AstrolabeQuery dataclass field tests."""
+
+    def test_query_stores_latitude(self) -> None:
+        q = AstrolabeQuery(latitude_deg=48.8, date="2026-01-01", time="12:00", target="sun")
+        assert q.latitude_deg == 48.8
+
+    def test_query_stores_date(self) -> None:
+        q = AstrolabeQuery(latitude_deg=0.0, date="2026-06-21", time="12:00", target="sun")
+        assert q.date == "2026-06-21"
+
+    def test_query_stores_time(self) -> None:
+        q = AstrolabeQuery(latitude_deg=0.0, date="2026-01-01", time="15:30", target="sun")
+        assert q.time == "15:30"
+
+    def test_query_stores_target(self) -> None:
+        q = AstrolabeQuery(latitude_deg=0.0, date="2026-01-01", time="12:00", target="sun")
+        assert q.target == "sun"
+
+
+class TestAstrolabeEmulatorAdditional:
+    """Edge cases and additional properties of the astrolabe emulator."""
+
+    def test_north_pole_arctic_summer(self) -> None:
+        emu = AstrolabeEmulator()
+        q = AstrolabeQuery(latitude_deg=90.0, date="2026-06-21", time="12:00", target="sun")
+        alt = emu.read_altitude(q)
+        # Sun is above horizon (circumpolar in Arctic summer)
+        assert alt > 0.0
+
+    def test_altitude_is_float(self) -> None:
+        emu = AstrolabeEmulator()
+        q = AstrolabeQuery(latitude_deg=51.5, date="2026-03-20", time="12:00", target="sun")
+        assert isinstance(emu.read_altitude(q), float)
+
+    def test_different_latitudes_give_different_noon_altitudes(self) -> None:
+        emu = AstrolabeEmulator()
+        q_equator = AstrolabeQuery(latitude_deg=0.0, date="2026-06-21", time="12:00", target="sun")
+        q_north = AstrolabeQuery(latitude_deg=60.0, date="2026-06-21", time="12:00", target="sun")
+        alt_equator = emu.read_altitude(q_equator)
+        alt_north = emu.read_altitude(q_north)
+        assert alt_equator != alt_north
+
+    def test_summer_noon_higher_than_equinox_noon_at_50n(self) -> None:
+        emu = AstrolabeEmulator()
+        q_summer = AstrolabeQuery(latitude_deg=50.0, date="2026-06-21", time="12:00", target="sun")
+        q_equinox = AstrolabeQuery(latitude_deg=50.0, date="2026-03-20", time="12:00", target="sun")
+        assert emu.read_altitude(q_summer) > emu.read_altitude(q_equinox)
+
+    def test_morning_lower_than_noon(self) -> None:
+        emu = AstrolabeEmulator()
+        q_morning = AstrolabeQuery(latitude_deg=51.5, date="2026-06-21", time="06:00", target="sun")
+        q_noon = AstrolabeQuery(latitude_deg=51.5, date="2026-06-21", time="12:00", target="sun")
+        assert emu.read_altitude(q_morning) < emu.read_altitude(q_noon)

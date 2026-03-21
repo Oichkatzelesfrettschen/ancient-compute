@@ -136,3 +136,67 @@ class TestALGOL68Contract:
     def test_rejected_unclosed_begin(self):
         """BEGIN without END is a syntax error."""
         _err("BEGIN INT x := 1")
+
+
+def _run_full(code: str) -> object:
+    """Execute ALGOL68 source fully (not just syntax check) to capture stdout."""
+    from backend.src.services.languages.algol68_service import ALGOL68Service
+
+    return asyncio.run(ALGOL68Service().execute_full(code))
+
+
+class TestALGOL68OutputVerification:
+    """Verify actual stdout output from ALGOL68 programs (execute_full)."""
+
+    def test_print_42(self) -> None:
+        r = _run_full("BEGIN print((42, newline)) END")
+        assert "42" in r.stdout
+
+    def test_factorial_5_outputs_120(self) -> None:
+        r = _run_full(
+            "BEGIN\n"
+            "  PROC fact = (INT n) INT:\n"
+            "    IF n <= 1 THEN 1 ELSE n * fact(n - 1) FI;\n"
+            "  print((fact(5), newline))\n"
+            "END"
+        )
+        assert "120" in r.stdout
+
+    def test_for_loop_sum_1_to_10(self) -> None:
+        r = _run_full(
+            "BEGIN\n"
+            "  INT s := 0;\n"
+            "  FOR i FROM 1 TO 10 DO s +:= i OD;\n"
+            "  print((s, newline))\n"
+            "END"
+        )
+        assert "55" in r.stdout
+
+    def test_true_struct_field_sum(self) -> None:
+        r = _run_full(
+            "BEGIN\n"
+            "  MODE POINT = STRUCT(INT x, y);\n"
+            "  POINT p = (3, 4);\n"
+            "  print((x OF p + y OF p, newline))\n"
+            "END"
+        )
+        assert "7" in r.stdout
+
+    def test_status_is_success(self) -> None:
+        from backend.src.services.languages.algol68_service import ExecutionStatus
+
+        r = _run("BEGIN print((1, newline)) END")
+        assert r.status == ExecutionStatus.SUCCESS
+
+
+class TestALGOL68RejectedPrograms:
+    """Additional rejection cases for ALGOL68."""
+
+    def test_rejected_no_begin(self) -> None:
+        _err("INT x := 5")
+
+    def test_rejected_bad_proc_syntax(self) -> None:
+        _err("BEGIN\n  PROC bad = INT: 42\nEND")
+
+    def test_rejected_undeclared_variable(self) -> None:
+        _err("BEGIN print((undefined_var, newline)) END")

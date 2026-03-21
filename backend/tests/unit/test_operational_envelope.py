@@ -63,3 +63,50 @@ class TestOperationalEnvelope:
         result = engine.predict_maintenance(max_hours=0.1)
         assert result.failure_time_s == float("inf") or result.failure_time_s is None
         assert not result.limiting_component or result.limiting_component == "none"
+
+
+class TestSimulationResultFields:
+    def test_duration_s_positive(self) -> None:
+        config = SimulationConfig(rpm=30.0)
+        result = SimulationEngine(config).predict_maintenance(max_hours=0.1)
+        assert result.duration_s > 0
+
+    def test_history_is_list(self) -> None:
+        config = SimulationConfig(rpm=30.0)
+        result = SimulationEngine(config).predict_maintenance(max_hours=0.05)
+        assert isinstance(result.history, list)
+
+    def test_history_is_non_empty(self) -> None:
+        config = SimulationConfig(rpm=30.0)
+        result = SimulationEngine(config).predict_maintenance(max_hours=0.05)
+        assert len(result.history) >= 1
+
+    def test_final_state_temperature_above_ambient(self) -> None:
+        config = SimulationConfig(rpm=60.0)
+        result = SimulationEngine(config).predict_maintenance(max_hours=0.5)
+        # Friction heating should raise temp above 20 C
+        assert result.final_state.temperature_C > 20.0
+
+    def test_gear_backlash_non_negative(self) -> None:
+        config = SimulationConfig(rpm=30.0)
+        result = SimulationEngine(config).predict_maintenance(max_hours=0.1)
+        assert result.final_state.gear_backlash_mm >= 0.0
+
+    def test_energy_consumed_non_negative(self) -> None:
+        config = SimulationConfig(rpm=30.0)
+        result = SimulationEngine(config).predict_maintenance(max_hours=0.1)
+        assert result.final_state.energy_consumed_J >= 0.0
+
+    def test_bearing_wear_list_is_non_empty(self) -> None:
+        config = SimulationConfig(rpm=60.0)
+        result = SimulationEngine(config).predict_maintenance(max_hours=0.1)
+        assert len(result.final_state.bearing_wear_volumes_mm3) > 0
+
+    def test_longer_run_more_wear(self) -> None:
+        config_short = SimulationConfig(rpm=60.0)
+        config_long = SimulationConfig(rpm=60.0)
+        r_short = SimulationEngine(config_short).predict_maintenance(max_hours=0.1)
+        r_long = SimulationEngine(config_long).predict_maintenance(max_hours=1.0)
+        max_wear_short = max(r_short.final_state.bearing_wear_volumes_mm3 or [0.0])
+        max_wear_long = max(r_long.final_state.bearing_wear_volumes_mm3 or [0.0])
+        assert max_wear_long >= max_wear_short

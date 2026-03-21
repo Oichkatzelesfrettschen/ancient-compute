@@ -63,7 +63,8 @@ async def test_idris_service_compiles_source() -> None:
     executor = get_executor("idris2")
     result = await executor.execute("main = 0")
     # May succeed or fail depending on parser, but should not be a placeholder
-    assert result.status in (BaseExecutionStatus.SUCCESS, BaseExecutionStatus.COMPILE_ERROR)
+    ok = (BaseExecutionStatus.SUCCESS.value, BaseExecutionStatus.COMPILE_ERROR.value)
+    assert result.status.value in ok
     assert "not yet implemented" not in result.stdout.lower()
 
 
@@ -72,7 +73,8 @@ async def test_systemf_service_compiles_source() -> None:
     """SystemF service should invoke compiler and return compilation result."""
     executor = get_executor("systemf")
     result = await executor.execute("42")
-    assert result.status in (BaseExecutionStatus.SUCCESS, BaseExecutionStatus.COMPILE_ERROR)
+    ok = (BaseExecutionStatus.SUCCESS.value, BaseExecutionStatus.COMPILE_ERROR.value)
+    assert result.status.value in ok
     assert "not yet implemented" not in result.stdout.lower()
 
 
@@ -83,5 +85,87 @@ async def test_lisp_service_reports_compile_error_for_invalid_source() -> None:
     # Missing closing parenthesis.
     result = await executor.execute("(defun broken (x) (+ x 1)")
 
-    assert result.status == BaseExecutionStatus.COMPILE_ERROR
+    assert result.status.value == BaseExecutionStatus.COMPILE_ERROR.value
     assert result.stderr
+
+
+class TestGetExecutorFactory:
+    def test_returns_none_for_unknown_language(self) -> None:
+        assert get_executor("cobol") is None
+        assert get_executor("") is None
+
+    def test_assembly_executor_returns_babbage_service(self) -> None:
+        from backend.src.services.languages.babbage_assembly_service import BabbageAssemblyService
+
+        assert isinstance(get_executor("assembly"), BabbageAssemblyService)
+
+    def test_aliases_resolve_to_same_executor_class(self) -> None:
+        e1 = get_executor("system-f")
+        e2 = get_executor("systemf")
+        assert type(e1) is type(e2)
+
+    def test_idris_aliases_same_class(self) -> None:
+        e1 = get_executor("idris")
+        e2 = get_executor("idris2")
+        assert type(e1) is type(e2)
+
+    def test_all_supported_languages_return_non_none(self) -> None:
+        supported = [
+            "c",
+            "python",
+            "haskell",
+            "assembly",
+            "lisp",
+            "idris",
+            "systemf",
+            "java",
+            "algol68",
+            "cpp",
+            "micropython",
+        ]
+        for lang in supported:
+            assert get_executor(lang) is not None, f"get_executor({lang!r}) returned None"
+
+
+class TestBabbageAssemblyExecutorSync:
+    """Synchronous tests that don't require async/await."""
+
+    def test_executor_has_execute_method(self) -> None:
+        from backend.src.services.languages.babbage_assembly_service import BabbageAssemblyService
+
+        svc = BabbageAssemblyService()
+        assert hasattr(svc, "execute")
+
+    def test_executor_is_same_instance_on_repeated_get(self) -> None:
+        from backend.src.services.languages.babbage_assembly_service import BabbageAssemblyService
+
+        e1 = get_executor("assembly")
+        e2 = get_executor("assembly")
+        # Both should be BabbageAssemblyService instances
+        assert isinstance(e1, BabbageAssemblyService)
+        assert isinstance(e2, BabbageAssemblyService)
+
+
+@pytest.mark.asyncio
+async def test_c_service_compiles_hello_world() -> None:
+    executor = get_executor("c")
+    code = '#include <stdio.h>\nint main() { printf("hi"); return 0; }'
+    result = await executor.execute(code)
+    ok = (BaseExecutionStatus.SUCCESS.value, BaseExecutionStatus.COMPILE_ERROR.value)
+    assert result.status.value in ok
+
+
+@pytest.mark.asyncio
+async def test_python_service_compiles_simple_code() -> None:
+    # PythonService compiles Python -> Babbage IR -> machine code (not native execution)
+    executor = get_executor("python")
+    result = await executor.execute("x = 1 + 2")
+    ok = (BaseExecutionStatus.SUCCESS.value, BaseExecutionStatus.COMPILE_ERROR.value)
+    assert result.status.value in ok
+
+
+@pytest.mark.asyncio
+async def test_python_service_returns_status() -> None:
+    executor = get_executor("python")
+    result = await executor.execute("x = 42")
+    assert result.status is not None

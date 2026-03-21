@@ -1,8 +1,8 @@
 # Project Status Dashboard
 
-**Auto-generated**: 2026-03-21 16:09 UTC
+**Auto-generated**: 2026-03-21 17:06 UTC
 **Branch**: `main`
-**Last commit**: `bc40360 test: expand antikythera gear-train and Napier's Bones test suites`
+**Last commit**: `5d2e330 chore: regenerate STATUS.md (2671 unit tests, 30 machines, 2026-03-21)`
 
 > Regenerate with: `make status`
 
@@ -12,7 +12,7 @@
 
 | Metric | Value |
 |--------|-------|
-| Unit tests collected | 3090 |
+| Unit tests collected | 3482 |
 | Collection errors | 0 |
 | Python source lines (backend/src/) | 46,451 |
 | Active docs (non-archive .md) | 200 |

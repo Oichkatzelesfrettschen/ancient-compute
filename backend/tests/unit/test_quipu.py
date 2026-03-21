@@ -99,3 +99,61 @@ class TestQuipuEmulator:
         emu = QuipuEmulator()
         emu.encode_number("census", 10_000)
         assert emu.sum_by_category("census") == 10_000
+
+
+class TestQuipuEmulatorStateConsistency:
+    """State consistency and multi-operation correctness."""
+
+    def test_state_keys_present(self) -> None:
+        emu = QuipuEmulator()
+        emu.encode_number("x", 1)
+        s = emu.state()
+        assert "records" in s
+
+    def test_state_record_has_category_and_value(self) -> None:
+        emu = QuipuEmulator()
+        emu.encode_number("wool", 55)
+        rec = emu.state()["records"][0]
+        assert rec["category"] == "wool"
+        assert rec["value"] == 55
+
+    def test_encode_order_preserved(self) -> None:
+        emu = QuipuEmulator()
+        emu.encode_number("X", 100)
+        emu.encode_number("X", 200)
+        emu.encode_number("X", 300)
+        vals = emu.decode_number("X")
+        assert vals == [100, 200, 300]
+
+    def test_sum_large_series(self) -> None:
+        emu = QuipuEmulator()
+        for i in range(1, 11):
+            emu.encode_number("seq", i)
+        assert emu.sum_by_category("seq") == 55
+
+    def test_multiple_categories_sum_independent(self) -> None:
+        emu = QuipuEmulator()
+        emu.encode_number("A", 10)
+        emu.encode_number("B", 20)
+        emu.encode_number("A", 30)
+        assert emu.sum_by_category("A") == 40
+        assert emu.sum_by_category("B") == 20
+
+    def test_reset_then_re_encode(self) -> None:
+        emu = QuipuEmulator()
+        emu.encode_number("Q", 99)
+        emu.reset()
+        emu.encode_number("Q", 1)
+        assert emu.sum_by_category("Q") == 1
+
+    def test_decode_after_reset_is_empty(self) -> None:
+        emu = QuipuEmulator()
+        emu.encode_number("Z", 7)
+        emu.reset()
+        assert emu.decode_number("Z") == []
+
+    def test_negative_value_encodes(self) -> None:
+        emu = QuipuEmulator()
+        emu.encode_number("debt", -50)
+        assert emu.decode_number("debt") == [-50]
+        assert emu.sum_by_category("debt") == -50

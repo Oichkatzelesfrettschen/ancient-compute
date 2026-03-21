@@ -155,3 +155,95 @@ def test_fourmilab_translate_empty():
     cards = parse_fourmilab_source("")
     instructions = translate_fourmilab(cards)
     assert instructions == []
+
+
+class TestTokenizeLine:
+    """Class-based coverage of tokenize_line edge cases."""
+
+    def test_label_without_opcode(self) -> None:
+        label, opcode, operands = tokenize_line("loop:")
+        assert label == "loop"
+        assert opcode is None
+
+    def test_opcode_is_uppercased(self) -> None:
+        _, opcode, _ = tokenize_line("load A 5")
+        assert opcode == "LOAD"
+
+    def test_multiple_operands(self) -> None:
+        _, opcode, operands = tokenize_line("MOV A B C")
+        assert len(operands) == 3
+
+    def test_inline_comment_stripped(self) -> None:
+        _, _, operands = tokenize_line("LOAD A 5 ; load five into A")
+        assert operands == ["A", "5"]
+
+    def test_label_with_inline_comment(self) -> None:
+        label, opcode, operands = tokenize_line("start: NOP ; begin")
+        assert label == "start"
+        assert opcode == "NOP"
+        assert operands == []
+
+    def test_whitespace_around_label(self) -> None:
+        label, opcode, _ = tokenize_line("  entry:  HALT")
+        assert label == "entry"
+        assert opcode == "HALT"
+
+    def test_returns_three_tuple(self) -> None:
+        result = tokenize_line("NOP")
+        assert len(result) == 3
+
+
+class TestParseSource:
+    """Class-based coverage of parse_source multi-instruction behavior."""
+
+    def test_nop_instruction_has_empty_operands(self) -> None:
+        result = parse_source("NOP")
+        assert result[0].operands == []
+
+    def test_instruction_count_matches_non_comment_lines(self) -> None:
+        source = "LOAD A 1\n; skip\nLOAD B 2\nHALT\n"
+        result = parse_source(source)
+        assert len(result) == 3
+
+    def test_each_instruction_has_opcode_attr(self) -> None:
+        result = parse_source("LOAD A 1\nHALT")
+        for instr in result:
+            assert hasattr(instr, "opcode")
+
+    def test_each_instruction_has_operands_attr(self) -> None:
+        result = parse_source("LOAD A 1\nHALT")
+        for instr in result:
+            assert hasattr(instr, "operands")
+
+    def test_halt_opcode_parsed_correctly(self) -> None:
+        result = parse_source("HALT")
+        assert result[0].opcode == "HALT"
+
+    def test_three_labels_all_resolved(self) -> None:
+        source = "a: NOP\nb: NOP\nc: JUMP a"
+        result = parse_source(source)
+        # JUMP a should resolve 'a' to 0
+        assert result[2].operands == ["0"]
+
+
+class TestFourmilabParse:
+    """Additional fourmilab parser tests."""
+
+    def test_parse_returns_list(self) -> None:
+        from backend.src.emulator.cli.assembler.fourmilab import parse_fourmilab_source
+
+        cards = parse_fourmilab_source("P\n")
+        assert isinstance(cards, list)
+
+    def test_print_card_has_print_kind(self) -> None:
+        from backend.src.emulator.cli.assembler.fourmilab import parse_fourmilab_source
+
+        cards = parse_fourmilab_source("P\n")
+        assert len(cards) == 1
+        assert cards[0].kind == "print"
+
+    def test_multiple_lines_produce_multiple_cards(self) -> None:
+        from backend.src.emulator.cli.assembler.fourmilab import parse_fourmilab_source
+
+        cards = parse_fourmilab_source("P\nP\nP\n")
+        assert len(cards) == 3

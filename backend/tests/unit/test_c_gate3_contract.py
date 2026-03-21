@@ -158,3 +158,57 @@ class TestCFreestandingContract:
     def test_rejected_pointer(self):
         """Pointer declarations are rejected."""
         _err("int deref(int *p) { return *p; }")
+
+
+class TestCFreestandingMachineCode:
+    """Verify machine_code properties of compiled C programs."""
+
+    def test_machine_code_is_non_empty_string(self) -> None:
+        r = _run("int add(int a, int b) { return a + b; }")
+        assert isinstance(r.machine_code, str)
+        assert len(r.machine_code) > 0
+
+    def test_machine_code_contains_hex_addresses(self) -> None:
+        r = _run("int add(int a, int b) { return a + b; }")
+        assert "00000000" in r.machine_code
+
+    def test_more_functions_more_machine_code(self) -> None:
+        r1 = _run("int f(int x) { return x; }")
+        r2 = _run(
+            "int f(int x) { return x; }\n"
+            "int g(int a, int b) { return f(a) + f(b); }\n"
+            "int h(int x) { return g(x, x) * 2; }"
+        )
+        assert len(r2.machine_code) >= len(r1.machine_code)
+
+    def test_stdout_contains_hex_dump_marker(self) -> None:
+        r = _run("int add(int a, int b) { return a + b; }")
+        assert r.stdout
+        assert "MACHINE CODE" in r.stdout
+
+
+class TestCFreestandingAdditional:
+    """Additional C freestanding programs."""
+
+    def test_max_function(self) -> None:
+        _ok("int max2(int a, int b) {\n" "  if (a > b) { return a; }\n" "  return b;\n" "}")
+
+    def test_recursive_power(self) -> None:
+        _ok(
+            "int power(int base, int exp) {\n"
+            "  if (exp == 0) { return 1; }\n"
+            "  return base * power(base, exp - 1);\n"
+            "}"
+        )
+
+    def test_three_param_function(self) -> None:
+        _ok("int add3(int a, int b, int c) { return a + b + c; }")
+
+    def test_nested_recursive_calls(self) -> None:
+        _ok(
+            "int ack(int m, int n) {\n"
+            "  if (m == 0) { return n + 1; }\n"
+            "  if (n == 0) { return ack(m - 1, 1); }\n"
+            "  return ack(m - 1, ack(m, n - 1));\n"
+            "}"
+        )

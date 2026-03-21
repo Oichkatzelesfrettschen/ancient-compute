@@ -87,3 +87,44 @@ class TestSlideRuleEmulator:
     def test_multiply_small_fractions(self) -> None:
         emu = SlideRuleEmulator()
         assert math.isclose(emu.multiply(0.1, 0.1), 0.01, rel_tol=1e-6)
+
+
+class TestSlideRuleEmulatorAccuracy:
+    """Verify mathematical accuracy of multiply and divide operations."""
+
+    def test_multiply_pi_e(self) -> None:
+        emu = SlideRuleEmulator()
+        result = emu.multiply(math.pi, math.e)
+        assert math.isclose(result, math.pi * math.e, rel_tol=1e-6)
+
+    def test_divide_pi_by_e(self) -> None:
+        emu = SlideRuleEmulator()
+        result = emu.divide(math.pi, math.e)
+        assert math.isclose(result, math.pi / math.e, rel_tol=1e-6)
+
+    def test_multiply_sqrt_two_squared(self) -> None:
+        emu = SlideRuleEmulator()
+        result = emu.multiply(math.sqrt(2), math.sqrt(2))
+        assert math.isclose(result, 2.0, rel_tol=1e-6)
+
+    def test_divide_is_inverse_of_multiply(self) -> None:
+        emu = SlideRuleEmulator()
+        a, b = 7.3, 2.9
+        product = emu.multiply(a, b)
+        assert math.isclose(emu.divide(product, b), a, rel_tol=1e-9)
+
+    def test_chain_multiply_three_values(self) -> None:
+        emu = SlideRuleEmulator()
+        r1 = emu.multiply(2.0, 3.0)
+        r2 = emu.multiply(r1, 4.0)
+        assert math.isclose(r2, 24.0, rel_tol=1e-6)
+
+    def test_multiply_near_unity_gives_identity(self) -> None:
+        emu = SlideRuleEmulator()
+        result = emu.multiply(1.0000001, 1.0000001)
+        assert math.isclose(result, 1.0000002, rel_tol=1e-5)
+
+    def test_both_operands_negative_raises(self) -> None:
+        emu = SlideRuleEmulator()
+        with pytest.raises(ValueError):
+            emu.multiply(-1.0, -1.0)

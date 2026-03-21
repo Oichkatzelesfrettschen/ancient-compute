@@ -98,3 +98,85 @@ def _walk_for_sources(obj, path, missing):
         else:
             for key, val in obj.items():
                 _walk_for_sources(val, f"{path}.{key}" if path else key, missing)
+
+
+class TestTimingYAMLStructure:
+    """Low-level structure checks on TIMING_PROVISIONAL.yaml."""
+
+    def _cfg(self) -> dict:
+        import yaml
+
+        with open(TIMING_YAML) as f:
+            return yaml.safe_load(f)
+
+    def test_top_level_valve_gear_key_present(self) -> None:
+        cfg = self._cfg()
+        assert "valve_gear" in cfg
+
+    def test_valve_gear_has_parameters_key(self) -> None:
+        cfg = self._cfg()
+        assert "parameters" in cfg["valve_gear"]
+
+    def test_lap_mm_value_is_positive(self) -> None:
+        cfg = self._cfg()
+        lap = cfg["valve_gear"]["parameters"]["lap_mm"]["value"]
+        assert lap > 0
+
+    def test_lead_mm_value_is_positive(self) -> None:
+        cfg = self._cfg()
+        lead = cfg["valve_gear"]["parameters"]["lead_mm"]["value"]
+        assert lead > 0
+
+    def test_cutoff_pct_between_0_and_100(self) -> None:
+        cfg = self._cfg()
+        cutoff = cfg["valve_gear"]["parameters"]["cutoff_pct"]["value"]
+        assert 0 < cutoff <= 100
+
+    def test_all_three_params_have_source_key(self) -> None:
+        cfg = self._cfg()
+        vg = cfg["valve_gear"]["parameters"]
+        for key in ("lap_mm", "lead_mm", "cutoff_pct"):
+            assert "source" in vg[key], f"{key} missing source"
+
+    def test_all_three_params_have_value_key(self) -> None:
+        cfg = self._cfg()
+        vg = cfg["valve_gear"]["parameters"]
+        for key in ("lap_mm", "lead_mm", "cutoff_pct"):
+            assert "value" in vg[key], f"{key} missing value"
+
+    def test_all_three_params_have_provisional_true(self) -> None:
+        cfg = self._cfg()
+        vg = cfg["valve_gear"]["parameters"]
+        for key in ("lap_mm", "lead_mm", "cutoff_pct"):
+            assert vg[key]["provisional"] is True, f"{key} should be provisional"
+
+
+class TestSimulationConfigEdgeCases:
+    """SimulationConfig boundary and custom value tests."""
+
+    def test_custom_steam_pressure(self) -> None:
+        cfg = SimulationConfig(steam_pressure_bar=10.0)
+        assert cfg.steam_pressure_bar == 10.0
+
+    def test_custom_piston_stroke(self) -> None:
+        cfg = SimulationConfig(piston_stroke_m=0.5)
+        assert cfg.piston_stroke_m == 0.5
+
+    def test_custom_thermal_efficiency(self) -> None:
+        cfg = SimulationConfig(thermal_efficiency_pct=12.0)
+        assert cfg.thermal_efficiency_pct == 12.0
+
+    def test_valve_params_independent_of_steam_params(self) -> None:
+        """Valve and steam fields are independent SimulationConfig fields."""
+        cfg = SimulationConfig(valve_lap_mm=5.0, steam_pressure_bar=8.0)
+        assert cfg.valve_lap_mm == 5.0
+        assert cfg.steam_pressure_bar == 8.0
+
+    def test_all_default_fields_are_positive(self) -> None:
+        cfg = SimulationConfig()
+        assert cfg.valve_lap_mm > 0
+        assert cfg.valve_lead_mm > 0
+        assert cfg.valve_cutoff_pct > 0
+        assert cfg.steam_pressure_bar > 0
+        assert cfg.piston_stroke_m > 0
+        assert cfg.thermal_efficiency_pct > 0

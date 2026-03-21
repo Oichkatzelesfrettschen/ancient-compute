@@ -168,3 +168,100 @@ def test_draconic_gearing():
 
     expected = 1.0 * (-224 / 63) * (-63 / 22) * 360.0
     assert abs(am.pointers["Draconic"] - expected) < 0.001
+
+
+class TestAntikytheraMechanismDialPresence:
+    """Structural tests: verify all dials exist and respond to input."""
+
+    def test_set_input_date_populates_all_dials(self) -> None:
+        am = AntikytheraMechanism()
+        am.set_input_date(1.0)
+        expected = {
+            "Sun",
+            "19-Year",
+            "Egyptian",
+            "Draconic",
+            "Saros",
+            "Exeligmos",
+            "Olympiad",
+            "Lunar",
+        }
+        assert expected.issubset(set(am.pointers.keys()))
+
+    def test_all_pointers_are_floats(self) -> None:
+        am = AntikytheraMechanism()
+        am.set_input_date(2.5)
+        for k, v in am.pointers.items():
+            assert isinstance(v, float), f"Pointer {k} is not float: {type(v)}"
+
+    def test_zero_input_gives_zero_or_near_zero_all_dials(self) -> None:
+        am = AntikytheraMechanism()
+        am.set_input_date(0.0)
+        for k, v in am.pointers.items():
+            assert abs(v) < 0.001, f"Pointer {k} = {v} with zero input"
+
+    def test_pointer_count_at_least_eight(self) -> None:
+        am = AntikytheraMechanism()
+        am.set_input_date(1.0)
+        assert len(am.pointers) >= 8
+
+    def test_set_input_date_replaces_previous_state(self) -> None:
+        am = AntikytheraMechanism()
+        am.set_input_date(10.0)
+        v_after_10 = dict(am.pointers)
+        am.set_input_date(1.0)
+        v_after_1 = dict(am.pointers)
+        # 19-Year should differ
+        assert abs(v_after_10["19-Year"] - v_after_1["19-Year"]) > 0.001
+
+
+class TestAntikytheraMechanismPeriods:
+    """Test that full-cycle inputs return to near-zero angular position."""
+
+    def test_19_year_cycle_returns_to_zero(self) -> None:
+        am = AntikytheraMechanism()
+        am.set_input_date(19.0)
+        assert abs(am.pointers["19-Year"]) % 360.0 < 0.001
+
+    def test_saros_18_year_cycle(self) -> None:
+        am = AntikytheraMechanism()
+        am.set_input_date(18.0)
+        assert abs(am.pointers["Saros"]) % 360.0 < 0.001
+
+    def test_exeligmos_54_year_cycle(self) -> None:
+        am = AntikytheraMechanism()
+        am.set_input_date(54.0)
+        assert abs(am.pointers["Exeligmos"]) % 360.0 < 0.001
+
+    def test_olympiad_4_year_cycle(self) -> None:
+        am = AntikytheraMechanism()
+        am.set_input_date(4.0)
+        assert abs(am.pointers["Olympiad"]) % 360.0 < 0.001
+
+    def test_egyptian_4_year_cycle(self) -> None:
+        am = AntikytheraMechanism()
+        am.set_input_date(4.0)
+        assert abs(am.pointers["Egyptian"]) % 360.0 < 0.001
+
+    def test_negative_date_reverses_saros_direction(self) -> None:
+        am_pos = AntikytheraMechanism()
+        am_pos.set_input_date(1.0)
+        am_neg = AntikytheraMechanism()
+        am_neg.set_input_date(-1.0)
+        # Saros pointer should be equal magnitude, opposite sign
+        assert abs(am_pos.pointers["Saros"] + am_neg.pointers["Saros"]) < 0.001
+
+    def test_fractional_year_19year_pointer(self) -> None:
+        am = AntikytheraMechanism()
+        am.set_input_date(0.5)
+        # Half year -> half of one 1/19 revolution
+        expected = (0.5 / 19.0) * 360.0
+        assert abs(abs(am.pointers["19-Year"]) - expected) < 0.001
+
+    def test_large_input_saros_angle_proportional(self) -> None:
+        am1 = AntikytheraMechanism()
+        am1.set_input_date(9.0)
+        am2 = AntikytheraMechanism()
+        am2.set_input_date(18.0)
+        # 18 years should give double the Saros angle of 9 years
+        assert abs(abs(am2.pointers["Saros"]) - 2.0 * abs(am1.pointers["Saros"])) < 0.001

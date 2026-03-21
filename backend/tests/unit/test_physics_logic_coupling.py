@@ -110,3 +110,46 @@ def test_electromagnetic_integration():
     assert sim.state.galvanic_risk_accumulator > 0
     # Heat generation should include Q_eddy
     assert sim.state.total_heat_generation_W > 0
+
+
+class TestSimulationEngineRunDirect:
+    def test_run_advances_time(self) -> None:
+        config = SimulationConfig(rpm=30.0)
+        sim = SimulationEngine(config)
+        sim.run(1.0)
+        assert sim.state.time_s >= 1.0
+
+    def test_run_accumulates_energy(self) -> None:
+        config = SimulationConfig(rpm=60.0)
+        sim = SimulationEngine(config)
+        sim.run(5.0)
+        assert sim.state.energy_consumed_J > 0
+
+    def test_run_galvanic_risk_accumulates(self) -> None:
+        config = SimulationConfig(rpm=60.0)
+        sim = SimulationEngine(config)
+        sim.run(10.0)
+        assert sim.state.galvanic_risk_accumulator > 0
+
+    def test_run_state_not_failed_at_low_rpm(self) -> None:
+        config = SimulationConfig(rpm=5.0)
+        sim = SimulationEngine(config)
+        sim.run(0.5)
+        assert not sim.failed
+
+
+class TestMonteCarloVariance:
+    def test_different_seeds_produce_distinct_configs(self) -> None:
+        c1 = SimulationConfig()
+        c2 = SimulationConfig()
+        c1.randomize_tolerances(seed=1)
+        c2.randomize_tolerances(seed=2)
+        assert c1.initial_clearance_mm != c2.initial_clearance_mm
+
+    def test_same_seed_produces_identical_configs(self) -> None:
+        c1 = SimulationConfig()
+        c2 = SimulationConfig()
+        c1.randomize_tolerances(seed=42)
+        c2.randomize_tolerances(seed=42)
+        assert math.isclose(c1.initial_clearance_mm, c2.initial_clearance_mm)
+        assert math.isclose(c1.initial_gear_backlash_mm, c2.initial_gear_backlash_mm)

@@ -135,3 +135,63 @@ class TestCppContract:
             "    return 0;\n"
             "}"
         )
+
+
+class TestCppContractAdditional:
+    """Additional C++20 feature tests."""
+
+    def test_range_based_for(self) -> None:
+        """Range-based for loop over initializer list."""
+        _ok(
+            "#include <initializer_list>\n"
+            "int sum_il(std::initializer_list<int> il) {\n"
+            "    int s = 0;\n"
+            "    for (auto x : il) s += x;\n"
+            "    return s;\n"
+            "}\n"
+            "int main() { return sum_il({1,2,3}) - 6; }"
+        )
+
+    def test_structured_bindings(self) -> None:
+        """C++17/20 structured bindings."""
+        _ok(
+            "#include <utility>\n"
+            "int main() {\n"
+            "    auto [a, b] = std::make_pair(3, 4);\n"
+            "    return a + b - 7;\n"
+            "}"
+        )
+
+    def test_enum_class(self) -> None:
+        """Scoped enum class."""
+        _ok(
+            "enum class Color { Red, Green, Blue };\n"
+            "int main() {\n"
+            "    Color c = Color::Green;\n"
+            "    return static_cast<int>(c) - 1;\n"
+            "}"
+        )
+
+    def test_nullptr_usage(self) -> None:
+        """nullptr keyword in pointer context."""
+        _ok(
+            "int* get_null() { return nullptr; }\n"
+            "int main() {\n"
+            "    int* p = get_null();\n"
+            "    return p == nullptr ? 0 : 1;\n"
+            "}"
+        )
+
+    def test_rejected_missing_return_type(self) -> None:
+        """Missing return type is a compile error."""
+        _err("f(int x) { return x; }")
+
+    def test_rejected_virtual_in_non_class(self) -> None:
+        """virtual keyword outside class is invalid."""
+        _err("virtual int f() { return 0; }")
+
+    def test_status_is_success(self) -> None:
+        from backend.src.services.languages.cpp_service import ExecutionStatus
+
+        r = _run("int main() { return 0; }")
+        assert r.status == ExecutionStatus.SUCCESS

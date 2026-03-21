@@ -197,3 +197,79 @@ class TestBridgeSnapshot:
 
         snap_after = bridge.snapshot()
         assert snap_after.time_s > snap_before.time_s
+
+
+class TestBridgeStateFields:
+    """Verify additional state fields exposed by SimulationBridge snapshot."""
+
+    def test_snapshot_has_shaft_deflection(self):
+        engine, bridge = _make_physics_engine()
+        engine.execute_instruction(_load(0))
+        snap = bridge.snapshot()
+        assert snap.shaft_deflection_mm >= 0.0
+
+    def test_snapshot_has_max_clearance(self):
+        engine, bridge = _make_physics_engine()
+        engine.execute_instruction(_load(0))
+        snap = bridge.snapshot()
+        assert snap.max_clearance_mm >= 0.0
+
+    def test_snapshot_has_gear_backlash(self):
+        engine, bridge = _make_physics_engine()
+        engine.execute_instruction(_load(0))
+        snap = bridge.snapshot()
+        assert snap.gear_backlash_mm >= 0.0
+
+    def test_snapshot_has_lubrication_regime(self):
+        engine, bridge = _make_physics_engine()
+        engine.execute_instruction(_load(0))
+        snap = bridge.snapshot()
+        assert snap.lubrication_regime in {"full", "boundary", "mixed", "starved"}
+
+    def test_snapshot_has_energy_consumed(self):
+        engine, bridge = _make_physics_engine()
+        engine.execute_instruction(_load(0))
+        snap = bridge.snapshot()
+        assert snap.energy_consumed_J >= 0.0
+
+    def test_energy_increases_with_more_ops(self):
+        engine1, bridge1 = _make_physics_engine()
+        engine1.execute_instruction(_load(0))
+        e1 = bridge1.snapshot().energy_consumed_J
+
+        engine2, bridge2 = _make_physics_engine()
+        for _ in range(10):
+            engine2.execute_instruction(_load(0))
+            engine2.execute_instruction(_add(1))
+        e2 = bridge2.snapshot().energy_consumed_J
+
+        assert e2 > e1
+
+
+class TestPhysicsReportExtended:
+    """Additional checks on physics_report() fields."""
+
+    def test_report_has_shaft_deflection(self):
+        engine, _ = _make_physics_engine()
+        engine.execute_instruction(_load(0))
+        report = engine.physics_report()
+        assert "shaft_deflection_mm" in report
+
+    def test_report_has_lubrication_regime(self):
+        engine, _ = _make_physics_engine()
+        engine.execute_instruction(_load(0))
+        report = engine.physics_report()
+        assert "lubrication_regime" in report
+
+    def test_report_failure_reason_is_none_initially(self):
+        engine, _ = _make_physics_engine()
+        report = engine.physics_report()
+        assert report.get("failure_reason") is None
+
+    def test_report_energy_consumed_positive_after_ops(self):
+        engine, _ = _make_physics_engine()
+        for _ in range(5):
+            engine.execute_instruction(_load(0))
+            engine.execute_instruction(_add(1))
+        report = engine.physics_report()
+        assert report["energy_consumed_J"] > 0

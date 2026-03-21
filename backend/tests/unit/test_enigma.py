@@ -150,3 +150,157 @@ def test_enigma_adapter_get_snapshot():
     assert snap["steps"] == 1
     assert snap["input_remaining"] == 1  # "I" still queued
     assert len(snap["output_tape"]) == 1
+
+
+class TestEnigmaMachineConfig:
+    """Verify machine construction with different rotor and plugboard configs."""
+
+    def test_default_machine_has_three_rotors(self) -> None:
+        m = EnigmaMachine()
+        assert len(m.rotors) == 3
+
+    def test_rotor_positions_set_correctly(self) -> None:
+        m = EnigmaMachine()
+        m.set_rotor_positions("BCD")
+        # B=1, C=2, D=3
+        assert m.rotors[0].position == 1
+        assert m.rotors[1].position == 2
+        assert m.rotors[2].position == 3
+
+    def test_rotor_position_A_is_zero(self) -> None:
+        m = EnigmaMachine()
+        m.set_rotor_positions("AAA")
+        assert all(r.position == 0 for r in m.rotors)
+
+    def test_plugboard_has_no_swaps_by_default(self) -> None:
+        m = EnigmaMachine(plugboard_connections=[])
+        # No swaps: map[i] == i (identity)
+        assert m.plugboard.map[0] == 0  # A -> A
+        assert m.plugboard.map[25] == 25  # Z -> Z
+
+    def test_plugboard_swaps_applied(self) -> None:
+        m = EnigmaMachine(plugboard_connections=["XY"])
+        x_idx = ord("X") - ord("A")
+        y_idx = ord("Y") - ord("A")
+        assert m.plugboard.map[x_idx] == y_idx
+        assert m.plugboard.map[y_idx] == x_idx
+
+    def test_rotor_selection_i_ii_iii(self) -> None:
+        m = EnigmaMachine(rotors=["I", "II", "III"])
+        assert len(m.rotors) == 3
+
+    def test_reflector_b(self) -> None:
+        m = EnigmaMachine(reflector="B")
+        # Just ensure construction doesn't raise
+        assert m is not None
+
+
+class TestEnigmaMachineEncipherment:
+    """Test encipherment properties of the Enigma machine."""
+
+    def test_single_char_encipher_is_different_from_input(self) -> None:
+        m = EnigmaMachine()
+        m.set_rotor_positions("AAA")
+        c = m.encipher_char("A")
+        assert c != "A"
+
+    def test_encipher_char_produces_uppercase_letter(self) -> None:
+        m = EnigmaMachine()
+        m.set_rotor_positions("AAA")
+        for ch in "ABCDEFGHIJ":
+            m.set_rotor_positions("AAA")
+            result = m.encipher_char(ch)
+            assert result.isalpha() and result.isupper()
+
+    def test_different_start_positions_give_different_ciphertext(self) -> None:
+        m1 = EnigmaMachine()
+        m1.set_rotor_positions("AAA")
+        c1 = m1.process_text("HELLO")
+
+        m2 = EnigmaMachine()
+        m2.set_rotor_positions("BBB")
+        c2 = m2.process_text("HELLO")
+
+        assert c1 != c2
+
+    def test_process_text_length_preserved(self) -> None:
+        m = EnigmaMachine()
+        m.set_rotor_positions("AAA")
+        plaintext = "ABCDEFGHIJ"
+        cipher = m.process_text(plaintext)
+        assert len(cipher) == len(plaintext)
+
+    def test_no_letter_maps_to_itself(self) -> None:
+        """Enigma never encrypts a letter as itself (key property)."""
+        m = EnigmaMachine()
+        m.set_rotor_positions("AAA")
+        for ch in "ABCDEFGHIJKLMNOPQRSTUVWXYZ":
+            m.set_rotor_positions("AAA")
+            assert m.encipher_char(ch) != ch, f"{ch} should not map to itself"
+
+    def test_ring_setting_changes_output(self) -> None:
+        m1 = EnigmaMachine(ring_settings=[0, 0, 0])
+        m1.set_rotor_positions("AAA")
+        c1 = m1.process_text("HELLO")
+
+        m2 = EnigmaMachine(ring_settings=[1, 1, 1])
+        m2.set_rotor_positions("AAA")
+        c2 = m2.process_text("HELLO")
+
+        assert c1 != c2
+
+
+class TestEnigmaAdapterExtended:
+    """Additional EnigmaAdapter method coverage."""
+
+    def test_get_register_values_keys(self) -> None:
+        m = EnigmaMachine()
+        m.set_rotor_positions("AAA")
+        a = EnigmaAdapter(m)
+        rv = a.get_register_values()
+        assert "R0" in rv and "R1" in rv and "R2" in rv
+
+    def test_get_register_values_match_positions(self) -> None:
+        m = EnigmaMachine()
+        m.set_rotor_positions("ABD")  # A=0, B=1, D=3
+        a = EnigmaAdapter(m)
+        rv = a.get_register_values()
+        assert rv["R0"] == 0
+        assert rv["R1"] == 1
+        assert rv["R2"] == 3
+
+    def test_get_memory_value_returns_zero(self) -> None:
+        m = EnigmaMachine()
+        a = EnigmaAdapter(m)
+        assert a.get_memory_value(0) == 0
+
+    def test_get_operation_time_ms_has_encipher_key(self) -> None:
+        a = EnigmaAdapter(EnigmaMachine())
+        timing = a.get_operation_time_ms()
+        assert "encipher_char" in timing
+        assert timing["encipher_char"] > 0
+
+    def test_step_empty_input_no_increment(self) -> None:
+        m = EnigmaMachine()
+        m.set_rotor_positions("AAA")
+        a = EnigmaAdapter(m)
+        a.step()
+        assert a.get_cycle_count() == 0
+
+    def test_output_is_all_alpha(self) -> None:
+        m = EnigmaMachine()
+        m.set_rotor_positions("AAA")
+        a = EnigmaAdapter(m)
+        a.load_input("ENIGMA")
+        for _ in range(6):
+            a.step()
+        assert a.get_output().isalpha()
+
+    def test_snapshot_input_remaining_decrements(self) -> None:
+        m = EnigmaMachine()
+        m.set_rotor_positions("AAA")
+        a = EnigmaAdapter(m)
+        a.load_input("ABC")
+        a.step()
+        snap = a.get_snapshot()
+        assert snap["input_remaining"] == 2

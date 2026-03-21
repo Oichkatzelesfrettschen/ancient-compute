@@ -432,9 +432,7 @@ def main() -> int:
             any_failed = True
         print(f"[{status}] {result.name}")
         pct = result.failure_probability * 100
-        print(
-            f"  Failures:         {result.n_failures}/{result.n_iterations} ({pct:.3f}%)"
-        )
+        print(f"  Failures:         {result.n_failures}/{result.n_iterations} ({pct:.3f}%)")
         print(f"  Mean margin:      {result.mean_margin:.6f}")
         print(f"  Min margin:       {result.min_margin:.6f}")
         print(f"  P1 margin:        {result.p99_margin:.6f}")

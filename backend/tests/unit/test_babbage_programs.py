@@ -20,6 +20,13 @@ def _run(name: str) -> float:
     return engine.result_cards[-1]["value"].to_decimal()
 
 
+def _run_all_outputs(name: str) -> list[float]:
+    engine = Engine()
+    engine.load_program(str(_PROGRAMS / name))
+    engine.run()
+    return [card["value"].to_decimal() for card in engine.result_cards]
+
+
 def test_babbage_addition_program():
     assert _run("babbage_addition.ae") == 5.0
 
@@ -55,3 +62,63 @@ def test_exp_series_one():
     """e^1 = 2.71828... -- 11-term Maclaurin series, error < 1e-7."""
     result = _run("exp_series.ae")
     assert abs(result - math.e) < 1e-5
+
+
+class TestAEProgramExecution:
+    def test_triangular_number_program(self) -> None:
+        """T(5) = 1+2+3+4+5 = 15."""
+        assert _run("triangular_number.ae") == 15.0
+
+    def test_addition_produces_single_output(self) -> None:
+        outputs = _run_all_outputs("babbage_addition.ae")
+        assert len(outputs) == 1
+
+    def test_program_runs_without_error(self) -> None:
+        for name in [
+            "babbage_addition.ae",
+            "triangular_number.ae",
+            "sin_series.ae",
+            "cos_series.ae",
+            "exp_series.ae",
+        ]:
+            engine = Engine()
+            engine.load_program(str(_PROGRAMS / name))
+            engine.run()  # must not raise
+            assert not engine.running
+
+    def test_sin_result_in_valid_range(self) -> None:
+        result = _run("sin_series.ae")
+        assert -1.0 <= result <= 1.0
+
+    def test_cos_result_in_valid_range(self) -> None:
+        result = _run("cos_series.ae")
+        assert -1.0 <= result <= 1.0
+
+    def test_exp_result_positive(self) -> None:
+        assert _run("exp_series.ae") > 0.0
+
+    def test_engine_not_running_after_run(self) -> None:
+        engine = Engine()
+        engine.load_program(str(_PROGRAMS / "babbage_addition.ae"))
+        engine.run()
+        assert not engine.running
+
+    def test_result_cards_list(self) -> None:
+        engine = Engine()
+        engine.load_program(str(_PROGRAMS / "babbage_addition.ae"))
+        engine.run()
+        assert isinstance(engine.result_cards, list)
+
+    def test_each_result_card_has_value(self) -> None:
+        engine = Engine()
+        engine.load_program(str(_PROGRAMS / "babbage_addition.ae"))
+        engine.run()
+        for card in engine.result_cards:
+            assert "value" in card
+
+    def test_sin_cos_sum_identity(self) -> None:
+        """sin^2(pi/6) + cos^2(pi/3) = sin^2(pi/6) + cos^2(pi/3) ≈ 0.25 + 0.25 = 0.5."""
+        s = _run("sin_series.ae")
+        c = _run("cos_series.ae")
+        # sin(pi/6) = cos(pi/3) = 0.5
+        assert abs(s - c) < 1e-5

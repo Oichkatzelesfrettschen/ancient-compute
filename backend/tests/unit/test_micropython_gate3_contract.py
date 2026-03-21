@@ -116,3 +116,53 @@ class TestMicroPythonContract:
     def test_rejected_invalid_indentation(self):
         """Mixed indentation or bad indent is a SyntaxError (COMPILE_ERROR)."""
         _err_compile("def f():\nreturn 1")
+
+
+class TestMicroPythonOutputVerification:
+    """Verify stdout values from MicroPython programs."""
+
+    def test_print_hello_stdout(self) -> None:
+        r = _run('print("hello")')
+        assert "hello" in r.stdout
+
+    def test_arithmetic_result(self) -> None:
+        r = _run("print(6 * 7)")
+        assert "42" in r.stdout
+
+    def test_factorial_5_is_120(self) -> None:
+        r = _run(
+            "def fact(n):\n"
+            "    if n <= 1:\n"
+            "        return 1\n"
+            "    return n * fact(n - 1)\n"
+            "print(fact(5))"
+        )
+        assert "120" in r.stdout
+
+    def test_list_comprehension_squares(self) -> None:
+        r = _run("print([x*x for x in range(4)])")
+        assert "9" in r.stdout  # 3*3 is last element
+
+    def test_for_range_sum(self) -> None:
+        r = _run("s = 0\nfor i in range(5):\n    s += i\nprint(s)")
+        assert "10" in r.stdout
+
+    def test_while_countdown_result(self) -> None:
+        r = _run("n = 5\nwhile n > 0:\n    n -= 1\nprint(n)")
+        assert "0" in r.stdout
+
+
+class TestMicroPythonRejectedPrograms:
+    """Additional rejection cases."""
+
+    def test_rejected_missing_colon(self) -> None:
+        _err_compile("def f(x)\n    return x")
+
+    def test_rejected_invalid_keyword(self) -> None:
+        _err_compile("x = @invalid")
+
+    def test_status_success_for_empty_program(self) -> None:
+        from backend.src.services.languages.micropython_service import ExecutionStatus
+
+        r = _run("x = 1")
+        assert r.status == ExecutionStatus.SUCCESS

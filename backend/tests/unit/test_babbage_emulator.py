@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from backend.src.emulator.analytical_engine import BabbageNumber, Engine, Instruction
 
 
@@ -188,3 +190,87 @@ def test_engine_nop():
     instruction = Instruction("NOP")
     engine.execute_instruction(instruction)
     assert engine.PC == 6  # PC should increment
+
+
+class TestBabbageNumber:
+    """BabbageNumber arithmetic and comparison coverage."""
+
+    def test_multiply_two_numbers(self) -> None:
+        a = BabbageNumber(6)
+        b = BabbageNumber(7)
+        assert (a * b).to_decimal() == 42.0
+
+    def test_negate(self) -> None:
+        n = BabbageNumber(5)
+        neg = BabbageNumber(-5)
+        assert (n + neg).to_decimal() == 0.0
+
+    def test_zero_decimal(self) -> None:
+        assert BabbageNumber(0).to_decimal() == 0.0
+
+    def test_le_equal_values(self) -> None:
+        assert BabbageNumber(10) <= BabbageNumber(10)
+
+    def test_ge_equal_values(self) -> None:
+        assert BabbageNumber(10) >= BabbageNumber(10)
+
+    def test_large_value_round_trip(self) -> None:
+        n = BabbageNumber(999_999_999)
+        assert n.to_decimal() == 999_999_999.0
+
+    def test_fractional_value(self) -> None:
+        n = BabbageNumber(0.5)
+        assert abs(n.to_decimal() - 0.5) < 1e-9
+
+
+class TestEngineFlags:
+    """Engine flag updates after arithmetic operations."""
+
+    def test_zero_flag_set_after_sub_to_zero(self) -> None:
+        engine = Engine()
+        engine.registers["A"] = BabbageNumber(5)
+        engine.execute_instruction(Instruction("SUB", ["A", "5"]))
+        assert engine.flags["ZERO"]
+
+    def test_sign_flag_set_after_negative_result(self) -> None:
+        engine = Engine()
+        engine.registers["A"] = BabbageNumber(3)
+        engine.execute_instruction(Instruction("SUB", ["A", "10"]))
+        assert engine.flags["SIGN"]
+
+    def test_zero_flag_clear_after_nonzero_add(self) -> None:
+        engine = Engine()
+        engine.registers["A"] = BabbageNumber(0)
+        engine.execute_instruction(Instruction("ADD", ["A", "5"]))
+        assert not engine.flags["ZERO"]
+
+    def test_registers_have_default_keys(self) -> None:
+        engine = Engine()
+        for reg in ("A", "B", "C", "D"):
+            assert reg in engine.registers
+
+
+class TestEngineMemoryOps:
+    """LOAD/STOR round-trips and memory layout."""
+
+    def test_stor_then_load_round_trip(self) -> None:
+        engine = Engine()
+        engine.registers["A"] = BabbageNumber(77)
+        engine.execute_instruction(Instruction("STOR", ["A", "[3]"]))
+        engine.execute_instruction(Instruction("LOAD", ["B", "[3]"]))
+        assert engine.registers["B"].to_decimal() == 77.0
+
+    def test_multiple_memory_cells_independent(self) -> None:
+        engine = Engine()
+        engine.registers["A"] = BabbageNumber(1)
+        engine.execute_instruction(Instruction("STOR", ["A", "[0]"]))
+        engine.registers["A"] = BabbageNumber(2)
+        engine.execute_instruction(Instruction("STOR", ["A", "[1]"]))
+        assert engine.memory[0].to_decimal() == 1.0
+        assert engine.memory[1].to_decimal() == 2.0
+
+    def test_load_immediate_does_not_affect_memory(self) -> None:
+        engine = Engine()
+        engine.execute_instruction(Instruction("LOAD", ["A", "42"]))
+        assert engine.registers["A"].to_decimal() == 42.0
+        assert engine.memory[0].to_decimal() == 0.0
