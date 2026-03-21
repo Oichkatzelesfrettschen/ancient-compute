@@ -1,5 +1,4 @@
 import type { AnalyticalEngineSnapshot } from './analytical_engine';
-import type { MechanicalPhase } from './emulator_types'; // Assuming this might be needed later
 
 export interface DebugState {
     cycle: number;

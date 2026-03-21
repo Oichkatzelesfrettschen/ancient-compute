@@ -9,7 +9,7 @@
 		type MachineState
 	} from '$lib/api/machines';
 
-	const machineId = $page.params.id;
+	const machineId = $page.params.id ?? '';
 
 	let detail: MachineDetail | null = null;
 	let state: MachineState | null = null;
