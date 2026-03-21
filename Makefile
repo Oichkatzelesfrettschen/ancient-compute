@@ -79,7 +79,7 @@ dev:
 	docker compose up
 
 dev-backend:
-	cd backend && uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
+	PYTHONPATH=. uvicorn backend.src.main:app --reload --host 127.0.0.1 --port 8000
 
 dev-frontend:
 	cd frontend && pnpm dev
