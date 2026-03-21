@@ -360,16 +360,21 @@ def _apply_load(
                 machine.set_value(int(addr_str), int(val))
 
     elif pit == "data_deck":
-        from ..emulator.hollerith_tabulator import PunchedCard
+        if machine_id == "jacquard-loom":
+            # Jacquard payload: {"cards": [[1,0,...], [0,1,...], ...]}
+            raw_cards: list[list[int]] = [[int(b) for b in row] for row in payload.get("cards", [])]
+            adapter.load_deck(raw_cards)  # type: ignore[attr-defined]
+        else:
+            from ..emulator.hollerith_tabulator import PunchedCard
 
-        cards = []
-        for card_dict in payload.get("cards", []):
-            cols = card_dict.get("columns", [])
-            c = PunchedCard()
-            for col in cols:
-                c.punch(card_dict.get("row", 0), col)
-            cards.append(c)
-        adapter.load_deck(cards)  # type: ignore[attr-defined]
+            punched: list[Any] = []
+            for card_dict in payload.get("cards", []):
+                cols = card_dict.get("columns", [])
+                c = PunchedCard()
+                for col in cols:
+                    c.punch(card_dict.get("row", 0), col)
+                punched.append(c)
+            adapter.load_deck(punched)  # type: ignore[attr-defined]
 
     elif pit == "none":
         # Calculators: optionally set input value
