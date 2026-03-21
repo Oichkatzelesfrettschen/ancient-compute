@@ -231,18 +231,18 @@ def _apply_load(
             machine.load_program(instrs)
 
     elif pit == "instructions_json" and machine_id in ("zuse-z1",):
-        from ..emulator.zuse_z1 import Z1Instruction, Z1Op
+        from ..emulator.zuse_z1 import ZuseFloat
 
         if "memory" in payload:
             for addr_str, val in payload["memory"].items():
-                machine.load_memory(int(addr_str), float(val))
+                machine.store(int(addr_str), ZuseFloat.from_float(float(val)))
         if "program" in payload:
-            instrs = []
+            tape: list[tuple[Any, ...]] = []
             for instr_dict in payload["program"]:
-                op = Z1Op(instr_dict["op"])
+                op = instr_dict["op"]
                 addr = instr_dict.get("address", 0)
-                instrs.append(Z1Instruction(op=op, address=addr))
-            machine.load_program(instrs)
+                tape.append((op, addr))
+            machine.load_program(tape)
 
     elif pit == "instructions_json" and machine_id in ("harvard-mark-i",):
         from decimal import Decimal
@@ -256,13 +256,13 @@ def _apply_load(
             for idx_str, val in payload["constants"].items():
                 machine.set_constant(int(idx_str), Decimal(str(val)))
         if "program" in payload:
-            instrs = []
+            mark1_instrs: list[Any] = []
             for instr_dict in payload["program"]:
                 op = instr_dict["op"]
                 args = tuple(instr_dict.get("args", []))
                 label = instr_dict.get("label", "")
-                instrs.append(MarkIInstruction(op=op, args=args, label=label))
-            machine.load_program(instrs)
+                mark1_instrs.append(MarkIInstruction(op=op, args=args, label=label))
+            machine.load_program(mark1_instrs)
 
     elif pit == "instructions_json" and machine_id in ("eniac",):
         from ..emulator.eniac import ENIACInstruction
@@ -271,12 +271,12 @@ def _apply_load(
             for idx_str, val in payload["accumulators"].items():
                 machine.set_accumulator(int(idx_str), float(val))
         if "program" in payload:
-            instrs = []
+            eniac_instrs: list[Any] = []
             for instr_dict in payload["program"]:
                 op = instr_dict["op"]
                 args = tuple(instr_dict.get("args", []))
-                instrs.append(ENIACInstruction(op=op, args=args))
-            machine.load_program(instrs)
+                eniac_instrs.append(ENIACInstruction(op=op, args=args))
+            machine.load_program(eniac_instrs)
 
     elif pit == "instructions_json" and machine_id == "ludgate":
         # Ludgate: load program tape as list of tuples
@@ -327,8 +327,8 @@ def _apply_load(
         adapter._stops = []  # type: ignore[attr-defined]
 
     elif pit == "lorenz_tape" and machine_id in ("colossus", "colossus-2"):
-        tape = [[int(b) for b in row] for row in payload.get("tape", [])]
-        adapter.load_tape(tape)  # type: ignore[attr-defined]
+        lorenz_tape: list[list[int]] = [[int(b) for b in row] for row in payload.get("tape", [])]
+        adapter.load_tape(lorenz_tape)  # type: ignore[attr-defined]
 
     elif pit == "coefficients" and machine_id == "scheutz-de":
         vals = payload.get("initial_values", [0, 6, 2, 0])
@@ -345,17 +345,16 @@ def _apply_load(
     elif pit == "words" and machine_id == "edsac":
         from ..emulator.edsac import EDSACInstruction
 
-        instrs = []
+        edsac_instrs: list[EDSACInstruction] = []
         for item in payload.get("instructions", []):
-            instrs.append(
+            edsac_instrs.append(
                 EDSACInstruction(
-                    address=item["address"],
-                    mnemonic=item["mnemonic"],
-                    operand=item.get("operand", 0),
+                    function=item["mnemonic"],
+                    address=item.get("operand", 0),
                 )
             )
-        if instrs:
-            machine.store_instructions(instrs)
+        if edsac_instrs:
+            machine.store_instructions(0, edsac_instrs)
         if "data" in payload:
             for addr_str, val in payload["data"].items():
                 machine.set_value(int(addr_str), int(val))
@@ -366,7 +365,7 @@ def _apply_load(
         cards = []
         for card_dict in payload.get("cards", []):
             cols = card_dict.get("columns", [])
-            c = PunchedCard(num_columns=80)
+            c = PunchedCard()
             for col in cols:
                 c.punch(card_dict.get("row", 0), col)
             cards.append(c)
