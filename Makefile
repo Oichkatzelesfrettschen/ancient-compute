@@ -325,25 +325,52 @@ physics-envelope:
 verify:
 	@echo "=== Local CI Verification ==="
 	@echo ""
-	@echo "[1/6] Backend linting (ruff)..."
+	@echo "[1/9] Backend linting (ruff)..."
 	@cd backend && ruff check src/ tests/ 2>&1 || (echo "FAIL: ruff"; exit 1)
-	@echo "[2/6] Backend formatting (black)..."
+	@echo "[2/9] Backend formatting (black)..."
 	@cd backend && python3 -m black --check --diff src/ tests/ 2>&1 || (echo "FAIL: black"; exit 1)
-	@echo "[3/6] Backend tests..."
+	@echo "[3/9] Backend tests..."
 	@cd backend && python3 -m pytest tests/unit/ -q \
 	  --ignore=backend/tests/integration/test_cross_language.py \
 	  --ignore=backend/tests/integration/test_phase4_w1_api.py \
 	  2>&1 || (echo "FAIL: pytest"; exit 1)
-	@echo "[4/6] Shell scripts (shellcheck)..."
+	@echo "[4/9] Shell scripts (shellcheck)..."
 	@find . -name "*.sh" -not -path "./.git/*" -not -path "./venv/*" \
 	  -exec shellcheck --severity=warning {} + 2>&1 || (echo "WARN: shellcheck issues"; true)
-	@echo "[5/6] BOM validation..."
+	@echo "[5/9] BOM validation..."
 	@PYTHONPATH=. python3 tools/validate_bom.py 2>&1 || (echo "FAIL: BOM validation"; exit 1)
-	@echo "[6/6] Opcode sync check..."
+	@echo "[6/9] Opcode sync check..."
 	@PYTHONPATH=. python3 tools/validate_opcodes.py 2>&1 || (echo "FAIL: opcode sync"; exit 1)
+	@echo "[7/9] Dockerfile linting (hadolint)..."
+	@hadolint backend/Dockerfile \
+	  backend/src/services/containers/base/Dockerfile \
+	  backend/src/services/containers/python/Dockerfile \
+	  backend/src/services/containers/c/Dockerfile \
+	  backend/src/services/containers/haskell/Dockerfile \
+	  frontend/Dockerfile \
+	  services/lisp/Dockerfile \
+	  2>&1 || (echo "WARN: hadolint issues"; true)
+	@echo "[8/9] YAML linting (yamllint)..."
+	@yamllint -c .yamllint.yaml \
+	  docs/hardware/OPCODES.yaml \
+	  docs/simulation/sim_schema.yaml \
+	  docs/simulation/NOTE_G_DECK.yaml \
+	  docs/simulation/NOTE_B_DECK.yaml \
+	  docs/simulation/NOTE_C_DECK.yaml \
+	  docs/simulation/NOTE_D_DECK.yaml \
+	  docs/simulation/NOTE_G_TABLE_A2.yaml \
+	  docs/simulation/TIMING_PROVISIONAL.yaml \
+	  docs/agents.yaml \
+	  .pre-commit-config.yaml \
+	  docker-compose.yml \
+	  2>&1 || (echo "WARN: yamllint issues"; true)
+	@echo "[9/9] pip-audit (dependencies)..."
+	@pip-audit -r backend/requirements.txt -q 2>&1 | grep -v "^WARNING" || (echo "WARN: pip-audit issues"; true)
 	@echo ""
 	@echo "--- mypy summary (non-blocking) ---"
 	@python3 -m mypy backend/src/ 2>&1 | tail -1 || true
+	@echo "--- bandit summary (non-blocking) ---"
+	@bandit -r backend/src/ -q --severity-level medium 2>&1 | tail -6 || true
 	@echo ""
 	@echo "=== Verification PASSED ==="
 
