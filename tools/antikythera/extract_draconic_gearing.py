@@ -20,8 +20,7 @@ def pdftotext(pdf_path: Path) -> str:
     result = subprocess.run(
         ["pdftotext", str(pdf_path), "-"],
         check=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        capture_output=True,
         text=True,
     )
     return result.stdout
@@ -59,7 +58,8 @@ def extract(text: str) -> dict:
             "s1": {"teeth": s1},
         },
         "remarks": [
-            "This is a partial parameter set; full train factors (b3/e1, e6/k2, ...) are not yet extracted.",
+            "This is a partial parameter set; full train factors"
+            " (b3/e1, e6/k2, ...) are not yet extracted.",
         ],
     }
 

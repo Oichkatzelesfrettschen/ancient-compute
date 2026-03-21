@@ -116,8 +116,8 @@ def shaft_deflection(p: dict) -> float:
     L_m = p["shaft_span_mm"] / 1000.0
     E_Pa = p["shaft_youngs_GPa"] * 1e9
     d_m = p["shaft_diameter_mm"] / 1000.0
-    I = math.pi * d_m**4 / 64.0
-    delta_m = p["shaft_load_N"] * L_m**3 / (48 * E_Pa * I)
+    moi = math.pi * d_m**4 / 64.0
+    delta_m = p["shaft_load_N"] * L_m**3 / (48 * E_Pa * moi)
     return delta_m * 1000.0  # mm
 
 
@@ -152,10 +152,10 @@ def euler_buckling(p: dict) -> float:
     """
     E_Pa = p["column_youngs_GPa"] * 1e9
     w_m = p["column_width_mm"] / 1000.0
-    I = w_m**4 / 12.0  # square cross section
+    moi = w_m**4 / 12.0  # square cross section
     K = 0.5  # fixed-fixed
     L_m = p["column_height_mm"] / 1000.0
-    return math.pi**2 * E_Pa * I / (K * L_m) ** 2
+    return math.pi**2 * E_Pa * moi / (K * L_m) ** 2
 
 
 # --- Phase III: Stress concentration ---
@@ -178,11 +178,11 @@ def critical_speed_margin(p: dict) -> float:
     L_m = p["shaft_span_mm"] / 1000.0
     E_Pa = p["shaft_youngs_GPa"] * 1e9
     rho = p["shaft_density_kg_m3"]
-    I = math.pi * d_m**4 / 64.0
+    moi = math.pi * d_m**4 / 64.0
     A = math.pi * d_m**2 / 4.0
     if L_m <= 0 or A <= 0 or rho <= 0:
         return float("inf")
-    omega_n = (math.pi**2 / L_m**2) * math.sqrt(E_Pa * I / (rho * A))
+    omega_n = (math.pi**2 / L_m**2) * math.sqrt(E_Pa * moi / (rho * A))
     crit_rpm = omega_n * 60.0 / (2.0 * math.pi)
     return crit_rpm / p["shaft_rpm"] if p["shaft_rpm"] > 0 else float("inf")
 

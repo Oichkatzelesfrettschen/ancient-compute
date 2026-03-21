@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import contextlib
 import pathlib
 import re
 import sys
@@ -27,10 +28,8 @@ for tf in text_files:
         m = re.search(pat, txt, re.IGNORECASE)
         if m and k not in found:
             val = next(g for g in m.groups() if g)
-            try:
+            with contextlib.suppress(Exception):
                 val = float(val)
-            except Exception:
-                pass
             found[k] = val
 out = {"extracted": found, "source_files": [str(t) for t in text_files]}
 pathlib.Path("docs/simulation/extracted.yaml").write_text(yaml.safe_dump(out, sort_keys=True))

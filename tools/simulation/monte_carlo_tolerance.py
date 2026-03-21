@@ -102,7 +102,7 @@ def check_gear_backlash(rng: random.Random, n: int) -> MCResult:
         backlash = GEAR_BACKLASH.sample(rng)
         module = GEAR_MODULE.sample(rng)
         brass_alpha = BRASS_ALPHA.sample(rng)
-        steel_alpha = STEEL_ALPHA.sample(rng)
+        _steel_alpha = STEEL_ALPHA.sample(rng)
         temp = rng.gauss(MAX_OPERATING_TEMP_C, 2.0)  # near max operating temp
 
         # Pitch diameter ~ module * 20 teeth = 50 mm nominal
@@ -223,8 +223,8 @@ def check_shaft_deflection(rng: random.Random, n: int) -> MCResult:
         L_m = span / 1000.0
         E_Pa = E_GPa * 1e9
         d_m = diameter / 1000.0
-        I = math.pi * d_m**4 / 64.0
-        delta_m = load * L_m**3 / (48.0 * E_Pa * I)
+        moi = math.pi * d_m**4 / 64.0
+        delta_m = load * L_m**3 / (48.0 * E_Pa * moi)
         delta_mm = delta_m * 1000.0
 
         limit_mm = span / 10000.0  # L/10000
@@ -281,8 +281,8 @@ def check_fatigue_with_Kt(rng: random.Random, n: int) -> MCResult:
         L_m = 0.375  # bearing span
         M_Nm = load_n * L_m / 4.0  # max moment for simply-supported
         c = d_m / 2.0
-        I = math.pi * d_m**4 / 64.0
-        sigma_a = (M_Nm * c / I) / 1e6  # MPa
+        moi = math.pi * d_m**4 / 64.0
+        sigma_a = (M_Nm * c / moi) / 1e6  # MPa
 
         sf = Se / sigma_a if sigma_a > 0 else float("inf")
         margin = sf - 1.5
@@ -431,8 +431,9 @@ def main() -> int:
         if status == "FAIL":
             any_failed = True
         print(f"[{status}] {result.name}")
+        pct = result.failure_probability * 100
         print(
-            f"  Failures:         {result.n_failures}/{result.n_iterations} ({result.failure_probability * 100:.3f}%)"
+            f"  Failures:         {result.n_failures}/{result.n_iterations} ({pct:.3f}%)"
         )
         print(f"  Mean margin:      {result.mean_margin:.6f}")
         print(f"  Min margin:       {result.min_margin:.6f}")
@@ -444,7 +445,8 @@ def main() -> int:
         return 1
     else:
         print(
-            "RESULT: All interference probabilities below threshold. Mechanical feasibility confirmed."
+            "RESULT: All interference probabilities below threshold."
+            " Mechanical feasibility confirmed."
         )
         return 0
 
