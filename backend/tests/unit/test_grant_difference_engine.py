@@ -4,15 +4,16 @@ Tests cover: register loading, single-step crank, multi-step tabulation,
 overflow detection, and tabulation of known polynomials.
 """
 
-import pytest
 from decimal import Decimal
 
-from backend.src.emulator.grant_difference_engine import GrantDifferenceEngine
+import pytest
 
+from backend.src.emulator.grant_difference_engine import GrantDifferenceEngine
 
 # ---------------------------------------------------------------------------
 # Setup helpers
 # ---------------------------------------------------------------------------
+
 
 def _linear_diffs(a: float, b: float) -> list[float]:
     """Initial differences for f(x) = a + b*x (1st order).
@@ -111,7 +112,7 @@ class TestQuadraticTabulation:
         e = GrantDifferenceEngine()
         e.load(_quadratic_diffs(2.0, 3.0, 1.0))
         results = [float(e.crank()) for _ in range(5)]
-        expected = [2 + 3 * x + x ** 2 for x in range(1, 6)]
+        expected = [2 + 3 * x + x**2 for x in range(1, 6)]
         assert results == expected
 
     def test_revolution_count(self):
@@ -206,7 +207,7 @@ class TestTabulateFromX0:
     def test_squares_from_callable(self):
         """Verify auto-difference-computation from f(x) = x^2."""
         e = GrantDifferenceEngine()
-        results = e.tabulate_from_x0(lambda x: x ** 2, x0=0.0, step=1.0, n=5, order=2)
+        results = e.tabulate_from_x0(lambda x: x**2, x0=0.0, step=1.0, n=5, order=2)
         # Starting at f(x0+h) = f(1) = 1
         assert [float(r) for r in results] == [1.0, 4.0, 9.0, 16.0, 25.0]
 

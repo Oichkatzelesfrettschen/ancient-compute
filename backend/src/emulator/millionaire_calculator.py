@@ -92,10 +92,8 @@ class MillionaireCalculator:
         """Set input sliders from a non-negative integer."""
         if value < 0:
             raise ValueError("Input must be non-negative")
-        if value >= 10 ** self.INPUT_DIGITS:
-            raise ValueError(
-                f"Input {value} exceeds {self.INPUT_DIGITS}-digit capacity"
-            )
+        if value >= 10**self.INPUT_DIGITS:
+            raise ValueError(f"Input {value} exceeds {self.INPUT_DIGITS}-digit capacity")
         digits = str(value).zfill(self.INPUT_DIGITS)
         for i, ch in enumerate(reversed(digits)):
             self._input[i] = int(ch)
@@ -110,9 +108,7 @@ class MillionaireCalculator:
         """Set carriage position (0 = units, 1 = tens, ...)."""
         max_pos = self.RESULT_DIGITS - self.INPUT_DIGITS
         if not 0 <= position <= max_pos:
-            raise ValueError(
-                f"Carriage position {position} out of range [0, {max_pos}]"
-            )
+            raise ValueError(f"Carriage position {position} out of range [0, {max_pos}]")
         self.carriage_position = position
 
     def clear_result(self) -> None:

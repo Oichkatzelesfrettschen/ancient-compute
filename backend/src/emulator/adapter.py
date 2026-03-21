@@ -549,7 +549,7 @@ class ThomasArithometerAdapter(MachineAdapter):
     def get_column_values(self) -> list[int]:
         # Expose result digits as column values (units -> MSD).
         result = self.machine.get_result()
-        return [(result // (10 ** i)) % 10 for i in range(16)]
+        return [(result // (10**i)) % 10 for i in range(16)]
 
     def get_register_values(self) -> dict[str, Any]:
         return {
@@ -726,7 +726,7 @@ class MillionaireAdapter(MachineAdapter):
 
     def get_column_values(self) -> list[int]:
         result = self.machine.get_result()
-        return [(result // (10 ** i)) % 10 for i in range(16)]
+        return [(result // (10**i)) % 10 for i in range(16)]
 
     def get_register_values(self) -> dict[str, Any]:
         state = self.machine.state
@@ -753,7 +753,7 @@ class AntikytheraAdapter(MachineAdapter):
     All dial pointer positions are exposed as registers.
     """
 
-    _STEP_SIZE = 1.0 / 365.25   # one solar day
+    _STEP_SIZE = 1.0 / 365.25  # one solar day
 
     def __init__(self, machine: AntikytheraMechanism) -> None:
         self.machine = machine
@@ -769,8 +769,11 @@ class AntikytheraAdapter(MachineAdapter):
     def get_column_values(self) -> list[int]:
         # Expose gear angles as integer degrees (0-359) for 8 key gears.
         key_gears = ["b1", "b2", "e3", "e4", "k1", "k2", "SA4", "LN2"]
-        return [int(self.machine.gears[g].angle * 180 / 3.14159265) % 360
-                for g in key_gears if g in self.machine.gears]
+        return [
+            int(self.machine.gears[g].angle * 180 / 3.14159265) % 360
+            for g in key_gears
+            if g in self.machine.gears
+        ]
 
     def get_register_values(self) -> dict[str, Any]:
         return dict(self.machine.pointers)
@@ -805,7 +808,7 @@ class BombeAdapter(MachineAdapter):
     def __init__(self, machine: Bombe, menu: BombeMenu) -> None:
         self.machine = machine
         self.menu = menu
-        self._pos = 0        # linear index 0..26^3-1
+        self._pos = 0  # linear index 0..26^3-1
         self._stops: list[Any] = []
 
     def get_cycle_count(self) -> int:
@@ -824,7 +827,9 @@ class BombeAdapter(MachineAdapter):
     def get_register_values(self) -> dict[str, Any]:
         L, M, R = self.get_column_values()
         return {
-            "L": L, "M": M, "R": R,
+            "L": L,
+            "M": M,
+            "R": R,
             "stops_found": len(self._stops),
             "positions_tested": self._pos,
         }
@@ -835,7 +840,7 @@ class BombeAdapter(MachineAdapter):
         return None
 
     def step(self) -> None:
-        if self._pos >= 26 ** 3:
+        if self._pos >= 26**3:
             return
         L = (self._pos // 676) % 26
         M = (self._pos // 26) % 26
@@ -1013,10 +1018,7 @@ class ENIACAdapter(MachineAdapter):
         return [int(self.machine.get_accumulator(i)) for i in range(20)]
 
     def get_register_values(self) -> dict[str, Any]:
-        return {
-            f"A{i}": float(self.machine.get_accumulator(i))
-            for i in range(20)
-        }
+        return {f"A{i}": float(self.machine.get_accumulator(i)) for i in range(20)}
 
     def get_memory_value(self, address: int) -> Any:
         if 0 <= address < 20:

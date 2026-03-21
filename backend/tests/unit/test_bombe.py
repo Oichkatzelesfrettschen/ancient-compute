@@ -5,7 +5,6 @@ import pytest
 from backend.src.emulator.bombe import Bombe, BombeMenu, BombeStop, _make_scrambler_lookup
 from backend.src.emulator.enigma import EnigmaMachine, to_int
 
-
 # ---------------------------------------------------------------------------
 # BombeMenu
 # ---------------------------------------------------------------------------
@@ -77,7 +76,7 @@ class TestScramblerLookup:
 
         fwd = [[ord(c) - 65 for c in ROTOR_WIRING[n]] for n in rotor_names]
         rev = [[0] * 26 for _ in fwd]
-        for m, f in zip(rev, fwd):
+        for m, f in zip(rev, fwd, strict=True):
             for i, o in enumerate(f):
                 m[o] = i
         ref = [ord(c) - 65 for c in REFLECTOR_WIRING[reflector]]
@@ -97,7 +96,6 @@ class TestScramblerLookup:
 
     def test_scrambler_matches_enigma_no_plugboard(self):
         """Scrambler at a given position should match Enigma (no plugboard)."""
-        from backend.src.emulator.enigma import REFLECTOR_WIRING, ROTOR_WIRING
 
         # Enigma at position (0, 0, 1) = one step from AAA
         m = EnigmaMachine(rotors=["I", "II", "III"], reflector="B")
@@ -250,7 +248,7 @@ class TestRunState:
     def test_run_updates_state(self):
         m = EnigmaMachine(rotors=["I", "II", "III"], reflector="B")
         m.set_rotor_positions("AAA")
-        menu = BombeMenu.from_crib("ABCDEFGABCDEFG", m.process_text("ABCDEFGABCDEFG"))
+        BombeMenu.from_crib("ABCDEFGABCDEFG", m.process_text("ABCDEFGABCDEFG"))
         bombe = Bombe()
         # Run over a subset of positions for speed (just L=0 plane)
         # We test state tracking, not correctness of full scan

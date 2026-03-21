@@ -2,8 +2,7 @@
 
 import pytest
 
-from backend.src.emulator.millionaire_calculator import MillionaireCalculator, _PLATE
-
+from backend.src.emulator.millionaire_calculator import _PLATE, MillionaireCalculator
 
 # ---------------------------------------------------------------------------
 # Multiplication plate
@@ -45,7 +44,7 @@ class TestInput:
     def test_set_input_overflow_raises(self):
         m = MillionaireCalculator()
         with pytest.raises(ValueError):
-            m.set_input(10 ** MillionaireCalculator.INPUT_DIGITS)
+            m.set_input(10**MillionaireCalculator.INPUT_DIGITS)
 
     def test_set_lever_valid(self):
         m = MillionaireCalculator()
@@ -108,7 +107,7 @@ class TestDirectMultiplication:
     def test_multiply_then_add(self):
         """After multiply, add should work with lever=1."""
         m = MillionaireCalculator()
-        m.multiply(10, 5)   # result = 50
+        m.multiply(10, 5)  # result = 50
         assert m.add(3) == 53
 
 

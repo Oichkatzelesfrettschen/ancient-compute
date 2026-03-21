@@ -55,15 +55,11 @@ _DIGITS = 30
 class GrantState:
     """Observable state of Grant's Difference Engine."""
 
-    registers: list[Decimal] = field(
-        default_factory=lambda: [Decimal(0)] * _MAX_REGISTERS
-    )
-    num_orders: int = 0          # Number of active difference orders (1..14)
-    revolution_count: int = 0    # Total number of crank revolutions
+    registers: list[Decimal] = field(default_factory=lambda: [Decimal(0)] * _MAX_REGISTERS)
+    num_orders: int = 0  # Number of active difference orders (1..14)
+    revolution_count: int = 0  # Total number of crank revolutions
     output_table: list[Decimal] = field(default_factory=list)
-    overflow_flags: list[bool] = field(
-        default_factory=lambda: [False] * _MAX_REGISTERS
-    )
+    overflow_flags: list[bool] = field(default_factory=lambda: [False] * _MAX_REGISTERS)
 
 
 class GrantDifferenceEngine:
@@ -104,9 +100,7 @@ class GrantDifferenceEngine:
         if len(initial_values) < 2:
             raise ValueError("Need at least 2 values: f(x0) and one difference")
         if len(initial_values) > _MAX_REGISTERS:
-            raise ValueError(
-                f"Too many initial values (max {_MAX_REGISTERS} registers)"
-            )
+            raise ValueError(f"Too many initial values (max {_MAX_REGISTERS} registers)")
         for i, v in enumerate(initial_values):
             self.state.registers[i] = Decimal(str(v))
         self.state.num_orders = len(initial_values) - 1
@@ -163,8 +157,9 @@ class GrantDifferenceEngine:
             raise ValueError("n must be non-negative")
         return [self.crank() for _ in range(n)]
 
-    def tabulate_from_x0(self, polynomial_fn: object, x0: float, step: float, n: int,
-                         order: int) -> list[Decimal]:
+    def tabulate_from_x0(
+        self, polynomial_fn: object, x0: float, step: float, n: int, order: int
+    ) -> list[Decimal]:
         """Convenience: auto-compute initial differences from a callable, then tabulate.
 
         Computes the finite differences of polynomial_fn at x0 with increment step,
@@ -181,6 +176,7 @@ class GrantDifferenceEngine:
             List of n Decimal values starting from f(x0+step).
         """
         from collections.abc import Callable
+
         fn: Callable[[float], float] = polynomial_fn  # type: ignore[assignment]
 
         # Compute initial difference table

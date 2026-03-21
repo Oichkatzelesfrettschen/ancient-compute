@@ -65,17 +65,13 @@ class PunchedCard:
     def punch(self, row: int, col: int) -> None:
         """Punch a hole at (row, col)."""
         if not (0 <= row < CARD_ROWS and 0 <= col < CARD_COLS):
-            raise IndexError(
-                f"Position ({row},{col}) out of range [{CARD_ROWS}x{CARD_COLS}]"
-            )
+            raise IndexError(f"Position ({row},{col}) out of range [{CARD_ROWS}x{CARD_COLS}]")
         self.holes[row][col] = True
 
     def read(self, row: int, col: int) -> bool:
         """Return True if a hole exists at (row, col)."""
         if not (0 <= row < CARD_ROWS and 0 <= col < CARD_COLS):
-            raise IndexError(
-                f"Position ({row},{col}) out of range [{CARD_ROWS}x{CARD_COLS}]"
-            )
+            raise IndexError(f"Position ({row},{col}) out of range [{CARD_ROWS}x{CARD_COLS}]")
         return self.holes[row][col]
 
     def holes_in_row(self, row: int) -> list[int]:
@@ -148,9 +144,7 @@ class HollerithTabulator:
         self.cards_processed: int = 0
 
         # Auxiliary counters (numbered 0..MAX_COUNTERS-1) for user assignment.
-        self._aux_counters: list[CounterDial] = [
-            CounterDial() for _ in range(MAX_COUNTERS)
-        ]
+        self._aux_counters: list[CounterDial] = [CounterDial() for _ in range(MAX_COUNTERS)]
 
     def counter(self, row: int, col: int) -> CounterDial:
         """Return the counter for hole position (row, col).
@@ -212,9 +206,7 @@ class HollerithTabulator:
             Dict mapping bin number -> list of cards sorted into that bin.
         """
         if not 0 <= sort_column < CARD_COLS:
-            raise IndexError(
-                f"Sort column {sort_column} out of range [0, {CARD_COLS-1}]"
-            )
+            raise IndexError(f"Sort column {sort_column} out of range [0, {CARD_COLS-1}]")
         bins: dict[int, list[PunchedCard]] = {i: [] for i in range(SORT_BINS)}
         for card in cards:
             punched_rows = card.holes_in_col(sort_column)

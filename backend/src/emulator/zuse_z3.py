@@ -59,7 +59,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import StrEnum
 
 # Reuse ZuseFloat from the Z1 (same 22-bit FP format)
 from .zuse_z1 import ZuseFloat
@@ -72,19 +72,19 @@ _MEMORY_SIZE = 64
 # ---------------------------------------------------------------------------
 
 
-class Z3Op(str, Enum):
+class Z3Op(StrEnum):
     """Z3 instruction operation codes."""
 
-    LOAD = "LOAD"    # Load memory[m] into accumulator
+    LOAD = "LOAD"  # Load memory[m] into accumulator
     STORE = "STORE"  # Store accumulator to memory[m]
-    ADD = "ADD"      # accumulator += memory[m]
-    SUB = "SUB"      # accumulator -= memory[m]
-    MULT = "MULT"    # accumulator *= memory[m]
-    DIV = "DIV"      # accumulator /= memory[m]
-    SQRT = "SQRT"    # accumulator = sqrt(accumulator)
-    READ = "READ"    # accumulator = next input
+    ADD = "ADD"  # accumulator += memory[m]
+    SUB = "SUB"  # accumulator -= memory[m]
+    MULT = "MULT"  # accumulator *= memory[m]
+    DIV = "DIV"  # accumulator /= memory[m]
+    SQRT = "SQRT"  # accumulator = sqrt(accumulator)
+    READ = "READ"  # accumulator = next input
     PRINT = "PRINT"  # output <- accumulator
-    HALT = "HALT"    # stop execution
+    HALT = "HALT"  # stop execution
 
 
 @dataclass
@@ -100,11 +100,11 @@ class Z3Instruction:
     address: int = 0
 
     def __post_init__(self) -> None:
-        if self.op in (Z3Op.LOAD, Z3Op.STORE, Z3Op.ADD, Z3Op.SUB, Z3Op.MULT, Z3Op.DIV):
-            if not 0 <= self.address < _MEMORY_SIZE:
-                raise ValueError(
-                    f"Memory address {self.address} out of range [0, {_MEMORY_SIZE - 1}]"
-                )
+        if (
+            self.op in (Z3Op.LOAD, Z3Op.STORE, Z3Op.ADD, Z3Op.SUB, Z3Op.MULT, Z3Op.DIV)
+            and not 0 <= self.address < _MEMORY_SIZE
+        ):
+            raise ValueError(f"Memory address {self.address} out of range [0, {_MEMORY_SIZE - 1}]")
 
 
 # ---------------------------------------------------------------------------
@@ -116,17 +116,15 @@ class Z3Instruction:
 class Z3State:
     """Observable state of the Zuse Z3."""
 
-    memory: list[ZuseFloat] = field(
-        default_factory=lambda: [ZuseFloat(0)] * _MEMORY_SIZE
-    )
+    memory: list[ZuseFloat] = field(default_factory=lambda: [ZuseFloat(0)] * _MEMORY_SIZE)
     accumulator: ZuseFloat = field(default_factory=lambda: ZuseFloat(0))
-    program_counter: int = 0       # Index into program tape
+    program_counter: int = 0  # Index into program tape
     halted: bool = False
-    cycle_count: int = 0           # Total instructions executed
+    cycle_count: int = 0  # Total instructions executed
     output_tape: list[float] = field(default_factory=list)  # PRINT outputs
-    input_tape: list[float] = field(default_factory=list)   # READ inputs
-    input_pointer: int = 0         # Next unread position in input_tape
-    overflow: bool = False         # Set when FP result is out of range
+    input_tape: list[float] = field(default_factory=list)  # READ inputs
+    input_pointer: int = 0  # Next unread position in input_tape
+    overflow: bool = False  # Set when FP result is out of range
 
 
 # ---------------------------------------------------------------------------
@@ -169,17 +167,13 @@ class ZuseZ3:
     def load_memory(self, address: int, value: float) -> None:
         """Pre-load a float value into memory register ``address``."""
         if not 0 <= address < _MEMORY_SIZE:
-            raise IndexError(
-                f"Memory address {address} out of range [0, {_MEMORY_SIZE - 1}]"
-            )
+            raise IndexError(f"Memory address {address} out of range [0, {_MEMORY_SIZE - 1}]")
         self.state.memory[address] = ZuseFloat.from_float(value)
 
     def get_memory(self, address: int) -> float:
         """Read memory register ``address`` as a Python float."""
         if not 0 <= address < _MEMORY_SIZE:
-            raise IndexError(
-                f"Memory address {address} out of range [0, {_MEMORY_SIZE - 1}]"
-            )
+            raise IndexError(f"Memory address {address} out of range [0, {_MEMORY_SIZE - 1}]")
         return self.state.memory[address].to_float()
 
     def load_input_tape(self, values: list[float]) -> None:
@@ -241,24 +235,16 @@ class ZuseZ3:
             self.state.memory[addr] = self.state.accumulator
 
         elif op == Z3Op.ADD:
-            self.state.accumulator = self._fp_add(
-                self.state.accumulator, self.state.memory[addr]
-            )
+            self.state.accumulator = self._fp_add(self.state.accumulator, self.state.memory[addr])
 
         elif op == Z3Op.SUB:
-            self.state.accumulator = self._fp_sub(
-                self.state.accumulator, self.state.memory[addr]
-            )
+            self.state.accumulator = self._fp_sub(self.state.accumulator, self.state.memory[addr])
 
         elif op == Z3Op.MULT:
-            self.state.accumulator = self._fp_mult(
-                self.state.accumulator, self.state.memory[addr]
-            )
+            self.state.accumulator = self._fp_mult(self.state.accumulator, self.state.memory[addr])
 
         elif op == Z3Op.DIV:
-            self.state.accumulator = self._fp_div(
-                self.state.accumulator, self.state.memory[addr]
-            )
+            self.state.accumulator = self._fp_div(self.state.accumulator, self.state.memory[addr])
 
         elif op == Z3Op.SQRT:
             self.state.accumulator = self._fp_sqrt(self.state.accumulator)

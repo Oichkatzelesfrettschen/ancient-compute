@@ -56,11 +56,10 @@ References:
 from __future__ import annotations
 
 import collections
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import NamedTuple
 
 from .enigma import REFLECTOR_WIRING, ROTOR_NOTCHES, ROTOR_WIRING, to_int
-
 
 # ---------------------------------------------------------------------------
 # Scrambler lookup computation (no object overhead in the hot path)
@@ -157,11 +156,9 @@ class BombeMenu:
         crib = crib.upper().replace(" ", "")
         cipher = cipher.upper().replace(" ", "")
         if len(crib) != len(cipher):
-            raise ValueError(
-                f"Crib length ({len(crib)}) != cipher length ({len(cipher)})"
-            )
+            raise ValueError(f"Crib length ({len(crib)}) != cipher length ({len(cipher)})")
         links: list[MenuLink] = []
-        for i, (c, p) in enumerate(zip(crib, cipher)):
+        for i, (c, p) in enumerate(zip(crib, cipher, strict=True)):
             if not c.isalpha() or not p.isalpha():
                 raise ValueError(f"Non-alpha character at position {i}")
             if c == p:
@@ -246,9 +243,7 @@ class BombeStop(NamedTuple):
 
     def positions_str(self) -> str:
         """Return positions as a three-character string, e.g., 'AAA'."""
-        return (
-            chr(self.left + 65) + chr(self.middle + 65) + chr(self.right + 65)
-        )
+        return chr(self.left + 65) + chr(self.middle + 65) + chr(self.right + 65)
 
 
 # ---------------------------------------------------------------------------
@@ -313,15 +308,9 @@ class Bombe:
             for i, o in enumerate(fwd):
                 rev[o] = i
             self._rev_maps.append(rev)
-        self._reflect_map: list[int] = [
-            ord(c) - 65 for c in REFLECTOR_WIRING[reflector]
-        ]
-        self._notches_m: list[int] = [
-            to_int(c) for c in ROTOR_NOTCHES.get(rotor_order[1], "")
-        ]
-        self._notches_r: list[int] = [
-            to_int(c) for c in ROTOR_NOTCHES.get(rotor_order[2], "")
-        ]
+        self._reflect_map: list[int] = [ord(c) - 65 for c in REFLECTOR_WIRING[reflector]]
+        self._notches_m: list[int] = [to_int(c) for c in ROTOR_NOTCHES.get(rotor_order[1], "")]
+        self._notches_r: list[int] = [to_int(c) for c in ROTOR_NOTCHES.get(rotor_order[2], "")]
 
         # Results from the last run()
         self.last_run_stops: list[BombeStop] = []
@@ -331,9 +320,7 @@ class Bombe:
     # Internal helpers
     # ------------------------------------------------------------------
 
-    def _advance_position(
-        self, L: int, M: int, R: int, steps: int
-    ) -> tuple[int, int, int]:
+    def _advance_position(self, L: int, M: int, R: int, steps: int) -> tuple[int, int, int]:
         """Advance (L, M, R) by ``steps`` Enigma steps including double-stepping."""
         nm = self._notches_m
         nr = self._notches_r
@@ -347,9 +334,7 @@ class Bombe:
             R = (R + 1) % 26
         return L, M, R
 
-    def _build_lookups(
-        self, base: tuple[int, int, int], max_offset: int
-    ) -> list[list[int]]:
+    def _build_lookups(self, base: tuple[int, int, int], max_offset: int) -> list[list[int]]:
         """Build scrambler lookup tables for offsets 0..max_offset from base."""
         L, M, R = base
         lookups: list[list[int]] = []
@@ -364,9 +349,7 @@ class Bombe:
                 (cR - self._ring_settings[2]) % 26,
             ]
             lookups.append(
-                _make_scrambler_lookup(
-                    self._fwd_maps, self._rev_maps, self._reflect_map, offsets
-                )
+                _make_scrambler_lookup(self._fwd_maps, self._rev_maps, self._reflect_map, offsets)
             )
         return lookups
 
@@ -406,9 +389,7 @@ class Bombe:
                 val = assignment[letter]
 
                 for link in adj.get(letter, []):
-                    other = (
-                        link.letter_b if link.letter_a == letter else link.letter_a
-                    )
+                    other = link.letter_b if link.letter_a == letter else link.letter_a
                     # WHY same encipher in both directions: the Enigma scrambler
                     # (rotors + reflector, no plugboard) is self-reciprocal --
                     # S(S(k)) = k for any fixed position. So the same lookup

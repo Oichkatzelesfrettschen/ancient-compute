@@ -10,7 +10,6 @@ from backend.src.emulator.odhner_arithmometer import (
     RevolutionCounter,
 )
 
-
 # ---------------------------------------------------------------------------
 # Component tests
 # ---------------------------------------------------------------------------
@@ -56,7 +55,7 @@ class TestResultRegister:
     def test_sub_borrow(self):
         r = ResultRegister()
         r.add_at(0, 10)  # = 10
-        r.sub_at(0, 3)   # 10 - 3 = 7
+        r.sub_at(0, 3)  # 10 - 3 = 7
         assert r.get() == 7
 
     def test_clear(self):
@@ -256,7 +255,7 @@ class TestInputValidation:
     def test_overflow_input_raises(self):
         m = OdhnerArithmometer()
         with pytest.raises(ValueError):
-            m.set_input(10 ** OdhnerArithmometer.INPUT_DIGITS)
+            m.set_input(10**OdhnerArithmometer.INPUT_DIGITS)
 
 
 # ---------------------------------------------------------------------------

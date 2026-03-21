@@ -68,24 +68,24 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-_STORE_SIZE = 512         # 512 17-bit words
-_WORD_BITS = 17           # 17-bit word
-_WORD_MASK = (1 << _WORD_BITS) - 1   # 0x1FFFF
-_SIGN_BIT = 1 << (_WORD_BITS - 1)    # 0x10000
+_STORE_SIZE = 512  # 512 17-bit words
+_WORD_BITS = 17  # 17-bit word
+_WORD_MASK = (1 << _WORD_BITS) - 1  # 0x1FFFF
+_SIGN_BIT = 1 << (_WORD_BITS - 1)  # 0x10000
 
 # Function codes (letter mnemonic -> integer)
 _FC = {
-    "X": 0,   # no-op
-    "A": 0,   # add  (overlaps with X; distinguished by context)
-    "S": 2,   # subtract
-    "H": 6,   # set multiplier register
-    "V": 5,   # multiply and accumulate
-    "T": 3,   # transfer (store and clear)
-    "U": 4,   # store without clearing
-    "C": 1,   # collate (AND)
-    "R": 7,   # shift right
-    "L": 8,   # shift left
-    "E": 9,   # branch if >= 0
+    "X": 0,  # no-op
+    "A": 0,  # add  (overlaps with X; distinguished by context)
+    "S": 2,  # subtract
+    "H": 6,  # set multiplier register
+    "V": 5,  # multiply and accumulate
+    "T": 3,  # transfer (store and clear)
+    "U": 4,  # store without clearing
+    "C": 1,  # collate (AND)
+    "R": 7,  # shift right
+    "L": 8,  # shift left
+    "E": 9,  # branch if >= 0
     "G": 10,  # branch if < 0
     "I": 11,  # input from tape
     "O": 12,  # output to printer
@@ -96,22 +96,22 @@ _FC = {
 _FC_NAMES = {v: k for k, v in _FC.items()}
 
 # The canonical function codes for each instruction
-_FC_ADD  = 0   # A
-_FC_SUB  = 2   # S
-_FC_H    = 6   # H (set R)
-_FC_V    = 5   # V (multiply + accumulate)
-_FC_T    = 3   # T (transfer = store + clear acc)
-_FC_U    = 4   # U (store, keep acc)
-_FC_C    = 1   # C (collate/AND)
-_FC_R    = 7   # R (right shift)
-_FC_L    = 8   # L (left shift)
-_FC_E    = 9   # E (branch >= 0)
-_FC_G    = 10  # G (branch < 0)
-_FC_I    = 11  # I (input)
-_FC_O    = 12  # O (output)
-_FC_F    = 13  # F (load)
-_FC_P    = 14  # P (indexed)
-_FC_Z    = 15  # Z (stop)
+_FC_ADD = 0  # A
+_FC_SUB = 2  # S
+_FC_H = 6  # H (set R)
+_FC_V = 5  # V (multiply + accumulate)
+_FC_T = 3  # T (transfer = store + clear acc)
+_FC_U = 4  # U (store, keep acc)
+_FC_C = 1  # C (collate/AND)
+_FC_R = 7  # R (right shift)
+_FC_L = 8  # L (left shift)
+_FC_E = 9  # E (branch >= 0)
+_FC_G = 10  # G (branch < 0)
+_FC_I = 11  # I (input)
+_FC_O = 12  # O (output)
+_FC_F = 13  # F (load)
+_FC_P = 14  # P (indexed)
+_FC_Z = 15  # Z (stop)
 
 
 def _to_signed(value: int) -> int:
@@ -149,9 +149,7 @@ class EDSACInstruction:
             raise ValueError(f"Unknown EDSAC function: {self.function!r}")
         self.function = f
         if not 0 <= self.address < _STORE_SIZE:
-            raise ValueError(
-                f"Address {self.address} out of range [0, {_STORE_SIZE-1}]"
-            )
+            raise ValueError(f"Address {self.address} out of range [0, {_STORE_SIZE-1}]")
 
     def encode(self) -> int:
         """Encode this instruction to a 17-bit word."""
@@ -169,9 +167,9 @@ class EDSACState:
     """Observable state of the EDSAC."""
 
     store: list[int] = field(default_factory=lambda: [0] * _STORE_SIZE)
-    accumulator: int = 0       # 17-bit signed (or 35-bit for long ops)
-    multiplier_register: int = 0   # 17-bit
-    ci: int = 0                # 10-bit control (program counter)
+    accumulator: int = 0  # 17-bit signed (or 35-bit for long ops)
+    multiplier_register: int = 0  # 17-bit
+    ci: int = 0  # 10-bit control (program counter)
     halted: bool = False
     cycle_count: int = 0
     output_tape: list[str] = field(default_factory=list)
@@ -223,9 +221,7 @@ class EDSAC:
 
     def _check_addr(self, address: int) -> None:
         if not 0 <= address < _STORE_SIZE:
-            raise IndexError(
-                f"Store address {address} out of range [0, {_STORE_SIZE-1}]"
-            )
+            raise IndexError(f"Store address {address} out of range [0, {_STORE_SIZE-1}]")
 
     def store_instructions(self, start: int, instructions: list[EDSACInstruction]) -> None:
         """Encode and store a list of EDSAC instructions starting at address ``start``."""

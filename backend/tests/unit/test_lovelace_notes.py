@@ -172,9 +172,9 @@ class TestNoteCNative:
     )
     def test_triangular_number_native(self, n, expected):
         result = run_note_c_native(n)
-        assert _close(result, float(expected)), (
-            f"T({n}) expected {expected}, got {result.to_decimal()}"
-        )
+        assert _close(
+            result, float(expected)
+        ), f"T({n}) expected {expected}, got {result.to_decimal()}"
 
     def test_matches_python_runner(self):
         """Native AE result must agree with the Python-level runner."""

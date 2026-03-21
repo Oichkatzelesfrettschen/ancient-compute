@@ -6,14 +6,16 @@ import pytest
 
 from backend.src.emulator.zuse_z3 import Z3Instruction, Z3Op, ZuseZ3
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
 
-def _run(instructions: list[Z3Instruction], memory: dict[int, float] | None = None,
-         input_tape: list[float] | None = None) -> ZuseZ3:
+def _run(
+    instructions: list[Z3Instruction],
+    memory: dict[int, float] | None = None,
+    input_tape: list[float] | None = None,
+) -> ZuseZ3:
     z3 = ZuseZ3()
     if memory:
         for addr, val in memory.items():
@@ -96,23 +98,27 @@ class TestLoadStore:
     def test_store_writes_memory(self):
         z3 = ZuseZ3()
         z3.load_memory(0, 5.0)
-        z3.load_program([
-            Z3Instruction(Z3Op.LOAD, 0),
-            Z3Instruction(Z3Op.STORE, 1),
-            Z3Instruction(Z3Op.HALT),
-        ])
+        z3.load_program(
+            [
+                Z3Instruction(Z3Op.LOAD, 0),
+                Z3Instruction(Z3Op.STORE, 1),
+                Z3Instruction(Z3Op.HALT),
+            ]
+        )
         z3.run()
         assert abs(z3.get_memory(1) - 5.0) < 1e-3
 
     def test_load_store_roundtrip(self):
         z3 = ZuseZ3()
         z3.load_memory(3, 42.0)
-        z3.load_program([
-            Z3Instruction(Z3Op.LOAD, 3),
-            Z3Instruction(Z3Op.STORE, 10),
-            Z3Instruction(Z3Op.LOAD, 10),
-            Z3Instruction(Z3Op.HALT),
-        ])
+        z3.load_program(
+            [
+                Z3Instruction(Z3Op.LOAD, 3),
+                Z3Instruction(Z3Op.STORE, 10),
+                Z3Instruction(Z3Op.LOAD, 10),
+                Z3Instruction(Z3Op.HALT),
+            ]
+        )
         z3.run()
         assert abs(z3.get_accumulator() - 42.0) < 1e-3
 
@@ -125,48 +131,42 @@ class TestLoadStore:
 class TestArithmetic:
     def test_add(self):
         z3 = _run(
-            [Z3Instruction(Z3Op.LOAD, 0), Z3Instruction(Z3Op.ADD, 1),
-             Z3Instruction(Z3Op.HALT)],
+            [Z3Instruction(Z3Op.LOAD, 0), Z3Instruction(Z3Op.ADD, 1), Z3Instruction(Z3Op.HALT)],
             memory={0: 3.0, 1: 4.0},
         )
         assert abs(z3.get_accumulator() - 7.0) < 1e-3
 
     def test_subtract(self):
         z3 = _run(
-            [Z3Instruction(Z3Op.LOAD, 0), Z3Instruction(Z3Op.SUB, 1),
-             Z3Instruction(Z3Op.HALT)],
+            [Z3Instruction(Z3Op.LOAD, 0), Z3Instruction(Z3Op.SUB, 1), Z3Instruction(Z3Op.HALT)],
             memory={0: 10.0, 1: 3.0},
         )
         assert abs(z3.get_accumulator() - 7.0) < 1e-3
 
     def test_multiply(self):
         z3 = _run(
-            [Z3Instruction(Z3Op.LOAD, 0), Z3Instruction(Z3Op.MULT, 1),
-             Z3Instruction(Z3Op.HALT)],
+            [Z3Instruction(Z3Op.LOAD, 0), Z3Instruction(Z3Op.MULT, 1), Z3Instruction(Z3Op.HALT)],
             memory={0: 6.0, 1: 7.0},
         )
         assert abs(z3.get_accumulator() - 42.0) < 1e-3
 
     def test_divide(self):
         z3 = _run(
-            [Z3Instruction(Z3Op.LOAD, 0), Z3Instruction(Z3Op.DIV, 1),
-             Z3Instruction(Z3Op.HALT)],
+            [Z3Instruction(Z3Op.LOAD, 0), Z3Instruction(Z3Op.DIV, 1), Z3Instruction(Z3Op.HALT)],
             memory={0: 10.0, 1: 4.0},
         )
         assert abs(z3.get_accumulator() - 2.5) < 1e-3
 
     def test_sqrt(self):
         z3 = _run(
-            [Z3Instruction(Z3Op.LOAD, 0), Z3Instruction(Z3Op.SQRT),
-             Z3Instruction(Z3Op.HALT)],
+            [Z3Instruction(Z3Op.LOAD, 0), Z3Instruction(Z3Op.SQRT), Z3Instruction(Z3Op.HALT)],
             memory={0: 16.0},
         )
         assert abs(z3.get_accumulator() - 4.0) < 1e-3
 
     def test_sqrt_two(self):
         z3 = _run(
-            [Z3Instruction(Z3Op.LOAD, 0), Z3Instruction(Z3Op.SQRT),
-             Z3Instruction(Z3Op.HALT)],
+            [Z3Instruction(Z3Op.LOAD, 0), Z3Instruction(Z3Op.SQRT), Z3Instruction(Z3Op.HALT)],
             memory={0: 2.0},
         )
         assert abs(z3.get_accumulator() - math.sqrt(2)) < 1e-3
@@ -175,23 +175,24 @@ class TestArithmetic:
         z3 = ZuseZ3()
         z3.load_memory(0, 5.0)
         z3.load_memory(1, 0.0)
-        z3.load_program([Z3Instruction(Z3Op.LOAD, 0), Z3Instruction(Z3Op.DIV, 1),
-                         Z3Instruction(Z3Op.HALT)])
+        z3.load_program(
+            [Z3Instruction(Z3Op.LOAD, 0), Z3Instruction(Z3Op.DIV, 1), Z3Instruction(Z3Op.HALT)]
+        )
         with pytest.raises(ZeroDivisionError):
             z3.run()
 
     def test_sqrt_negative_raises(self):
         z3 = ZuseZ3()
         z3.load_memory(0, -4.0)
-        z3.load_program([Z3Instruction(Z3Op.LOAD, 0), Z3Instruction(Z3Op.SQRT),
-                         Z3Instruction(Z3Op.HALT)])
+        z3.load_program(
+            [Z3Instruction(Z3Op.LOAD, 0), Z3Instruction(Z3Op.SQRT), Z3Instruction(Z3Op.HALT)]
+        )
         with pytest.raises(ValueError):
             z3.run()
 
     def test_negative_multiply(self):
         z3 = _run(
-            [Z3Instruction(Z3Op.LOAD, 0), Z3Instruction(Z3Op.MULT, 1),
-             Z3Instruction(Z3Op.HALT)],
+            [Z3Instruction(Z3Op.LOAD, 0), Z3Instruction(Z3Op.MULT, 1), Z3Instruction(Z3Op.HALT)],
             memory={0: -3.0, 1: 5.0},
         )
         assert abs(z3.get_accumulator() - (-15.0)) < 1e-3
@@ -212,8 +213,7 @@ class TestIO:
 
     def test_print_to_output(self):
         z3 = _run(
-            [Z3Instruction(Z3Op.LOAD, 0), Z3Instruction(Z3Op.PRINT),
-             Z3Instruction(Z3Op.HALT)],
+            [Z3Instruction(Z3Op.LOAD, 0), Z3Instruction(Z3Op.PRINT), Z3Instruction(Z3Op.HALT)],
             memory={0: 3.14},
         )
         assert len(z3.state.output_tape) == 1
@@ -222,8 +222,10 @@ class TestIO:
     def test_multiple_prints(self):
         z3 = _run(
             [
-                Z3Instruction(Z3Op.LOAD, 0), Z3Instruction(Z3Op.PRINT),
-                Z3Instruction(Z3Op.LOAD, 1), Z3Instruction(Z3Op.PRINT),
+                Z3Instruction(Z3Op.LOAD, 0),
+                Z3Instruction(Z3Op.PRINT),
+                Z3Instruction(Z3Op.LOAD, 1),
+                Z3Instruction(Z3Op.PRINT),
                 Z3Instruction(Z3Op.HALT),
             ],
             memory={0: 1.0, 1: 2.0},
@@ -235,11 +237,13 @@ class TestIO:
     def test_read_exhausted_raises(self):
         z3 = ZuseZ3()
         z3.load_input_tape([1.0])
-        z3.load_program([
-            Z3Instruction(Z3Op.READ),
-            Z3Instruction(Z3Op.READ),  # Tape exhausted
-            Z3Instruction(Z3Op.HALT),
-        ])
+        z3.load_program(
+            [
+                Z3Instruction(Z3Op.READ),
+                Z3Instruction(Z3Op.READ),  # Tape exhausted
+                Z3Instruction(Z3Op.HALT),
+            ]
+        )
         with pytest.raises(RuntimeError, match="exhausted"):
             z3.run()
 
@@ -253,30 +257,33 @@ class TestControl:
     def test_halt_stops_execution(self):
         z3 = ZuseZ3()
         z3.load_memory(0, 1.0)
-        z3.load_program([
-            Z3Instruction(Z3Op.LOAD, 0),
-            Z3Instruction(Z3Op.HALT),
-            Z3Instruction(Z3Op.LOAD, 0),  # Never reached
-        ])
+        z3.load_program(
+            [
+                Z3Instruction(Z3Op.LOAD, 0),
+                Z3Instruction(Z3Op.HALT),
+                Z3Instruction(Z3Op.LOAD, 0),  # Never reached
+            ]
+        )
         z3.run()
-        assert z3.state.program_counter == 2   # stopped after HALT
-        assert z3.state.cycle_count == 2        # LOAD + HALT
+        assert z3.state.program_counter == 2  # stopped after HALT
+        assert z3.state.cycle_count == 2  # LOAD + HALT
 
     def test_end_of_tape_stops(self):
         """Running off the end of the tape halts automatically."""
         z3 = ZuseZ3()
         z3.load_memory(0, 5.0)
-        z3.load_program([
-            Z3Instruction(Z3Op.LOAD, 0),
-            # No HALT -- end of tape
-        ])
+        z3.load_program(
+            [
+                Z3Instruction(Z3Op.LOAD, 0),
+                # No HALT -- end of tape
+            ]
+        )
         z3.run()
         assert z3.state.halted
 
     def test_cycle_count(self):
         z3 = _run(
-            [Z3Instruction(Z3Op.LOAD, 0), Z3Instruction(Z3Op.ADD, 1),
-             Z3Instruction(Z3Op.HALT)],
+            [Z3Instruction(Z3Op.LOAD, 0), Z3Instruction(Z3Op.ADD, 1), Z3Instruction(Z3Op.HALT)],
             memory={0: 1.0, 1: 2.0},
         )
         assert z3.state.cycle_count == 3
@@ -285,10 +292,12 @@ class TestControl:
         """step() executes one instruction at a time."""
         z3 = ZuseZ3()
         z3.load_memory(0, 5.0)
-        z3.load_program([
-            Z3Instruction(Z3Op.LOAD, 0),
-            Z3Instruction(Z3Op.HALT),
-        ])
+        z3.load_program(
+            [
+                Z3Instruction(Z3Op.LOAD, 0),
+                Z3Instruction(Z3Op.HALT),
+            ]
+        )
         result1 = z3.step()  # LOAD -> returns True (continue)
         assert result1 is True
         result2 = z3.step()  # HALT -> returns False (halted)
@@ -316,42 +325,46 @@ class TestCompoundProgram:
         # Pre-load a=3 at addr 0, b=4 at addr 1
         # Program: a^2 + b^2 -> addr 2, then sqrt(addr 2)
         z3 = ZuseZ3()
-        z3.load_memory(0, 3.0)   # a
-        z3.load_memory(1, 4.0)   # b
-        z3.load_program([
-            Z3Instruction(Z3Op.LOAD, 0),   # acc = 3
-            Z3Instruction(Z3Op.MULT, 0),   # acc = 9
-            Z3Instruction(Z3Op.STORE, 2),  # mem[2] = 9
-            Z3Instruction(Z3Op.LOAD, 1),   # acc = 4
-            Z3Instruction(Z3Op.MULT, 1),   # acc = 16
-            Z3Instruction(Z3Op.ADD, 2),    # acc = 25
-            Z3Instruction(Z3Op.SQRT),      # acc = 5
-            Z3Instruction(Z3Op.PRINT),
-            Z3Instruction(Z3Op.HALT),
-        ])
+        z3.load_memory(0, 3.0)  # a
+        z3.load_memory(1, 4.0)  # b
+        z3.load_program(
+            [
+                Z3Instruction(Z3Op.LOAD, 0),  # acc = 3
+                Z3Instruction(Z3Op.MULT, 0),  # acc = 9
+                Z3Instruction(Z3Op.STORE, 2),  # mem[2] = 9
+                Z3Instruction(Z3Op.LOAD, 1),  # acc = 4
+                Z3Instruction(Z3Op.MULT, 1),  # acc = 16
+                Z3Instruction(Z3Op.ADD, 2),  # acc = 25
+                Z3Instruction(Z3Op.SQRT),  # acc = 5
+                Z3Instruction(Z3Op.PRINT),
+                Z3Instruction(Z3Op.HALT),
+            ]
+        )
         z3.run()
         assert abs(z3.state.output_tape[0] - 5.0) < 1e-2
 
     def test_quadratic_formula_discriminant(self):
         """Compute discriminant D = b^2 - 4ac for a=1, b=5, c=6 -> D=1."""
         z3 = ZuseZ3()
-        z3.load_memory(0, 1.0)   # a
-        z3.load_memory(1, 5.0)   # b
-        z3.load_memory(2, 6.0)   # c
-        z3.load_memory(3, 4.0)   # constant 4
-        z3.load_program([
-            Z3Instruction(Z3Op.LOAD, 1),   # acc = b
-            Z3Instruction(Z3Op.MULT, 1),   # acc = b^2 = 25
-            Z3Instruction(Z3Op.STORE, 4),  # mem[4] = 25
-            Z3Instruction(Z3Op.LOAD, 3),   # acc = 4
-            Z3Instruction(Z3Op.MULT, 0),   # acc = 4*a = 4
-            Z3Instruction(Z3Op.MULT, 2),   # acc = 4*a*c = 24
-            Z3Instruction(Z3Op.STORE, 5),  # mem[5] = 24
-            Z3Instruction(Z3Op.LOAD, 4),   # acc = 25
-            Z3Instruction(Z3Op.SUB, 5),    # acc = 25 - 24 = 1
-            Z3Instruction(Z3Op.PRINT),
-            Z3Instruction(Z3Op.HALT),
-        ])
+        z3.load_memory(0, 1.0)  # a
+        z3.load_memory(1, 5.0)  # b
+        z3.load_memory(2, 6.0)  # c
+        z3.load_memory(3, 4.0)  # constant 4
+        z3.load_program(
+            [
+                Z3Instruction(Z3Op.LOAD, 1),  # acc = b
+                Z3Instruction(Z3Op.MULT, 1),  # acc = b^2 = 25
+                Z3Instruction(Z3Op.STORE, 4),  # mem[4] = 25
+                Z3Instruction(Z3Op.LOAD, 3),  # acc = 4
+                Z3Instruction(Z3Op.MULT, 0),  # acc = 4*a = 4
+                Z3Instruction(Z3Op.MULT, 2),  # acc = 4*a*c = 24
+                Z3Instruction(Z3Op.STORE, 5),  # mem[5] = 24
+                Z3Instruction(Z3Op.LOAD, 4),  # acc = 25
+                Z3Instruction(Z3Op.SUB, 5),  # acc = 25 - 24 = 1
+                Z3Instruction(Z3Op.PRINT),
+                Z3Instruction(Z3Op.HALT),
+            ]
+        )
         z3.run()
         assert abs(z3.state.output_tape[0] - 1.0) < 0.1
 

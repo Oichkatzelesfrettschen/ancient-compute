@@ -56,19 +56,19 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-_STORE_SIZE = 32          # 32 words of CRT memory
-_WORD_BITS = 32           # 32-bit word
-_WORD_MASK = (1 << _WORD_BITS) - 1   # 0xFFFFFFFF
-_SIGN_BIT = 1 << (_WORD_BITS - 1)    # 0x80000000
+_STORE_SIZE = 32  # 32 words of CRT memory
+_WORD_BITS = 32  # 32-bit word
+_WORD_MASK = (1 << _WORD_BITS) - 1  # 0xFFFFFFFF
+_SIGN_BIT = 1 << (_WORD_BITS - 1)  # 0x80000000
 
 # Instruction function codes (F field, bits 5-7)
-_F_JMP  = 0  # 000: Jump to store[S]
-_F_JRP  = 4  # 100: Jump relative by store[S]
-_F_LDN  = 2  # 010: Load Negative
-_F_STO  = 6  # 110: Store
-_F_SUB  = 1  # 001: Subtract (also 5)
-_F_CMP  = 3  # 011: Skip next if A < 0
-_F_STP  = 7  # 111: Stop
+_F_JMP = 0  # 000: Jump to store[S]
+_F_JRP = 4  # 100: Jump relative by store[S]
+_F_LDN = 2  # 010: Load Negative
+_F_STO = 6  # 110: Store
+_F_SUB = 1  # 001: Subtract (also 5)
+_F_CMP = 3  # 011: Skip next if A < 0
+_F_STP = 7  # 111: Stop
 
 
 def _to_signed(value: int) -> int:
@@ -94,9 +94,9 @@ class SSEMState:
     """Observable state of the Manchester SSEM (Baby)."""
 
     store: list[int] = field(default_factory=lambda: [0] * _STORE_SIZE)
-    accumulator: int = 0      # 32-bit signed, stored as Python int
-    ci: int = 0               # 5-bit control (program counter), 0..31
-    pi: int = 0               # Present instruction register
+    accumulator: int = 0  # 32-bit signed, stored as Python int
+    ci: int = 0  # 5-bit control (program counter), 0..31
+    pi: int = 0  # Present instruction register
     halted: bool = False
     cycle_count: int = 0
 
@@ -150,9 +150,7 @@ class ManchesterBaby:
 
     def _check_addr(self, address: int) -> None:
         if not 0 <= address < _STORE_SIZE:
-            raise IndexError(
-                f"Store address {address} out of range [0, {_STORE_SIZE-1}]"
-            )
+            raise IndexError(f"Store address {address} out of range [0, {_STORE_SIZE-1}]")
 
     # ------------------------------------------------------------------
     # Program loading

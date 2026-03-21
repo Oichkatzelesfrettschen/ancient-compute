@@ -39,11 +39,11 @@ class AntikytheraMechanism:
 
         self._init_main_train()
         self._init_b1_cover_disc()  # Voulgaris 2024
-        self._init_draconic()       # Voulgaris 2021 (Fragment D)
-        self._init_saros_train()    # Back upper-left: 223-month / 18.03-year Saros
+        self._init_draconic()  # Voulgaris 2021 (Fragment D)
+        self._init_saros_train()  # Back upper-left: 223-month / 18.03-year Saros
         self._init_exeligmos_train()  # Back lower-left: 3xSaros = 54.09-year Exeligmos
-        self._init_olympiad_train() # Front: 4-year Panhellenic Games dial
-        self._init_lunar_train()    # Moon phase pointer: 12.3684 synodic months/year
+        self._init_olympiad_train()  # Front: 4-year Panhellenic Games dial
+        self._init_lunar_train()  # Moon phase pointer: 12.3684 synodic months/year
 
     def _add_gear(self, name: str, teeth: int) -> None:
         self.gears[name] = Gear(name, teeth)

@@ -122,8 +122,16 @@ def test_lunar_metonic_accuracy():
 def test_all_seven_dials_present():
     am = AntikytheraMechanism()
     am.set_input_date(1.0)
-    expected_dials = {"Sun", "19-Year", "Egyptian", "Draconic",
-                      "Saros", "Exeligmos", "Olympiad", "Lunar"}
+    expected_dials = {
+        "Sun",
+        "19-Year",
+        "Egyptian",
+        "Draconic",
+        "Saros",
+        "Exeligmos",
+        "Olympiad",
+        "Lunar",
+    }
     assert expected_dials.issubset(set(am.pointers.keys()))
 
 

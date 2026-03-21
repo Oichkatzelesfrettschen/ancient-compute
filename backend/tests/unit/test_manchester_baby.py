@@ -3,15 +3,14 @@
 import pytest
 
 from backend.src.emulator.manchester_baby import (
-    ManchesterBaby,
     _F_CMP,
     _F_JMP,
-    _F_JRP,
     _F_LDN,
     _F_STO,
     _F_STP,
     _F_SUB,
     _STORE_SIZE,
+    ManchesterBaby,
     _to_signed,
     _to_unsigned,
 )
@@ -63,8 +62,12 @@ class TestDecode:
 
 
 class TestInstructions:
-    def _run(self, instructions: list[tuple[int, int]], data: dict[int, int] | None = None,
-             start_acc: int = 0) -> ManchesterBaby:
+    def _run(
+        self,
+        instructions: list[tuple[int, int]],
+        data: dict[int, int] | None = None,
+        start_acc: int = 0,
+    ) -> ManchesterBaby:
         baby = ManchesterBaby()
         if data:
             for addr, val in data.items():
@@ -93,26 +96,30 @@ class TestInstructions:
         """If A < 0: skip next instruction."""
         # acc = -1 (negative), so CMP should skip the STO and halt immediately
         baby = ManchesterBaby()
-        baby.store_program([
-            (0, _F_CMP),   # skip next if A < 0
-            (5, _F_STO),   # store acc -> store[5] (should be skipped)
-            (0, _F_STP),   # halt
-        ])
+        baby.store_program(
+            [
+                (0, _F_CMP),  # skip next if A < 0
+                (5, _F_STO),  # store acc -> store[5] (should be skipped)
+                (0, _F_STP),  # halt
+            ]
+        )
         baby.state.accumulator = -1  # set AFTER store_program
         baby.run()
-        assert baby.get_store(5) == 0   # STO was skipped
+        assert baby.get_store(5) == 0  # STO was skipped
 
     def test_cmp_no_skip_if_positive(self):
         """If A >= 0: do NOT skip."""
         baby = ManchesterBaby()
-        baby.store_program([
-            (0, _F_CMP),   # A >= 0, no skip
-            (5, _F_STO),   # executed
-            (0, _F_STP),
-        ])
+        baby.store_program(
+            [
+                (0, _F_CMP),  # A >= 0, no skip
+                (5, _F_STO),  # executed
+                (0, _F_STP),
+            ]
+        )
         baby.state.accumulator = 1  # positive, no skip (set AFTER store_program)
         baby.run()
-        assert baby.get_store(5) == 1   # STO was executed
+        assert baby.get_store(5) == 1  # STO was executed
 
     def test_jmp_sets_ci(self):
         """JMP addr: CI <- store[addr]."""
@@ -132,11 +139,13 @@ class TestInstructions:
         """Negate a value: LDN addr loads -store[addr]."""
         baby = ManchesterBaby()
         baby.store_word(0, -100)
-        baby.store_program([
-            (0, _F_LDN),    # A = -(-100) = 100
-            (1, _F_STO),    # store[1] = 100
-            (0, _F_STP),
-        ])
+        baby.store_program(
+            [
+                (0, _F_LDN),  # A = -(-100) = 100
+                (1, _F_STO),  # store[1] = 100
+                (0, _F_STP),
+            ]
+        )
         baby.run()
         assert baby.get_store(1) == 100
 
@@ -163,19 +172,21 @@ class TestKilburnFirstProgram:
         # We test: load N=6 and divisor=3, compute N - 2*divisor = 0
         # (checking if 3 divides 6 by repeated subtraction)
         baby = ManchesterBaby()
-        baby.store_word(0, 6)   # N = 6
+        baby.store_word(0, 6)  # N = 6
         baby.store_word(31, 3)  # divisor = 3
 
         # Program: compute 6 - 3 - 3 = 0 and store result
-        baby.store_program([
-            (0, _F_LDN),    # A = -6
-            (30, _F_STO),   # store[30] = -6
-            (31, _F_SUB),   # A = A - store[31] = -6 - 3 = -9 ... not quite right
-            # Actually: LDN gives negative, we need to work with Baby's limited ops
-            # Simpler test: just verify LDN, SUB, STO work correctly
-            (29, _F_STO),
-            (0, _F_STP),
-        ])
+        baby.store_program(
+            [
+                (0, _F_LDN),  # A = -6
+                (30, _F_STO),  # store[30] = -6
+                (31, _F_SUB),  # A = A - store[31] = -6 - 3 = -9 ... not quite right
+                # Actually: LDN gives negative, we need to work with Baby's limited ops
+                # Simpler test: just verify LDN, SUB, STO work correctly
+                (29, _F_STO),
+                (0, _F_STP),
+            ]
+        )
         baby.run()
         # store[30] = -6, store[29] = -6 - 3 = -9
         assert baby.get_store(30) == -6
@@ -191,10 +202,12 @@ class TestControl:
     def test_cycle_count(self):
         baby = ManchesterBaby()
         baby.store_word(0, 0)
-        baby.store_program([
-            (0, _F_LDN),
-            (0, _F_STP),
-        ])
+        baby.store_program(
+            [
+                (0, _F_LDN),
+                (0, _F_STP),
+            ]
+        )
         baby.run()
         assert baby.state.cycle_count == 2
 
@@ -214,7 +227,7 @@ class TestControl:
         baby.state.accumulator = 100
         baby.reset()
         assert baby.state.accumulator == 0
-        assert baby.get_store(5) == 42   # store preserved
+        assert baby.get_store(5) == 42  # store preserved
 
     def test_full_reset_clears_store(self):
         baby = ManchesterBaby()

@@ -10,7 +10,6 @@ from backend.src.emulator.colossus import (
     LorenzWheel,
 )
 
-
 # ---------------------------------------------------------------------------
 # LorenzWheel
 # ---------------------------------------------------------------------------
@@ -41,7 +40,8 @@ class TestLorenzWheel:
 
     def test_reset(self):
         w = LorenzWheel.from_pattern([0, 1, 1])
-        w.step(); w.step()
+        w.step()
+        w.step()
         w.reset()
         assert w.pos == 0
 
@@ -66,9 +66,9 @@ class TestLorenzSZ42:
 
     def test_wheel_periods_correct(self):
         lorenz = LorenzSZ42.with_random_key(seed=0)
-        for w, p in zip(lorenz.chi_wheels, CHI_PERIODS):
+        for w, p in zip(lorenz.chi_wheels, CHI_PERIODS, strict=True):
             assert w.period == p
-        for w, p in zip(lorenz.psi_wheels, PSI_PERIODS):
+        for w, p in zip(lorenz.psi_wheels, PSI_PERIODS, strict=True):
             assert w.period == p
 
     def test_encipher_self_reciprocal(self):
@@ -93,7 +93,7 @@ class TestLorenzSZ42:
         chi = lorenz.current_chi()
         psi = lorenz.current_psi()
         key = lorenz.current_key()
-        for c, p, k in zip(chi, psi, key):
+        for c, p, k in zip(chi, psi, key, strict=True):
             assert k == c ^ p
 
     def test_reset_returns_to_start(self):
@@ -106,11 +106,11 @@ class TestLorenzSZ42:
     def test_from_key_explicit(self):
         """Construct Lorenz from explicit cam patterns."""
         key = {
-            "chi_1": [1, 0] * 20 + [1],      # 41 cams
-            "chi_2": [0, 1] * 15 + [0],      # 31 cams
-            "chi_3": [1] * 29,               # 29 cams
-            "chi_4": [0, 1] * 13,            # 26 cams
-            "chi_5": [1, 0] * 11 + [1],      # 23 cams
+            "chi_1": [1, 0] * 20 + [1],  # 41 cams
+            "chi_2": [0, 1] * 15 + [0],  # 31 cams
+            "chi_3": [1] * 29,  # 29 cams
+            "chi_4": [0, 1] * 13,  # 26 cams
+            "chi_5": [1, 0] * 11 + [1],  # 23 cams
             "psi_1": [1] * 43,
             "psi_2": [0] * 47,
             "psi_3": [1, 0] * 25 + [1],
@@ -129,8 +129,9 @@ class TestLorenzSZ42:
 
 
 class TestColossus:
-    def _setup_zero_psi(self, chi_start: int = 0, tape_len: int = 200
-                        ) -> tuple[Colossus, list[list[int]], int]:
+    def _setup_zero_psi(
+        self, chi_start: int = 0, tape_len: int = 200
+    ) -> tuple[Colossus, list[list[int]], int]:
         """Build a Lorenz with all-zero psi so chi-breaking has a clear signal.
 
         WHY all-zero psi: with psi=0, the key stream equals chi stream, so
@@ -140,17 +141,19 @@ class TestColossus:
 
         Returns (colossus, ciphertext_tape, true_chi_1_start).
         """
-        # Build all-zero psi (all cams = 0)
-        psi_zero = [0] * 43 + [0] * 47 + [0] * 51 + [0] * 53 + [0] * 59
         key: dict[str, list[int]] = {
-            **{f"chi_{i+1}": __import__("random", fromlist=[]).Random(i).choices(
-                [0, 1], k=CHI_PERIODS[i]) for i in range(5)},
+            **{
+                f"chi_{i+1}": __import__("random", fromlist=[])
+                .Random(i)
+                .choices([0, 1], k=CHI_PERIODS[i])
+                for i in range(5)
+            },
             "psi_1": [0] * 43,
             "psi_2": [0] * 47,
             "psi_3": [0] * 51,
             "psi_4": [0] * 53,
             "psi_5": [0] * 59,
-            "mu_37": [1] * 37,    # always-on: psi always steps (doesn't matter, psi=0)
+            "mu_37": [1] * 37,  # always-on: psi always steps (doesn't matter, psi=0)
             "mu_61": [1] * 61,
         }
         # Set chi wheel 1 to a specific starting position
@@ -165,7 +168,9 @@ class TestColossus:
         colossus = Colossus(lorenz)
         return colossus, cipher, chi_start
 
-    def _setup(self, seed: int = 42, tape_len: int = 100) -> tuple[Colossus, list[list[int]], list[int]]:
+    def _setup(
+        self, seed: int = 42, tape_len: int = 100
+    ) -> tuple[Colossus, list[list[int]], list[int]]:
         """Build a Lorenz, encrypt some plaintext, return (colossus, tape, true_chi_starts)."""
         lorenz = LorenzSZ42.with_random_key(seed=seed)
         true_starts = [w.pos for w in lorenz.chi_wheels]
@@ -187,7 +192,7 @@ class TestColossus:
         (all bits sum to odd parity since plain = [1,1,1,1,1]).
         All other positions give lower counts due to chi XOR mismatch."""
         tape_len = 200
-        true_start = 7   # arbitrary chi_1 start
+        true_start = 7  # arbitrary chi_1 start
         colossus, tape, _ = self._setup_zero_psi(chi_start=true_start, tape_len=tape_len)
         counts = colossus.chi_break_single_wheel(tape, wheel_index=0)
         peak_pos, peak_count = colossus.find_peak(counts)

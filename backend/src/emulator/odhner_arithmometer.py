@@ -36,13 +36,13 @@ References:
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 
 
-class CrankDirection(str, Enum):
+class CrankDirection(StrEnum):
     """Direction of the crank rotation."""
 
-    ADD = "ADD"            # clockwise: adds input to result
+    ADD = "ADD"  # clockwise: adds input to result
     SUBTRACT = "SUBTRACT"  # anticlockwise: subtracts input from result
 
 
@@ -163,9 +163,7 @@ class OdhnerArithmometer:
     INPUT_DIGITS = 9
 
     def __init__(self) -> None:
-        self.pinwheels: list[OdhnerPinwheel] = [
-            OdhnerPinwheel() for _ in range(self.INPUT_DIGITS)
-        ]
+        self.pinwheels: list[OdhnerPinwheel] = [OdhnerPinwheel() for _ in range(self.INPUT_DIGITS)]
         self.result = ResultRegister()
         self.counter = RevolutionCounter()
         self.carriage_position: int = 0
@@ -179,10 +177,8 @@ class OdhnerArithmometer:
         """Set pinwheel sliders from a non-negative integer."""
         if value < 0:
             raise ValueError("Input must be non-negative")
-        if value >= 10 ** self.INPUT_DIGITS:
-            raise ValueError(
-                f"Input {value} exceeds {self.INPUT_DIGITS}-digit capacity"
-            )
+        if value >= 10**self.INPUT_DIGITS:
+            raise ValueError(f"Input {value} exceeds {self.INPUT_DIGITS}-digit capacity")
         digits = str(value).zfill(self.INPUT_DIGITS)
         for i, ch in enumerate(reversed(digits)):
             self.pinwheels[i].set(int(ch))
@@ -205,9 +201,7 @@ class OdhnerArithmometer:
         """Set carriage position (0 = units, 1 = tens, ...)."""
         max_pos = ResultRegister.DIGITS - self.INPUT_DIGITS
         if not 0 <= position <= max_pos:
-            raise ValueError(
-                f"Carriage position {position} out of range [0, {max_pos}]"
-            )
+            raise ValueError(f"Carriage position {position} out of range [0, {max_pos}]")
         self.carriage_position = position
 
     def set_direction(self, direction: CrankDirection) -> None:

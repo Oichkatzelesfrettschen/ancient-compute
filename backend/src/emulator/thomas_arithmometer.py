@@ -35,10 +35,10 @@ References:
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 
 
-class CrankMode(str, Enum):
+class CrankMode(StrEnum):
     """Direction of the crank turn."""
 
     ADD = "ADD"
@@ -119,15 +119,9 @@ class ThomasArithmometer:
     COUNTER_DIGITS = 8
 
     def __init__(self) -> None:
-        self.pinwheels: list[Pinwheel] = [
-            Pinwheel() for _ in range(self.INPUT_DIGITS)
-        ]
-        self.result: list[ResultWheel] = [
-            ResultWheel() for _ in range(self.RESULT_DIGITS)
-        ]
-        self.counter: list[CounterWheel] = [
-            CounterWheel() for _ in range(self.COUNTER_DIGITS)
-        ]
+        self.pinwheels: list[Pinwheel] = [Pinwheel() for _ in range(self.INPUT_DIGITS)]
+        self.result: list[ResultWheel] = [ResultWheel() for _ in range(self.RESULT_DIGITS)]
+        self.counter: list[CounterWheel] = [CounterWheel() for _ in range(self.COUNTER_DIGITS)]
         # Carriage position: 0 = units, 1 = tens, 2 = hundreds, ...
         self.carriage_position: int = 0
         self.crank_mode: CrankMode = CrankMode.ADD
@@ -140,10 +134,8 @@ class ThomasArithmometer:
         """Set the input sliders from a non-negative integer (up to 8 digits)."""
         if value < 0:
             raise ValueError("Input value must be non-negative; use subtract mode for negatives")
-        if value >= 10 ** self.INPUT_DIGITS:
-            raise ValueError(
-                f"Input value {value} exceeds {self.INPUT_DIGITS}-digit capacity"
-            )
+        if value >= 10**self.INPUT_DIGITS:
+            raise ValueError(f"Input value {value} exceeds {self.INPUT_DIGITS}-digit capacity")
         digits = str(value).zfill(self.INPUT_DIGITS)
         for i, ch in enumerate(reversed(digits)):
             self.pinwheels[i].set(int(ch))
@@ -185,9 +177,7 @@ class ThomasArithmometer:
         """Set the carriage to a specific digit position (0 = units)."""
         max_pos = self.RESULT_DIGITS - self.INPUT_DIGITS
         if not 0 <= position <= max_pos:
-            raise ValueError(
-                f"Carriage position {position} out of range [0, {max_pos}]"
-            )
+            raise ValueError(f"Carriage position {position} out of range [0, {max_pos}]")
         self.carriage_position = position
 
     # ------------------------------------------------------------------

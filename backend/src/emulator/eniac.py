@@ -69,7 +69,7 @@ from decimal import Decimal, getcontext
 getcontext().prec = 10
 
 _NUM_ACCUMULATORS = 20
-_ACC_DIGITS = 10      # 10-digit decimal accumulator
+_ACC_DIGITS = 10  # 10-digit decimal accumulator
 
 
 # ---------------------------------------------------------------------------
@@ -114,9 +114,7 @@ class ENIACInstruction:
 class ENIACState:
     """Observable state of the ENIAC."""
 
-    accumulators: list[Decimal] = field(
-        default_factory=lambda: [Decimal(0)] * _NUM_ACCUMULATORS
-    )
+    accumulators: list[Decimal] = field(default_factory=lambda: [Decimal(0)] * _NUM_ACCUMULATORS)
     program_counter: int = 0
     halted: bool = False
     cycle_count: int = 0
@@ -167,18 +165,12 @@ class ENIAC:
 
     def _check_acc(self, index: int) -> None:
         if not 0 <= index < _NUM_ACCUMULATORS:
-            raise IndexError(
-                f"Accumulator {index} out of range [0, {_NUM_ACCUMULATORS-1}]"
-            )
+            raise IndexError(f"Accumulator {index} out of range [0, {_NUM_ACCUMULATORS-1}]")
 
     def load_program(self, instructions: list[ENIACInstruction]) -> None:
         """Load program (replaces physical cable rewiring)."""
         self._program = list(instructions)
-        self._labels = {
-            instr.label: i
-            for i, instr in enumerate(instructions)
-            if instr.label
-        }
+        self._labels = {instr.label: i for i, instr in enumerate(instructions) if instr.label}
         self.state.program_counter = 0
         self.state.halted = False
 
@@ -210,29 +202,36 @@ class ENIAC:
 
         if op == ENIACOp.ADD:
             dst, src = int(a[0]), int(a[1])
-            self._check_acc(dst); self._check_acc(src)
+            self._check_acc(dst)
+            self._check_acc(src)
             acc[dst] += acc[src]
 
         elif op == ENIACOp.SUB:
             dst, src = int(a[0]), int(a[1])
-            self._check_acc(dst); self._check_acc(src)
+            self._check_acc(dst)
+            self._check_acc(src)
             acc[dst] -= acc[src]
 
         elif op == ENIACOp.MULT:
             dst, src1, src2 = int(a[0]), int(a[1]), int(a[2])
-            self._check_acc(dst); self._check_acc(src1); self._check_acc(src2)
+            self._check_acc(dst)
+            self._check_acc(src1)
+            self._check_acc(src2)
             acc[dst] = acc[src1] * acc[src2]
 
         elif op == ENIACOp.DIV:
             dst, src1, src2 = int(a[0]), int(a[1]), int(a[2])
-            self._check_acc(dst); self._check_acc(src1); self._check_acc(src2)
+            self._check_acc(dst)
+            self._check_acc(src1)
+            self._check_acc(src2)
             if acc[src2] == 0:
                 raise ZeroDivisionError("ENIAC division by zero")
             acc[dst] = acc[src1] / acc[src2]
 
         elif op == ENIACOp.SQRT:
             dst, src = int(a[0]), int(a[1])
-            self._check_acc(dst); self._check_acc(src)
+            self._check_acc(dst)
+            self._check_acc(src)
             val = float(acc[src])
             if val < 0:
                 raise ValueError(f"ENIAC SQRT of negative number: {val}")

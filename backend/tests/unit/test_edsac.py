@@ -3,10 +3,10 @@
 import pytest
 
 from backend.src.emulator.edsac import (
-    EDSAC,
-    EDSACInstruction,
     _FC,
     _STORE_SIZE,
+    EDSAC,
+    EDSACInstruction,
     _to_signed,
     _to_unsigned,
 )
@@ -118,13 +118,16 @@ class TestArithmetic:
     def test_h_and_v_multiply(self):
         """H sets R; V: A += store[N] * R."""
         e = EDSAC()
-        e.store_value(50, 6)   # multiplicand
-        e.store_value(51, 7)   # multiplier
-        e.store_instructions(0, [
-            EDSACInstruction("H", 51),   # R = store[51] = 7
-            EDSACInstruction("V", 50),   # A += store[50] * R = 6 * 7 = 42
-            EDSACInstruction("Z", 0),
-        ])
+        e.store_value(50, 6)  # multiplicand
+        e.store_value(51, 7)  # multiplier
+        e.store_instructions(
+            0,
+            [
+                EDSACInstruction("H", 51),  # R = store[51] = 7
+                EDSACInstruction("V", 50),  # A += store[50] * R = 6 * 7 = 42
+                EDSACInstruction("Z", 0),
+            ],
+        )
         e.run()
         assert e.state.accumulator == 42
 
@@ -168,37 +171,46 @@ class TestBranching:
         e = EDSAC()
         # Program at 0: E 10 (branch to 10), then at 10: Z (halt)
         # (CI starts at -1, step() increments to 0 before first fetch)
-        e.store_instructions(0, [
-            EDSACInstruction("E", 10),  # branch to addr 10
-            EDSACInstruction("T", 50),  # skipped
-        ])
+        e.store_instructions(
+            0,
+            [
+                EDSACInstruction("E", 10),  # branch to addr 10
+                EDSACInstruction("T", 50),  # skipped
+            ],
+        )
         e.store_value(11, 0)  # ensure Z at addr 11
         e.state.store[11] = EDSACInstruction("Z", 0).encode()
-        e.state.accumulator = 5   # positive -> branch taken (set AFTER store_instructions)
+        e.state.accumulator = 5  # positive -> branch taken (set AFTER store_instructions)
         e.run()
         assert e.get_value(50) == 0  # T was skipped
 
     def test_g_branch_if_negative(self):
         """G addr: branch to addr if A < 0."""
         e = EDSAC()
-        e.store_instructions(0, [
-            EDSACInstruction("G", 10),  # branch to addr 10
-            EDSACInstruction("T", 50),  # skipped
-        ])
+        e.store_instructions(
+            0,
+            [
+                EDSACInstruction("G", 10),  # branch to addr 10
+                EDSACInstruction("T", 50),  # skipped
+            ],
+        )
         e.state.store[11] = EDSACInstruction("Z", 0).encode()
-        e.state.accumulator = -1   # negative -> branch taken (set AFTER store_instructions)
+        e.state.accumulator = -1  # negative -> branch taken (set AFTER store_instructions)
         e.run()
         assert e.get_value(50) == 0  # T was skipped
 
     def test_no_branch_when_condition_false(self):
         """G: no branch if A >= 0."""
         e = EDSAC()
-        e.store_instructions(0, [
-            EDSACInstruction("G", 20),   # no branch (A >= 0)
-            EDSACInstruction("T", 50),   # executed
-            EDSACInstruction("Z", 0),
-        ])
-        e.state.accumulator = 1   # positive -> G does NOT branch (set AFTER store_instructions)
+        e.store_instructions(
+            0,
+            [
+                EDSACInstruction("G", 20),  # no branch (A >= 0)
+                EDSACInstruction("T", 50),  # executed
+                EDSACInstruction("Z", 0),
+            ],
+        )
+        e.state.accumulator = 1  # positive -> G does NOT branch (set AFTER store_instructions)
         e.run()
         assert e.get_value(50) == 1  # T was executed
 
@@ -207,31 +219,40 @@ class TestIO:
     def test_input_tape(self):
         e = EDSAC()
         e.load_input_tape([42])
-        e.store_instructions(0, [
-            EDSACInstruction("I", 50),   # store input at addr 50
-            EDSACInstruction("Z", 0),
-        ])
+        e.store_instructions(
+            0,
+            [
+                EDSACInstruction("I", 50),  # store input at addr 50
+                EDSACInstruction("Z", 0),
+            ],
+        )
         e.run()
         assert e.get_value(50) == 42
 
     def test_input_exhausted_raises(self):
         e = EDSAC()
         e.load_input_tape([1])
-        e.store_instructions(0, [
-            EDSACInstruction("I", 50),
-            EDSACInstruction("I", 51),   # tape exhausted
-            EDSACInstruction("Z", 0),
-        ])
+        e.store_instructions(
+            0,
+            [
+                EDSACInstruction("I", 50),
+                EDSACInstruction("I", 51),  # tape exhausted
+                EDSACInstruction("Z", 0),
+            ],
+        )
         with pytest.raises(RuntimeError, match="exhausted"):
             e.run()
 
     def test_output(self):
         e = EDSAC()
-        e.store_value(50, 1)   # ITA2 value 1 = 'A' + 0 = letter
-        e.store_instructions(0, [
-            EDSACInstruction("O", 50),
-            EDSACInstruction("Z", 0),
-        ])
+        e.store_value(50, 1)  # ITA2 value 1 = 'A' + 0 = letter
+        e.store_instructions(
+            0,
+            [
+                EDSACInstruction("O", 50),
+                EDSACInstruction("Z", 0),
+            ],
+        )
         e.run()
         assert len(e.state.output_tape) == 1
 
@@ -248,13 +269,16 @@ class TestControl:
         e = EDSAC()
         e.store_value(50, 100)
         e.store_value(51, 200)
-        e.store_instructions(0, [
-            EDSACInstruction("T", 52),   # store[52] = 0 (clear acc)
-            EDSACInstruction("A", 50),   # acc += 100
-            EDSACInstruction("A", 51),   # acc += 200
-            EDSACInstruction("T", 52),   # store[52] = 300, acc = 0
-            EDSACInstruction("Z", 0),
-        ])
+        e.store_instructions(
+            0,
+            [
+                EDSACInstruction("T", 52),  # store[52] = 0 (clear acc)
+                EDSACInstruction("A", 50),  # acc += 100
+                EDSACInstruction("A", 51),  # acc += 200
+                EDSACInstruction("T", 52),  # store[52] = 300, acc = 0
+                EDSACInstruction("Z", 0),
+            ],
+        )
         e.run()
         assert e.get_value(52) == 300
 

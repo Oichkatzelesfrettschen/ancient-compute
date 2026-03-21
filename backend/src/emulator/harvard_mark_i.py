@@ -58,14 +58,13 @@ References:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from decimal import Decimal, getcontext, InvalidOperation
-from typing import NamedTuple
+from decimal import Decimal, getcontext
 
 # 23-digit decimal precision (22 digits + sign)
 getcontext().prec = 23
 
-_NUM_COUNTERS = 72         # Main storage counters
-_NUM_CONSTANTS = 60        # Read-only constant registers (0..59)
+_NUM_COUNTERS = 72  # Main storage counters
+_NUM_CONSTANTS = 60  # Read-only constant registers (0..59)
 _TOTAL_STORAGE = _NUM_COUNTERS + _NUM_CONSTANTS  # Addresses 0..131
 
 
@@ -76,6 +75,7 @@ _TOTAL_STORAGE = _NUM_COUNTERS + _NUM_CONSTANTS  # Addresses 0..131
 
 class MarkIOp(str):
     """Mark I operation codes (string constants)."""
+
     LOAD = "LOAD"
     STORE = "STORE"
     ADD = "ADD"
@@ -122,9 +122,7 @@ class MarkIState:
     """Observable state of the Harvard Mark I."""
 
     # 72 accumulators + 60 constant registers
-    storage: list[Decimal] = field(
-        default_factory=lambda: [Decimal(0)] * _TOTAL_STORAGE
-    )
+    storage: list[Decimal] = field(default_factory=lambda: [Decimal(0)] * _TOTAL_STORAGE)
     program_counter: int = 0
     halted: bool = False
     cycle_count: int = 0
@@ -148,7 +146,7 @@ class HarvardMarkI:
         m1.set_counter(0, Decimal("2"))                   # counter 0 = 2
 
         prog = [
-            MarkIInstruction(MarkIOp.MULT, (60, 0, 0)),   # counter 60 = 0 * 0 (from constants slot 0)
+            MarkIInstruction(MarkIOp.MULT, (60, 0, 0)),   # counter 60 = counter[0]^2
             MarkIInstruction(MarkIOp.HALT),
         ]
         m1.load_program(prog)
@@ -197,9 +195,7 @@ class HarvardMarkI:
     def _write(self, addr: int, value: Decimal) -> None:
         """Write to storage address. Constant registers (72+) are read-only."""
         if addr >= _NUM_COUNTERS:
-            raise PermissionError(
-                f"Storage address {addr} is a read-only constant register"
-            )
+            raise PermissionError(f"Storage address {addr} is a read-only constant register")
         if not 0 <= addr < _NUM_COUNTERS:
             raise IndexError(f"Counter address {addr} out of range [0, {_NUM_COUNTERS-1}]")
         self.state.storage[addr] = value
@@ -212,11 +208,7 @@ class HarvardMarkI:
     def load_program(self, instructions: list[MarkIInstruction]) -> None:
         """Load program onto the sequence tape."""
         self._program = list(instructions)
-        self._labels = {
-            instr.label: i
-            for i, instr in enumerate(instructions)
-            if instr.label
-        }
+        self._labels = {instr.label: i for i, instr in enumerate(instructions) if instr.label}
         self.state.program_counter = 0
         self.state.halted = False
 

@@ -13,7 +13,6 @@ from backend.src.emulator.thomas_arithmometer import (
     ThomasArithmometer,
 )
 
-
 # ---------------------------------------------------------------------------
 # Component-level tests
 # ---------------------------------------------------------------------------
@@ -279,7 +278,7 @@ class TestInputValidation:
     def test_input_overflow_raises(self):
         m = ThomasArithmometer()
         with pytest.raises(ValueError):
-            m.set_input(10 ** ThomasArithmometer.INPUT_DIGITS)
+            m.set_input(10**ThomasArithmometer.INPUT_DIGITS)
 
 
 # ---------------------------------------------------------------------------

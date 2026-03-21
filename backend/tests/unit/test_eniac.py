@@ -1,11 +1,10 @@
 """Unit tests for the ENIAC emulator (1945)."""
 
-import math
 from decimal import Decimal
 
 import pytest
 
-from backend.src.emulator.eniac import ENIAC, ENIACInstruction, ENIACOp, _NUM_ACCUMULATORS
+from backend.src.emulator.eniac import _NUM_ACCUMULATORS, ENIAC, ENIACInstruction, ENIACOp
 
 
 def _run(instructions, accumulators=None):
@@ -79,9 +78,7 @@ class TestArithmetic:
         assert e.get_accumulator(0) == Decimal("0")
 
     def test_load_immediate(self):
-        e = _run(
-            [ENIACInstruction(ENIACOp.LOAD, (0, "3.14")), ENIACInstruction(ENIACOp.HALT)]
-        )
+        e = _run([ENIACInstruction(ENIACOp.LOAD, (0, "3.14")), ENIACInstruction(ENIACOp.HALT)])
         assert float(e.get_accumulator(0)) == pytest.approx(3.14, rel=1e-4)
 
     def test_div_by_zero(self):
@@ -103,9 +100,11 @@ class TestArithmetic:
 class TestIO:
     def test_print(self):
         e = _run(
-            [ENIACInstruction(ENIACOp.LOAD, (0, "7")),
-             ENIACInstruction(ENIACOp.PRINT, (0,)),
-             ENIACInstruction(ENIACOp.HALT)]
+            [
+                ENIACInstruction(ENIACOp.LOAD, (0, "7")),
+                ENIACInstruction(ENIACOp.PRINT, (0,)),
+                ENIACInstruction(ENIACOp.HALT),
+            ]
         )
         assert len(e.state.output_tape) == 1
         assert float(e.state.output_tape[0]) == pytest.approx(7.0)
@@ -120,9 +119,11 @@ class TestControl:
 
     def test_cycle_count(self):
         e = _run(
-            [ENIACInstruction(ENIACOp.LOAD, (0, "1")),
-             ENIACInstruction(ENIACOp.LOAD, (1, "2")),
-             ENIACInstruction(ENIACOp.HALT)]
+            [
+                ENIACInstruction(ENIACOp.LOAD, (0, "1")),
+                ENIACInstruction(ENIACOp.LOAD, (1, "2")),
+                ENIACInstruction(ENIACOp.HALT),
+            ]
         )
         assert e.state.cycle_count == 3
 
@@ -131,29 +132,27 @@ class TestControl:
         e = ENIAC()
         e.load_accumulator(0, Decimal("3"))
         e.load_accumulator(1, Decimal("4"))
-        e.load_program([
-            ENIACInstruction(ENIACOp.MULT, (2, 0, 0)),   # acc[2] = 9
-            ENIACInstruction(ENIACOp.MULT, (3, 1, 1)),   # acc[3] = 16
-            ENIACInstruction(ENIACOp.ADD, (2, 3)),        # acc[2] = 25
-            ENIACInstruction(ENIACOp.SQRT, (4, 2)),       # acc[4] = 5
-            ENIACInstruction(ENIACOp.PRINT, (4,)),
-            ENIACInstruction(ENIACOp.HALT),
-        ])
+        e.load_program(
+            [
+                ENIACInstruction(ENIACOp.MULT, (2, 0, 0)),  # acc[2] = 9
+                ENIACInstruction(ENIACOp.MULT, (3, 1, 1)),  # acc[3] = 16
+                ENIACInstruction(ENIACOp.ADD, (2, 3)),  # acc[2] = 25
+                ENIACInstruction(ENIACOp.SQRT, (4, 2)),  # acc[4] = 5
+                ENIACInstruction(ENIACOp.PRINT, (4,)),
+                ENIACInstruction(ENIACOp.HALT),
+            ]
+        )
         e.run()
         assert float(e.state.output_tape[0]) == pytest.approx(5.0, rel=1e-4)
 
     def test_reset(self):
-        e = _run(
-            [ENIACInstruction(ENIACOp.LOAD, (0, "99")), ENIACInstruction(ENIACOp.HALT)]
-        )
+        e = _run([ENIACInstruction(ENIACOp.LOAD, (0, "99")), ENIACInstruction(ENIACOp.HALT)])
         e.reset()
         assert e.get_accumulator(0) == Decimal("0")
         assert e.state.cycle_count == 0
 
     def test_state_snapshot(self):
-        e = _run(
-            [ENIACInstruction(ENIACOp.HALT)]
-        )
+        e = _run([ENIACInstruction(ENIACOp.HALT)])
         s = e.state_snapshot()
         assert s["num_accumulators"] == _NUM_ACCUMULATORS
         assert s["halted"] is True

@@ -56,9 +56,9 @@ from dataclasses import dataclass, field
 # ---------------------------------------------------------------------------
 
 # Lorenz wheel periods (number of cams per wheel)
-CHI_PERIODS = [41, 31, 29, 26, 23]         # 5 chi wheels
-PSI_PERIODS = [43, 47, 51, 53, 59]         # 5 psi wheels
-MOTOR_PERIODS = [37, 61]                   # 2 motor wheels (mu_37, mu_61)
+CHI_PERIODS = [41, 31, 29, 26, 23]  # 5 chi wheels
+PSI_PERIODS = [43, 47, 51, 53, 59]  # 5 psi wheels
+MOTOR_PERIODS = [37, 61]  # 2 motor wheels (mu_37, mu_61)
 
 
 # ---------------------------------------------------------------------------
@@ -130,9 +130,9 @@ class LorenzSZ42:
       Good et al. (1945), General Report on Tunny, Ch. 2.
     """
 
-    chi_wheels: list[LorenzWheel]    # 5 chi wheels (always step)
-    psi_wheels: list[LorenzWheel]    # 5 psi wheels (conditional step)
-    mu_wheels: list[LorenzWheel]     # 2 motor wheels (mu_37, mu_61)
+    chi_wheels: list[LorenzWheel]  # 5 chi wheels (always step)
+    psi_wheels: list[LorenzWheel]  # 5 psi wheels (conditional step)
+    mu_wheels: list[LorenzWheel]  # 2 motor wheels (mu_37, mu_61)
 
     @classmethod
     def from_key(cls, key: dict[str, list[int]]) -> LorenzSZ42:
@@ -153,13 +153,11 @@ class LorenzSZ42:
     def with_random_key(cls, seed: int = 42) -> LorenzSZ42:
         """Create a Lorenz SZ with a pseudorandom cam pattern."""
         import random
+
         rng = random.Random(seed)
-        chi = [LorenzWheel(p, [rng.randint(0, 1) for _ in range(p)])
-               for p in CHI_PERIODS]
-        psi = [LorenzWheel(p, [rng.randint(0, 1) for _ in range(p)])
-               for p in PSI_PERIODS]
-        mu = [LorenzWheel(p, [rng.randint(0, 1) for _ in range(p)])
-              for p in MOTOR_PERIODS]
+        chi = [LorenzWheel(p, [rng.randint(0, 1) for _ in range(p)]) for p in CHI_PERIODS]
+        psi = [LorenzWheel(p, [rng.randint(0, 1) for _ in range(p)]) for p in PSI_PERIODS]
+        mu = [LorenzWheel(p, [rng.randint(0, 1) for _ in range(p)]) for p in MOTOR_PERIODS]
         return cls(chi_wheels=chi, psi_wheels=psi, mu_wheels=mu)
 
     def reset(self) -> None:
@@ -177,7 +175,7 @@ class LorenzSZ42:
 
     def current_key(self) -> list[int]:
         """Return the 5-bit key stream: chi XOR psi."""
-        return [c ^ p for c, p in zip(self.current_chi(), self.current_psi())]
+        return [c ^ p for c, p in zip(self.current_chi(), self.current_psi(), strict=True)]
 
     def encipher_char(self, plaintext_bits: list[int]) -> list[int]:
         """Encipher one 5-bit character.
@@ -185,7 +183,7 @@ class LorenzSZ42:
         Returns ciphertext bits. Advances all wheels after encipherment.
         """
         key = self.current_key()
-        cipher = [p ^ k for p, k in zip(plaintext_bits, key)]
+        cipher = [p ^ k for p, k in zip(plaintext_bits, key, strict=True)]
         self._step()
         return cipher
 
@@ -280,7 +278,7 @@ class Colossus:
         count = 0
         for char_bits in tape:
             chi_bits = self.lorenz.current_chi()
-            xor_bits = [t ^ c for t, c in zip(char_bits, chi_bits)]
+            xor_bits = [t ^ c for t, c in zip(char_bits, chi_bits, strict=True)]
 
             if function == "XOR_sum_odd":
                 # Count positions where XOR of all 5 bits is 1 (odd number of 1s)
@@ -344,8 +342,7 @@ class Colossus:
         Returns a dict mapping wheel_index -> {starting_pos -> count}.
         """
         return {
-            i: self.chi_break_single_wheel(tape, wheel_index=i, function=function)
-            for i in range(5)
+            i: self.chi_break_single_wheel(tape, wheel_index=i, function=function) for i in range(5)
         }
 
     @staticmethod

@@ -1,8 +1,8 @@
 # Project Status Dashboard
 
-**Auto-generated**: 2026-03-20 22:57 UTC
+**Auto-generated**: 2026-03-21 03:38 UTC
 **Branch**: `main`
-**Last commit**: `fd77d35 fix: AE DIV fixed-point arithmetic -- Note G now computes correct Bernoulli numbers`
+**Last commit**: `3769274 feat: AE transcendental series programs + ADA_EXTENSIONS corrections`
 
 > Regenerate with: `make status`
 
@@ -12,9 +12,9 @@
 
 | Metric | Value |
 |--------|-------|
-| Unit tests collected | 2218 |
+| Unit tests collected | 2569 |
 | Collection errors | 0 |
-| Python source lines (backend/src/) | 39,169 |
+| Python source lines (backend/src/) | 43,686 |
 | Active docs (non-archive .md) | 199 |
 
 ## Phase Status
