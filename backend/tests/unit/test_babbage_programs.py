@@ -117,8 +117,71 @@ class TestAEProgramExecution:
             assert "value" in card
 
     def test_sin_cos_sum_identity(self) -> None:
-        """sin^2(pi/6) + cos^2(pi/3) = sin^2(pi/6) + cos^2(pi/3) ≈ 0.25 + 0.25 = 0.5."""
+        """sin^2(pi/6) + cos^2(pi/3) = sin^2(pi/6) + cos^2(pi/3) approx 0.25 + 0.25 = 0.5."""
         s = _run("sin_series.ae")
         c = _run("cos_series.ae")
         # sin(pi/6) = cos(pi/3) = 0.5
         assert abs(s - c) < 1e-5
+
+
+class TestAEProgramOutputCount:
+    """Verify that programs produce the correct number of outputs."""
+
+    def test_addition_one_output(self) -> None:
+        outputs = _run_all_outputs("babbage_addition.ae")
+        assert len(outputs) == 1
+
+    def test_triangular_number_one_output(self) -> None:
+        outputs = _run_all_outputs("triangular_number.ae")
+        assert len(outputs) == 1
+
+    def test_sin_series_one_output(self) -> None:
+        outputs = _run_all_outputs("sin_series.ae")
+        assert len(outputs) == 1
+
+    def test_cos_series_one_output(self) -> None:
+        outputs = _run_all_outputs("cos_series.ae")
+        assert len(outputs) == 1
+
+    def test_exp_series_one_output(self) -> None:
+        outputs = _run_all_outputs("exp_series.ae")
+        assert len(outputs) == 1
+
+    def test_ln_series_one_output(self) -> None:
+        outputs = _run_all_outputs("ln_series.ae")
+        assert len(outputs) == 1
+
+
+class TestAEProgramLnSeries:
+    def test_ln_series_result_positive(self) -> None:
+        result = _run("ln_series.ae")
+        assert result > 0
+
+    def test_ln_series_close_to_half(self) -> None:
+        """ln(sqrt(e)) = 0.5 -- 10-term Mercator series."""
+        result = _run("ln_series.ae")
+        assert abs(result - 0.5) < 1e-3
+
+    def test_ln_series_result_in_range(self) -> None:
+        result = _run("ln_series.ae")
+        # Reasonable range: between 0.4 and 0.6
+        assert 0.4 < result < 0.6
+
+
+class TestAEProgramRepeatability:
+    """Each program should produce the same result on multiple runs."""
+
+    def test_addition_is_reproducible(self) -> None:
+        r1 = _run("babbage_addition.ae")
+        r2 = _run("babbage_addition.ae")
+        assert r1 == r2
+
+    def test_sin_is_reproducible(self) -> None:
+        r1 = _run("sin_series.ae")
+        r2 = _run("sin_series.ae")
+        assert abs(r1 - r2) < 1e-12
+
+    def test_exp_is_reproducible(self) -> None:
+        r1 = _run("exp_series.ae")
+        r2 = _run("exp_series.ae")
+        assert abs(r1 - r2) < 1e-12

@@ -7,7 +7,12 @@ from pathlib import Path
 import pytest
 import yaml
 
-from backend.src.assembler.assembler import Assembler
+from backend.src.assembler.assembler import (
+    Assembler,
+    AssemblyError,
+    Lexer,
+    SymbolTable,
+)
 
 FIXTURE_PATH = (
     Path(__file__).resolve().parents[1] / "fixtures" / "babbage_assembler_golden_corpus.yaml"
@@ -119,3 +124,181 @@ class TestAssemblerBasics:
             assert "source" in case
             assert "expected_hex" in case
             assert "expected_symbols" in case
+
+
+class TestSymbolTable:
+    def test_define_and_lookup(self) -> None:
+        st = SymbolTable()
+        st.define("foo", 5)
+        assert st.lookup("foo") == 5
+
+    def test_is_defined_true(self) -> None:
+        st = SymbolTable()
+        st.define("bar", 0)
+        assert st.is_defined("bar") is True
+
+    def test_is_defined_false_for_missing(self) -> None:
+        st = SymbolTable()
+        assert st.is_defined("missing") is False
+
+    def test_duplicate_define_raises(self) -> None:
+        st = SymbolTable()
+        st.define("x", 1)
+        with pytest.raises(AssemblyError):
+            st.define("x", 2)
+
+    def test_lookup_undefined_raises(self) -> None:
+        st = SymbolTable()
+        with pytest.raises(AssemblyError):
+            st.lookup("nope")
+
+    def test_define_multiple_symbols(self) -> None:
+        st = SymbolTable()
+        st.define("a", 0)
+        st.define("b", 1)
+        st.define("c", 2)
+        assert st.lookup("a") == 0
+        assert st.lookup("b") == 1
+        assert st.lookup("c") == 2
+
+    def test_symbols_dict_is_populated(self) -> None:
+        st = SymbolTable()
+        st.define("label", 10)
+        assert "label" in st.symbols
+        assert st.symbols["label"] == 10
+
+
+class TestLexer:
+    def test_empty_source_produces_no_tokens(self) -> None:
+        lexer = Lexer("")
+        tokens = lexer.tokenize()
+        assert tokens == []
+
+    def test_comment_line_produces_no_tokens(self) -> None:
+        lexer = Lexer("# this is a comment")
+        tokens = lexer.tokenize()
+        assert tokens == []
+
+    def test_global_directive_tokenized(self) -> None:
+        lexer = Lexer(".global main")
+        tokens = lexer.tokenize()
+        types = [t.type for t in tokens]
+        assert "directive" in types
+
+    def test_text_directive_tokenized(self) -> None:
+        lexer = Lexer(".text")
+        tokens = lexer.tokenize()
+        assert tokens[0].type == "directive"
+        assert tokens[0].value == ".text"
+
+    def test_label_produces_label_token(self) -> None:
+        lexer = Lexer("main:")
+        tokens = lexer.tokenize()
+        label_tokens = [t for t in tokens if t.type == "label"]
+        assert len(label_tokens) == 1
+        assert label_tokens[0].value == "main"
+
+    def test_inline_comment_stripped(self) -> None:
+        lexer = Lexer("HALT  # stop here")
+        tokens = lexer.tokenize()
+        # Should have instruction token(s) but not the comment text
+        values = [t.value for t in tokens]
+        assert "# stop here" not in values
+
+    def test_blank_lines_skipped(self) -> None:
+        lexer = Lexer("\n\n\nHALT\n\n")
+        tokens = lexer.tokenize()
+        assert len(tokens) >= 1  # HALT produces at least one token
+
+    def test_line_numbers_tracked(self) -> None:
+        lexer = Lexer(".global f\n.text\nf:\n  RET")
+        tokens = lexer.tokenize()
+        assert all(t.line_number >= 1 for t in tokens)
+
+
+class TestAssemblerBranchInstructions:
+    def test_jmp_to_label_assembles(self) -> None:
+        src = ".global main\n.text\nmain:\n  JMP main"
+        result = Assembler(src).assemble()
+        assert result.error_count == 0
+        assert len(result.machine_code) == 1
+
+    def test_jz_to_label_assembles(self) -> None:
+        src = ".global f\n.text\nf:\n  LOAD A, 0\nloop:\n  JZ loop\n  RET"
+        result = Assembler(src).assemble()
+        assert result.error_count == 0
+        assert len(result.machine_code) == 3
+
+    def test_call_and_ret_assemble(self) -> None:
+        src = ".global main\n.text\nmain:\n" "  CALL sub\n  RET\nsub:\n  RET"
+        result = Assembler(src).assemble()
+        assert result.error_count == 0
+        assert len(result.machine_code) >= 3
+
+    def test_forward_reference_label_resolved(self) -> None:
+        src = ".global main\n.text\nmain:\n  JMP end\n  LOAD A, 1\nend:\n  RET"
+        result = Assembler(src).assemble()
+        assert result.error_count == 0
+        assert "end" in result.symbol_table
+
+    def test_multiple_conditional_jumps_assemble(self) -> None:
+        src = (
+            ".global main\n.text\nmain:\n"
+            "  LOAD A, 5\n  CMP A, 3\ntrue_branch:\n  JGT end\n"
+            "  LOAD B, 0\nend:\n  RET"
+        )
+        result = Assembler(src).assemble()
+        assert result.error_count == 0
+
+
+class TestAssemblerExtendedOpcodes:
+    """Tests for opcodes beyond the basics."""
+
+    def test_nop_assembles(self) -> None:
+        result = Assembler(".global f\n.text\nf:\n  NOP\n  RET").assemble()
+        assert result.error_count == 0
+        assert len(result.machine_code) == 2
+
+    def test_halt_assembles(self) -> None:
+        result = Assembler(".global f\n.text\nf:\n  HALT").assemble()
+        assert result.error_count == 0
+        assert len(result.machine_code) == 1
+
+    def test_wrprn_assembles(self) -> None:
+        result = Assembler(".global f\n.text\nf:\n  LOAD A, 7\n  WRPRN A\n  RET").assemble()
+        assert result.error_count == 0
+        assert len(result.machine_code) == 3
+
+    def test_sqrt_assembles(self) -> None:
+        result = Assembler(".global f\n.text\nf:\n  LOAD A, 9\n  SQRT A\n  RET").assemble()
+        assert result.error_count == 0
+
+    def test_sub_assembles(self) -> None:
+        src = ".global f\n.text\nf:\n  LOAD A, 10\n  LOAD B, 3\n  SUB A, B\n  RET"
+        result = Assembler(src).assemble()
+        assert result.error_count == 0
+        assert len(result.machine_code) == 4
+
+    def test_mul_assembles(self) -> None:
+        src = ".global f\n.text\nf:\n  LOAD A, 6\n  LOAD B, 7\n  MULT A, B\n  RET"
+        result = Assembler(src).assemble()
+        assert result.error_count == 0
+
+    def test_cmp_assembles(self) -> None:
+        result = Assembler(".global f\n.text\nf:\n  LOAD A, 5\n  CMP A, 3\n  RET").assemble()
+        assert result.error_count == 0
+
+    def test_get_hex_dump_has_address_prefix(self) -> None:
+        result = Assembler(".global f\n.text\nf:\n  LOAD A, 1\n  RET").assemble()
+        dump = result.get_hex_dump()
+        # Hex dump should have address info
+        assert len(dump) > 0
+        # Each line contains a hex word
+        assert "0x" in dump or all(c in "0123456789abcdefABCDEF \n:" for c in dump)
+
+    def test_get_symbol_map_lists_labels(self) -> None:
+        src = ".global f\n.text\nf:\n  LOAD A, 1\nlabel2:\n  RET"
+        result = Assembler(src).assemble()
+        sym_map = result.get_symbol_map()
+        assert "f" in sym_map
+        assert "label2" in sym_map

@@ -153,3 +153,101 @@ class TestMonteCarloVariance:
         c2.randomize_tolerances(seed=42)
         assert math.isclose(c1.initial_clearance_mm, c2.initial_clearance_mm)
         assert math.isclose(c1.initial_gear_backlash_mm, c2.initial_gear_backlash_mm)
+
+
+class TestOILInstruction:
+    """OIL instruction resets wear; multiple calls are idempotent."""
+
+    def test_oil_resets_all_bearings(self) -> None:
+        config = SimulationConfig()
+        sim = SimulationEngine(config)
+        engine = Engine(physical_engine=sim)
+        sim.state.bearing_wear_volumes_mm3 = [5.0, 5.0, 5.0, 5.0]
+        engine._execute_OIL()
+        assert all(v == 0.0 for v in sim.state.bearing_wear_volumes_mm3)
+
+    def test_oil_called_twice_remains_zero(self) -> None:
+        config = SimulationConfig()
+        sim = SimulationEngine(config)
+        engine = Engine(physical_engine=sim)
+        sim.state.bearing_wear_volumes_mm3 = [3.0, 3.0, 3.0, 3.0]
+        engine._execute_OIL()
+        engine._execute_OIL()
+        assert all(v == 0.0 for v in sim.state.bearing_wear_volumes_mm3)
+
+    def test_oil_does_not_reset_temperature(self) -> None:
+        config = SimulationConfig()
+        sim = SimulationEngine(config)
+        engine = Engine(physical_engine=sim)
+        sim.run(5.0)  # warm up
+        temp_before = sim.state.temperature_C
+        engine._execute_OIL()
+        # OIL should not reset temperature
+        assert sim.state.temperature_C == pytest.approx(temp_before)
+
+
+class TestTimingAtDifferentRPM:
+    """Higher RPM should execute instructions faster in real-time seconds."""
+
+    def test_higher_rpm_faster_execution(self) -> None:
+        # At 60 RPM, each cycle takes 1 second; at 30 RPM each takes 2 seconds.
+        # ADD takes 8 cycles, so: 8s at 60 RPM vs 16s at 30 RPM.
+        config_fast = SimulationConfig(rpm=60.0)
+        config_slow = SimulationConfig(rpm=30.0)
+
+        sim_fast = SimulationEngine(config_fast)
+        sim_slow = SimulationEngine(config_slow)
+
+        engine_fast = Engine(physical_engine=sim_fast)
+        engine_slow = Engine(physical_engine=sim_slow)
+
+        instr = Instruction("ADD", ["A", "5"])
+        engine_fast.execute_instruction(instr)
+        engine_slow.execute_instruction(instr)
+
+        # Faster RPM -> less real-world time per cycle
+        assert engine_fast.clock_time < engine_slow.clock_time
+
+    def test_clock_time_tracks_sim_time(self) -> None:
+        config = SimulationConfig(rpm=30.0)
+        sim = SimulationEngine(config)
+        engine = Engine(physical_engine=sim)
+
+        instr = Instruction("NOP")
+        engine.execute_instruction(instr)
+        # NOP has 0 cycles; engine may advance minimally but sim_time tracks
+        assert engine.clock_time >= 0.0
+        assert math.isclose(sim.state.time_s, engine.clock_time)
+
+
+class TestSimulationFailurePropagation:
+    """Verify that multiple bearings seizing triggers failure."""
+
+    def test_two_bearing_seizures_triggers_failure(self) -> None:
+        config = SimulationConfig(rpm=30.0)
+        sim = SimulationEngine(config)
+        engine = Engine(physical_engine=sim)
+        engine.instruction_cards = [Instruction("NOP")]
+
+        # Seize the first two bearings
+        sim.state.bearing_clearances_mm[0] = 0.0
+        sim.state.bearing_clearances_mm[1] = 0.0
+        sim._check_failures()
+        assert sim.failed
+
+        with pytest.raises(MechanicalFailureError):
+            engine.step_one_instruction()
+
+    def test_failure_reason_is_bearing_seizure(self) -> None:
+        config = SimulationConfig(rpm=30.0)
+        sim = SimulationEngine(config)
+        engine = Engine(physical_engine=sim)
+        engine.instruction_cards = [Instruction("NOP")]
+
+        sim.state.bearing_clearances_mm = [0.0, 0.05, 0.05, 0.05]
+        sim._check_failures()
+
+        try:
+            engine.step_one_instruction()
+        except MechanicalFailureError as exc:
+            assert "bearing_seizure" in str(exc)

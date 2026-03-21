@@ -195,3 +195,97 @@ class TestCppContractAdditional:
 
         r = _run("int main() { return 0; }")
         assert r.status == ExecutionStatus.SUCCESS
+
+
+class TestExecutionResultFields:
+    """ExecutionResult dataclass fields for execute() (syntax-check)."""
+
+    def _ok_result(self) -> object:
+        return _run("int main() { return 0; }")
+
+    def _err_result(self) -> object:
+        return _run("int main() { undeclared; }")
+
+    def test_success_execution_time_non_negative(self) -> None:
+        r = self._ok_result()
+        assert r.execution_time >= 0.0
+
+    def test_success_exit_code_zero(self) -> None:
+        r = self._ok_result()
+        assert r.exit_code == 0
+
+    def test_failure_exit_code_nonzero(self) -> None:
+        r = self._err_result()
+        assert r.exit_code != 0
+
+    def test_success_stdout_is_string(self) -> None:
+        r = self._ok_result()
+        assert isinstance(r.stdout, str)
+
+    def test_success_stderr_is_string(self) -> None:
+        r = self._ok_result()
+        assert isinstance(r.stderr, str)
+
+    def test_failure_stderr_contains_error(self) -> None:
+        r = self._err_result()
+        assert len(r.stderr) > 0
+
+    def test_failure_execution_time_non_negative(self) -> None:
+        r = self._err_result()
+        assert r.execution_time >= 0.0
+
+
+class TestCppExecuteFull:
+    """execute_full() compiles AND runs the program."""
+
+    def _full(self, code: str) -> object:
+        import asyncio
+
+        from backend.src.services.languages.cpp_service import CppService
+
+        return asyncio.run(CppService().execute_full(code))
+
+    def test_hello_world_runs(self) -> None:
+        from backend.src.services.languages.cpp_service import ExecutionStatus
+
+        code = (
+            "#include <cstdio>\n" "int main() {\n" '    printf("hello\\n");\n' "    return 0;\n" "}"
+        )
+        r = self._full(code)
+        assert r.status == ExecutionStatus.SUCCESS
+
+    def test_hello_world_stdout_contains_hello(self) -> None:
+        code = (
+            "#include <cstdio>\n" "int main() {\n" '    printf("hello\\n");\n' "    return 0;\n" "}"
+        )
+        r = self._full(code)
+        assert "hello" in r.stdout
+
+    def test_full_compile_error_returns_compile_error(self) -> None:
+        from backend.src.services.languages.cpp_service import ExecutionStatus
+
+        r = self._full("int main() { undeclared_var = 5; }")
+        assert r.status == ExecutionStatus.COMPILE_ERROR
+
+    def test_full_success_exit_code_zero(self) -> None:
+        r = self._full("int main() { return 0; }")
+        assert r.exit_code == 0
+
+    def test_full_execution_time_positive(self) -> None:
+        r = self._full("int main() { return 0; }")
+        assert r.execution_time >= 0.0
+
+    def test_full_arithmetic_result(self) -> None:
+        from backend.src.services.languages.cpp_service import ExecutionStatus
+
+        code = (
+            "#include <cstdio>\n"
+            "int main() {\n"
+            "    int x = 6 * 7;\n"
+            '    printf("%d\\n", x);\n'
+            "    return 0;\n"
+            "}"
+        )
+        r = self._full(code)
+        assert r.status == ExecutionStatus.SUCCESS
+        assert "42" in r.stdout

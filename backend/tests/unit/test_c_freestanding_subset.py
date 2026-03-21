@@ -141,3 +141,114 @@ class TestCFreestandingSubsetRejected:
     def test_rejection_status_is_compile_error(self) -> None:
         result = _execute("struct S { int x; };\nint main() { return 0; }")
         assert result.status == ExecutionStatus.COMPILE_ERROR
+
+    def test_goto_rejected_with_label(self) -> None:
+        result = _execute("int f() { goto end; end: return 0; }")
+        assert result.status == ExecutionStatus.COMPILE_ERROR
+        assert "goto statements" in result.stderr
+
+    def test_array_declarator_rejected(self) -> None:
+        result = _execute("int f() { int arr[5]; return 0; }")
+        assert result.status == ExecutionStatus.COMPILE_ERROR
+        assert "array declarators" in result.stderr
+
+    def test_multiple_unsupported_features_all_listed(self) -> None:
+        code = "#include <stdio.h>\nstruct S { int x; };\nint main() { return 0; }"
+        result = _execute(code)
+        assert result.status == ExecutionStatus.COMPILE_ERROR
+        assert "preprocessor directives" in result.stderr
+        assert "struct/union/enum types" in result.stderr
+
+    def test_enum_rejected(self) -> None:
+        result = _execute("enum Color { RED, GREEN, BLUE };\nint main() { return 0; }")
+        assert result.status == ExecutionStatus.COMPILE_ERROR
+        assert "struct/union/enum types" in result.stderr
+
+    def test_union_rejected(self) -> None:
+        result = _execute("union U { int x; float y; };\nint main() { return 0; }")
+        assert result.status == ExecutionStatus.COMPILE_ERROR
+        assert "struct/union/enum types" in result.stderr
+
+
+class TestCompilationResultFields:
+    """CompilationResult dataclass fields for both success and failure."""
+
+    def test_success_status_is_success(self) -> None:
+        result = _execute("int add(int a, int b) { return a + b; }")
+        assert result.status == ExecutionStatus.SUCCESS
+
+    def test_success_machine_code_non_empty(self) -> None:
+        result = _execute("int add(int a, int b) { return a + b; }")
+        assert len(result.machine_code) > 0
+
+    def test_success_assembly_text_non_empty(self) -> None:
+        result = _execute("int add(int a, int b) { return a + b; }")
+        assert len(result.assembly_text) > 0
+
+    def test_success_ir_text_contains_function(self) -> None:
+        result = _execute("int add(int a, int b) { return a + b; }")
+        assert "add" in result.ir_text or len(result.ir_text) > 0
+
+    def test_success_compilation_time_positive(self) -> None:
+        result = _execute("int add(int a, int b) { return a + b; }")
+        assert result.compilation_time >= 0.0
+
+    def test_success_stderr_is_empty(self) -> None:
+        result = _execute("int f(int x) { return x; }")
+        assert result.stderr == ""
+
+    def test_failure_stderr_non_empty(self) -> None:
+        result = _execute("#include <stdio.h>\nint main() { return 0; }")
+        assert len(result.stderr) > 0
+
+    def test_failure_compilation_time_non_negative(self) -> None:
+        result = _execute("struct S { int x; };")
+        assert result.compilation_time >= 0.0
+
+
+class TestDetectUnsupportedFeaturesDirect:
+    """Direct tests for _detect_unsupported_features()."""
+
+    def _service(self) -> CService:
+        return CService()
+
+    def test_clean_code_returns_empty(self) -> None:
+        svc = self._service()
+        found = svc._detect_unsupported_features("int f(int x) { return x; }")
+        assert found == []
+
+    def test_preprocessor_detected(self) -> None:
+        svc = self._service()
+        found = svc._detect_unsupported_features("#define X 5\nint f() { return 0; }")
+        assert "preprocessor directives" in found
+
+    def test_struct_detected(self) -> None:
+        svc = self._service()
+        found = svc._detect_unsupported_features("struct S { int x; };")
+        assert "struct/union/enum types" in found
+
+    def test_switch_detected(self) -> None:
+        svc = self._service()
+        code = "int f(int x) { switch(x) { default: return 0; } }"
+        found = svc._detect_unsupported_features(code)
+        assert "switch statements" in found
+
+    def test_goto_detected(self) -> None:
+        svc = self._service()
+        found = svc._detect_unsupported_features("int f() { goto end; end: return 0; }")
+        assert "goto statements" in found
+
+    def test_pointer_detected(self) -> None:
+        svc = self._service()
+        found = svc._detect_unsupported_features("int f(int *p) { return 0; }")
+        assert "pointer declarators" in found
+
+    def test_array_detected(self) -> None:
+        svc = self._service()
+        found = svc._detect_unsupported_features("int f() { int arr[5]; return 0; }")
+        assert "array declarators" in found
+
+    def test_returns_list(self) -> None:
+        svc = self._service()
+        found = svc._detect_unsupported_features("int f() { return 0; }")
+        assert isinstance(found, list)

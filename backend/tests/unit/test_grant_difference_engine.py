@@ -215,3 +215,103 @@ class TestTabulateFromX0:
         e = GrantDifferenceEngine()
         results = e.tabulate_from_x0(lambda x: 2 * x + 1, x0=0.0, step=1.0, n=4, order=1)
         assert [float(r) for r in results] == [3.0, 5.0, 7.0, 9.0]
+
+    def test_cubic_from_callable(self) -> None:
+        e = GrantDifferenceEngine()
+        results = e.tabulate_from_x0(lambda x: x**3, x0=0.0, step=1.0, n=5, order=3)
+        assert [float(r) for r in results] == [1.0, 8.0, 27.0, 64.0, 125.0]
+
+    def test_non_unit_step(self) -> None:
+        """step=0.5: f(x) = x^2 at x=0.5, 1.0, 1.5 -> 0.25, 1.0, 2.25."""
+        e = GrantDifferenceEngine()
+        results = e.tabulate_from_x0(lambda x: x**2, x0=0.0, step=0.5, n=3, order=2)
+        expected = [0.25, 1.0, 2.25]
+        for r, ex in zip(results, expected, strict=True):
+            assert float(r) == pytest.approx(ex, abs=1e-10)
+
+    def test_returns_decimal_values(self) -> None:
+        e = GrantDifferenceEngine()
+        results = e.tabulate_from_x0(lambda x: x, x0=0.0, step=1.0, n=3, order=1)
+        assert all(isinstance(r, Decimal) for r in results)
+
+
+class TestGrantStateFields:
+    """State dataclass fields and mutation after operations."""
+
+    def test_state_has_num_orders_after_load(self) -> None:
+        e = GrantDifferenceEngine()
+        e.load([0.0, 1.0, 2.0])
+        assert e.state.num_orders == 2
+
+    def test_state_num_orders_one_for_linear(self) -> None:
+        e = GrantDifferenceEngine()
+        e.load([1.0, 2.0])
+        assert e.state.num_orders == 1
+
+    def test_overflow_flags_initialized_false(self) -> None:
+        e = GrantDifferenceEngine()
+        assert all(f is False for f in e.state.overflow_flags)
+
+    def test_output_table_is_empty_initially(self) -> None:
+        e = GrantDifferenceEngine()
+        e.load([1.0, 1.0])
+        assert e.state.output_table == []
+
+    def test_output_table_appended_by_crank(self) -> None:
+        e = GrantDifferenceEngine()
+        e.load([0.0, 1.0])
+        v = e.crank()
+        assert e.state.output_table[0] == v
+
+    def test_crank_returns_decimal(self) -> None:
+        e = GrantDifferenceEngine()
+        e.load([0.0, 1.0])
+        v = e.crank()
+        assert isinstance(v, Decimal)
+
+    def test_registers_list_length_is_max(self) -> None:
+        e = GrantDifferenceEngine()
+        assert len(e.state.registers) == 15
+
+    def test_overflow_flags_list_length_is_max(self) -> None:
+        e = GrantDifferenceEngine()
+        assert len(e.state.overflow_flags) == 15
+
+    def test_revolution_count_increments_per_crank(self) -> None:
+        e = GrantDifferenceEngine()
+        e.load([0.0, 1.0])
+        for i in range(1, 5):
+            e.crank()
+            assert e.state.revolution_count == i
+
+    def test_state_reset_clears_num_orders(self) -> None:
+        e = GrantDifferenceEngine()
+        e.load([1.0, 2.0])
+        e.reset()
+        assert e.state.num_orders == 0
+
+
+class TestGrantOverflowDetection:
+    """Overflow flag is set when a register exceeds 30 digits."""
+
+    def test_no_overflow_on_small_values(self) -> None:
+        e = GrantDifferenceEngine()
+        e.load([100.0, 1.0])
+        e.crank()
+        assert not any(e.state.overflow_flags)
+
+    def test_overflow_flag_set_when_value_exceeds_30_digits(self) -> None:
+        # D0 = D1 = 6*10^29; sum = 1.2*10^30 >= 10^30 -> overflow
+        large = 6 * 10**29
+        e = GrantDifferenceEngine()
+        e.load([float(large), float(large)])
+        e.crank()
+        assert e.state.overflow_flags[0] is True
+
+    def test_overflow_wraps_modulo(self) -> None:
+        large = 6 * 10**29
+        e = GrantDifferenceEngine()
+        e.load([float(large), float(large)])
+        v = e.crank()
+        expected = (2 * Decimal(str(large))) % Decimal(10) ** 30
+        assert v == expected

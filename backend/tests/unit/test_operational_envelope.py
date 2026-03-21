@@ -2,7 +2,7 @@
 
 import pytest
 
-from backend.src.emulator.simulation.engine import SimulationEngine
+from backend.src.emulator.simulation.engine import SimulationEngine, StepResult
 from backend.src.emulator.simulation.state import SimulationConfig
 
 pytestmark = pytest.mark.physics
@@ -110,3 +110,156 @@ class TestSimulationResultFields:
         max_wear_short = max(r_short.final_state.bearing_wear_volumes_mm3 or [0.0])
         max_wear_long = max(r_long.final_state.bearing_wear_volumes_mm3 or [0.0])
         assert max_wear_long >= max_wear_short
+
+
+class TestStepResult:
+    """StepResult fields returned by a single step()."""
+
+    def _step_once(self, rpm: float = 30.0) -> StepResult:
+        config = SimulationConfig(rpm=rpm)
+        engine = SimulationEngine(config)
+        return engine.step()
+
+    def test_step_returns_step_result(self) -> None:
+        result = self._step_once()
+        assert isinstance(result, StepResult)
+
+    def test_step_time_positive(self) -> None:
+        result = self._step_once()
+        assert result.time_s > 0.0
+
+    def test_step_temperature_is_float(self) -> None:
+        result = self._step_once()
+        assert isinstance(result.temperature_C, float)
+
+    def test_step_max_clearance_non_negative(self) -> None:
+        result = self._step_once()
+        assert result.max_clearance_mm >= 0.0
+
+    def test_step_max_wear_non_negative(self) -> None:
+        result = self._step_once()
+        assert result.max_wear_volume_mm3 >= 0.0
+
+    def test_step_shaft_deflection_non_negative(self) -> None:
+        result = self._step_once()
+        assert result.shaft_deflection_mm >= 0.0
+
+    def test_step_total_heat_positive(self) -> None:
+        result = self._step_once()
+        assert result.total_heat_W > 0.0
+
+    def test_step_friction_coeff_in_range(self) -> None:
+        result = self._step_once()
+        assert 0.0 < result.friction_coeff <= 1.0
+
+    def test_step_lubrication_regime_is_string(self) -> None:
+        result = self._step_once()
+        assert isinstance(result.lubrication_regime, str)
+        assert result.lubrication_regime in {"full_film", "mixed", "boundary"}
+
+    def test_step_lambda_ratio_positive(self) -> None:
+        result = self._step_once()
+        assert result.lambda_ratio > 0.0
+
+
+class TestSimulationEngineProperties:
+    """failed / failure_reason properties and reset()."""
+
+    def test_initial_not_failed(self) -> None:
+        engine = SimulationEngine(SimulationConfig(rpm=30.0))
+        assert engine.failed is False
+
+    def test_initial_failure_reason_empty(self) -> None:
+        engine = SimulationEngine(SimulationConfig(rpm=30.0))
+        assert engine.failure_reason == ""
+
+    def test_reset_clears_failed(self) -> None:
+        config = SimulationConfig(rpm=30.0)
+        engine = SimulationEngine(config)
+        # Force a failure via bearing seizure
+        engine.state.bearing_clearances_mm = [0.0, 0.05, 0.05, 0.05]
+        engine._check_failures()
+        assert engine.failed
+        engine.reset()
+        assert engine.failed is False
+
+    def test_reset_clears_failure_reason(self) -> None:
+        config = SimulationConfig(rpm=30.0)
+        engine = SimulationEngine(config)
+        engine.state.bearing_clearances_mm = [0.0, 0.05, 0.05, 0.05]
+        engine._check_failures()
+        engine.reset()
+        assert engine.failure_reason == ""
+
+    def test_reset_restores_time_to_zero(self) -> None:
+        config = SimulationConfig(rpm=30.0)
+        engine = SimulationEngine(config)
+        engine.run(10.0)
+        engine.reset()
+        assert engine.state.time_s == 0.0
+
+    def test_temperature_failure_triggers_failed(self) -> None:
+        config = SimulationConfig(rpm=30.0)
+        engine = SimulationEngine(config)
+        engine.state.temperature_C = config.temperature_limit_C + 1.0
+        engine._check_failures()
+        assert engine.failed
+        assert engine.failure_reason == "temperature"
+
+    def test_bearing_seizure_triggers_failed(self) -> None:
+        config = SimulationConfig(rpm=30.0)
+        engine = SimulationEngine(config)
+        engine.state.bearing_clearances_mm = [0.0, 0.1, 0.1, 0.1]
+        engine._check_failures()
+        assert engine.failed
+        assert engine.failure_reason == "bearing_seizure"
+
+
+class TestSimulationStateFields:
+    """Verify SimulationState initial values and copy()."""
+
+    def test_initial_temperature_is_ambient(self) -> None:
+        config = SimulationConfig(ambient_temperature_C=25.0)
+        engine = SimulationEngine(config)
+        assert engine.state.temperature_C == pytest.approx(25.0)
+
+    def test_initial_time_zero(self) -> None:
+        engine = SimulationEngine(SimulationConfig())
+        assert engine.state.time_s == 0.0
+
+    def test_initial_shaft_angle_zero(self) -> None:
+        engine = SimulationEngine(SimulationConfig())
+        assert engine.state.shaft_angle_deg == 0.0
+
+    def test_initial_oil_age_zero(self) -> None:
+        engine = SimulationEngine(SimulationConfig())
+        assert engine.state.oil_age_hours == 0.0
+
+    def test_initial_fatigue_damage_zero(self) -> None:
+        engine = SimulationEngine(SimulationConfig())
+        assert engine.state.cumulative_fatigue_damage == 0.0
+
+    def test_copy_is_independent(self) -> None:
+        state = SimulationEngine(SimulationConfig()).state
+        copy = state.copy()
+        copy.temperature_C = 9999.0
+        assert state.temperature_C != 9999.0
+
+    def test_step_advances_shaft_angle(self) -> None:
+        # 30 RPM: 180 deg/s with dt=1s -> shaft_angle becomes 180
+        engine = SimulationEngine(SimulationConfig(rpm=30.0))
+        engine.step()
+        assert engine.state.shaft_angle_deg == pytest.approx(180.0)
+
+    def test_run_accumulates_sliding_distance(self) -> None:
+        # Each step advances sliding distance; non-zero after run
+        config = SimulationConfig(rpm=60.0)
+        engine = SimulationEngine(config)
+        engine.run(100.0)
+        assert engine.state.total_sliding_distance_mm > 0.0
+
+    def test_oil_age_accumulates_during_run(self) -> None:
+        config = SimulationConfig(rpm=30.0)
+        engine = SimulationEngine(config)
+        engine.run(3600.0)  # 1 hour
+        assert engine.state.oil_age_hours > 0.0

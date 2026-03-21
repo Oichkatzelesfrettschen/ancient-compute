@@ -1,8 +1,8 @@
 # Project Status Dashboard
 
-**Auto-generated**: 2026-03-21 17:06 UTC
+**Auto-generated**: 2026-03-21 17:56 UTC
 **Branch**: `main`
-**Last commit**: `5d2e330 chore: regenerate STATUS.md (2671 unit tests, 30 machines, 2026-03-21)`
+**Last commit**: `603df6a test: test coverage sprint -- expand 33 test files to full class-based suites (3063 unit tests)`
 
 > Regenerate with: `make status`
 
@@ -12,7 +12,7 @@
 
 | Metric | Value |
 |--------|-------|
-| Unit tests collected | 3482 |
+| Unit tests collected | 3701 |
 | Collection errors | 0 |
 | Python source lines (backend/src/) | 46,451 |
 | Active docs (non-archive .md) | 200 |
