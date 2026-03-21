@@ -160,7 +160,8 @@ HALT
     engine.run()
     if not engine.result_cards:
         raise RuntimeError("Engine produced no output for T(n) computation")
-    return engine.result_cards[-1]["value"]
+    result: BabbageNumber = engine.result_cards[-1]["value"]  # type: ignore[assignment]
+    return result
 
 
 def run_note_c(n: int) -> BabbageNumber:

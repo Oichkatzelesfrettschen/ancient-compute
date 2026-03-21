@@ -581,24 +581,24 @@ class OdhnerAdapter(MachineAdapter):
         self.machine = machine
 
     def get_cycle_count(self) -> int:
-        return self.machine.revolution_counter.get()
+        return self.machine.counter.get()
 
     def get_current_phase(self) -> MechanicalPhase | None:
         return None
 
     def get_column_values(self) -> list[int]:
         # Expose result register digits as column values.
-        return list(self.machine.result_register.digits)
+        return list(self.machine.result._digits)
 
     def get_register_values(self) -> dict[str, Any]:
         return {
-            "result": self.machine.result_register.get(),
-            "counter": self.machine.revolution_counter.get(),
+            "result": self.machine.result.get(),
+            "counter": self.machine.counter.get(),
             "direction": self.machine.direction.value,
         }
 
     def get_memory_value(self, address: int) -> Any:
-        digits = self.machine.result_register.digits
+        digits = self.machine.result._digits
         if 0 <= address < len(digits):
             return digits[address]
         return 0
@@ -608,8 +608,8 @@ class OdhnerAdapter(MachineAdapter):
 
     def get_snapshot(self) -> Any:
         return {
-            "result": self.machine.result_register.get(),
-            "counter": self.machine.revolution_counter.get(),
+            "result": self.machine.result.get(),
+            "counter": self.machine.counter.get(),
             "input": [pw.value for pw in self.machine.pinwheels],
             "carriage_position": self.machine.carriage_position,
         }
@@ -729,7 +729,7 @@ class MillionaireAdapter(MachineAdapter):
         return [(result // (10**i)) % 10 for i in range(16)]
 
     def get_register_values(self) -> dict[str, Any]:
-        state = self.machine.state
+        state = self.machine.state()
         return {
             "result": state["result"],
             "counter": state["counter"],
@@ -743,7 +743,7 @@ class MillionaireAdapter(MachineAdapter):
         self.machine.turn_crank()
 
     def get_snapshot(self) -> Any:
-        return dict(self.machine.state)
+        return dict(self.machine.state())
 
 
 class AntikytheraAdapter(MachineAdapter):
