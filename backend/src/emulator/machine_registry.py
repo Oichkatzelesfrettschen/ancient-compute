@@ -22,6 +22,7 @@ from .adapter import (
     AntikytheraAdapter,
     AstrolabeAdapter,
     BombeAdapter,
+    ClayTokensAdapter,
     ColossusAdapter,
     CurtaAdapter,
     EDSACAdapter,
@@ -42,6 +43,7 @@ from .adapter import (
     QuipuAdapter,
     ScheutzAdapter,
     SlideRuleAdapter,
+    TallyMarksAdapter,
     ThomasArithometerAdapter,
     TorresQuevedoAdapter,
     ZuseZ1Adapter,
@@ -250,6 +252,20 @@ def _make_curta() -> tuple[Any, MachineAdapter]:
     return m, CurtaAdapter(m)
 
 
+def _make_tally_marks() -> tuple[Any, MachineAdapter]:
+    from .tally_marks import TallyMarksEmulator
+
+    m = TallyMarksEmulator()
+    return m, TallyMarksAdapter(m)
+
+
+def _make_clay_tokens() -> tuple[Any, MachineAdapter]:
+    from .clay_tokens import ClayTokensEmulator
+
+    m = ClayTokensEmulator()
+    return m, ClayTokensAdapter(m)
+
+
 def _make_abacus() -> tuple[Any, MachineAdapter]:
     from .abacus import AbacusEmulator
 
@@ -306,6 +322,37 @@ def _make_ae() -> tuple[Any, MachineAdapter]:
 _BASE = "backend.src.emulator."
 
 MACHINES: list[MachineEntry] = [
+    # -----------------------------------------------------------------------
+    # Prehistoric / ancient counting
+    # -----------------------------------------------------------------------
+    MachineEntry(
+        id="tally-marks",
+        name="Tally Marks (Ishango Bone)",
+        year=-20000,
+        country="Central Africa",
+        inventor="Unknown",
+        category="calculator",
+        brief="Oldest known numerical recording; step() carves a mark, every 5th forms a gate.",
+        program_input_type="none",
+        manual=_load_manual(_BASE + "tally_marks"),
+        example_payload={"delta": 7},
+        factory=_make_tally_marks,
+        tags=["prehistoric", "counting", "bone", "ancient"],
+    ),
+    MachineEntry(
+        id="clay-tokens",
+        name="Clay Tokens (Bullae)",
+        year=-8000,
+        country="Mesopotamia",
+        inventor="Unknown",
+        category="calculator",
+        brief="Commodity accounting with clay tokens sealed in bullae; first known data structure.",
+        program_input_type="none",
+        manual=_load_manual(_BASE + "clay_tokens"),
+        example_payload={"token_type": "grain", "qty": 5},
+        factory=_make_clay_tokens,
+        tags=["Mesopotamia", "accounting", "clay", "ancient"],
+    ),
     # -----------------------------------------------------------------------
     # Astronomical / ancient
     # -----------------------------------------------------------------------

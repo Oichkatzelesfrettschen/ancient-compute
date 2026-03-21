@@ -1,8 +1,8 @@
 # Project Status Dashboard
 
-**Auto-generated**: 2026-03-21 08:20 UTC
+**Auto-generated**: 2026-03-21 08:36 UTC
 **Branch**: `main`
-**Last commit**: `27e4269 feat: add Jacquard Loom as 24th machine (France, 1804)`
+**Last commit**: `9c2cecc feat: add Abacus, Slide Rule, Quipu, and Astrolabe as machines 25-28`
 
 > Regenerate with: `make status`
 
@@ -12,9 +12,9 @@
 
 | Metric | Value |
 |--------|-------|
-| Unit tests collected | 2818 |
+| Unit tests collected | 2840 |
 | Collection errors | 0 |
-| Python source lines (backend/src/) | 45,360 |
+| Python source lines (backend/src/) | 45,662 |
 | Active docs (non-archive .md) | 199 |
 
 ## Phase Status

@@ -393,6 +393,14 @@ def _apply_load(
             machine.set_multiplier_lever(int(payload["multiplier_lever"]))
         if "category" in payload and "value" in payload and hasattr(machine, "encode_number"):
             machine.encode_number(str(payload["category"]), int(payload["value"]))
+        if "token_type" in payload and hasattr(machine, "add_token"):
+            machine.add_token(str(payload["token_type"]), int(payload.get("qty", 1)))
+        if "delta" in payload and hasattr(machine, "step") and callable(machine.step):
+            # TallyMarks: step(delta) takes an int argument; suppress if no-arg step
+            import contextlib
+
+            with contextlib.suppress(TypeError):
+                machine.step(int(payload["delta"]))
 
     elif pit == "date":
         if machine_id == "astrolabe":

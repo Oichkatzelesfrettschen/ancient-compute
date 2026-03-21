@@ -18,6 +18,7 @@ if TYPE_CHECKING:
     from .antikythera import AntikytheraMechanism
     from .astrolabe import AstrolabeEmulator
     from .bombe import Bombe, BombeMenu
+    from .clay_tokens import ClayTokensEmulator
     from .colossus import Colossus
     from .edsac import EDSAC
     from .eniac import ENIAC
@@ -34,6 +35,7 @@ if TYPE_CHECKING:
     from .pascaline import PascalineEmulator
     from .quipu import QuipuEmulator
     from .slide_rule import SlideRuleEmulator
+    from .tally_marks import TallyMarksEmulator
     from .thomas_arithmometer import ThomasArithmometer
     from .zuse_z3 import ZuseZ3
 
@@ -1361,4 +1363,103 @@ class AstrolabeAdapter(MachineAdapter):
             "hour": self._hour,
             "altitude_deg": round(self._last_altitude, 2),
             "steps": self._steps,
+        }
+
+
+class TallyMarksAdapter(MachineAdapter):
+    """Adapter for TallyMarksEmulator (Prehistoric, ~20,000 BCE).
+
+    One step = add 1 tally mark.  Every 5th mark completes a gate (||||/).
+    Represents the oldest known form of numerical recording (Ishango bone).
+    """
+
+    def __init__(self, machine: TallyMarksEmulator) -> None:
+        self.machine = machine
+
+    def get_cycle_count(self) -> int:
+        return int(self.machine.state()["count"])
+
+    def get_current_phase(self) -> MechanicalPhase | None:
+        return None
+
+    def get_column_values(self) -> list[int]:
+        count = int(self.machine.state()["count"])
+        # Each group of 5 is one column; remainder fills the last column.
+        groups = count // 5
+        remainder = count % 5
+        return ([5] * groups + [remainder]) if remainder else ([5] * groups or [0])
+
+    def get_register_values(self) -> dict[str, Any]:
+        count = int(self.machine.state()["count"])
+        return {
+            "count": count,
+            "groups": count // 5,
+            "remainder": count % 5,
+            "tally": self.machine.render(),
+        }
+
+    def get_memory_value(self, address: int) -> Any:
+        cols = self.get_column_values()
+        if 0 <= address < len(cols):
+            return cols[address]
+        return 0
+
+    def step(self) -> None:
+        self.machine.step(1)
+
+    def get_snapshot(self) -> Any:
+        return {
+            "count": int(self.machine.state()["count"]),
+            "tally": self.machine.render(),
+        }
+
+
+class ClayTokensAdapter(MachineAdapter):
+    """Adapter for ClayTokensEmulator (Mesopotamia, ~8,000 BCE).
+
+    One step = add one 'goods' token to the collection.
+    Demonstrates the bulla/envelope accounting system predating cuneiform.
+    """
+
+    def __init__(self, machine: ClayTokensEmulator) -> None:
+        self.machine = machine
+        self._ops = 0
+
+    def get_cycle_count(self) -> int:
+        return self._ops
+
+    def get_current_phase(self) -> MechanicalPhase | None:
+        return None
+
+    def get_column_values(self) -> list[int]:
+        tokens = dict(self.machine.state()["tokens"])
+        return [v for v in list(tokens.values())[:8]]
+
+    def get_register_values(self) -> dict[str, Any]:
+        state = self.machine.state()
+        return {
+            "tokens": dict(state["tokens"]),
+            "sealed": bool(state["sealed"]),
+            "operations": self._ops,
+        }
+
+    def get_memory_value(self, address: int) -> Any:
+        tokens = list(dict(self.machine.state()["tokens"]).values())
+        if 0 <= address < len(tokens):
+            return tokens[address]
+        return 0
+
+    def step(self) -> None:
+        state = self.machine.state()
+        if not state["sealed"]:
+            self.machine.add_token("goods", 1)
+        self._ops += 1
+
+    def get_snapshot(self) -> Any:
+        state = self.machine.state()
+        return {
+            "tokens": dict(state["tokens"]),
+            "sealed": bool(state["sealed"]),
+            "impression": dict(state["impression"]),
+            "operations": self._ops,
         }
