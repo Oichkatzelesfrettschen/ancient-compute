@@ -1,8 +1,8 @@
 # Project Status Dashboard
 
-**Auto-generated**: 2026-03-21 07:45 UTC
+**Auto-generated**: 2026-03-21 08:20 UTC
 **Branch**: `main`
-**Last commit**: `9b5198c feat: Ludgate/Torres step() dispatch + Torres conditional branching`
+**Last commit**: `27e4269 feat: add Jacquard Loom as 24th machine (France, 1804)`
 
 > Regenerate with: `make status`
 
@@ -12,9 +12,9 @@
 
 | Metric | Value |
 |--------|-------|
-| Unit tests collected | 2775 |
+| Unit tests collected | 2818 |
 | Collection errors | 0 |
-| Python source lines (backend/src/) | 45,148 |
+| Python source lines (backend/src/) | 45,360 |
 | Active docs (non-archive .md) | 199 |
 
 ## Phase Status
