@@ -377,6 +377,72 @@ class TestMachinesAPI:
             assert "materials" in item, f"Missing 'materials' on {item['id']}"
             assert "operation_time_ms" in item, f"Missing 'operation_time_ms' on {item['id']}"
 
+    def test_astrolabe_load_sets_date_and_latitude(self, api_client: Any) -> None:
+        """POST /machines/astrolabe/load with a date payload configures the adapter."""
+        api_client.post("/machines/astrolabe/reset")
+        payload = {"payload": {"date": "2026-06-21", "latitude": 48.8}}
+        resp = api_client.post("/machines/astrolabe/load", json=payload)
+        assert resp.status_code == 200
+        # Step once -- adapter should use the new date
+        step_resp = api_client.post("/machines/astrolabe/step")
+        assert step_resp.status_code == 200
+        assert step_resp.json()["cycle_count"] == 1
+
+    def test_astrolabe_state_has_altitude(self, api_client: Any) -> None:
+        """After loading and stepping, state snapshot includes altitude_deg."""
+        api_client.post("/machines/astrolabe/reset")
+        api_client.post("/machines/astrolabe/load",
+                        json={"payload": {"date": "2026-03-20", "latitude": 0.0}})
+        api_client.post("/machines/astrolabe/step")
+        state_resp = api_client.get("/machines/astrolabe/state")
+        snap = state_resp.json()["snapshot"]
+        assert "altitude_deg" in snap
+        assert -90.0 <= snap["altitude_deg"] <= 90.0
+
+    def test_hollerith_load_deck_via_api(self, api_client: Any) -> None:
+        """POST /machines/hollerith-tabulator/load with a data_deck payload."""
+        api_client.post("/machines/hollerith-tabulator/reset")
+        payload = {"payload": {"cards": [{"row": 0, "columns": [1, 3, 5, 7]}]}}
+        resp = api_client.post("/machines/hollerith-tabulator/load", json=payload)
+        assert resp.status_code == 200
+
+    def test_antikythera_load_years_via_api(self, api_client: Any) -> None:
+        """POST /machines/antikythera/load with years payload."""
+        api_client.post("/machines/antikythera/reset")
+        payload = {"payload": {"years": 4.0}}
+        resp = api_client.post("/machines/antikythera/load", json=payload)
+        assert resp.status_code == 200
+        step_resp = api_client.post("/machines/antikythera/step")
+        assert step_resp.status_code == 200
+
+    def test_analytical_engine_assembly_load_and_step(self, api_client: Any) -> None:
+        """POST /machines/analytical-engine/load with assembly source + run."""
+        api_client.post("/machines/analytical-engine/reset")
+        payload = {"payload": {"source": "LOAD A, 3\nLOAD B, 4\nADD A, B\nHALT"}}
+        resp = api_client.post("/machines/analytical-engine/load", json=payload)
+        assert resp.status_code == 200
+
+    def test_load_unknown_machine_404(self, api_client: Any) -> None:
+        resp = api_client.post("/machines/nonexistent/load",
+                               json={"payload": {}})
+        assert resp.status_code == 404
+
+    def test_run_unknown_machine_404(self, api_client: Any) -> None:
+        resp = api_client.post("/machines/ghost/run")
+        assert resp.status_code == 404
+
+    def test_step_returns_cycle_count(self, api_client: Any) -> None:
+        """step() response always includes cycle_count."""
+        api_client.post("/machines/pascaline/reset")
+        resp = api_client.post("/machines/pascaline/step")
+        assert resp.status_code == 200
+        assert "cycle_count" in resp.json()
+
+    def test_list_returns_30_machines(self, api_client: Any) -> None:
+        resp = api_client.get("/machines")
+        assert resp.status_code == 200
+        assert len(resp.json()) == 30
+
 
 # ---------------------------------------------------------------------------
 # Registry data: materials and timing constants

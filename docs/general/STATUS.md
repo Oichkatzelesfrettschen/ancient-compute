@@ -1,8 +1,8 @@
 # Project Status Dashboard
 
-**Auto-generated**: 2026-03-21 15:35 UTC
+**Auto-generated**: 2026-03-21 15:53 UTC
 **Branch**: `main`
-**Last commit**: `ba2c997 chore: fix 12 ruff violations in simulation tools`
+**Last commit**: `6500362 test: expand Curta and ENIAC test suites`
 
 > Regenerate with: `make status`
 
@@ -12,7 +12,7 @@
 
 | Metric | Value |
 |--------|-------|
-| Unit tests collected | 3014 |
+| Unit tests collected | 3055 |
 | Collection errors | 0 |
 | Python source lines (backend/src/) | 46,451 |
 | Active docs (non-archive .md) | 200 |
