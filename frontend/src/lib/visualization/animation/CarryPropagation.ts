@@ -134,7 +134,7 @@ export class CarryPropagation {
     if (leverIndex < 0 || leverIndex >= this.leverCount) {
       return 0;
     }
-    return this.leverAnimations[leverIndex].engagementRadians;
+    return this.leverAnimations[leverIndex]!.engagementRadians;
   }
 
   /**
@@ -151,7 +151,7 @@ export class CarryPropagation {
     if (leverIndex < 0 || leverIndex >= this.leverCount) {
       return false;
     }
-    return this.leverAnimations[leverIndex].isEngaged;
+    return this.leverAnimations[leverIndex]!.isEngaged;
   }
 
   /**
@@ -161,7 +161,7 @@ export class CarryPropagation {
     if (leverIndex < 0 || leverIndex >= this.leverCount) {
       return false;
     }
-    return this.leverAnimations[leverIndex].isComplete;
+    return this.leverAnimations[leverIndex]!.isComplete;
   }
 
   /**
@@ -252,7 +252,7 @@ export class CarryPropagation {
     if (leverIndex < 0 || leverIndex >= this.leverCount) {
       return null;
     }
-    return { ...this.leverAnimations[leverIndex] };
+    return { ...this.leverAnimations[leverIndex]! };
   }
 
   /**
@@ -311,7 +311,7 @@ export function createCarryPropagationSequence(
       endValue: Math.PI / 2, // π/2 radians (90°)
       duration: 160, // 160ms engagement
       startTime: leverStartTime,
-      easing: 'easeInOutCubic'
+      easing: 'easeInOutCubic' as const
     });
   }
 

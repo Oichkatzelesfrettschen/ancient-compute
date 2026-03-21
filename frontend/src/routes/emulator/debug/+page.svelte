@@ -1,6 +1,7 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { toolsApi, type DebugState, type PerformanceReport } from '$lib/api/tools';
+    import { toolsApi } from '$lib/api/tools';
+    import type { DebugState, PerformanceReport } from '$lib/types/index';
     import DebuggerControls from '$lib/components/emulator/DebuggerControls.svelte';
     import RegisterView from '$lib/components/emulator/RegisterView.svelte';
     import PerformanceView from '$lib/components/emulator/PerformanceView.svelte';
@@ -9,6 +10,8 @@
     let perfReport: PerformanceReport | null = null;
     let isPaused = true;
     let error: string | null = null;
+
+    $: snap = (state?.snapshot as unknown) as Record<string, unknown>;
 
     async function step() {
         try {
@@ -77,23 +80,23 @@
                 <RegisterView registers={state.registers} title="Machine State" />
                 
                 <!-- Curta Specific Visualization -->
-                {#if state.snapshot && state.snapshot.sliders}
+                {#if snap && snap['sliders']}
                      <div class="curta-panel">
-                         <RegisterView 
-                            registers={state.snapshot.sliders} 
-                            title="Curta Sliders (Input)" 
-                            useDials={true} 
+                         <RegisterView
+                            registers={snap['sliders']}
+                            title="Curta Sliders (Input)"
+                            useDials={true}
                          />
-                         
+
                          <!-- Split Result into digits for dial view? For now, raw value -->
                          <div class="dials-row">
                              <div class="dial-group">
                                  <h4>Result Dial</h4>
-                                 <div class="digital-display">{state.snapshot.result}</div>
+                                 <div class="digital-display">{snap['result']}</div>
                              </div>
                              <div class="dial-group">
                                  <h4>Counter Dial</h4>
-                                 <div class="digital-display">{state.snapshot.counter}</div>
+                                 <div class="digital-display">{snap['counter']}</div>
                              </div>
                          </div>
                      </div>

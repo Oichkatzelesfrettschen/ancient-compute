@@ -423,7 +423,7 @@ describe('Utility Functions', () => {
       const shafts = createAllShaftRotations(rotations, newRotations, 200);
 
       for (let i = 0; i < 8; i++) {
-        expect(shafts[i].getShaftId()).toBe(i);
+        expect(shafts[i]!.getShaftId()).toBe(i);
       }
     });
 
@@ -433,8 +433,8 @@ describe('Utility Functions', () => {
 
       const shafts = createAllShaftRotations(rotations, newRotations, 500);
 
-      shafts[0].update(250);
-      expect(shafts[0].getProgress()).toBeCloseTo(0.5, 1);
+      shafts[0]!.update(250);
+      expect(shafts[0]!.getProgress()).toBeCloseTo(0.5, 1);
     });
   });
 });

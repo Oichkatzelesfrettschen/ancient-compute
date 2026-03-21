@@ -80,7 +80,7 @@ export class ColumnValueAnimation {
       return;
     }
 
-    const wheel = this.wheelAnimations[wheelIndex];
+    const wheel = this.wheelAnimations[wheelIndex]!;
     const oldValue = wheel.currentValue;
 
     // Calculate shortest rotation path
@@ -117,7 +117,7 @@ export class ColumnValueAnimation {
     }
 
     for (let i = 0; i < this.wheelsPerColumn; i++) {
-      this.animateWheelToValue(i, newValues[i]);
+      this.animateWheelToValue(i, newValues[i]!);
     }
   }
 
@@ -160,7 +160,7 @@ export class ColumnValueAnimation {
     if (wheelIndex < 0 || wheelIndex >= this.wheelsPerColumn) {
       return 0;
     }
-    return this.wheelAnimations[wheelIndex].currentRotation;
+    return this.wheelAnimations[wheelIndex]!.currentRotation;
   }
 
   /**
@@ -177,7 +177,7 @@ export class ColumnValueAnimation {
     if (wheelIndex < 0 || wheelIndex >= this.wheelsPerColumn) {
       return 0;
     }
-    return Math.round(this.wheelAnimations[wheelIndex].currentValue);
+    return Math.round(this.wheelAnimations[wheelIndex]!.currentValue);
   }
 
   /**
@@ -201,7 +201,7 @@ export class ColumnValueAnimation {
     if (wheelIndex < 0 || wheelIndex >= this.wheelsPerColumn) {
       return false;
     }
-    return this.wheelAnimations[wheelIndex].isAnimating;
+    return this.wheelAnimations[wheelIndex]!.isAnimating;
   }
 
   /**
@@ -258,7 +258,7 @@ export class ColumnValueAnimation {
     if (wheelIndex < 0 || wheelIndex >= this.wheelsPerColumn) {
       return null;
     }
-    return { ...this.wheelAnimations[wheelIndex] };
+    return { ...this.wheelAnimations[wheelIndex]! };
   }
 
   /**
@@ -334,16 +334,16 @@ export function createColumnValueAnimationSequence(
   // Create staggered animations for each wheel in column
   for (let wheelIndex = 0; wheelIndex < newValues.length; wheelIndex++) {
     const wheelStartTime = startTime + wheelIndex * staggerDelayMs;
-    const magnitude = Math.abs(newValues[wheelIndex]); // Simplified; assumes starting from 0
+    const magnitude = Math.abs(newValues[wheelIndex]!); // Simplified; assumes starting from 0
     const duration = 150 + (magnitude - 1) * 20;
 
     sequences.push({
       targetObject: `column${columnIndex}wheel${wheelIndex}`,
       startValue: 0,
-      endValue: (newValues[wheelIndex] * 36 * Math.PI) / 180, // Convert to radians
+      endValue: (newValues[wheelIndex]! * 36 * Math.PI) / 180, // Convert to radians
       duration,
       startTime: wheelStartTime,
-      easing: 'easeInOutCubic'
+      easing: 'easeInOutCubic' as const
     });
   }
 

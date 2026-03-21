@@ -39,6 +39,7 @@ describe('Timeline', () => {
         endValue: 10,
         duration: 1000,
         startTime: 0,
+        propertyName: 'value',
         easing: 'linear'
       };
 
@@ -56,6 +57,7 @@ describe('Timeline', () => {
           endValue: 10,
           duration: 1000,
           startTime: 0,
+          propertyName: 'value',
           easing: 'linear'
         },
         {
@@ -64,6 +66,7 @@ describe('Timeline', () => {
           endValue: 20,
           duration: 1000,
           startTime: 0,
+          propertyName: 'value',
           easing: 'linear'
         }
       ];
@@ -80,6 +83,7 @@ describe('Timeline', () => {
         endValue: 10,
         duration: 1000,
         startTime: 0,
+        propertyName: 'value',
         easing: 'linear'
       };
 
@@ -138,6 +142,7 @@ describe('Timeline', () => {
         endValue: 10,
         duration: 1000,
         startTime: 0,
+        propertyName: 'value',
         easing: 'linear'
       };
 
@@ -159,6 +164,7 @@ describe('Timeline', () => {
         endValue: 10,
         duration: 1000,
         startTime: 0,
+        propertyName: 'value',
         easing: 'linear'
       };
 
@@ -179,6 +185,7 @@ describe('Timeline', () => {
         endValue: 10,
         duration: 1000,
         startTime: 0,
+        propertyName: 'value',
         easing: 'linear'
       };
 
@@ -197,6 +204,7 @@ describe('Timeline', () => {
         endValue: 10,
         duration: 100,
         startTime: 0,
+        propertyName: 'value',
         easing: 'linear'
       };
 
@@ -218,6 +226,7 @@ describe('Timeline', () => {
         endValue: 100,
         duration: 1000,
         startTime: 0,
+        propertyName: 'value',
         easing: 'linear'
       };
 
@@ -243,6 +252,7 @@ describe('Timeline', () => {
         endValue: 10,
         duration: 100,
         startTime: 0,
+        propertyName: 'value',
         easing: 'linear'
       };
 
@@ -261,6 +271,7 @@ describe('Timeline', () => {
           endValue: 10,
           duration: 100,
           startTime: 0,
+          propertyName: 'value',
           easing: 'linear'
         },
         {
@@ -269,6 +280,7 @@ describe('Timeline', () => {
           endValue: 20,
           duration: 100,
           startTime: 0,
+          propertyName: 'value',
           easing: 'linear'
         }
       ];
@@ -299,6 +311,7 @@ describe('Timeline', () => {
         endValue: 10,
         duration: 1000,
         startTime: 0,
+        propertyName: 'value',
         easing: 'linear'
       };
 
@@ -322,6 +335,7 @@ describe('Timeline', () => {
         endValue: 10,
         duration: 1000,
         startTime: 0,
+        propertyName: 'value',
         easing: 'linear'
       };
 
@@ -345,6 +359,7 @@ describe('Timeline', () => {
         endValue: 10,
         duration: 100,
         startTime: 0,
+        propertyName: 'value',
         easing: 'linear'
       };
 
@@ -370,6 +385,7 @@ describe('Timeline', () => {
         endValue: 10,
         duration: 100,
         startTime: 0,
+        propertyName: 'value',
         easing: 'linear'
       };
 
@@ -382,7 +398,7 @@ describe('Timeline', () => {
   });
 
   describe('Completion Callbacks', () => {
-    it('should invoke completion callback', (done) => {
+    it('should invoke completion callback', (done: (error?: Error) => void) => {
       const callback = vi.fn(() => {
         done();
       });
@@ -393,6 +409,7 @@ describe('Timeline', () => {
         endValue: 10,
         duration: 100,
         startTime: 0,
+        propertyName: 'value',
         easing: 'linear'
       };
 
@@ -402,7 +419,7 @@ describe('Timeline', () => {
 
       // Give callback time to execute
       setTimeout(() => {
-        if (!callback.mock.called) {
+        if (callback.mock.calls.length === 0) {
           done();
         }
       }, 10);
@@ -419,6 +436,7 @@ describe('Timeline', () => {
         endValue: 10,
         duration: 100,
         startTime: 0,
+        propertyName: 'value',
         easing: 'linear'
       };
 
@@ -439,6 +457,7 @@ describe('Timeline', () => {
           endValue: 10,
           duration: 1000,
           startTime: 0,
+          propertyName: 'value',
           easing: 'linear'
         },
         {
@@ -447,6 +466,7 @@ describe('Timeline', () => {
           endValue: 20,
           duration: 1000,
           startTime: 100,
+          propertyName: 'value',
           easing: 'linear'
         }
       ];
@@ -471,6 +491,7 @@ describe('Timeline', () => {
           endValue: 10,
           duration: 1000,
           startTime: 0,
+          propertyName: 'value',
           easing: 'linear'
         },
         {
@@ -479,6 +500,7 @@ describe('Timeline', () => {
           endValue: 20,
           duration: 500,
           startTime: 1000,
+          propertyName: 'value',
           easing: 'linear'
         }
       ];
@@ -511,6 +533,7 @@ describe('Timeline', () => {
         endValue: 10,
         duration: 1000,
         startTime: 0,
+        propertyName: 'value',
         easing: 'linear'
       };
 
@@ -528,6 +551,7 @@ describe('Timeline', () => {
         endValue: 10,
         duration: 0,
         startTime: 0,
+        propertyName: 'value',
         easing: 'linear'
       };
 
@@ -545,6 +569,7 @@ describe('Timeline', () => {
         endValue: 10,
         duration: 1000,
         startTime: 0,
+        propertyName: 'value',
         easing: 'linear'
       };
 
@@ -562,6 +587,7 @@ describe('Timeline', () => {
         endValue: 10,
         duration: 100,
         startTime: 0,
+        propertyName: 'value',
         easing: 'linear'
       };
 

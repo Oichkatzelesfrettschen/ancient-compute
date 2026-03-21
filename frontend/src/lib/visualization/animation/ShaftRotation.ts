@@ -343,7 +343,7 @@ export function createAllShaftRotations(
 ): ShaftRotation[] {
   const rotations: ShaftRotation[] = [];
   for (let i = 0; i < 8; i++) {
-    rotations.push(new ShaftRotation(i, shaftRotations[i], newRotations[i], durationMs));
+    rotations.push(new ShaftRotation(i, shaftRotations[i]!, newRotations[i]!, durationMs));
   }
   return rotations;
 }

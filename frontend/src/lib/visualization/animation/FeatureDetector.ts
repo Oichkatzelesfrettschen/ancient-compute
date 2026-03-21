@@ -116,7 +116,7 @@ export class FeatureDetector {
         this.queryCapabilities(this.gl as WebGL2RenderingContext, caps);
       } else {
         // Fall back to WebGL 1.0
-        this.gl = this.canvas.getContext('webgl') || this.canvas.getContext('experimental-webgl');
+        this.gl = (this.canvas.getContext('webgl') || this.canvas.getContext('experimental-webgl')) as WebGLRenderingContext | null;
         if (this.gl) {
           caps.supportsWebGL1 = true;
           this.queryCapabilities(this.gl, caps);
@@ -306,7 +306,7 @@ export class FeatureDetector {
    */
   supportsFeature(feature: keyof Omit<WebGLCapabilities, 'platform' | 'gpuVendor' | 'deviceTier'>): boolean {
     const caps = this.getCapabilities();
-    return caps[feature as any] === true;
+    return (caps as unknown as Record<string, unknown>)[feature] === true;
   }
 
   /**

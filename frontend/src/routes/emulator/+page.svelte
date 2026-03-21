@@ -20,13 +20,19 @@
 		if (results.length > 0) {
 			// Get the last state as current
 			const lastResult = results[results.length - 1];
-			if (lastResult.state) {
+			if (lastResult?.state) {
 				machineState = lastResult.state;
 			}
 
 			// Update mold progress (approximation)
 			moldProgress = Math.min(50, results.length);
 		}
+	}
+
+	function onResults(e: CustomEvent) { handleExecutionResults(e.detail); }
+	function onStateUpdate(e: CustomEvent) {
+		machineState = e.detail;
+		isPaused = e.detail.paused;
 	}
 </script>
 
@@ -50,11 +56,8 @@
 		<!-- Left Column: Controls and Input -->
 		<aside class="control-sidebar">
 			<EmulatorControl
-				on:results={(e) => handleExecutionResults(e.detail)}
-				on:stateUpdate={(e) => {
-					machineState = e.detail;
-					isPaused = e.detail.paused;
-				}}
+				on:results={onResults}
+				on:stateUpdate={onStateUpdate}
 			/>
 		</aside>
 

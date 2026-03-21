@@ -44,7 +44,7 @@ const masteryLevels: MasteryBadge[] = [
 // Calculate mastery level from progress percentage
 function getMasteryLevel(progress: number): MasteryBadge {
   return (
-    masteryLevels.slice().reverse().find((m) => progress >= m.threshold) || masteryLevels[0]
+    masteryLevels.slice().reverse().find((m) => progress >= m.threshold) || masteryLevels[0]!
   );
 }
 
@@ -52,11 +52,11 @@ function getMasteryLevel(progress: number): MasteryBadge {
 function getRecentCompletions(state: any): CompletionEvent[] {
   const events: CompletionEvent[] = [];
 
-  state.eras.forEach((era) => {
+  state.eras.forEach((era: any) => {
     const eraLabel = era.label;
     const eraColor = era.color;
 
-    era.modules.forEach((module) => {
+    era.modules.forEach((module: any) => {
       module.lessons?.forEach((lesson: Lesson) => {
         if (lesson.completed && lesson.completedAt) {
           events.push({
@@ -99,8 +99,8 @@ function calculateStats(state: any) {
   let completedExercises = 0;
   let totalHours = 0;
 
-  state.eras.forEach((era) => {
-    era.modules.forEach((module) => {
+  state.eras.forEach((era: any) => {
+    era.modules.forEach((module: any) => {
       totalLessons += module.lessons?.length || 0;
       completedLessons += module.lessons?.filter((l: Lesson) => l.completed).length || 0;
 
@@ -202,7 +202,7 @@ $: eraProgresses = state.eras.map((era) => {
             <div class="badge-level">{currentMastery.label}</div>
             <div class="badge-next">
               {#if currentMastery.level < 4}
-                {masteryLevels[currentMastery.level + 1].threshold}% to next
+                {masteryLevels[currentMastery.level + 1]?.threshold}% to next
               {:else}
                 Maximum mastery!
               {/if}

@@ -64,7 +64,7 @@ export class RenderingLoop {
   private lastSecondTime: number = 0;
   private fps: number = 60;
   private maxFrameTime: number = 0;
-  private minFrameTime: Infinity = Infinity;
+  private minFrameTime: number = Infinity;
 
   // Update callbacks
   private updateCallbacks: Map<string, UpdateCallback> = new Map();

@@ -38,8 +38,6 @@ function getCylinderGeometry(
   }
 
   const geometry = new THREE.CylinderGeometry(radiusTop, radiusBottom, height, segments);
-  geometry.castShadow = true;
-  geometry.receiveShadow = true;
   GeometryCache.cylinderGeometries.set(key, geometry);
 
   return geometry;
@@ -56,8 +54,6 @@ function getBoxGeometry(width: number, height: number, depth: number): THREE.Box
   }
 
   const geometry = new THREE.BoxGeometry(width, height, depth);
-  geometry.castShadow = true;
-  geometry.receiveShadow = true;
   GeometryCache.boxGeometries.set(key, geometry);
 
   return geometry;
@@ -74,8 +70,6 @@ function getTorusGeometry(radius: number, tube: number, segments: number = 32): 
   }
 
   const geometry = new THREE.TorusGeometry(radius, tube, segments, segments);
-  geometry.castShadow = true;
-  geometry.receiveShadow = true;
   GeometryCache.torusGeometries.set(key, geometry);
 
   return geometry;
@@ -260,7 +254,7 @@ export class GeometryBuilder {
 
     for (const pos of columnPositions) {
       const supportMesh = new THREE.Mesh(supportGeometry, frameMaterial);
-      supportMesh.position.set(pos[0], pos[1], pos[2]);
+      supportMesh.position.set(pos[0]!, pos[1]!, pos[2]!);
       supportMesh.castShadow = true;
       supportMesh.receiveShadow = true;
       frameGroup.add(supportMesh);
@@ -298,28 +292,28 @@ export class GeometryBuilder {
    */
   getDigitWheel(columnIndex: number, wheelIndex: number): THREE.Mesh | null {
     const index = columnIndex * 31 + wheelIndex;
-    return index < this.digitWheels.length ? this.digitWheels[index] : null;
+    return index < this.digitWheels.length ? (this.digitWheels[index] ?? null) : null;
   }
 
   /**
    * Get shaft mesh
    */
   getShaft(shaftIndex: number): THREE.Mesh | null {
-    return shaftIndex < this.shaftCylinders.length ? this.shaftCylinders[shaftIndex] : null;
+    return shaftIndex < this.shaftCylinders.length ? (this.shaftCylinders[shaftIndex] ?? null) : null;
   }
 
   /**
    * Get carry lever mesh
    */
   getCarryLever(leverIndex: number): THREE.Mesh | null {
-    return leverIndex < this.carryLevers.length ? this.carryLevers[leverIndex] : null;
+    return leverIndex < this.carryLevers.length ? (this.carryLevers[leverIndex] ?? null) : null;
   }
 
   /**
    * Get engagement indicator mesh
    */
   getEngagementIndicator(leverIndex: number): THREE.Mesh | null {
-    return leverIndex < this.engagementIndicators.length ? this.engagementIndicators[leverIndex] : null;
+    return leverIndex < this.engagementIndicators.length ? (this.engagementIndicators[leverIndex] ?? null) : null;
   }
 
   /**

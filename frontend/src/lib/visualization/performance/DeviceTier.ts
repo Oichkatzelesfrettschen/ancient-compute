@@ -10,7 +10,7 @@
  * smooth animation (target 60 FPS) on that class of hardware
  */
 
-import type { SystemCapabilities } from './FeatureDetector';
+import type { WebGLCapabilities } from '../animation/FeatureDetector';
 
 export type DeviceTierLevel = 'low' | 'medium' | 'high';
 
@@ -58,10 +58,10 @@ export interface DeviceTier {
 /**
  * Determine device tier from system capabilities
  */
-export function classifyDeviceTier(capabilities: SystemCapabilities): DeviceTier {
+export function classifyDeviceTier(capabilities: WebGLCapabilities): DeviceTier {
   const score = calculateScore(capabilities);
 
-  if (capabilities.isLowEnd || score < 35) {
+  if (score < 35) {
     return {
       level: 'low',
       score,
@@ -91,40 +91,28 @@ export function classifyDeviceTier(capabilities: SystemCapabilities): DeviceTier
  * Calculate performance score (0-100)
  * Used to determine device tier thresholds
  */
-function calculateScore(capabilities: SystemCapabilities): number {
+function calculateScore(capabilities: WebGLCapabilities): number {
   let score = 50;
 
-  // GPU VRAM (up to 25 points)
-  if (capabilities.gpu.vramEstimate >= 2048) score += 25;
-  else if (capabilities.gpu.vramEstimate >= 1024) score += 20;
-  else if (capabilities.gpu.vramEstimate >= 512) score += 15;
-  else if (capabilities.gpu.vramEstimate >= 256) score += 5;
+  // WebGL2 support (up to 25 points)
+  if (capabilities.supportsWebGL2) score += 25;
 
-  // GPU Type (up to 20 points)
-  if (!capabilities.gpu.isIntegrated) score += 20;
+  // GPU vendor / integrated detection (up to 20 points)
+  const integrated = /intel|mali|adreno|powervr/i.test(capabilities.gpuVendor);
+  if (!integrated) score += 20;
 
   // Max Texture Size (up to 20 points)
-  if (capabilities.gpu.maxTextureSize >= 4096) score += 20;
-  else if (capabilities.gpu.maxTextureSize >= 2048) score += 15;
-  else if (capabilities.gpu.maxTextureSize >= 1024) score += 10;
+  if (capabilities.maxTextureSize >= 4096) score += 20;
+  else if (capabilities.maxTextureSize >= 2048) score += 15;
+  else if (capabilities.maxTextureSize >= 1024) score += 10;
 
-  // Features (up to 20 points)
+  // Extension-based features (up to 20 points)
   let featureScore = 0;
-  if (capabilities.features.anisotropic) featureScore += 5;
-  if (capabilities.features.depthTexture) featureScore += 5;
-  if (capabilities.features.shadowMapping) featureScore += 5;
-  if (capabilities.features.instancedArrays) featureScore += 5;
+  if (capabilities.supportsComputeShaders) featureScore += 5;
+  if (capabilities.supportsShaderStorageBufferObject) featureScore += 5;
+  if (capabilities.supportsTimerQuery) featureScore += 5;
+  if (capabilities.supportsQueryObjects) featureScore += 5;
   score += featureScore;
-
-  // CPU (up to 15 points)
-  if (capabilities.cpuCores >= 8) score += 15;
-  else if (capabilities.cpuCores >= 4) score += 10;
-  else score += 5;
-
-  // Memory (up to 10 points)
-  if (capabilities.memoryGB >= 8) score += 10;
-  else if (capabilities.memoryGB >= 4) score += 7;
-  else if (capabilities.memoryGB >= 2) score += 4;
 
   return Math.min(100, score);
 }
@@ -134,7 +122,7 @@ function calculateScore(capabilities: SystemCapabilities): number {
  * Minimal effect: 640p textures, no shadows, minimal post-processing
  * Target: 60 FPS on integrated GPUs
  */
-function getLowQualitySettings(capabilities: SystemCapabilities): RenderingQuality {
+function getLowQualitySettings(capabilities: WebGLCapabilities): RenderingQuality {
   return {
     shadowMapSize: 0, // Disabled
     reflectionQuality: 'none',
@@ -158,12 +146,12 @@ function getLowQualitySettings(capabilities: SystemCapabilities): RenderingQuali
  * Balanced: 1024p textures, simple shadows, some post-processing
  * Target: 60 FPS on mid-range GPUs
  */
-function getMediumQualitySettings(capabilities: SystemCapabilities): RenderingQuality {
+function getMediumQualitySettings(capabilities: WebGLCapabilities): RenderingQuality {
   return {
     shadowMapSize: 512,
     reflectionQuality: 'low',
     msaaSamples: 2,
-    useAnisotropicFiltering: capabilities.features.anisotropic,
+    useAnisotropicFiltering: capabilities.supportsWebGL2,
     maxTextureResolution: 1024,
     particleCountMultiplier: 1.0,
     targetFrameRate: 60,
@@ -182,7 +170,7 @@ function getMediumQualitySettings(capabilities: SystemCapabilities): RenderingQu
  * Maximum quality: 4K textures, advanced shadows, full post-processing
  * Target: 90+ FPS on high-end GPUs
  */
-function getHighQualitySettings(capabilities: SystemCapabilities): RenderingQuality {
+function getHighQualitySettings(capabilities: WebGLCapabilities): RenderingQuality {
   return {
     shadowMapSize: 2048,
     reflectionQuality: 'high',

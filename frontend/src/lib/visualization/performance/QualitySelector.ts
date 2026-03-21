@@ -31,40 +31,7 @@ export interface QualitySelector {
  * This bridges animation/FeatureDetector with DeviceTier quality system
  */
 export function selectQualityFromWebGL(capabilities: WebGLCapabilities): QualitySelector {
-  // Convert WebGL capabilities to our DeviceTier-compatible format
-  const systemCapabilities = {
-    gpu: {
-      vendor: capabilities.gpuVendor,
-      renderer: 'WebGL Device',
-      maxTextureSize: capabilities.maxTextureSize,
-      maxCubemapSize: capabilities.maxCubeMapTextureSize,
-      maxRenderBufferSize: capabilities.maxRenderbufferSize,
-      vramEstimate: estimateVRAM(capabilities.maxTextureSize),
-      isIntegrated: detectIntegratedGPU(capabilities),
-      supportsHighPrecision: capabilities.supportsWebGL2,
-    },
-    features: {
-      anisotropic: false, // Will be expanded if needed
-      compression: {
-        s3tc: false,
-        astc: false,
-        bptc: false,
-      },
-      shadowMapping: false,
-      depthTexture: false,
-      drawBuffers: capabilities.supportsDrawIndirect || capabilities.maxDrawBuffers > 1,
-      instancedArrays: false,
-      standardDerivatives: false,
-      textureHalf: false,
-      textureFloat: false,
-      VAO: false,
-    },
-    cpuCores: navigator.hardwareConcurrency || 4,
-    memoryGB: (navigator as any).deviceMemory || 8,
-    isLowEnd: capabilities.deviceTier === 'LOW',
-  };
-
-  const deviceTier = classifyDeviceTier(systemCapabilities);
+  const deviceTier = classifyDeviceTier(capabilities);
   const performanceScore = calculatePerformanceScore(capabilities);
 
   return {

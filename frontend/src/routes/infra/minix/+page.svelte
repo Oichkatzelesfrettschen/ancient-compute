@@ -9,6 +9,9 @@
   let csvUrl = '';
   let series: { t: Date; cpu: number; rss: number; dRead: number; dWrite: number }[] = [];
   let selectedRun: string = '';
+  $: recentBootTimes = ((summary?.recent || []) as { boot_duration_ms: number }[]).map(
+    (r) => r.boot_duration_ms
+  );
 
   async function fetchJson(path: string) {
     const res = await fetch(path);
@@ -23,9 +26,9 @@
     const rows = text.trim().split(/\r?\n/);
     const out: any[] = [];
     for (let i = 1; i < rows.length; i++) {
-      const cols = rows[i].split(',');
+      const cols = rows[i]!.split(',');
       if (cols.length < 7) continue;
-      const t = new Date(cols[0]);
+      const t = new Date(cols[0]!);
       const cpu = parseFloat(cols[1] || '0');
       const rss = (parseFloat(cols[2] || '0')) / 1024.0; // MB
       const dRead = parseFloat(cols[5] || '0');
@@ -96,7 +99,7 @@
   </ul>
   <div class="chart">
          <h3>Boot Time Trend (recent runs)</h3>
-         {@html lineChart((summary.recent || []).map(r => r.boot_duration_ms), { color: '#7b61ff' })}
+         {@html lineChart(recentBootTimes, { color: '#7b61ff' })}
        </div>
        {:else}  <p>No summary available.</p>
   {/if}

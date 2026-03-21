@@ -185,7 +185,7 @@ export class StateAnimator {
 
     for (let columnIndex = 0; columnIndex < 8; columnIndex++) {
       const columnStartTime = startTime + columnIndex * staggerMs;
-      const columnState = newState.columns[columnIndex];
+      const columnState = newState.columnStates[columnIndex];
       const values = this.extractColumnValues(columnState);
 
       // Create animation steps for column
@@ -233,8 +233,8 @@ export class StateAnimator {
 
     for (let shaftIndex = 0; shaftIndex < 8; shaftIndex++) {
       const shaftStartTime = startTime + shaftIndex * staggerMs;
-      const shaftState = newState.shafts[shaftIndex];
-      const targetAngle = shaftState.rotationRadians;
+      const shaftState = newState.shafts[shaftIndex]!;
+      const targetAngle = shaftState.rotation;
 
       // Create animation step for shaft
       const shaftAnimationStep = this.createShaftRotationStep(
@@ -260,7 +260,7 @@ export class StateAnimator {
       // Convert decimal to individual digits
       const valueStr = String(columnState.digitalValue).padStart(31, '0');
       for (let i = 0; i < 31; i++) {
-        values.push(parseInt(valueStr[i], 10));
+        values.push(parseInt(valueStr[i]!, 10));
       }
     } else {
       // Default: all zeros
@@ -280,6 +280,7 @@ export class StateAnimator {
     startTime: number
   ): Array<{
     targetObject: string;
+    propertyName: string;
     startValue: number;
     endValue: number;
     duration: number;
@@ -290,18 +291,19 @@ export class StateAnimator {
     const wheelStaggerMs = 5; // 5ms between wheels in same column
 
     for (let wheelIndex = 0; wheelIndex < values.length; wheelIndex++) {
-      const wheelValue = values[wheelIndex];
+      const wheelValue = values[wheelIndex]!;
       const wheelStartTime = startTime + wheelIndex * wheelStaggerMs;
       const degreesPerValue = 36; // 360° / 10 values
       const endRotationRadians = (wheelValue * degreesPerValue * Math.PI) / 180;
 
       steps.push({
         targetObject: `column${columnIndex}wheel${wheelIndex}`,
+        propertyName: 'rotation',
         startValue: 0,
         endValue: endRotationRadians,
         duration: this.columnDurationBaseMs,
         startTime: wheelStartTime,
-        easing: 'easeInOutCubic'
+        easing: 'easeInOutCubic' as const
       });
     }
 
@@ -316,6 +318,7 @@ export class StateAnimator {
     startTime: number
   ): Array<{
     targetObject: string;
+    propertyName: string;
     startValue: number;
     endValue: number;
     duration: number;
@@ -327,16 +330,17 @@ export class StateAnimator {
     // Create staggered animations for 8 carry levers
     for (let leverIndex = 0; leverIndex < 8; leverIndex++) {
       const leverStartTime = startTime + leverIndex * this.carryStaggerMs;
-      const leverState = newState.carryLevers[leverIndex];
+      const leverState = newState.carryLevers[leverIndex]!;
       const isEngaged = leverState.isEngaged;
 
       steps.push({
         targetObject: `carryLever${leverIndex}`,
+        propertyName: 'engaged',
         startValue: 0,
         endValue: isEngaged ? Math.PI / 2 : 0, // 0° to 90°
         duration: 160, // 160ms engagement
         startTime: leverStartTime,
-        easing: 'easeInOutCubic'
+        easing: 'easeInOutCubic' as const
       });
     }
 
@@ -352,6 +356,7 @@ export class StateAnimator {
     startTime: number
   ): {
     targetObject: string;
+    propertyName: string;
     startValue: number;
     endValue: number;
     duration: number;
@@ -360,11 +365,12 @@ export class StateAnimator {
   } {
     return {
       targetObject: `shaft${shaftIndex}`,
+      propertyName: 'rotation',
       startValue: 0,
       endValue: targetAngle,
       duration: this.shaftDurationBaseMs,
       startTime,
-      easing: 'easeInOutCubic'
+      easing: 'easeInOutCubic' as const
     };
   }
 
@@ -382,7 +388,7 @@ export class StateAnimator {
     if (shaftIndex < 0 || shaftIndex >= this.shaftRotations.length) {
       return null;
     }
-    return this.shaftRotations[shaftIndex];
+    return this.shaftRotations[shaftIndex] ?? null;
   }
 
   /**
@@ -392,7 +398,7 @@ export class StateAnimator {
     if (columnIndex < 0 || columnIndex >= this.columnAnimations.length) {
       return null;
     }
-    return this.columnAnimations[columnIndex];
+    return this.columnAnimations[columnIndex] ?? null;
   }
 
   /**

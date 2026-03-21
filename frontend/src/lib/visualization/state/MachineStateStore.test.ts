@@ -41,8 +41,8 @@ describe('MachineStateStore', () => {
       const state = store.getState();
       expect(state.columnStates).toHaveLength(8);
       for (let i = 0; i < 8; i++) {
-        expect(state.columnStates[i].columnIndex).toBe(i);
-        expect(state.columnStates[i].value).toBe(0);
+        expect(state.columnStates[i]!.columnIndex).toBe(i);
+        expect(state.columnStates[i]!.value).toBe(0);
       }
     });
 
@@ -50,16 +50,16 @@ describe('MachineStateStore', () => {
       const state = store.getState();
       expect(state.carryLevers).toHaveLength(8);
       for (let i = 0; i < 8; i++) {
-        expect(state.carryLevers[i].columnIndex).toBe(i);
-        expect(state.carryLevers[i].isEngaged).toBe(false);
+        expect(state.carryLevers[i]!.columnIndex).toBe(i);
+        expect(state.carryLevers[i]!.isEngaged).toBe(false);
       }
     });
 
     it('should have 8 shafts initialized', () => {
       const state = store.getState();
       expect(state.shafts).toHaveLength(8);
-      expect(state.shafts[0].shaftType).toBe('INPUT');
-      expect(state.shafts[7].shaftType).toBe('OUTPUT');
+      expect(state.shafts[0]!.shaftType).toBe('INPUT');
+      expect(state.shafts[7]!.shaftType).toBe('OUTPUT');
     });
   });
 
@@ -78,8 +78,8 @@ describe('MachineStateStore', () => {
     it('should update single column', () => {
       store.updateColumn(0, { value: 5, carryActive: true });
       const state = store.getState();
-      expect(state.columnStates[0].value).toBe(5);
-      expect(state.columnStates[0].carryActive).toBe(true);
+      expect(state.columnStates[0]!.value).toBe(5);
+      expect(state.columnStates[0]!.carryActive).toBe(true);
     });
 
     it('should update multiple columns', () => {
@@ -91,24 +91,24 @@ describe('MachineStateStore', () => {
       store.updateColumns(updates);
 
       const state = store.getState();
-      expect(state.columnStates[0].value).toBe(3);
-      expect(state.columnStates[1].value).toBe(7);
-      expect(state.columnStates[2].value).toBe(2);
+      expect(state.columnStates[0]!.value).toBe(3);
+      expect(state.columnStates[1]!.value).toBe(7);
+      expect(state.columnStates[2]!.value).toBe(2);
     });
 
     it('should update carry lever', () => {
       store.updateCarryLever(0, { isEngaged: true, rotationAngle: 90 });
       const state = store.getState();
-      expect(state.carryLevers[0].isEngaged).toBe(true);
-      expect(state.carryLevers[0].rotationAngle).toBe(90);
+      expect(state.carryLevers[0]!.isEngaged).toBe(true);
+      expect(state.carryLevers[0]!.rotationAngle).toBe(90);
     });
 
     it('should update shaft', () => {
       const angle = Math.PI / 2;
       store.updateShaft(0, { rotation: angle, isRotating: true });
       const state = store.getState();
-      expect(state.shafts[0].rotation).toBe(angle);
-      expect(state.shafts[0].isRotating).toBe(true);
+      expect(state.shafts[0]!.rotation).toBe(angle);
+      expect(state.shafts[0]!.isRotating).toBe(true);
     });
 
     it('should increment state version on update', () => {
@@ -199,11 +199,11 @@ describe('MachineStateStore', () => {
       const beforeRevert = store.getState();
 
       store.updateColumn(0, { value: 10 });
-      expect(store.getState().columnStates[0].value).toBe(10);
+      expect(store.getState().columnStates[0]!.value).toBe(10);
 
       store.revertToPrevious(1);
       const afterRevert = store.getState();
-      expect(afterRevert.columnStates[0].value).toBe(5);
+      expect(afterRevert.columnStates[0]!.value).toBe(5);
     });
 
     it('should retrieve state at version', () => {
@@ -235,7 +235,7 @@ describe('MachineStateStore', () => {
       const state = store.getState();
       expect(state.phase).toBe('IDLE');
       expect(state.stepNumber).toBe(0);
-      expect(state.columnStates[0].value).toBe(0);
+      expect(state.columnStates[0]!.value).toBe(0);
     });
 
     it('should clear history on reset', () => {
@@ -295,7 +295,7 @@ describe('MachineStateStore', () => {
     it('should notify subscribers on state change', () => {
       let notified = false;
       const unsubscribe = store.subscribe((state) => {
-        if (state.columnStates[0].value === 5) {
+        if (state.columnStates[0]!.value === 5) {
           notified = true;
         }
       });
@@ -308,7 +308,7 @@ describe('MachineStateStore', () => {
   });
 
   describe('Derived Stores', () => {
-    it('should derive current phase', (done) => {
+    it('should derive current phase', (done: (error?: Error) => void) => {
       store.setPhase('ADDITION');
 
       const unsubscribe = currentPhase.subscribe((phase) => {
@@ -320,7 +320,7 @@ describe('MachineStateStore', () => {
       });
     });
 
-    it('should derive current step', (done) => {
+    it('should derive current step', (done: (error?: Error) => void) => {
       store.nextStep();
       store.nextStep();
 
@@ -331,7 +331,7 @@ describe('MachineStateStore', () => {
       });
     });
 
-    it('should derive paused state', (done) => {
+    it('should derive paused state', (done: (error?: Error) => void) => {
       store.setPaused(true);
 
       const unsubscribe = isPausedStore.subscribe((paused) => {
@@ -343,7 +343,7 @@ describe('MachineStateStore', () => {
       });
     });
 
-    it('should derive column values', (done) => {
+    it('should derive column values', (done: (error?: Error) => void) => {
       store.updateColumns(
         new Map([
           [0, { value: 3 }],
@@ -367,10 +367,10 @@ describe('MachineStateStore', () => {
   describe('Edge Cases', () => {
     it('should handle column value boundaries', () => {
       store.updateColumn(0, { value: 0 });
-      expect(store.getState().columnStates[0].value).toBe(0);
+      expect(store.getState().columnStates[0]!.value).toBe(0);
 
       store.updateColumn(0, { value: 9 });
-      expect(store.getState().columnStates[0].value).toBe(9);
+      expect(store.getState().columnStates[0]!.value).toBe(9);
     });
 
     it('should handle rapid updates', () => {
@@ -389,7 +389,7 @@ describe('MachineStateStore', () => {
 
       const state = store.getState();
       for (let i = 0; i < 8; i++) {
-        expect(state.columnStates[i].value).toBe((i + 1) % 10);
+        expect(state.columnStates[i]!.value).toBe((i + 1) % 10);
       }
     });
   });

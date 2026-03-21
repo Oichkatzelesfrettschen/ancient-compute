@@ -34,7 +34,7 @@ describe('SceneManager', () => {
       sceneManager = new SceneManager({ canvasContainer: container });
 
       expect(sceneManager).toBeDefined();
-      expect(sceneManager.isInitialized).toBe(true);
+      expect((sceneManager as any).isInitialized).toBe(true);
     });
 
     it('should initialize with custom dimensions', () => {
@@ -247,7 +247,7 @@ describe('SceneManager', () => {
       sceneManager.dispose();
 
       expect(disposeSpy).toHaveBeenCalled();
-      expect(sceneManager.isInitialized).toBe(false);
+      expect((sceneManager as any).isInitialized).toBe(false);
     });
 
     it('should clear scene after disposal', () => {

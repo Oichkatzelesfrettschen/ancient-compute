@@ -24,7 +24,7 @@ let selectedTab: 'lessons' | 'exercises' = 'lessons';
 let expandedSections: Set<string> = new Set();
 
 currentModule.subscribe((m) => {
-  module = m;
+  module = m ?? null;
   if (m?.lessons.length === 0 && m?.exercises.length > 0) {
     selectedTab = 'exercises';
   } else {

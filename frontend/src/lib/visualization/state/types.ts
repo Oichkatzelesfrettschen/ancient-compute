@@ -211,11 +211,11 @@ export type ConnectionStatus =
  */
 export interface WebSocketConfig {
   url: string;
-  reconnectAttempts: number; // Default: 5
-  initialBackoffMs: number; // Default: 1000ms
-  maxBackoffMs: number; // Default: 16000ms
-  heartbeatIntervalMs: number; // Default: 30000ms
-  messageQueueSize: number; // Default: 100
+  reconnectAttempts?: number; // Default: 5
+  initialBackoffMs?: number; // Default: 1000ms
+  maxBackoffMs?: number; // Default: 16000ms
+  heartbeatIntervalMs?: number; // Default: 30000ms
+  messageQueueSize?: number; // Default: 100
 }
 
 /**

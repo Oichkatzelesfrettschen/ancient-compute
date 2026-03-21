@@ -59,7 +59,7 @@ describe('Emulator API Client', () => {
 
       expect(result.success).toBe(true);
       expect(result.results).toHaveLength(3);
-      expect(result.results?.[0].result).toBe(3);
+      expect(result.results?.[0]!.result).toBe(3);
       expect(global.fetch).toHaveBeenCalledWith(
         expect.stringContaining('/api/execute'),
         expect.objectContaining({
@@ -129,7 +129,7 @@ describe('Emulator API Client', () => {
       const result = await executePolynomial([1, 0, 1], [1, 3], 1.0);
 
       expect(result.success).toBe(true);
-      expect(result.results?.[2].result).toBe(10); // x=3: 3^2 + 1 = 10
+      expect(result.results?.[2]!.result).toBe(10); // x=3: 3^2 + 1 = 10
     });
   });
 

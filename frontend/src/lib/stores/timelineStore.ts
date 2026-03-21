@@ -417,7 +417,7 @@ export function previousLesson(): void {
 
     return {
       ...state,
-      selectedLessonId: module.lessons[currentIndex - 1].id,
+      selectedLessonId: module.lessons[currentIndex - 1]!.id,
     };
   });
 }
@@ -440,7 +440,7 @@ export function nextLesson(): void {
 
     return {
       ...state,
-      selectedLessonId: module.lessons[currentIndex + 1].id,
+      selectedLessonId: module.lessons[currentIndex + 1]!.id,
     };
   });
 }
@@ -460,8 +460,8 @@ export function previousModule(): void {
 
     return {
       ...state,
-      selectedModuleId: era.modules[currentIndex - 1].id,
-      selectedLessonId: era.modules[currentIndex - 1].lessons[0]?.id || null,
+      selectedModuleId: era.modules[currentIndex - 1]!.id,
+      selectedLessonId: era.modules[currentIndex - 1]!.lessons[0]?.id ?? null,
       selectedExerciseId: null,
     };
   });
@@ -482,8 +482,8 @@ export function nextModule(): void {
 
     return {
       ...state,
-      selectedModuleId: era.modules[currentIndex + 1].id,
-      selectedLessonId: era.modules[currentIndex + 1].lessons[0]?.id || null,
+      selectedModuleId: era.modules[currentIndex + 1]!.id,
+      selectedLessonId: era.modules[currentIndex + 1]!.lessons[0]?.id ?? null,
       selectedExerciseId: null,
     };
   });

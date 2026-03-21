@@ -102,7 +102,7 @@ const masteryLevels: MasteryBadge[] = [
 
 function getMasteryLevel(progress: number): MasteryBadge {
   return (
-    masteryLevels.slice().reverse().find((m) => progress >= m.threshold) || masteryLevels[0]
+    masteryLevels.slice().reverse().find((m) => progress >= m.threshold) || masteryLevels[0]!
   );
 }
 
@@ -119,10 +119,10 @@ interface CompletionEvent {
 function getRecentCompletions(state: any): CompletionEvent[] {
   const events: CompletionEvent[] = [];
 
-  state.eras.forEach((era) => {
+  state.eras.forEach((era: any) => {
     const eraLabel = era.label;
 
-    era.modules.forEach((module) => {
+    era.modules.forEach((module: any) => {
       module.lessons?.forEach((lesson: Lesson) => {
         if (lesson.completed && lesson.completedAt) {
           events.push({
@@ -163,8 +163,8 @@ function calculateStats(state: any) {
   let completedExercises = 0;
   let totalHours = 0;
 
-  state.eras.forEach((era) => {
-    era.modules.forEach((module) => {
+  state.eras.forEach((era: any) => {
+    era.modules.forEach((module: any) => {
       totalLessons += module.lessons?.length || 0;
       completedLessons += module.lessons?.filter((l: Lesson) => l.completed).length || 0;
 
@@ -188,8 +188,8 @@ function calculateOverallProgress(state: any): number {
   let totalLessons = 0;
   let completedLessons = 0;
 
-  state.eras.forEach((era) => {
-    era.modules.forEach((module) => {
+  state.eras.forEach((era: any) => {
+    era.modules.forEach((module: any) => {
       totalLessons += module.lessons?.length || 0;
       completedLessons += module.lessons?.filter((l: Lesson) => l.completed).length || 0;
     });
@@ -371,9 +371,9 @@ describe('ProgressTracker', () => {
       const events = getRecentCompletions(state);
 
       expect(events).toHaveLength(1);
-      expect(events[0].type).toBe('lesson');
-      expect(events[0].title).toBe('Sample Lesson');
-      expect(events[0].icon).toBe('📖');
+      expect(events[0]!.type).toBe('lesson');
+      expect(events[0]!.title).toBe('Sample Lesson');
+      expect(events[0]!.icon).toBe('📖');
     });
 
     it('should include completed exercises with scores', () => {
@@ -386,9 +386,9 @@ describe('ProgressTracker', () => {
       const events = getRecentCompletions(state);
 
       expect(events).toHaveLength(1);
-      expect(events[0].type).toBe('exercise');
-      expect(events[0].score).toBe(95);
-      expect(events[0].icon).toBe('💻');
+      expect(events[0]!.type).toBe('exercise');
+      expect(events[0]!.score).toBe(95);
+      expect(events[0]!.icon).toBe('💻');
     });
 
     it('should sort events by date descending (most recent first)', () => {
@@ -405,8 +405,8 @@ describe('ProgressTracker', () => {
       const state = { eras: [mockEra({ modules: [module] })] };
       const events = getRecentCompletions(state);
 
-      expect(events[0].title).toBe('Recent Lesson');
-      expect(events[1].title).toBe('Old Lesson');
+      expect(events[0]!.title).toBe('Recent Lesson');
+      expect(events[1]!.title).toBe('Old Lesson');
     });
 
     it('should limit to 8 most recent events', () => {
@@ -434,7 +434,7 @@ describe('ProgressTracker', () => {
       const state = { eras: [era] };
       const events = getRecentCompletions(state);
 
-      expect(events[0].eraLabel).toBe('Ancient');
+      expect(events[0]!.eraLabel).toBe('Ancient');
     });
   });
 
@@ -596,7 +596,7 @@ describe('ProgressTracker', () => {
       // Check recent completions (should have 3: 2 lessons + 1 exercise with score)
       const completions = getRecentCompletions(state);
       expect(completions.length).toBeGreaterThan(0);
-      expect(completions[0].eraLabel).toBeDefined();
+      expect(completions[0]!.eraLabel).toBeDefined();
 
       // Check mastery level
       const mastery = getMasteryLevel(progress);

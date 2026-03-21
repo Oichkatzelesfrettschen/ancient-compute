@@ -173,8 +173,8 @@ export class InteractiveCamera {
     if (event.touches.length === 1) {
       this.controlState.isDragging = true;
       this.controlState.previousMousePosition = {
-        x: event.touches[0].clientX,
-        y: event.touches[0].clientY
+        x: event.touches[0]!.clientX,
+        y: event.touches[0]!.clientY
       };
     } else if (event.touches.length === 2) {
       // Pinch zoom
@@ -190,14 +190,14 @@ export class InteractiveCamera {
     event.preventDefault();
 
     if (event.touches.length === 1 && this.controlState.isDragging) {
-      const deltaX = event.touches[0].clientX - this.controlState.previousMousePosition.x;
-      const deltaY = event.touches[0].clientY - this.controlState.previousMousePosition.y;
+      const deltaX = event.touches[0]!.clientX - this.controlState.previousMousePosition.x;
+      const deltaY = event.touches[0]!.clientY - this.controlState.previousMousePosition.y;
 
       this.rotateView(deltaX, deltaY);
 
       this.controlState.previousMousePosition = {
-        x: event.touches[0].clientX,
-        y: event.touches[0].clientY
+        x: event.touches[0]!.clientX,
+        y: event.touches[0]!.clientY
       };
     } else if (event.touches.length === 2) {
       // Pinch zoom
@@ -308,8 +308,8 @@ export class InteractiveCamera {
    */
   private recordTouchDistance(event: TouchEvent): void {
     if (event.touches.length === 2) {
-      const touch1 = event.touches[0];
-      const touch2 = event.touches[1];
+      const touch1 = event.touches[0]!;
+      const touch2 = event.touches[1]!;
 
       const dx = touch1.clientX - touch2.clientX;
       const dy = touch1.clientY - touch2.clientY;
@@ -324,8 +324,8 @@ export class InteractiveCamera {
   private getTouchDistance(event: TouchEvent): number {
     if (event.touches.length < 2) return 0;
 
-    const touch1 = event.touches[0];
-    const touch2 = event.touches[1];
+    const touch1 = event.touches[0]!;
+    const touch2 = event.touches[1]!;
 
     const dx = touch1.clientX - touch2.clientX;
     const dy = touch1.clientY - touch2.clientY;

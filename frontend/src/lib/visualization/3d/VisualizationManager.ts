@@ -201,8 +201,8 @@ export class VisualizationManager {
       // Column wheel rotation
       const match = targetObject.match(/column(\d+)wheel(\d+)/);
       if (match) {
-        const colIndex = parseInt(match[1]);
-        const wheelIndex = parseInt(match[2]);
+        const colIndex = parseInt(match[1]!);
+        const wheelIndex = parseInt(match[2]!);
 
         const wheel = this.scene.getDigitWheelMesh(colIndex, wheelIndex);
         if (wheel) {
@@ -213,7 +213,7 @@ export class VisualizationManager {
       // Shaft rotation
       const match = targetObject.match(/shaft(\d+)/);
       if (match) {
-        const shaftIndex = parseInt(match[1]);
+        const shaftIndex = parseInt(match[1]!);
 
         const shaft = this.scene.getShaftMesh(shaftIndex);
         if (shaft) {
@@ -224,7 +224,7 @@ export class VisualizationManager {
       // Carry lever engagement
       const match = targetObject.match(/carryLever(\d+)/);
       if (match) {
-        const leverIndex = parseInt(match[1]);
+        const leverIndex = parseInt(match[1]!);
 
         const lever = this.scene.getCarryLeverMesh(leverIndex);
         if (lever) {

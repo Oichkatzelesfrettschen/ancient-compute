@@ -85,7 +85,7 @@
 				// Update local state
 				const index = breakpoints.findIndex((b) => b.id === id);
 				if (index >= 0) {
-					breakpoints[index].enabled = !bp.enabled;
+					breakpoints[index]!.enabled = !bp.enabled;
 					breakpoints = breakpoints;
 				}
 			} else {
@@ -125,7 +125,7 @@
 
 			if (response.success) {
 				currentState = response.state || null;
-				isPaused = response.breakpointsHit && response.breakpointsHit.length > 0;
+				isPaused = !!(response.breakpointsHit && response.breakpointsHit.length > 0);
 			} else {
 				errorMessage = response.error || 'Step failed';
 			}

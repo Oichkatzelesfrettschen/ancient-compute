@@ -122,12 +122,12 @@ export class CameraController {
    * Remove all event listeners
    */
   private detachEventListeners(): void {
-    this.canvas.removeEventListener('mousedown', this.listeners['mousedown']);
-    this.canvas.removeEventListener('mousemove', this.listeners['mousemove']);
-    this.canvas.removeEventListener('wheel', this.listeners['wheel']);
-    document.removeEventListener('mouseup', this.listeners['mouseup']);
-    document.removeEventListener('keydown', this.listeners['keydown']);
-    document.removeEventListener('keyup', this.listeners['keyup']);
+    this.canvas.removeEventListener('mousedown', this.listeners['mousedown']!);
+    this.canvas.removeEventListener('mousemove', this.listeners['mousemove']!);
+    this.canvas.removeEventListener('wheel', this.listeners['wheel']!);
+    document.removeEventListener('mouseup', this.listeners['mouseup']!);
+    document.removeEventListener('keydown', this.listeners['keydown']!);
+    document.removeEventListener('keyup', this.listeners['keyup']!);
   }
 
   /**

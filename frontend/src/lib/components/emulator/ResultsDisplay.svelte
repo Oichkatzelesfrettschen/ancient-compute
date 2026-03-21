@@ -80,7 +80,7 @@
 		// Analyze pattern of differences to estimate degree
 		const differences: number[] = [];
 		for (let i = 1; i < results.length; i++) {
-			differences.push(results[i].result - results[i - 1].result);
+			differences.push(results[i]!.result - results[i - 1]!.result);
 		}
 
 		let degree = 1;
@@ -89,7 +89,7 @@
 			const next: number[] = [];
 			let isConstant = true;
 			for (let i = 1; i < current.length; i++) {
-				const diff = current[i] - current[i - 1];
+				const diff = current[i]! - current[i - 1]!;
 				next.push(diff);
 				if (diff !== next[0]) isConstant = false;
 			}

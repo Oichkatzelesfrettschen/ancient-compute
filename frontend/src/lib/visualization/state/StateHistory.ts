@@ -57,7 +57,7 @@ export class StateHistory {
    */
   getCurrentState(): MachineState | null {
     if (this.currentIndex >= 0 && this.currentIndex < this.entries.length) {
-      return this.entries[this.currentIndex].state;
+      return this.entries[this.currentIndex]!.state;
     }
     return null;
   }
@@ -68,7 +68,7 @@ export class StateHistory {
   movePrevious(): MachineState | null {
     if (this.currentIndex > 0) {
       this.currentIndex -= 1;
-      return this.entries[this.currentIndex].state;
+      return this.entries[this.currentIndex]!.state;
     }
     return null;
   }
@@ -79,7 +79,7 @@ export class StateHistory {
   moveNext(): MachineState | null {
     if (this.currentIndex < this.entries.length - 1) {
       this.currentIndex += 1;
-      return this.entries[this.currentIndex].state;
+      return this.entries[this.currentIndex]!.state;
     }
     return null;
   }
@@ -90,7 +90,7 @@ export class StateHistory {
   moveToIndex(index: number): MachineState | null {
     if (index >= 0 && index < this.entries.length) {
       this.currentIndex = index;
-      return this.entries[index].state;
+      return this.entries[index]!.state;
     }
     return null;
   }
@@ -101,7 +101,7 @@ export class StateHistory {
   moveToLatest(): MachineState | null {
     if (this.entries.length > 0) {
       this.currentIndex = this.entries.length - 1;
-      return this.entries[this.currentIndex].state;
+      return this.entries[this.currentIndex]!.state;
     }
     return null;
   }
@@ -225,8 +225,8 @@ export class StateHistory {
       };
     }
 
-    const firstTimestamp = this.entries[0].timestamp;
-    const lastTimestamp = this.entries[this.entries.length - 1].timestamp;
+    const firstTimestamp = this.entries[0]!.timestamp;
+    const lastTimestamp = this.entries[this.entries.length - 1]!.timestamp;
     const totalTime = lastTimestamp - firstTimestamp;
 
     let columnChanges = 0;
@@ -267,7 +267,7 @@ export class StateHistory {
 
     // Count column differences
     for (let i = 0; i < 8; i++) {
-      if (state1.columnStates[i].value !== state2.columnStates[i].value) {
+      if (state1.columnStates[i]!.value !== state2.columnStates[i]!.value) {
         columnChanges += 1;
       }
     }
@@ -275,8 +275,8 @@ export class StateHistory {
     // Count carry differences
     for (let i = 0; i < 8; i++) {
       if (
-        state1.carryLevers[i].isEngaged !==
-        state2.carryLevers[i].isEngaged
+        state1.carryLevers[i]!.isEngaged !==
+        state2.carryLevers[i]!.isEngaged
       ) {
         carryChanges += 1;
       }
@@ -284,7 +284,7 @@ export class StateHistory {
 
     // Count shaft differences
     for (let i = 0; i < 8; i++) {
-      if (state1.shafts[i].rotation !== state2.shafts[i].rotation) {
+      if (state1.shafts[i]!.rotation !== state2.shafts[i]!.rotation) {
         shaftChanges += 1;
       }
     }
@@ -307,8 +307,8 @@ export class StateHistory {
     ) => boolean
   ): { index: number; fromState: MachineState; toState: MachineState } | null {
     for (let i = 1; i < this.entries.length; i++) {
-      const prev = this.entries[i - 1].state;
-      const curr = this.entries[i].state;
+      const prev = this.entries[i - 1]!.state;
+      const curr = this.entries[i]!.state;
       if (predicate(prev, curr)) {
         return {
           index: i,
@@ -331,8 +331,8 @@ export class StateHistory {
   ): Array<{ index: number; fromState: MachineState; toState: MachineState }> {
     const transitions = [];
     for (let i = 1; i < this.entries.length; i++) {
-      const prev = this.entries[i - 1].state;
-      const curr = this.entries[i].state;
+      const prev = this.entries[i - 1]!.state;
+      const curr = this.entries[i]!.state;
       if (predicate(prev, curr)) {
         transitions.push({
           index: i,

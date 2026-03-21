@@ -84,7 +84,7 @@
 				if (!manager) return;
 				const rect = canvas?.getBoundingClientRect();
 				if (rect) {
-					manager.scene.onWindowResize(rect.width, rect.height);
+					manager.getScene().onWindowResize(rect.width, rect.height);
 				}
 			};
 
@@ -153,7 +153,8 @@
 
 		try {
 			// Compute diff between states
-			const diff = StateReconciler.computeDiff(oldState, newState);
+			const reconciler = new StateReconciler();
+			const diff = reconciler.computeDiff(oldState, newState);
 
 			// Update visualization (triggers animation sequence)
 			manager.updateState(newState, diff);
@@ -165,12 +166,12 @@
 			previousState = newState;
 
 			// Update performance metrics
-			const stats = manager.scene.getStats();
+			const stats = manager.getScene().getStats();
 			performanceMetrics = {
 				fps: stats.fps,
 				deltaTime: stats.deltaTime,
-				renderTime: stats.renderTime,
-				animationTime: stats.animationTime
+				renderTime: 0,
+				animationTime: 0
 			};
 		} catch (error) {
 			console.error('Error updating visualization:', error);
@@ -201,7 +202,7 @@
 	</div>
 
 	<ControlPanel
-		isAnimating={isAnimating || manager?.timeline.isRunning() || false}
+		isAnimating={isAnimating || manager?.getTimeline().getState() === 'RUNNING' || false}
 		debugInfo={debugInfo}
 		metrics={performanceMetrics}
 		connectionStatus={connectionStatus}

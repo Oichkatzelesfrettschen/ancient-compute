@@ -122,7 +122,7 @@ describe('TimelineStore', () => {
     it('should have null currentEra initially', () => {
       let era: Era | null = null;
       currentEra.subscribe((value) => {
-        era = value;
+        era = value ?? null;
       });
 
       expect(era).toBeNull();
@@ -178,11 +178,11 @@ describe('TimelineStore', () => {
 
       let era: Era | null = null;
       currentEra.subscribe((value) => {
-        era = value;
+        era = value ?? null;
       });
 
       expect(era).toEqual(mockEra);
-      expect(era?.label).toBe('Ancient');
+      expect((era as unknown as Era).label).toBe('Ancient');
     });
   });
 
@@ -217,11 +217,11 @@ describe('TimelineStore', () => {
 
       let module: Module | null = null;
       currentModule.subscribe((value) => {
-        module = value;
+        module = value ?? null;
       });
 
       expect(module).toEqual(mockModule);
-      expect(module?.title).toBe('Ancient Foundations');
+      expect((module as unknown as Module).title).toBe('Ancient Foundations');
     });
   });
 
@@ -256,11 +256,11 @@ describe('TimelineStore', () => {
 
       let lesson: Lesson | null = null;
       currentLesson.subscribe((value) => {
-        lesson = value;
+        lesson = value ?? null;
       });
 
       expect(lesson).toEqual(mockLesson);
-      expect(lesson?.title).toBe('Introduction to Computation');
+      expect((lesson as unknown as Lesson).title).toBe('Introduction to Computation');
     });
   });
 
@@ -286,7 +286,7 @@ describe('TimelineStore', () => {
         state = value;
       });
 
-      const lesson = state!.eras[0].modules[0].lessons[0];
+      const lesson = state!.eras[0]!.modules[0]!.lessons[0]!;
       expect(lesson.completed).toBe(true);
       expect(lesson.completedAt).toBeDefined();
 
@@ -303,7 +303,7 @@ describe('TimelineStore', () => {
         state = value;
       });
 
-      const module = state!.eras[0].modules[0];
+      const module = state!.eras[0]!.modules[0]!;
       expect(module.completedLessons).toBeGreaterThan(0);
     });
 
@@ -345,7 +345,7 @@ describe('TimelineStore', () => {
         state = value;
       });
 
-      const exercise = state!.eras[0].modules[0].exercises[0];
+      const exercise = state!.eras[0]!.modules[0]!.exercises[0]!;
       expect(exercise.completed).toBe(true);
       expect(exercise.bestScore).toBe(95);
       expect(exercise.completedAt).toBeDefined();
@@ -394,7 +394,7 @@ describe('TimelineStore', () => {
         state = value;
       });
 
-      const exercise = state!.eras[0].modules[0].exercises[0];
+      const exercise = state!.eras[0]!.modules[0]!.exercises[0]!;
       expect(exercise.bestScore).toBe(95); // Should keep highest score
     });
   });
@@ -561,9 +561,9 @@ describe('TimelineStore', () => {
         list = value;
       });
 
-      expect(list[0].order).toBe(1);
-      expect(list[1].order).toBe(2);
-      expect(list[2].order).toBe(3);
+      expect(list[0]!.order).toBe(1);
+      expect(list[1]!.order).toBe(2);
+      expect(list[2]!.order).toBe(3);
     });
 
     it('should return current era modules sorted', () => {
@@ -586,8 +586,8 @@ describe('TimelineStore', () => {
         modules = value;
       });
 
-      expect(modules[0].order).toBe(1);
-      expect(modules[1].order).toBe(2);
+      expect(modules[0]!.order).toBe(1);
+      expect(modules[1]!.order).toBe(2);
     });
   });
 

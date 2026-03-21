@@ -49,7 +49,7 @@ describe('WebSocketClient', () => {
       expect(client.getStatus()).toBe('DISCONNECTED');
     });
 
-    it('should support status change callbacks', (done) => {
+    it('should support status change callbacks', (done: (error?: Error) => void) => {
       const unsubscribe = client.onStatusChange((status) => {
         if (status === 'CONNECTING') {
           expect(status).toBe('CONNECTING');
@@ -222,7 +222,7 @@ describe('WebSocketClient', () => {
   });
 
   describe('Global Client', () => {
-    it('should support global instance creation', () => {
+    it('should support global instance creation', async () => {
       const { getWebSocketClient } = await import('./WebSocketClient');
       const global1 = getWebSocketClient(config);
       const global2 = getWebSocketClient(config);

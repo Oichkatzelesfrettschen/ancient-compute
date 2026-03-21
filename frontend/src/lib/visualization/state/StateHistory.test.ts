@@ -41,9 +41,7 @@ function createTestState(value: number): MachineState {
     shafts: Array.from({ length: 8 }, (_, i) => ({
       shaftIndex: i,
       shaftType:
-        ['INPUT', 'ADDEND1', 'ADDEND2', 'ADDEND3', 'ADDEND4', 'ADDEND5', 'ADDEND6', 'OUTPUT'] as const[
-          i
-        ],
+        (['INPUT', 'ADDEND1', 'ADDEND2', 'ADDEND3', 'ADDEND4', 'ADDEND5', 'ADDEND6', 'OUTPUT'] as const)[i]!,
       rotation: 0,
       rotationVelocity: 0,
       isRotating: false
@@ -152,7 +150,7 @@ describe('StateHistory', () => {
     it('should get last N states', () => {
       const last3 = history.getLastStates(3);
       expect(last3.length).toBe(3);
-      expect(last3[last3.length - 1].stepNumber).toBe(5);
+      expect(last3[last3.length - 1]!.stepNumber).toBe(5);
     });
 
     it('should get state at version', () => {
@@ -224,7 +222,7 @@ describe('StateHistory', () => {
       const state1 = createTestState(1);
       const state2 = createTestState(2);
       state2.phase = 'ADDITION';
-      state2.columnStates[1].value = 5;
+      state2.columnStates[1]!.value = 5;
 
       const comparison = history.compareStates(state1, state2);
 
@@ -288,7 +286,7 @@ describe('StateHistory', () => {
     it('should get snapshots', () => {
       const snapshots = history.getSnapshots();
       expect(snapshots.length).toBe(3);
-      expect(snapshots[0].phase).toBe('IDLE');
+      expect(snapshots[0]!.phase).toBe('IDLE');
     });
 
     it('should generate summary', () => {

@@ -11,6 +11,21 @@
  */
 
 import { timelineStore, selectEra, erasList, currentEra } from '../../stores/timelineStore';
+function calculateOverallProgress(): number {
+  let total = 0;
+  let completed = 0;
+
+  $timelineStore.eras.forEach((era) => {
+    era.modules.forEach((mod) => {
+      mod.lessons.forEach((lesson) => {
+        total++;
+        if (lesson.completed) completed++;
+      });
+    });
+  });
+
+  return total > 0 ? Math.round((completed / total) * 100) : 0;
+}
 import type { Era } from '../../stores/timelineStore';
 
 let scrollContainer: HTMLDivElement;
@@ -26,7 +41,7 @@ let selectedEraId: string | null = null;
 erasList.subscribe((value) => {
   eras = value;
   if (eras.length > 0 && !selectedEraId) {
-    selectedEraId = eras[0].id;
+    selectedEraId = eras[0]!.id;
   }
 });
 
@@ -259,7 +274,9 @@ function getEraX(index: number): number {
   </div>
 
   <!-- Era details card below timeline -->
-  {#if selectedEraId && eras.find((e) => e.id === selectedEraId) as selectedEra}
+  {#if selectedEraId}
+    {@const selectedEra = eras.find((e) => e.id === selectedEraId)}
+    {#if selectedEra}
     <div class="selected-era-card" style="border-left: 4px solid {selectedEra.color}">
       <div class="era-card-header">
         <h3 class="era-name">{selectedEra.fullName}</h3>
@@ -280,28 +297,11 @@ function getEraX(index: number): number {
       </div>
       <p class="era-description">{selectedEra.description}</p>
     </div>
+    {/if}
   {/if}
 </div>
 
-<script lang="ts">
-  import { timelineStore as store } from '../../stores/timelineStore';
 
-  function calculateOverallProgress(): number {
-    let total = 0;
-    let completed = 0;
-
-    $store.eras.forEach((era) => {
-      era.modules.forEach((mod) => {
-        mod.lessons.forEach((lesson) => {
-          total++;
-          if (lesson.completed) completed++;
-        });
-      });
-    });
-
-    return total > 0 ? Math.round((completed / total) * 100) : 0;
-  }
-</script>
 
 <style>
   .timeline-wrapper {

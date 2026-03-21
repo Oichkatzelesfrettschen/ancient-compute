@@ -119,7 +119,7 @@ function getCompletionStatus(module: Module): string {
                 on:click={() => handleModuleClick(module)}
               >
                 <!-- Module status indicator -->
-                <div class="module-status" class:completed class:in-progress>
+                <div class="module-status" class:completed={status === 'completed'} class:in-progress={status === 'in-progress'}>
                   {#if status === 'completed'}
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                       <path

@@ -42,6 +42,10 @@
 		coefficients = coefficients; // Trigger reactivity
 	}
 
+	function handleCoefficientChange(index: number): void {
+		updateCoefficient(index, coefficients[index] ?? 0);
+	}
+
 	/**
 	 * Execute polynomial evaluation
 	 */
@@ -172,7 +176,7 @@
 								<input
 									type="number"
 									bind:value={coefficients[index]}
-									on:change={() => updateCoefficient(index, coefficients[index])}
+									on:change={() => handleCoefficientChange(index)}
 									disabled={isRunning}
 								/>
 								{#if index === coefficients.length - 1 && coefficients.length > 1}

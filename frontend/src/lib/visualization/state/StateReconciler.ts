@@ -73,8 +73,8 @@ export class StateReconciler {
 
     // Compute column changes
     for (let i = 0; i < 8; i++) {
-      const oldCol = oldState.columnStates[i];
-      const newCol = newState.columnStates[i];
+      const oldCol = oldState.columnStates[i]!;
+      const newCol = newState.columnStates[i]!;
 
       if (
         oldCol.value !== newCol.value ||
@@ -93,8 +93,8 @@ export class StateReconciler {
 
     // Compute carry changes
     for (let i = 0; i < 8; i++) {
-      const oldCarry = oldState.carryLevers[i];
-      const newCarry = newState.carryLevers[i];
+      const oldCarry = oldState.carryLevers[i]!;
+      const newCarry = newState.carryLevers[i]!;
 
       if (
         oldCarry.isEngaged !== newCarry.isEngaged ||
@@ -112,8 +112,8 @@ export class StateReconciler {
 
     // Compute shaft changes
     for (let i = 0; i < 8; i++) {
-      const oldShaft = oldState.shafts[i];
-      const newShaft = newState.shafts[i];
+      const oldShaft = oldState.shafts[i]!;
+      const newShaft = newState.shafts[i]!;
 
       if (oldShaft.rotation !== newShaft.rotation) {
         diff.shaftChanges.push({
@@ -149,8 +149,8 @@ export class StateReconciler {
     if (clientState.stateVersion !== serverState.stateVersion) {
       // Version mismatch - potential conflict
       for (let i = 0; i < 8; i++) {
-        const clientCol = clientState.columnStates[i];
-        const serverCol = serverState.columnStates[i];
+        const clientCol = clientState.columnStates[i]!;
+        const serverCol = serverState.columnStates[i]!;
 
         if (clientCol.value !== serverCol.value) {
           conflicts.push({
@@ -162,8 +162,8 @@ export class StateReconciler {
 
           // Apply resolution
           if (this.config.conflictStrategy === 'ACCEPT_CLIENT') {
-            resolvedState.columnStates[i].value = clientCol.value;
-            resolvedState.columnStates[i].wheelRotation = clientCol.wheelRotation;
+            resolvedState.columnStates[i]!.value = clientCol.value;
+            resolvedState.columnStates[i]!.wheelRotation = clientCol.wheelRotation;
           }
           // else ACCEPT_SERVER is already applied (serverState is base)
         }
@@ -229,7 +229,7 @@ export class StateReconciler {
 
     // Carry lever animations
     for (let i = 0; i < diff.carryChanges.length; i++) {
-      const change = diff.carryChanges[i];
+      const change = diff.carryChanges[i]!;
       if (change.wasEngaged !== change.isEngaged) {
         const key = `carry-${change.columnIndex}.engaged`;
         paths.set(key, {

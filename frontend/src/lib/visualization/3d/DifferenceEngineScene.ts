@@ -133,7 +133,6 @@ export class DifferenceEngineScene {
 
     // Enable rendering options
     renderer.outputEncoding = THREE.sRGBEncoding;
-    renderer.gammaFactor = 2.2;
 
     return renderer;
   }
@@ -159,7 +158,7 @@ export class DifferenceEngineScene {
     this.scene.add(this.engineGroup);
 
     // Add background
-    this.scene.background = this.config.clearColor;
+    this.scene.background = this.config.clearColor ?? null;
   }
 
   /**

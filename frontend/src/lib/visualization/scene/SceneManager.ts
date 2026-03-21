@@ -125,9 +125,8 @@ export class SceneManager {
     renderer.setPixelRatio(this.dpr);
     renderer.setClearColor(this.config.backgroundColor);
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFShadowShadowMap;
+    renderer.shadowMap.type = THREE.PCFShadowMap;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
-    renderer.gammaFactor = 2.2;
 
     // Enable extensions for better performance
     const context = renderer.getContext();

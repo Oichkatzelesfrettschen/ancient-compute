@@ -344,7 +344,7 @@ describe('DifferenceEngineScene', () => {
       expect(scene).toBeDefined();
     });
 
-    it('should track frame rate', (done) => {
+    it('should track frame rate', (done: (error?: Error) => void) => {
       scene.start();
 
       // Wait a bit for frames to accumulate

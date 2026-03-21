@@ -13,8 +13,13 @@
 
 import { get } from 'svelte/store';
 import { WebSocketClient, createWebSocketClient } from './state/WebSocketClient';
-import { machineStateStore, type MachineState } from './state/MachineStateStore';
-import type { StateUpdatePayload } from './state/types';
+import { machineStateStore } from './state/MachineStateStore';
+import type {
+  StateUpdatePayload,
+  WebSocketMessage,
+  WebSocketMessageType,
+  ConnectionStatus as WsConnectionStatus
+} from './state/types';
 
 /**
  * Connection status tracking
@@ -45,7 +50,7 @@ export function initializeWebSocket(backendUrl: string): () => void {
   }
 
   connection = {
-    client: createWebSocketClient(backendUrl),
+    client: createWebSocketClient({ url: backendUrl }),
     status: 'connecting',
     unsubscribers: [],
     isInitialized: false,
@@ -58,51 +63,58 @@ export function initializeWebSocket(backendUrl: string): () => void {
    * Handler for STATE_UPDATE messages from backend
    * Dispatches state changes to machineStateStore
    */
-  const handleStateUpdate = (payload: StateUpdatePayload) => {
-    if (!payload.state) return;
+  const handleStateUpdate = (message: WebSocketMessage) => {
+    const payload = message.payload as StateUpdatePayload;
+    const state = payload.fullState;
+    if (!state) return;
 
     // Update store with new state
-    machineStateStore.setState(payload.state);
-
-    // Acknowledge receipt if sequence number present
-    if (payload.sequenceNumber !== undefined) {
-      client.acknowledge(payload.sequenceNumber);
-    }
+    machineStateStore.setState(state);
   };
 
   /**
    * Handler for complete state snapshots
    * Used when recovering from connection loss
    */
-  const handleStateSnapshot = (payload: any) => {
-    if (!payload.state) return;
-    machineStateStore.setState(payload.state);
+  const handleStateSnapshot = (message: WebSocketMessage) => {
+    const payload = message.payload as StateUpdatePayload;
+    const state = payload.fullState;
+    if (!state) return;
+    machineStateStore.setState(state);
   };
 
   /**
    * Handler for animation completion notifications
    * Useful for coordinating multi-step animations
    */
-  const handleAnimationComplete = (payload: any) => {
+  const handleAnimationComplete = (message: WebSocketMessage) => {
+    const payload = message.payload as Record<string, unknown>;
     // Log for debugging; UI updates via store subscription
     console.debug('[WebSocket] Animation complete:', {
-      timestamp: payload.timestamp,
-      animationId: payload.animationId,
+      timestamp: payload['timestamp'],
+      animationId: payload['animationId'],
     });
   };
 
   /**
    * Connection status change handler
    */
-  const handleStatusChange = (status: ConnectionStatus) => {
-    conn.status = status;
+  const handleStatusChange = (wsStatus: WsConnectionStatus) => {
+    const statusMap: Record<WsConnectionStatus, ConnectionStatus> = {
+      DISCONNECTED: 'disconnected',
+      CONNECTING: 'connecting',
+      CONNECTED: 'connected',
+      RECONNECTING: 'connecting',
+      ERROR: 'error'
+    };
+    conn.status = statusMap[wsStatus];
     conn.errorMessage = undefined;
 
-    console.log('[WebSocket] Connection status:', status);
+    console.log('[WebSocket] Connection status:', wsStatus);
 
-    if (status === 'connected') {
+    if (wsStatus === 'CONNECTED') {
       // Request full state snapshot on reconnection
-      client.send('REQUEST_SNAPSHOT', {});
+      client.send('STATE_SNAPSHOT', {});
     }
   };
 
@@ -193,10 +205,10 @@ export function reconnect(): void {
  * Send custom message to backend
  * Useful for commands, queries, debug requests
  */
-export function sendMessage(type: string, payload: any): void {
+export function sendMessage(type: string, payload: unknown): void {
   const client = getWebSocketClient();
   if (client && isConnected()) {
-    client.send(type, payload);
+    client.send(type as WebSocketMessageType, payload);
   } else {
     console.warn('[WebSocket] Cannot send message: not connected');
   }

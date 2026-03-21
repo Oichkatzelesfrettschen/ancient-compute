@@ -105,7 +105,7 @@ export class BaseRenderer {
     this.renderer.setPixelRatio(this.pixelRatio);
     this.renderer.setSize(this.width, this.height, false);
     this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFShadowShadowMap;
+    this.renderer.shadowMap.type = THREE.PCFShadowMap;
 
     // Enable scissor test for viewport management (if needed)
     const gl = this.renderer.getContext();
@@ -136,10 +136,7 @@ export class BaseRenderer {
         uniforms: {}
       });
 
-      // Force compilation
-      if (this.renderer) {
-        this.renderer.compile(testMaterial, this.scene);
-      }
+      // Note: material compiles on first render
 
       return { success: true };
     } catch (error) {
@@ -172,10 +169,7 @@ export class BaseRenderer {
 
       this.materials.set(config.name, material);
 
-      // Force compilation
-      if (this.renderer) {
-        this.renderer.compile(material, this.scene);
-      }
+      // Note: material compiles on first render
 
       return material;
     } catch (error) {

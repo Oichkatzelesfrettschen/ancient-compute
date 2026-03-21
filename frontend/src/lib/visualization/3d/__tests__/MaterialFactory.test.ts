@@ -69,8 +69,8 @@ describe('MaterialFactory', () => {
     });
 
     it('should create different materials for different columns', () => {
-      const material0 = factory.createColumnMaterial(0);
-      const material1 = factory.createColumnMaterial(1);
+      const material0 = factory.createColumnMaterial(0) as THREE.MeshStandardMaterial;
+      const material1 = factory.createColumnMaterial(1) as THREE.MeshStandardMaterial;
 
       // Different instances but same color (shared palette)
       expect(material0.color).toEqual(material1.color);
@@ -401,7 +401,7 @@ describe('MaterialFactory', () => {
   });
 
   describe('Global Factory Instance', () => {
-    it('should export global material factory instance', () => {
+    it('should export global material factory instance', async () => {
       const { globalMaterialFactory } = await import('../MaterialFactory');
 
       expect(globalMaterialFactory).toBeInstanceOf(MaterialFactory);

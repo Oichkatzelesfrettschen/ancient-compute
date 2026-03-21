@@ -12,6 +12,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import '@testing-library/jest-dom';
 import { render, screen, fireEvent, waitFor } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import EmulatorControl from './EmulatorControl.svelte';
@@ -86,7 +87,7 @@ describe('EmulatorControl Component', () => {
       // Get remove button (should exist for second coefficient)
       const removeButtons = screen.getAllByText(/remove/i);
       if (removeButtons.length > 0) {
-        await user.click(removeButtons[removeButtons.length - 1]);
+        await user.click(removeButtons[removeButtons.length - 1]!);
         // Coefficient should be removed
       }
     });
@@ -143,16 +144,16 @@ describe('EmulatorControl Component', () => {
       render(EmulatorControl);
 
       const inputs = screen.getAllByRole('spinbutton');
-      await user.clear(inputs[0]);
-      await user.type(inputs[0], '1');
+      await user.clear(inputs[0]!);
+      await user.type(inputs[0]!, '1');
 
       // Add another coefficient
       const addButton = screen.getByText(/add coefficient/i);
       await user.click(addButton);
 
       const newInputs = screen.getAllByRole('spinbutton');
-      await user.clear(newInputs[1]);
-      await user.type(newInputs[1], '2');
+      await user.clear(newInputs[1]!);
+      await user.type(newInputs[1]!, '2');
 
       // Should display f(x) = 1 + 2x or similar
     });
@@ -160,7 +161,7 @@ describe('EmulatorControl Component', () => {
     it('should display zero coefficients properly', async () => {
       render(EmulatorControl);
 
-      const input = screen.getAllByRole('spinbutton')[0];
+      const input = screen.getAllByRole('spinbutton')[0]!;
       expect(input).toHaveValue(0);
     });
 
@@ -333,8 +334,8 @@ describe('EmulatorControl Component', () => {
 
       // Set some values
       const inputs = screen.getAllByRole('spinbutton');
-      await user.clear(inputs[0]);
-      await user.type(inputs[0], '5');
+      await user.clear(inputs[0]!);
+      await user.type(inputs[0]!, '5');
 
       // Click clear
       const clearButton = screen.getByText('Clear');
@@ -408,7 +409,7 @@ describe('EmulatorControl Component', () => {
   describe('Event Emissions', () => {
     it('should emit results event on successful execution', async () => {
       const { component } = render(EmulatorControl);
-      let emittedResults = null;
+      let emittedResults: unknown = null;
 
       component.$on('results', (event: any) => {
         emittedResults = event.detail;
@@ -426,7 +427,7 @@ describe('EmulatorControl Component', () => {
 
     it('should emit stateUpdate event on state change', async () => {
       const { component } = render(EmulatorControl);
-      let emittedState = null;
+      let emittedState: unknown = null;
 
       component.$on('stateUpdate', (event: any) => {
         emittedState = event.detail;

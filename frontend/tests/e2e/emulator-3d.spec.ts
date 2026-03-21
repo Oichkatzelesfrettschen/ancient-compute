@@ -233,7 +233,7 @@ test.describe('Emulator 3D Visualization', () => {
 
       const text = await fpsText.textContent();
       const fpsMatch = text?.match(/FPS:\s*(\d+)/);
-      const fps = fpsMatch ? parseInt(fpsMatch[1]) : 0;
+      const fps = fpsMatch ? parseInt(fpsMatch[1]!) : 0;
 
       // Most devices should maintain at least 30 FPS, high-end 60+
       expect(fps).toBeGreaterThan(20);
@@ -247,7 +247,7 @@ test.describe('Emulator 3D Visualization', () => {
       const frameTimeText = await page.locator('text=/Frame Time:.*\\d+/');
       const text = await frameTimeText.textContent();
       const timeMatch = text?.match(/Frame Time:\s*([\d.]+)/);
-      const frameTime = timeMatch ? parseFloat(timeMatch[1]) : 0;
+      const frameTime = timeMatch ? parseFloat(timeMatch[1]!) : 0;
 
       // Frame time should be reasonable (< 33.33ms for 30 FPS)
       // Allow some margin for slower devices

@@ -39,9 +39,7 @@ function createTestState(overrides?: Partial<MachineState>): MachineState {
     shafts: Array.from({ length: 8 }, (_, i) => ({
       shaftIndex: i,
       shaftType:
-        ['INPUT', 'ADDEND1', 'ADDEND2', 'ADDEND3', 'ADDEND4', 'ADDEND5', 'ADDEND6', 'OUTPUT'] as const[
-          i
-        ],
+        (['INPUT', 'ADDEND1', 'ADDEND2', 'ADDEND3', 'ADDEND4', 'ADDEND5', 'ADDEND6', 'OUTPUT'] as const)[i]!,
       rotation: 0,
       rotationVelocity: 0,
       isRotating: false
@@ -74,23 +72,23 @@ describe('StateReconciler', () => {
     it('should detect column changes', () => {
       const old = createTestState();
       const updated = createTestState();
-      updated.columnStates[0].value = 5;
-      updated.columnStates[0].wheelRotation = Math.PI / 2;
+      updated.columnStates[0]!.value = 5;
+      updated.columnStates[0]!.wheelRotation = Math.PI / 2;
 
       const diff = reconciler.computeDiff(old, updated);
 
       expect(diff.columnChanges.length).toBe(1);
-      expect(diff.columnChanges[0].oldValue).toBe(0);
-      expect(diff.columnChanges[0].newValue).toBe(5);
-      expect(diff.columnChanges[0].magnitude).toBe(5);
+      expect(diff.columnChanges[0]!.oldValue).toBe(0);
+      expect(diff.columnChanges[0]!.newValue).toBe(5);
+      expect(diff.columnChanges[0]!.magnitude).toBe(5);
     });
 
     it('should detect multiple column changes', () => {
       const old = createTestState();
       const updated = createTestState();
-      updated.columnStates[0].value = 3;
-      updated.columnStates[2].value = 7;
-      updated.columnStates[5].value = 2;
+      updated.columnStates[0]!.value = 3;
+      updated.columnStates[2]!.value = 7;
+      updated.columnStates[5]!.value = 2;
 
       const diff = reconciler.computeDiff(old, updated);
 
@@ -100,8 +98,8 @@ describe('StateReconciler', () => {
     it('should detect carry changes', () => {
       const old = createTestState();
       const updated = createTestState();
-      updated.carryLevers[0].isEngaged = true;
-      updated.carryLevers[2].hasCarryToPropagate = true;
+      updated.carryLevers[0]!.isEngaged = true;
+      updated.carryLevers[2]!.hasCarryToPropagate = true;
 
       const diff = reconciler.computeDiff(old, updated);
 
@@ -111,8 +109,8 @@ describe('StateReconciler', () => {
     it('should detect shaft changes', () => {
       const old = createTestState();
       const updated = createTestState();
-      updated.shafts[0].rotation = Math.PI;
-      updated.shafts[1].rotation = Math.PI / 2;
+      updated.shafts[0]!.rotation = Math.PI;
+      updated.shafts[1]!.rotation = Math.PI / 2;
 
       const diff = reconciler.computeDiff(old, updated);
 
@@ -140,7 +138,7 @@ describe('StateReconciler', () => {
 
       const result = reconciler.reconcile(client, server);
 
-      expect(result.resolvedState.columnStates[0].value).toBe(7);
+      expect(result.resolvedState.columnStates[0]!.value).toBe(7);
     });
 
     it('should detect conflicts', () => {
@@ -168,7 +166,7 @@ describe('StateReconciler', () => {
     it('should generate interpolation paths', () => {
       const old = createTestState();
       const updated = createTestState();
-      updated.columnStates[0].value = 5;
+      updated.columnStates[0]!.value = 5;
 
       const result = reconciler.reconcile(old, updated);
 
@@ -178,8 +176,8 @@ describe('StateReconciler', () => {
     it('should generate animation sequence', () => {
       const old = createTestState();
       const updated = createTestState();
-      updated.columnStates[0].value = 5;
-      updated.columnStates[1].value = 3;
+      updated.columnStates[0]!.value = 5;
+      updated.columnStates[1]!.value = 3;
 
       const result = reconciler.reconcile(old, updated);
 
@@ -189,7 +187,7 @@ describe('StateReconciler', () => {
     it('should calculate animation time', () => {
       const old = createTestState();
       const updated = createTestState();
-      updated.columnStates[0].value = 5;
+      updated.columnStates[0]!.value = 5;
 
       const result = reconciler.reconcile(old, updated);
 

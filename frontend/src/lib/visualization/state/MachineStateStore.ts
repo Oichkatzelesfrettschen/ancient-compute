@@ -8,7 +8,7 @@
  * - Subscription system for state changes
  */
 
-import { writable, derived, type Writable } from 'svelte/store';
+import { writable, derived, type Writable, type Readable } from 'svelte/store';
 import type {
   MachineState,
   MachinePhase,
@@ -61,7 +61,7 @@ function createInitialState(): MachineState {
       ];
       return {
         shaftIndex: i,
-        shaftType: shaftTypes[i],
+        shaftType: shaftTypes[i]!,
         rotation: 0,
         rotationVelocity: 0,
         isRotating: false
@@ -118,7 +118,7 @@ class CircularStateBuffer {
   getAt(offset: number): StateHistoryEntry | null {
     if (offset >= this.buffer.length) return null;
     const actualIndex = (this.writeIndex - 1 - offset + this.buffer.length) % this.buffer.length;
-    return this.buffer[actualIndex];
+    return this.buffer[actualIndex] ?? null;
   }
 
   /**
@@ -217,7 +217,7 @@ export function createMachineStateStore() {
     ): void {
       stateStore.update((current) => {
         const columns = [...current.columnStates];
-        columns[columnIndex] = { ...columns[columnIndex], ...update };
+        columns[columnIndex] = { ...columns[columnIndex]!, ...update };
         return {
           ...current,
           columnStates: columns,
@@ -234,7 +234,7 @@ export function createMachineStateStore() {
       stateStore.update((current) => {
         const columns = [...current.columnStates];
         updates.forEach((update, index) => {
-          columns[index] = { ...columns[index], ...update };
+          columns[index] = { ...columns[index]!, ...update };
         });
         return {
           ...current,
@@ -254,7 +254,7 @@ export function createMachineStateStore() {
     ): void {
       stateStore.update((current) => {
         const levers = [...current.carryLevers];
-        levers[columnIndex] = { ...levers[columnIndex], ...update };
+        levers[columnIndex] = { ...levers[columnIndex]!, ...update };
         return {
           ...current,
           carryLevers: levers,
@@ -273,7 +273,7 @@ export function createMachineStateStore() {
     ): void {
       stateStore.update((current) => {
         const shafts = [...current.shafts];
-        shafts[shaftIndex] = { ...shafts[shaftIndex], ...update };
+        shafts[shaftIndex] = { ...shafts[shaftIndex]!, ...update };
         return {
           ...current,
           shafts: shafts,
@@ -474,31 +474,33 @@ export const machineStateStore = createMachineStateStore();
 /**
  * Derived store: Current phase
  */
+const typedStore = machineStateStore as unknown as Readable<MachineState>;
+
 export const currentPhase = derived(
-  machineStateStore as any,
-  ($state) => $state.phase
+  typedStore,
+  ($state: MachineState) => $state.phase
 );
 
 /**
  * Derived store: Current step
  */
 export const currentStep = derived(
-  machineStateStore as any,
-  ($state) => $state.stepNumber
+  typedStore,
+  ($state: MachineState) => $state.stepNumber
 );
 
 /**
  * Derived store: Is paused
  */
 export const isPausedStore = derived(
-  machineStateStore as any,
-  ($state) => $state.isPaused
+  typedStore,
+  ($state: MachineState) => $state.isPaused
 );
 
 /**
  * Derived store: Column values (for easy access)
  */
 export const columnValues = derived(
-  machineStateStore as any,
-  ($state) => $state.columnStates.map((col) => col.value)
+  typedStore,
+  ($state: MachineState) => $state.columnStates.map((col: ColumnState) => col.value)
 );

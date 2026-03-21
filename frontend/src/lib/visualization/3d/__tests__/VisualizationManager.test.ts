@@ -9,17 +9,49 @@ import { VisualizationManager } from '../VisualizationManager';
 import type { MachineState, StateDiff } from '../../state/types';
 
 // Mock types for testing
-const createMockMachineState = (columns: number[] = [0, 0, 0, 0, 0, 0, 0, 0]): MachineState => ({
-  columns,
-  carryFlags: [false, false, false, false, false, false, false, false],
-  isRunning: false,
-  timestamp: Date.now()
+const createMockMachineState = (cols: number[] = [0, 0, 0, 0, 0, 0, 0, 0]): MachineState => ({
+  phase: 'IDLE',
+  elapsedTime: 0,
+  isPaused: false,
+  stepNumber: 0,
+  columnStates: cols.map((value, columnIndex) => ({
+    columnIndex,
+    value,
+    previousValue: 0,
+    targetValue: value,
+    wheelRotation: 0,
+    carryActive: false,
+    hasCarry: false,
+    transitionProgress: 0,
+  })),
+  carryLevers: Array.from({ length: 8 }, (_, columnIndex) => ({
+    columnIndex,
+    isEngaged: false,
+    rotationAngle: 0,
+    hasCarryToPropagate: false,
+    propagationProgress: 0,
+  })),
+  shafts: (
+    ['INPUT', 'ADDEND1', 'ADDEND2', 'ADDEND3', 'ADDEND4', 'ADDEND5', 'ADDEND6', 'OUTPUT'] as const
+  ).map((shaftType, shaftIndex) => ({
+    shaftIndex,
+    shaftType,
+    rotation: 0,
+    rotationVelocity: 0,
+    isRotating: false,
+  })),
+  phaseProgress: 0,
+  timestamp: Date.now(),
+  stateVersion: 0,
 });
 
 const createMockStateDiff = (): StateDiff => ({
-  changedColumns: [0],
-  changedFlags: [],
-  carry: []
+  phaseChanged: false,
+  columnChanges: [],
+  carryChanges: [],
+  shaftChanges: [],
+  timestamp: Date.now(),
+  stateVersionDelta: 1,
 });
 
 describe('VisualizationManager', () => {
@@ -130,9 +162,12 @@ describe('VisualizationManager', () => {
       const state1 = createMockMachineState([0, 0, 0, 0, 0, 0, 0, 0]);
       const state2 = createMockMachineState([1, 0, 0, 0, 0, 0, 0, 0]);
       const diff: StateDiff = {
-        changedColumns: [0],
-        changedFlags: [],
-        carry: []
+        phaseChanged: false,
+        columnChanges: [{ columnIndex: 0, oldValue: 0, newValue: 1, oldRotation: 0, newRotation: 0, magnitude: 1 }],
+        carryChanges: [],
+        shaftChanges: [],
+        timestamp: Date.now(),
+        stateVersionDelta: 1,
       };
 
       manager.updateState(state1, diff);
@@ -211,9 +246,12 @@ describe('VisualizationManager', () => {
       const state1 = createMockMachineState([0, 0, 0, 0, 0, 0, 0, 0]);
       const state2 = createMockMachineState([0, 0, 0, 0, 0, 0, 0, 0]);
       const diff: StateDiff = {
-        changedColumns: [],
-        changedFlags: [0],
-        carry: [{ leverIndex: 0, direction: 1, magnitude: 0.5 }]
+        phaseChanged: false,
+        columnChanges: [],
+        carryChanges: [{ columnIndex: 0, wasEngaged: false, isEngaged: true, hadCarry: false, hasCarry: true }],
+        shaftChanges: [],
+        timestamp: Date.now(),
+        stateVersionDelta: 1,
       };
 
       manager.updateState(state1, diff);
@@ -241,9 +279,12 @@ describe('VisualizationManager', () => {
       const state1 = createMockMachineState([0, 0, 0, 0, 0, 0, 0, 0]);
       const state2 = createMockMachineState([0, 0, 0, 0, 0, 0, 0, 0]);
       const diff: StateDiff = {
-        changedColumns: [],
-        changedFlags: [],
-        carry: [{ leverIndex: 0, direction: 1, magnitude: 0.5 }]
+        phaseChanged: false,
+        columnChanges: [],
+        carryChanges: [{ columnIndex: 0, wasEngaged: false, isEngaged: true, hadCarry: false, hasCarry: true }],
+        shaftChanges: [],
+        timestamp: Date.now(),
+        stateVersionDelta: 1,
       };
 
       manager.updateState(state1, diff);
@@ -292,7 +333,7 @@ describe('VisualizationManager', () => {
       expect(metrics.totalFrames).toBeGreaterThanOrEqual(0);
     });
 
-    it('should update metrics over time', (done) => {
+    it('should update metrics over time', (done: (error?: Error) => void) => {
       const metrics1 = manager.getMetrics();
 
       setTimeout(() => {
@@ -524,7 +565,7 @@ describe('VisualizationManager', () => {
       expect(manager.isAnimatingNow()).toBe(true);
     });
 
-    it('should handle animation completion', (done) => {
+    it('should handle animation completion', (done: (error?: Error) => void) => {
       const state1 = createMockMachineState([0, 0, 0, 0, 0, 0, 0, 0]);
       const state2 = createMockMachineState([1, 0, 0, 0, 0, 0, 0, 0]);
       const diff = createMockStateDiff();

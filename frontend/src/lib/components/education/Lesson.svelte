@@ -21,7 +21,7 @@ let copyFeedbackType: 'success' | 'error' = 'success';
 let copyFeedbackTimeout: ReturnType<typeof setTimeout> | null = null;
 
 currentLesson.subscribe((l) => {
-  lesson = l;
+  lesson = l ?? null;
   copyFeedback = null;
   if (copyFeedbackTimeout) {
     clearTimeout(copyFeedbackTimeout);
