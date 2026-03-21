@@ -17,8 +17,10 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from .adapter import (
+    AbacusAdapter,
     AEMachineAdapter,
     AntikytheraAdapter,
+    AstrolabeAdapter,
     BombeAdapter,
     ColossusAdapter,
     CurtaAdapter,
@@ -37,7 +39,9 @@ from .adapter import (
     NapierAdapter,
     OdhnerAdapter,
     PascalineAdapter,
+    QuipuAdapter,
     ScheutzAdapter,
+    SlideRuleAdapter,
     ThomasArithometerAdapter,
     TorresQuevedoAdapter,
     ZuseZ1Adapter,
@@ -246,6 +250,35 @@ def _make_curta() -> tuple[Any, MachineAdapter]:
     return m, CurtaAdapter(m)
 
 
+def _make_abacus() -> tuple[Any, MachineAdapter]:
+    from .abacus import AbacusEmulator
+
+    m = AbacusEmulator()
+    m.set_value(0)
+    return m, AbacusAdapter(m)
+
+
+def _make_slide_rule() -> tuple[Any, MachineAdapter]:
+    from .slide_rule import SlideRuleEmulator
+
+    m = SlideRuleEmulator()
+    return m, SlideRuleAdapter(m)
+
+
+def _make_quipu() -> tuple[Any, MachineAdapter]:
+    from .quipu import QuipuEmulator
+
+    m = QuipuEmulator()
+    return m, QuipuAdapter(m)
+
+
+def _make_astrolabe() -> tuple[Any, MachineAdapter]:
+    from .astrolabe import AstrolabeEmulator
+
+    m = AstrolabeEmulator()
+    return m, AstrolabeAdapter(m)
+
+
 def _make_jacquard() -> tuple[Any, MachineAdapter]:
     from .jacquard import JacquardLoom
 
@@ -277,6 +310,20 @@ MACHINES: list[MachineEntry] = [
     # Astronomical / ancient
     # -----------------------------------------------------------------------
     MachineEntry(
+        id="astrolabe",
+        name="Astrolabe",
+        year=700,
+        country="Islamic Caliphate / Greece",
+        inventor="al-Fazari / Ptolemy",
+        category="astronomical",
+        brief="Planispheric analog computer; reads solar altitude and latitude from the sky.",
+        program_input_type="date",
+        manual=_load_manual(_BASE + "astrolabe"),
+        example_payload={"date": "2026-03-21", "latitude": 51.5, "steps": 12},
+        factory=_make_astrolabe,
+        tags=["analog", "astronomy", "medieval", "Islamic"],
+    ),
+    MachineEntry(
         id="antikythera",
         name="Antikythera Mechanism",
         year=-100,
@@ -294,6 +341,34 @@ MACHINES: list[MachineEntry] = [
     # Calculators
     # -----------------------------------------------------------------------
     MachineEntry(
+        id="abacus",
+        name="Abacus (Suanpan)",
+        year=-200,
+        country="China",
+        inventor="Unknown",
+        category="calculator",
+        brief="Bead-and-rod decimal calculator; step() pushes one bead, accumulating counts.",
+        program_input_type="none",
+        manual=_load_manual(_BASE + "abacus"),
+        example_payload={"input": 42},
+        factory=_make_abacus,
+        tags=["ancient", "beads", "decimal", "manual"],
+    ),
+    MachineEntry(
+        id="quipu",
+        name="Quipu (Khipu)",
+        year=900,
+        country="Inca Empire (Peru)",
+        inventor="Unknown",
+        category="calculator",
+        brief="Knotted-cord recording device; encodes numbers by category across pendant cords.",
+        program_input_type="none",
+        manual=_load_manual(_BASE + "quipu"),
+        example_payload={"category": "llamas", "value": 42},
+        factory=_make_quipu,
+        tags=["Inca", "knots", "recording", "non-Western"],
+    ),
+    MachineEntry(
         id="napiers-bones",
         name="Napier's Bones",
         year=1617,
@@ -306,6 +381,20 @@ MACHINES: list[MachineEntry] = [
         example_payload={"number": 12345, "multiplier": 7},
         factory=_make_napier,
         tags=["manual", "multiplication", "ivory"],
+    ),
+    MachineEntry(
+        id="slide-rule",
+        name="Slide Rule",
+        year=1620,
+        country="England",
+        inventor="William Oughtred",
+        category="calculator",
+        brief="Logarithmic analog calculator; multiplication and division via log-scale addition.",
+        program_input_type="none",
+        manual=_load_manual(_BASE + "slide_rule"),
+        example_payload={"a": 12.5, "b": 3.14, "operation": "multiply"},
+        factory=_make_slide_rule,
+        tags=["logarithm", "analog", "mechanical"],
     ),
     MachineEntry(
         id="pascaline",

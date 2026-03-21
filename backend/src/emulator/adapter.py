@@ -13,8 +13,10 @@ from typing import TYPE_CHECKING, Any
 from .types import MechanicalPhase
 
 if TYPE_CHECKING:
+    from .abacus import AbacusEmulator
     from .analytical_engine import Engine
     from .antikythera import AntikytheraMechanism
+    from .astrolabe import AstrolabeEmulator
     from .bombe import Bombe, BombeMenu
     from .colossus import Colossus
     from .edsac import EDSAC
@@ -30,6 +32,8 @@ if TYPE_CHECKING:
     from .napiers_bones import NapiersBones
     from .odhner_arithmometer import OdhnerArithmometer
     from .pascaline import PascalineEmulator
+    from .quipu import QuipuEmulator
+    from .slide_rule import SlideRuleEmulator
     from .thomas_arithmometer import ThomasArithmometer
     from .zuse_z3 import ZuseZ3
 
@@ -1164,4 +1168,197 @@ class JacquardAdapter(MachineAdapter):
             "last_card": list(self._last_card),
             "pattern": self.machine.get_pattern(),
             "num_hooks": self.machine.num_hooks,
+        }
+
+
+class AbacusAdapter(MachineAdapter):
+    """Adapter for AbacusEmulator (China, ~200 BCE).
+
+    One step = one bead push (adds 1 to the current value).
+    Demonstrates bead-column arithmetic; columns represent decimal digits.
+    """
+
+    def __init__(self, machine: AbacusEmulator) -> None:
+        self.machine = machine
+        self._ops = 0
+
+    def get_cycle_count(self) -> int:
+        return self._ops
+
+    def get_current_phase(self) -> MechanicalPhase | None:
+        return None
+
+    def get_column_values(self) -> list[int]:
+        # Each digit of the current value is one column.
+        return self.machine._digits()  # noqa: SLF001
+
+    def get_register_values(self) -> dict[str, Any]:
+        return {"value": self.machine.state()["value"]}
+
+    def get_memory_value(self, address: int) -> Any:
+        digits = self.machine._digits()  # noqa: SLF001
+        if 0 <= address < len(digits):
+            return digits[address]
+        return 0
+
+    def step(self) -> None:
+        self.machine.add(1)
+        self._ops += 1
+
+    def get_snapshot(self) -> Any:
+        return {
+            "value": self.machine.state()["value"],
+            "digits": self.machine.state()["digits"],
+            "operations": self._ops,
+        }
+
+
+class SlideRuleAdapter(MachineAdapter):
+    """Adapter for SlideRuleEmulator (England, ~1620).
+
+    One step = multiply current result by 2 (demonstrates log-scale doubling).
+    The slide rule has no internal state; the adapter tracks the running result.
+    """
+
+    def __init__(self, machine: SlideRuleEmulator) -> None:
+        self.machine = machine
+        self._result: float = 1.0
+        self._ops = 0
+
+    def get_cycle_count(self) -> int:
+        return self._ops
+
+    def get_current_phase(self) -> MechanicalPhase | None:
+        return None
+
+    def get_column_values(self) -> list[int]:
+        # Expose integer part of result as a single column.
+        return [int(self._result)]
+
+    def get_register_values(self) -> dict[str, Any]:
+        return {"result": self._result, "log_result": self._ops}
+
+    def get_memory_value(self, address: int) -> Any:
+        return self._result if address == 0 else 0.0
+
+    def step(self) -> None:
+        # Each step doubles the running result via log-scale addition.
+        self._result = self.machine.multiply(self._result, 2.0)
+        self._ops += 1
+
+    def get_snapshot(self) -> Any:
+        return {
+            "result": self._result,
+            "operations": self._ops,
+        }
+
+
+class QuipuAdapter(MachineAdapter):
+    """Adapter for QuipuEmulator (Inca, ~900-1532 CE).
+
+    One step = record one tally unit in the "step" category.
+    Demonstrates knotted-cord encoding; each category is a pendant cord.
+    """
+
+    def __init__(self, machine: QuipuEmulator) -> None:
+        self.machine = machine
+        self._ops = 0
+
+    def get_cycle_count(self) -> int:
+        return self._ops
+
+    def get_current_phase(self) -> MechanicalPhase | None:
+        return None
+
+    def get_column_values(self) -> list[int]:
+        # Expose per-category totals as column values (up to 8 categories).
+        state = self.machine.state()
+        cats: dict[str, int] = {}
+        for r in state["records"]:
+            cats[str(r["category"])] = cats.get(str(r["category"]), 0) + int(r["value"])
+        return [v for v in list(cats.values())[:8]]
+
+    def get_register_values(self) -> dict[str, Any]:
+        state = self.machine.state()
+        return {
+            "record_count": len(state["records"]),
+            "operations": self._ops,
+        }
+
+    def get_memory_value(self, address: int) -> Any:
+        state = self.machine.state()
+        if 0 <= address < len(state["records"]):
+            return state["records"][address]
+        return 0
+
+    def step(self) -> None:
+        self.machine.encode_number("step", 1)
+        self._ops += 1
+
+    def get_snapshot(self) -> Any:
+        return {
+            "records": self.machine.state()["records"],
+            "operations": self._ops,
+        }
+
+
+class AstrolabeAdapter(MachineAdapter):
+    """Adapter for AstrolabeEmulator (Greece/Islam, ~200 BCE - 1600 CE).
+
+    One step = advance by 1 hour and recompute solar altitude.
+    Demonstrates the reticular projection used to read altitude angles from
+    the rete (star map) against the tympan (latitude plate).
+    """
+
+    def __init__(self, machine: AstrolabeEmulator) -> None:
+        self.machine = machine
+        self._date = "2026-03-21"
+        self._latitude = 51.5  # London (typical Islamic/European astrolabe latitude)
+        self._hour: float = 6.0  # start at dawn
+        self._last_altitude: float = 0.0
+        self._steps = 0
+
+    def get_cycle_count(self) -> int:
+        return self._steps
+
+    def get_current_phase(self) -> MechanicalPhase | None:
+        return None
+
+    def get_column_values(self) -> list[int]:
+        # Altitude in whole degrees as a single column value.
+        return [max(0, int(self._last_altitude))]
+
+    def get_register_values(self) -> dict[str, Any]:
+        return {
+            "hour": self._hour,
+            "altitude_deg": round(self._last_altitude, 2),
+            "latitude_deg": self._latitude,
+            "date": self._date,
+        }
+
+    def get_memory_value(self, address: int) -> Any:
+        return self._last_altitude if address == 0 else 0.0
+
+    def step(self) -> None:
+        from .astrolabe import AstrolabeQuery
+
+        self._hour = (self._hour + 1.0) % 24.0
+        hh = int(self._hour)
+        mm = int((self._hour - hh) * 60)
+        time_str = f"{hh:02d}:{mm:02d}"
+        try:
+            self._last_altitude = self.machine.read_altitude(
+                AstrolabeQuery(self._latitude, self._date, time_str, "sun")
+            )
+        except (KeyError, ValueError):
+            self._last_altitude = 0.0
+        self._steps += 1
+
+    def get_snapshot(self) -> Any:
+        return {
+            "date": self._date,
+            "latitude_deg": self._latitude,
+            "hour": self._hour,
+            "altitude_deg": round(self._last_altitude, 2),
+            "steps": self._steps,
         }

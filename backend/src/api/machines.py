@@ -384,16 +384,27 @@ def _apply_load(
                 machine.set_input(val)
             elif hasattr(machine, "set_number"):
                 machine.set_number(val)
+            elif hasattr(machine, "set_value"):
+                machine.set_value(val)
         if "sliders" in payload and hasattr(machine, "set_slider"):
             for i, v in enumerate(payload["sliders"]):
                 machine.set_slider(i, int(v))
         if "multiplier_lever" in payload and hasattr(machine, "set_multiplier_lever"):
             machine.set_multiplier_lever(int(payload["multiplier_lever"]))
+        if "category" in payload and "value" in payload and hasattr(machine, "encode_number"):
+            machine.encode_number(str(payload["category"]), int(payload["value"]))
 
     elif pit == "date":
-        # Antikythera: reset date
-        adapter._date = float(payload.get("years", 0.0))  # type: ignore[attr-defined]
-        adapter._steps = 0  # type: ignore[attr-defined]
+        if machine_id == "astrolabe":
+            # Astrolabe payload: {"date": "YYYY-MM-DD", "latitude": float, "steps": int}
+            adapter._date = str(payload.get("date", "2026-03-21"))  # type: ignore[attr-defined]
+            adapter._latitude = float(payload.get("latitude", 51.5))  # type: ignore[attr-defined]
+            adapter._hour = 0.0  # type: ignore[attr-defined]
+            adapter._steps = 0  # type: ignore[attr-defined]
+        else:
+            # Antikythera: reset date (decimal years)
+            adapter._date = float(payload.get("years", 0.0))  # type: ignore[attr-defined]
+            adapter._steps = 0  # type: ignore[attr-defined]
 
 
 @router.post("/{machine_id}/step", response_model=StepResponse)
