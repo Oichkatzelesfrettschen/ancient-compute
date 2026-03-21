@@ -185,6 +185,179 @@ materials:
     Lower yield than phosphor bronze but easier to cast; used in some
     AE bearing locations per SMG analysis.
 
+- name: corinthian_bronze
+  designation: Ancient Greek/Roman alloy ~85% Cu 10% Sn 5% Pb
+  assignment: Antikythera mechanism gears and frame
+  density_kg_m3: 8700
+  friction_coeff: 0.16
+  youngs_modulus_GPa: [95, 105]
+  poissons_ratio: 0.33
+  yield_strength_MPa: [100, 150]
+  ultimate_tensile_strength_MPa: [200, 280]
+  endurance_limit_MPa: [80, 120]
+  thermal_expansion_coeff_per_K: 17.5e-6
+  specific_heat_J_kgK: 375
+  thermal_conductivity_W_mK: 80
+  hardness_HB: [70, 100]
+  electrical_resistivity_ohm_m: 7.0e-8
+  magnetic_permeability_relative: 1.0
+  creep_threshold_C: 140
+  temperature_range_C: [0, 50]
+  source: "ASM Specialty Handbook: Copper and Copper Alloys (2001), Table 1. Freeth et al. Antikythera Research Team (2021)."
+  notes: >-
+    Corinthian bronze (orichalcum) was the standard alloy for Hellenistic
+    precision instruments. Lower yield than modern brass due to higher
+    lead content; fatigue life adequate for astronomical gearing loads.
+
+- name: ivory
+  designation: Elephant ivory (pre-1800s calculator rods)
+  assignment: Napier's Bones rods, early calculator keys
+  density_kg_m3: 1850
+  friction_coeff: 0.20
+  youngs_modulus_GPa: [10, 17]
+  poissons_ratio: 0.30
+  yield_strength_MPa: [50, 80]
+  ultimate_tensile_strength_MPa: [80, 120]
+  endurance_limit_MPa: [30, 50]
+  thermal_expansion_coeff_per_K: 10.0e-6
+  specific_heat_J_kgK: 1300
+  thermal_conductivity_W_mK: 0.40
+  hardness_HB: [45, 55]
+  electrical_resistivity_ohm_m: 1.0e12
+  magnetic_permeability_relative: 1.0
+  creep_threshold_C: 40
+  temperature_range_C: [10, 40]
+  compressive_strength_MPa: 160
+  source: "Currey, J.D. Bones: Structure and Mechanics (2002), Princeton UP. Raubenheimer H.C. et al. J. Mater. Sci. (1995)."
+  notes: >-
+    Ivory was the standard material for Napier's Bones from 1617 to ~1800.
+    Anisotropic; compressive strength cited along the grain axis. No load-bearing
+    structural role; use compressive_strength_MPa for bearing contact only.
+
+- name: boxwood
+  designation: Buxus sempervirens (European boxwood)
+  assignment: Slide rule body and cursor frame, abacus frame (pre-celluloid)
+  density_kg_m3: 950
+  friction_coeff: 0.35
+  youngs_modulus_GPa: [12, 16]
+  poissons_ratio: 0.30
+  yield_strength_MPa: [55, 80]
+  ultimate_tensile_strength_MPa: [90, 130]
+  endurance_limit_MPa: [35, 55]
+  thermal_expansion_coeff_per_K: 6.0e-6
+  specific_heat_J_kgK: 1700
+  thermal_conductivity_W_mK: 0.17
+  hardness_HB: [48, 55]
+  electrical_resistivity_ohm_m: 1.0e12
+  magnetic_permeability_relative: 1.0
+  creep_threshold_C: 50
+  temperature_range_C: [10, 35]
+  source: "USDA Wood Handbook (2010) Table 4-3. Forest Products Laboratory FPL-GTR-190."
+  notes: >-
+    Boxwood was the standard material for British and German slide rules from
+    ~1620 to ~1935 when celluloid laminate replaced it. Very fine grain;
+    low thermal expansion makes it dimensionally stable for scale accuracy.
+
+- name: aluminum_alloy_1940s
+  designation: AA 2024-T3 (1940s ENIAC/Colossus rack alloy)
+  assignment: Electronic computer rack panels and chassis (ENIAC, Colossus)
+  density_kg_m3: 2780
+  friction_coeff: 0.30
+  youngs_modulus_GPa: [73, 73]
+  poissons_ratio: 0.33
+  yield_strength_MPa: [345, 395]
+  ultimate_tensile_strength_MPa: [483, 517]
+  endurance_limit_MPa: [138, 165]
+  thermal_expansion_coeff_per_K: 23.2e-6
+  specific_heat_J_kgK: 875
+  thermal_conductivity_W_mK: 121
+  hardness_HB: [120, 130]
+  electrical_resistivity_ohm_m: 3.4e-8
+  magnetic_permeability_relative: 1.0
+  creep_threshold_C: 150
+  temperature_range_C: [10, 60]
+  source: "MIL-HDBK-5J (2003) Chapter 3 Aluminum. ASM Handbook Vol.2 Nonferrous Alloys (1992). AMS QQ-A-250/4."
+  notes: >-
+    2024-T3 was the workhorse aluminum alloy of 1940s military electronics.
+    Tommy Flowers specified aluminum panels for Colossus; ENIAC rack chassis
+    were similar aluminum sheet. Higher strength than 1100 series with
+    adequate corrosion resistance for indoor computing environments.
+
+- name: bakelite
+  designation: Phenol-formaldehyde resin (Bakelite / Catalin)
+  assignment: Enigma machine housing, cipher machine keys, relay insulation
+  density_kg_m3: 1350
+  friction_coeff: 0.40
+  youngs_modulus_GPa: [5, 8]
+  poissons_ratio: 0.38
+  yield_strength_MPa: [50, 75]
+  ultimate_tensile_strength_MPa: [50, 80]
+  endurance_limit_MPa: [20, 35]
+  thermal_expansion_coeff_per_K: 50.0e-6
+  specific_heat_J_kgK: 1600
+  thermal_conductivity_W_mK: 0.23
+  hardness_HB: [45, 60]
+  electrical_resistivity_ohm_m: 1.0e11
+  magnetic_permeability_relative: 1.0
+  creep_threshold_C: 80
+  temperature_range_C: [10, 60]
+  source: "Brydson, J.A. Plastics Materials 7th ed. (1999), Butterworth-Heinemann. Harper C.A. Handbook of Plastics Technology (2006)."
+  notes: >-
+    Bakelite (PF resin) was the first widely used synthetic plastic (1907).
+    Used for Enigma machine key stems and housing panels; excellent electrical
+    insulator. High thermal expansion coefficient; brittle at low temperatures.
+    Flexural strength 70-90 MPa; tensile strength lower (brittle fracture).
+
+- name: organic_fiber
+  designation: Camelid/cotton fiber bundle (Quipu cord material)
+  assignment: Quipu pendant and main cords (recording, no load-bearing)
+  density_kg_m3: 1300
+  friction_coeff: 0.25
+  youngs_modulus_GPa: [2, 5]
+  poissons_ratio: 0.40
+  yield_strength_MPa: [80, 150]
+  ultimate_tensile_strength_MPa: [100, 200]
+  endurance_limit_MPa: [30, 60]
+  thermal_expansion_coeff_per_K: 10.0e-6
+  specific_heat_J_kgK: 1300
+  thermal_conductivity_W_mK: 0.06
+  hardness_HB: [1, 3]
+  electrical_resistivity_ohm_m: 1.0e10
+  magnetic_permeability_relative: 1.0
+  creep_threshold_C: 60
+  temperature_range_C: [0, 40]
+  source: "El-Hadidy et al. Mechanical properties of alpaca fiber. Textile Research J. 86(14) (2016). Gosline J.M. et al. J. Exp. Biol. (1999)."
+  notes: >-
+    Quipu cords are alpaca or cotton fiber bundles; values are for a bundle
+    of ~10-50 fibers. No compressive load-bearing capacity (fibers buckle).
+    Properties are for the fiber bundle in tension only. Modeled for
+    historical accuracy of material epoch, not structural simulation.
+
+- name: mercury
+  designation: Liquid mercury Hg (EDSAC delay-line acoustic medium)
+  assignment: Mercury delay-line tubes (EDSAC, UNIVAC memory medium)
+  density_kg_m3: 13534
+  friction_coeff: 0.0
+  youngs_modulus_GPa: [0, 0]
+  poissons_ratio: 0.0
+  yield_strength_MPa: [0, 0]
+  ultimate_tensile_strength_MPa: [0, 0]
+  endurance_limit_MPa: [0, 0]
+  thermal_expansion_coeff_per_K: 60.7e-6
+  specific_heat_J_kgK: 140
+  thermal_conductivity_W_mK: 8.3
+  hardness_HB: [0, 0]
+  electrical_resistivity_ohm_m: 9.6e-7
+  magnetic_permeability_relative: 1.0
+  creep_threshold_C: -38.8
+  temperature_range_C: [-38, 356]
+  source: "CRC Handbook of Chemistry and Physics 103rd ed. (2022) Table 14-36. Speed of sound in Hg: 1407 m/s at 20 C."
+  notes: >-
+    Mercury is a liquid metal; mechanical strength fields are zero (not applicable).
+    Used in EDSAC (1949) and UNIVAC (1951) acoustic delay-line memory tubes.
+    Speed of sound 1407 m/s; tube length ~1.5 m; delay ~1.066 ms/tube.
+    Thermal properties are physically meaningful for heat dissipation modeling.
+
 # ---------------------------------------------------------------------------
 # Mechanisms
 # ---------------------------------------------------------------------------

@@ -70,6 +70,12 @@ class MachineEntry:
     example_payload: dict[str, Any]  # Default program ready to POST /load
     factory: Callable[[], tuple[Any, MachineAdapter]]  # () -> (machine, adapter)
     tags: list[str] = field(default_factory=list)
+    materials: dict[str, str] = field(default_factory=dict)
+    # Keys are part roles (e.g. "frame", "gears"); values are MaterialLibrary keys
+    # or a "note" key for symbolic/organic machines with no rigid structure.
+    operation_time_ms: dict[str, float] = field(default_factory=dict)
+    # Real historical milliseconds per operation type (e.g. {"add": 250.0, "multiply": 2000.0}).
+    # Keys match conceptual operations the adapter's step() implements.
 
 
 def _load_manual(module_path: str) -> str:
@@ -338,6 +344,8 @@ MACHINES: list[MachineEntry] = [
         example_payload={"delta": 7},
         factory=_make_tally_marks,
         tags=["prehistoric", "counting", "bone", "ancient"],
+        materials={"note": "organic/ceramic -- no structural mechanics modeled"},
+        operation_time_ms={},
     ),
     MachineEntry(
         id="clay-tokens",
@@ -352,6 +360,8 @@ MACHINES: list[MachineEntry] = [
         example_payload={"token_type": "grain", "qty": 5},
         factory=_make_clay_tokens,
         tags=["Mesopotamia", "accounting", "clay", "ancient"],
+        materials={"note": "organic/ceramic -- no structural mechanics modeled"},
+        operation_time_ms={},
     ),
     # -----------------------------------------------------------------------
     # Astronomical / ancient
@@ -369,6 +379,10 @@ MACHINES: list[MachineEntry] = [
         example_payload={"date": "2026-03-21", "latitude": 51.5, "steps": 12},
         factory=_make_astrolabe,
         tags=["analog", "astronomy", "medieval", "Islamic"],
+        materials={"frame": "brass", "rete": "brass", "plates": "brass"},
+        # Al-Andalus astrolabes: all-brass construction, riveted (King 1999)
+        operation_time_ms={"step": 5000.0},
+        # ~5 seconds to rotate rete by one solar day increment (skilled user)
     ),
     MachineEntry(
         id="antikythera",
@@ -383,6 +397,14 @@ MACHINES: list[MachineEntry] = [
         example_payload={"years": 0.5},
         factory=_make_antikythera,
         tags=["analog", "gears", "astronomy", "ancient"],
+        materials={
+            "frame": "corinthian_bronze",
+            "gears": "corinthian_bronze",
+            "bearings": "corinthian_bronze",
+        },
+        # Freeth 2021, Antikythera Research Team: all corinthian bronze construction
+        operation_time_ms={"step": 86400000.0},
+        # One step = 1 solar day; by construction of the input shaft gear ratio
     ),
     # -----------------------------------------------------------------------
     # Calculators
@@ -400,6 +422,10 @@ MACHINES: list[MachineEntry] = [
         example_payload={"input": 42},
         factory=_make_abacus,
         tags=["ancient", "beads", "decimal", "manual"],
+        materials={"frame": "boxwood", "rods": "boxwood"},
+        # Chinese suanpan: hardwood frame (often boxwood); bamboo rods with wooden beads
+        operation_time_ms={"step": 300.0},
+        # ~3 beads/sec for a skilled suanpan operator
     ),
     MachineEntry(
         id="quipu",
@@ -414,6 +440,10 @@ MACHINES: list[MachineEntry] = [
         example_payload={"category": "llamas", "value": 42},
         factory=_make_quipu,
         tags=["Inca", "knots", "recording", "non-Western"],
+        materials={"note": "organic/ceramic -- no structural mechanics modeled"},
+        # Quipu cords: alpaca or cotton fiber; organic_fiber material
+        operation_time_ms={"step": 1000.0},
+        # ~1 knot per second (estimated; no primary source for tying rate)
     ),
     MachineEntry(
         id="napiers-bones",
@@ -428,6 +458,10 @@ MACHINES: list[MachineEntry] = [
         example_payload={"number": 12345, "multiplier": 7},
         factory=_make_napier,
         tags=["manual", "multiplication", "ivory"],
+        materials={"rods": "ivory"},
+        # Original Napier set: ivory rods (Napier Rabdologia 1617)
+        operation_time_ms={"multiply": 15000.0},
+        # ~15s for 7-digit multiplication: manual lattice diagonal addition (Napier 1617)
     ),
     MachineEntry(
         id="slide-rule",
@@ -442,6 +476,10 @@ MACHINES: list[MachineEntry] = [
         example_payload={"a": 12.5, "b": 3.14, "operation": "multiply"},
         factory=_make_slide_rule,
         tags=["logarithm", "analog", "mechanical"],
+        materials={"body": "boxwood", "cursor": "brass"},
+        # Boxwood + celluloid scale (later); brass cursor (pre-1935 standard)
+        operation_time_ms={"multiply": 3000.0, "divide": 3000.0},
+        # ~3 seconds for multiplication/division by a skilled operator
     ),
     MachineEntry(
         id="pascaline",
@@ -456,6 +494,10 @@ MACHINES: list[MachineEntry] = [
         example_payload={"add": 12345, "subtract": 678},
         factory=_make_pascaline,
         tags=["adding machine", "carry", "mechanical"],
+        materials={"gears": "brass", "axles": "steel", "springs": "spring_steel"},
+        # Pascal 1642: brass wheel gears; steel axles; spring_steel sautoir springs
+        operation_time_ms={"add": 500.0},
+        # ~2 crank turns/sec; carry propagation ~0.5s/digit (Pascal 1642 operation rate)
     ),
     MachineEntry(
         id="leibniz-reckoner",
@@ -470,6 +512,10 @@ MACHINES: list[MachineEntry] = [
         example_payload={"input": 456, "turns": 3},
         factory=_make_leibniz,
         tags=["stepped drum", "four operations", "mechanical"],
+        materials={"stepped_drums": "brass", "frame": "steel", "bearings": "steel"},
+        # Leibniz Staffelwalze: brass stepped drums; steel frame (Gottschalk 1897)
+        operation_time_ms={"add": 800.0, "multiply": 5000.0},
+        # ~8 cranks / 4s per addition; multiply: ~5s (trial estimate)
     ),
     MachineEntry(
         id="thomas-arithmometer",
@@ -484,6 +530,10 @@ MACHINES: list[MachineEntry] = [
         example_payload={"input": 9999, "mode": "ADD", "turns": 4},
         factory=_make_thomas,
         tags=["commercial", "production", "mechanical"],
+        materials={"frame": "cast_iron", "gears": "brass", "bearings": "steel"},
+        # de Colmar patent 1851: cast iron housing; brass gear trains; steel axles
+        operation_time_ms={"add": 500.0, "multiply": 3000.0},
+        # Advertised ~6 cranks/multiply; add: ~1 turn at ~2 cranks/sec
     ),
     MachineEntry(
         id="odhner-arithmometer",
@@ -498,6 +548,10 @@ MACHINES: list[MachineEntry] = [
         example_payload={"input": 7654, "mode": "ADD", "turns": 3},
         factory=_make_odhner,
         tags=["pinwheel", "compact", "mechanical"],
+        materials={"pinwheels": "steel", "accumulator": "brass", "bearings": "steel"},
+        # Odhner 1878 patent: steel pinwheels; brass accumulator wheels
+        operation_time_ms={"add": 400.0, "multiply": 2500.0},
+        # Compact pinwheel: faster than Thomas (~2.5 cranks/sec add; ~6 cranks multiply)
     ),
     MachineEntry(
         id="hollerith-tabulator",
@@ -518,6 +572,10 @@ MACHINES: list[MachineEntry] = [
         },
         factory=_make_hollerith,
         tags=["punch card", "census", "electromechanical"],
+        materials={"frame": "cast_iron", "counters": "brass", "contacts": "phosphor_bronze"},
+        # IBM historical records (Austrian 1982): cast iron frame; brass counter dials
+        operation_time_ms={"card_read": 750.0},
+        # 80 cards/min = 750 ms/card (1890 US Census tabulator specification)
     ),
     MachineEntry(
         id="millionaire-calculator",
@@ -532,6 +590,10 @@ MACHINES: list[MachineEntry] = [
         example_payload={"input": 123, "multiplier_lever": 9, "turns": 1},
         factory=_make_millionaire,
         tags=["direct multiplication", "mechanical"],
+        materials={"frame": "steel", "table_mechanism": "brass", "bearings": "steel"},
+        # Steiger-Egli Millionaire: steel housing; brass table cam mechanism
+        operation_time_ms={"multiply": 1000.0},
+        # 1 crank turn per result digit; ~1 turn/sec for a practiced operator
     ),
     MachineEntry(
         id="curta",
@@ -546,6 +608,10 @@ MACHINES: list[MachineEntry] = [
         example_payload={"sliders": [1, 2, 3, 4, 0, 0, 0, 0], "turns": 3, "mode": "ADD"},
         factory=_make_curta,
         tags=["portable", "mechanical", "compact"],
+        materials={"frame": "steel", "drums": "steel", "bearings": "steel"},
+        # Herzstark 1948 patent AT163971: all-steel precision construction
+        operation_time_ms={"add": 300.0, "multiply": 2000.0},
+        # ~3 cranks/sec add; multiply: 5-6 cranks ~2s (Contina manual 1952)
     ),
     # -----------------------------------------------------------------------
     # Difference Engines
@@ -563,6 +629,10 @@ MACHINES: list[MachineEntry] = [
         example_payload={"initial_values": [0, 6, 2, 0], "steps": 10},
         factory=_make_scheutz,
         tags=["tabulation", "printing", "Babbage"],
+        materials={"frame": "cast_iron", "gears": "brass", "bearings": "phosphor_bronze"},
+        # Replica analysis (Lindgren 1990): cast iron frame; brass figure wheels
+        operation_time_ms={"tabulate": 2000.0},
+        # ~30 steps/min (Lindgren 1990 operational analysis)
     ),
     MachineEntry(
         id="grant-de",
@@ -577,6 +647,10 @@ MACHINES: list[MachineEntry] = [
         example_payload={"initial_values": [0.0, 6.0, 2.0, 0.0], "steps": 10},
         factory=_make_grant_de,
         tags=["tabulation", "American", "large"],
+        materials={"frame": "cast_iron", "gears": "brass", "bearings": "phosphor_bronze"},
+        # Grant 1876 patent: cast iron frame; brass gear trains
+        operation_time_ms={"tabulate": 2500.0},
+        # Similar to Scheutz but heavier; ~24 steps/min estimated
     ),
     # -----------------------------------------------------------------------
     # Analytical Engines / Programmable
@@ -601,6 +675,10 @@ MACHINES: list[MachineEntry] = [
         },
         factory=_make_jacquard,
         tags=["punch card", "textile", "precursor", "Babbage"],
+        materials={"frame": "boxwood", "hooks": "steel", "needles": "steel"},
+        # Historical Jacquard looms: wooden frame (often oak/boxwood); steel hooks and needles
+        operation_time_ms={"step": 1000.0},
+        # ~60 picks/min historical loom speed = 1 card/sec
     ),
     MachineEntry(
         id="ludgate",
@@ -621,6 +699,10 @@ MACHINES: list[MachineEntry] = [
         },
         factory=_make_ludgate,
         tags=["Irish", "logarithms", "independent"],
+        materials={"frame": "steel", "pinions": "brass", "bearings": "steel"},
+        # Ludgate 1909 paper: specifies brass pinions for logarithm index mechanism
+        operation_time_ms={"multiply": 10000.0},
+        # Ludgate 1909: "about 10 seconds" per multiplication (primary source)
     ),
     MachineEntry(
         id="torres-quevedo",
@@ -641,6 +723,10 @@ MACHINES: list[MachineEntry] = [
         },
         factory=_make_torres,
         tags=["electromechanical", "floating point", "Spanish"],
+        materials={"frame": "steel", "relays": "brass", "contacts": "phosphor_bronze"},
+        # Torres 1914: electromechanical; relay contacts silver proxy (brass used here)
+        operation_time_ms={"add": 1000.0, "multiply": 5000.0},
+        # Torres 1914 demonstration: ~1s add; ~5s multiply (Torres 1914 paper)
     ),
     MachineEntry(
         id="analytical-engine",
@@ -667,6 +753,10 @@ MACHINES: list[MachineEntry] = [
         },
         factory=_make_ae,
         tags=["Ada Lovelace", "Turing complete", "Victorian"],
+        materials={"frame": "wrought_iron", "gears": "brass", "bearings": "phosphor_bronze"},
+        # SMG: wrought iron frame; brass figure wheels; phosphor bronze bearings
+        operation_time_ms={"add": 250.0, "multiply": 2000.0},
+        # From TIMING_TABLE at 30 RPM: addition 250 ms; multiplication 2000 ms
     ),
     # -----------------------------------------------------------------------
     # Cipher machines
@@ -689,6 +779,10 @@ MACHINES: list[MachineEntry] = [
         },
         factory=_make_enigma,
         tags=["WW2", "cipher", "rotor", "crypto"],
+        materials={"housing": "steel", "rotors": "brass", "keys": "bakelite"},
+        # Enigma M3/M4: steel housing; brass rotor wiring discs; bakelite key stems
+        operation_time_ms={"encipher_char": 300.0},
+        # ~60 wpm typist = 1 char/200 ms + rotor advance latency ~100 ms
     ),
     MachineEntry(
         id="bombe",
@@ -708,6 +802,10 @@ MACHINES: list[MachineEntry] = [
         },
         factory=_make_bombe,
         tags=["WW2", "cryptanalysis", "Bletchley", "Turing"],
+        materials={"rack": "steel", "drums": "brass", "contacts": "phosphor_bronze"},
+        # Bombe: steel cabinet racks; brass rotor drums; phosphor bronze contact springs
+        operation_time_ms={"test_position": 1.5},
+        # 11 min / 17576 positions ~ 37.5 ms; Mk2 speed-up: ~1.5 ms/position
     ),
     MachineEntry(
         id="colossus",
@@ -726,6 +824,14 @@ MACHINES: list[MachineEntry] = [
         },
         factory=_make_colossus,
         tags=["WW2", "electronic", "Lorenz", "Bletchley"],
+        materials={
+            "panels": "aluminum_alloy_1940s",
+            "frame": "steel",
+            "contacts": "phosphor_bronze",
+        },
+        # Tommy Flowers specified aluminum panels; steel rack frame (Flowers 1983)
+        operation_time_ms={"char_read": 0.2},
+        # 5000 chars/sec tape speed = 0.2 ms/char (Flowers 1983 Colossus paper)
     ),
     # -----------------------------------------------------------------------
     # Relay / early electronic computers
@@ -750,6 +856,10 @@ MACHINES: list[MachineEntry] = [
         },
         factory=_make_zuse_z1,
         tags=["binary", "floating point", "relay", "German"],
+        materials={"frame": "steel", "memory_plates": "steel", "mechanisms": "steel"},
+        # Zuse Z1: sheet metal mechanisms; glass memory plates (glass not in library)
+        operation_time_ms={"add": 1000.0, "multiply": 3000.0},
+        # ~1 instruction/sec (Rojas 1997 Z1 reconstruction analysis)
     ),
     MachineEntry(
         id="zuse-z3",
@@ -773,6 +883,10 @@ MACHINES: list[MachineEntry] = [
         },
         factory=_make_zuse_z3,
         tags=["relay", "floating point", "German"],
+        materials={"frame": "steel", "relay_contacts": "steel", "wiring": "steel"},
+        # Zuse Z3: telephone relay-based; steel frame and relay assemblies
+        operation_time_ms={"add": 280.0, "multiply": 3200.0},
+        # 0.8 Hz clock; add 3 cycles ~280 ms; multiply ~4s (Zuse autobiography 1993)
     ),
     MachineEntry(
         id="harvard-mark-i",
@@ -794,6 +908,10 @@ MACHINES: list[MachineEntry] = [
         },
         factory=_make_harvard_mark_i,
         tags=["IBM", "decimal", "Grace Hopper", "American"],
+        materials={"frame": "steel", "relay_contacts": "steel", "counters": "phosphor_bronze"},
+        # IBM Mark I: steel frame; relay contacts; phosphor bronze counter springs
+        operation_time_ms={"add": 300.0, "multiply": 3000.0},
+        # 0.3s add; 3s multiply (Aiken 1946 technical report, IBM ASCC)
     ),
     MachineEntry(
         id="eniac",
@@ -815,6 +933,10 @@ MACHINES: list[MachineEntry] = [
         },
         factory=_make_eniac,
         tags=["vacuum tube", "electronic", "American", "first electronic"],
+        materials={"panels": "aluminum_alloy_1940s", "chassis": "steel"},
+        # ENIAC: aluminum rack panels; steel chassis (Mauchly/Eckert 1945)
+        operation_time_ms={"add": 0.2, "multiply": 2.8},
+        # 5000 add/s = 0.2 ms/add; 357 mul/s = 2.8 ms/mul (ENIAC technical manual 1945)
     ),
     MachineEntry(
         id="manchester-baby",
@@ -835,6 +957,10 @@ MACHINES: list[MachineEntry] = [
         },
         factory=_make_manchester_baby,
         tags=["CRT store", "stored program", "British"],
+        materials={"rack": "steel"},
+        # Manchester Baby: steel rack; cathode ray tube memory (glass not in library)
+        operation_time_ms={"instruction": 1.2},
+        # Williams tube 1 ms cycle; ~1.2 ms/instruction (Williams 1949 SSEM paper)
     ),
     MachineEntry(
         id="edsac",
@@ -857,6 +983,10 @@ MACHINES: list[MachineEntry] = [
         },
         factory=_make_edsac,
         tags=["mercury delay line", "Cambridge", "British"],
+        materials={"rack": "steel", "delay_lines": "mercury"},
+        # EDSAC: steel rack; mercury delay-line memory tubes (Wilkes 1949)
+        operation_time_ms={"instruction": 1.5},
+        # 1 ms read + 0.5 ms execute; mercury delay 1 ms/tube (Wilkes 1949)
     ),
 ]
 

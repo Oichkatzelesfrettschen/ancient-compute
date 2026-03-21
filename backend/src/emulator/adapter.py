@@ -70,6 +70,14 @@ class MachineAdapter(ABC):
     def get_snapshot(self) -> Any:
         pass
 
+    def get_operation_time_ms(self) -> dict[str, float]:
+        """Return historical real-world milliseconds per operation type.
+
+        Returns empty dict for machines with no known historical timing.
+        Subclasses override to return machine-specific timing constants.
+        """
+        return {}
+
 
 class DEMachineAdapter(MachineAdapter):
     def __init__(self, machine: Any) -> None:
@@ -98,6 +106,11 @@ class DEMachineAdapter(MachineAdapter):
 
 
 class AEMachineAdapter(MachineAdapter):
+    _TIMING_MS: dict[str, float] = {"add": 250.0, "multiply": 2000.0}
+
+    def get_operation_time_ms(self) -> dict[str, float]:
+        return self._TIMING_MS
+
     def __init__(self, engine: Engine) -> None:
         self.engine = engine
 
@@ -139,6 +152,11 @@ class AEMachineAdapter(MachineAdapter):
 
 class ScheutzAdapter(MachineAdapter):
     """Adapter for ScheutzDifferenceEngine."""
+
+    _TIMING_MS: dict[str, float] = {"tabulate": 2000.0}
+
+    def get_operation_time_ms(self) -> dict[str, float]:
+        return self._TIMING_MS
 
     def __init__(self, machine: Any) -> None:
         self.machine = machine
@@ -182,6 +200,11 @@ class LudgateAdapter(MachineAdapter):
     One step = one perforated-cylinder advance (program_pointer += 1, cycle_count += 1).
     Arithmetic operations are triggered explicitly via machine.add/multiply/etc.
     """
+
+    _TIMING_MS: dict[str, float] = {"multiply": 10000.0}
+
+    def get_operation_time_ms(self) -> dict[str, float]:
+        return self._TIMING_MS
 
     def __init__(self, machine: Any) -> None:
         self.machine = machine
@@ -227,6 +250,11 @@ class TorresQuevedoAdapter(MachineAdapter):
     Arithmetic is triggered explicitly via machine.add/subtract/multiply/divide.
     """
 
+    _TIMING_MS: dict[str, float] = {"add": 1000.0, "multiply": 5000.0}
+
+    def get_operation_time_ms(self) -> dict[str, float]:
+        return self._TIMING_MS
+
     def __init__(self, machine: Any) -> None:
         self.machine = machine
 
@@ -267,6 +295,11 @@ class TorresQuevedoAdapter(MachineAdapter):
 class ZuseZ1Adapter(MachineAdapter):
     """Adapter for ZuseZ1."""
 
+    _TIMING_MS: dict[str, float] = {"add": 1000.0, "multiply": 3000.0}
+
+    def get_operation_time_ms(self) -> dict[str, float]:
+        return self._TIMING_MS
+
     def __init__(self, machine: Any) -> None:
         self.machine = machine
 
@@ -299,6 +332,11 @@ class ZuseZ1Adapter(MachineAdapter):
 
 
 class CurtaAdapter(MachineAdapter):
+    _TIMING_MS: dict[str, float] = {"add": 300.0, "multiply": 2000.0}
+
+    def get_operation_time_ms(self) -> dict[str, float]:
+        return self._TIMING_MS
+
     def __init__(self, curta: Any) -> None:
         self.curta = curta
         self.turns: int = 0
@@ -341,6 +379,11 @@ class PascalineAdapter(MachineAdapter):
     One step = one digit-wheel turn on the units wheel (rotate_input_wheel(1)).
     The Pascaline has no program counter; step() advances the units carry chain.
     """
+
+    _TIMING_MS: dict[str, float] = {"add": 500.0}
+
+    def get_operation_time_ms(self) -> dict[str, float]:
+        return self._TIMING_MS
 
     def __init__(self, machine: PascalineEmulator) -> None:
         self.machine = machine
@@ -391,6 +434,11 @@ class LeibnizAdapter(MachineAdapter):
     The stepped drums add the input value to the accumulator each turn.
     """
 
+    _TIMING_MS: dict[str, float] = {"add": 800.0, "multiply": 5000.0}
+
+    def get_operation_time_ms(self) -> dict[str, float]:
+        return self._TIMING_MS
+
     def __init__(self, machine: LeibnizReckonerEmulator) -> None:
         self.machine = machine
 
@@ -437,6 +485,11 @@ class EnigmaAdapter(MachineAdapter):
     load_input(text) queues characters for step-by-step processing.
     output_tape accumulates enciphered characters.
     """
+
+    _TIMING_MS: dict[str, float] = {"encipher_char": 300.0}
+
+    def get_operation_time_ms(self) -> dict[str, float]:
+        return self._TIMING_MS
 
     def __init__(self, machine: EnigmaMachine) -> None:
         self.machine = machine
@@ -496,6 +549,11 @@ class NapierAdapter(MachineAdapter):
     cycle_count reflects how many multiply-by-single-digit operations were done.
     """
 
+    _TIMING_MS: dict[str, float] = {"multiply": 15000.0}
+
+    def get_operation_time_ms(self) -> dict[str, float]:
+        return self._TIMING_MS
+
     def __init__(self, machine: NapiersBones) -> None:
         self.machine = machine
         self._operations = 0
@@ -544,6 +602,11 @@ class ThomasArithometerAdapter(MachineAdapter):
     (ADD or SUBTRACT). The result dial and counter are exposed as registers.
     """
 
+    _TIMING_MS: dict[str, float] = {"add": 500.0, "multiply": 3000.0}
+
+    def get_operation_time_ms(self) -> dict[str, float]:
+        return self._TIMING_MS
+
     def __init__(self, machine: ThomasArithmometer) -> None:
         self.machine = machine
 
@@ -583,6 +646,11 @@ class OdhnerAdapter(MachineAdapter):
     One step = one crank turn. The pinwheel mechanism rotates once per step,
     adding or subtracting the input value from the result register.
     """
+
+    _TIMING_MS: dict[str, float] = {"add": 400.0, "multiply": 2500.0}
+
+    def get_operation_time_ms(self) -> dict[str, float]:
+        return self._TIMING_MS
 
     def __init__(self, machine: OdhnerArithmometer) -> None:
         self.machine = machine
@@ -629,6 +697,11 @@ class GrantDEAdapter(MachineAdapter):
     polynomial differences; D0 is the current function value.
     """
 
+    _TIMING_MS: dict[str, float] = {"tabulate": 2500.0}
+
+    def get_operation_time_ms(self) -> dict[str, float]:
+        return self._TIMING_MS
+
     def __init__(self, machine: GrantDifferenceEngine) -> None:
         self.machine = machine
         self._cranks = 0
@@ -670,6 +743,11 @@ class HollerithAdapter(MachineAdapter):
     One step = read one punched card from the loaded deck. The counters
     increment as holes are detected; the counter grid is exposed as memory.
     """
+
+    _TIMING_MS: dict[str, float] = {"card_read": 750.0}
+
+    def get_operation_time_ms(self) -> dict[str, float]:
+        return self._TIMING_MS
 
     def __init__(self, machine: HollerithTabulator) -> None:
         self.machine = machine
@@ -722,6 +800,11 @@ class MillionaireAdapter(MachineAdapter):
     multiplication table; each crank adds multiplier_lever * input to result.
     """
 
+    _TIMING_MS: dict[str, float] = {"multiply": 1000.0}
+
+    def get_operation_time_ms(self) -> dict[str, float]:
+        return self._TIMING_MS
+
     def __init__(self, machine: MillionaireCalculator) -> None:
         self.machine = machine
 
@@ -761,6 +844,10 @@ class AntikytheraAdapter(MachineAdapter):
     """
 
     _STEP_SIZE = 1.0 / 365.25  # one solar day
+    _TIMING_MS: dict[str, float] = {"step": 86400000.0}
+
+    def get_operation_time_ms(self) -> dict[str, float]:
+        return self._TIMING_MS
 
     def __init__(self, machine: AntikytheraMechanism) -> None:
         self.machine = machine
@@ -811,6 +898,11 @@ class BombeAdapter(MachineAdapter):
     Positions advance through 26^3 combinations sequentially (R fastest).
     Stops (candidate solutions) are accumulated and accessible via get_stops().
     """
+
+    _TIMING_MS: dict[str, float] = {"test_position": 1.5}
+
+    def get_operation_time_ms(self) -> dict[str, float]:
+        return self._TIMING_MS
 
     def __init__(self, machine: Bombe, menu: BombeMenu) -> None:
         self.machine = machine
@@ -876,6 +968,11 @@ class ZuseZ3Adapter(MachineAdapter):
     floating-point words; the accumulator is exposed as a register.
     """
 
+    _TIMING_MS: dict[str, float] = {"add": 280.0, "multiply": 3200.0}
+
+    def get_operation_time_ms(self) -> dict[str, float]:
+        return self._TIMING_MS
+
     def __init__(self, machine: ZuseZ3) -> None:
         self.machine = machine
 
@@ -915,6 +1012,11 @@ class ColossusAdapter(MachineAdapter):
     cycle). The chi-break count accumulators are exposed as registers.
     The adapter wraps the internal Lorenz wheel state for column display.
     """
+
+    _TIMING_MS: dict[str, float] = {"char_read": 0.2}
+
+    def get_operation_time_ms(self) -> dict[str, float]:
+        return self._TIMING_MS
 
     def __init__(self, machine: Colossus) -> None:
         self.machine = machine
@@ -970,6 +1072,11 @@ class HarvardMarkIAdapter(MachineAdapter):
     constants (read-only) are accessible as memory[0..131].
     """
 
+    _TIMING_MS: dict[str, float] = {"add": 300.0, "multiply": 3000.0}
+
+    def get_operation_time_ms(self) -> dict[str, float]:
+        return self._TIMING_MS
+
     def __init__(self, machine: HarvardMarkI) -> None:
         self.machine = machine
 
@@ -1011,6 +1118,11 @@ class ENIACAdapter(MachineAdapter):
     are exposed as registers and as memory[0..19].
     """
 
+    _TIMING_MS: dict[str, float] = {"add": 0.2, "multiply": 2.8}
+
+    def get_operation_time_ms(self) -> dict[str, float]:
+        return self._TIMING_MS
+
     def __init__(self, machine: ENIAC) -> None:
         self.machine = machine
 
@@ -1045,6 +1157,11 @@ class ManchesterBabyAdapter(MachineAdapter):
     One step = one Baby fetch-execute cycle (CI increments, fetch, execute).
     The 32-word CRT store is exposed as memory[0..31].
     """
+
+    _TIMING_MS: dict[str, float] = {"instruction": 1.2}
+
+    def get_operation_time_ms(self) -> dict[str, float]:
+        return self._TIMING_MS
 
     def __init__(self, machine: ManchesterBaby) -> None:
         self.machine = machine
@@ -1086,6 +1203,11 @@ class EDSACAdapter(MachineAdapter):
     The 512-word mercury delay-line store is exposed as memory[0..511].
     """
 
+    _TIMING_MS: dict[str, float] = {"instruction": 1.5}
+
+    def get_operation_time_ms(self) -> dict[str, float]:
+        return self._TIMING_MS
+
     def __init__(self, machine: EDSAC) -> None:
         self.machine = machine
 
@@ -1125,6 +1247,11 @@ class JacquardAdapter(MachineAdapter):
     One step = one card advance (one weft row woven).
     The loom has no program counter; step() reads the next card in the deck.
     """
+
+    _TIMING_MS: dict[str, float] = {"step": 1000.0}
+
+    def get_operation_time_ms(self) -> dict[str, float]:
+        return self._TIMING_MS
 
     def __init__(self, machine: JacquardLoom) -> None:
         self.machine = machine
@@ -1180,6 +1307,11 @@ class AbacusAdapter(MachineAdapter):
     Demonstrates bead-column arithmetic; columns represent decimal digits.
     """
 
+    _TIMING_MS: dict[str, float] = {"step": 300.0}
+
+    def get_operation_time_ms(self) -> dict[str, float]:
+        return self._TIMING_MS
+
     def __init__(self, machine: AbacusEmulator) -> None:
         self.machine = machine
         self._ops = 0
@@ -1222,6 +1354,11 @@ class SlideRuleAdapter(MachineAdapter):
     The slide rule has no internal state; the adapter tracks the running result.
     """
 
+    _TIMING_MS: dict[str, float] = {"multiply": 3000.0, "divide": 3000.0}
+
+    def get_operation_time_ms(self) -> dict[str, float]:
+        return self._TIMING_MS
+
     def __init__(self, machine: SlideRuleEmulator) -> None:
         self.machine = machine
         self._result: float = 1.0
@@ -1261,6 +1398,11 @@ class QuipuAdapter(MachineAdapter):
     One step = record one tally unit in the "step" category.
     Demonstrates knotted-cord encoding; each category is a pendant cord.
     """
+
+    _TIMING_MS: dict[str, float] = {"step": 1000.0}
+
+    def get_operation_time_ms(self) -> dict[str, float]:
+        return self._TIMING_MS
 
     def __init__(self, machine: QuipuEmulator) -> None:
         self.machine = machine
@@ -1311,6 +1453,11 @@ class AstrolabeAdapter(MachineAdapter):
     Demonstrates the reticular projection used to read altitude angles from
     the rete (star map) against the tympan (latitude plate).
     """
+
+    _TIMING_MS: dict[str, float] = {"step": 5000.0}
+
+    def get_operation_time_ms(self) -> dict[str, float]:
+        return self._TIMING_MS
 
     def __init__(self, machine: AstrolabeEmulator) -> None:
         self.machine = machine
