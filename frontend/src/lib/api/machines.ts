@@ -14,6 +14,8 @@ export interface MachineListItem {
 	brief: string;
 	program_input_type: string;
 	tags: string[];
+	materials: Record<string, string>;
+	operation_time_ms: Record<string, number>;
 }
 
 export interface MachineDetail extends MachineListItem {

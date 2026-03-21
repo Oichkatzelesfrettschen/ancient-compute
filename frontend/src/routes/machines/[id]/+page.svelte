@@ -191,8 +191,46 @@
 				</div>
 			</section>
 
-			<!-- Right: registers + columns + snapshot -->
+			<!-- Right: materials + timing + registers + columns + snapshot -->
 			<section class="right-panel">
+				<!-- Materials -- static metadata, always shown when non-empty -->
+				{#if detail.materials && Object.entries(detail.materials).some(([k]) => k !== 'note')}
+					<div class="panel-section">
+						<div class="section-title">Materials</div>
+						<table class="register-table">
+							<tbody>
+								{#each Object.entries(detail.materials) as [role, mat]}
+									{#if role !== 'note'}
+										<tr>
+											<td class="reg-name">{role}</td>
+											<td class="reg-value mat-val">{mat.replace(/_/g, ' ')}</td>
+										</tr>
+									{/if}
+								{/each}
+							</tbody>
+						</table>
+					</div>
+				{/if}
+
+				<!-- Operation Timing -- static metadata, always shown when non-empty -->
+				{#if detail.operation_time_ms && Object.keys(detail.operation_time_ms).length > 0}
+					<div class="panel-section">
+						<div class="section-title">Operation Timing</div>
+						<table class="register-table">
+							<tbody>
+								{#each Object.entries(detail.operation_time_ms) as [op, ms]}
+									<tr>
+										<td class="reg-name">{op}</td>
+										<td class="reg-value timing-val">
+											{ms >= 1000 ? (ms / 1000).toFixed(ms >= 86400000 ? 0 : 1) + ' s' : ms + ' ms'}
+										</td>
+									</tr>
+								{/each}
+							</tbody>
+						</table>
+					</div>
+				{/if}
+
 				{#if state}
 					<!-- Status bar -->
 					<div class="status-bar">
@@ -566,6 +604,16 @@
 
 	.snap-val {
 		color: #047857;
+	}
+
+	.mat-val {
+		color: #1d4ed8;
+		text-transform: capitalize;
+	}
+
+	.timing-val {
+		color: #166534;
+		font-variant-numeric: tabular-nums;
 	}
 
 	/* Columns strip */

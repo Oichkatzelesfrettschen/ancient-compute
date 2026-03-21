@@ -26,19 +26,35 @@
 	function yearLabel(year: number): string {
 		return year < 0 ? `${Math.abs(year)} BCE` : String(year);
 	}
+
+	/** Return the first structural material value (skip 'note' key), formatted. */
+	function primaryMaterial(mats: Record<string, string>): string {
+		const entry = Object.entries(mats).find(([k]) => k !== 'note');
+		return entry ? entry[1].replace(/_/g, ' ') : '';
+	}
+
+	/** Return the fastest operation time as a human-readable label. */
+	function fastestOp(timing: Record<string, number>): string {
+		const entries = Object.entries(timing);
+		if (entries.length === 0) return '';
+		const [op, ms] = entries.reduce((a, b) => (b[1] < a[1] ? b : a));
+		const label = ms >= 1000 ? `${(ms / 1000).toFixed(0)} s` : `${ms} ms`;
+		return `${op}: ${label}`;
+	}
 </script>
 
 <svelte:head>
 	<title>Machine Gallery -- Ancient Compute</title>
-	<meta name="description" content="Interactive gallery of 24 historical computing machines from ancient Greece to the dawn of the computer age." />
+	<meta name="description" content="Interactive gallery of 30 historical computing machines from prehistoric tally marks to the dawn of the computer age." />
 </svelte:head>
 
 <div class="gallery-page">
 	<header class="page-header">
 		<h1>Historical Machine Gallery</h1>
 		<p class="subtitle">
-			24 emulated machines spanning from ancient Greece (~100 BCE) to 1949.
-			Each machine is fully programmable via a live step-by-step interface.
+			30 emulated machines spanning 12,500 years -- from prehistoric tally marks to
+			the first stored-program computers. Each machine is fully programmable via a
+			live step-by-step interface.
 		</p>
 	</header>
 
@@ -84,6 +100,15 @@
 						{#each machine.tags.slice(0, 3) as tag}
 							<span class="tag">{tag}</span>
 						{/each}
+					</div>
+
+					<div class="card-meta">
+						{#if primaryMaterial(machine.materials)}
+							<span class="meta-chip mat-chip">{primaryMaterial(machine.materials)}</span>
+						{/if}
+						{#if fastestOp(machine.operation_time_ms)}
+							<span class="meta-chip timing-chip">{fastestOp(machine.operation_time_ms)}</span>
+						{/if}
 					</div>
 
 					<div class="card-footer">
@@ -230,6 +255,33 @@
 		border-radius: 4px;
 		font-size: 0.75rem;
 		color: #555;
+	}
+
+	.card-meta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.3rem;
+		margin-bottom: 0.6rem;
+		min-height: 1.4rem;
+	}
+
+	.meta-chip {
+		padding: 0.15rem 0.5rem;
+		border-radius: 4px;
+		font-size: 0.72rem;
+		font-weight: 500;
+	}
+
+	.mat-chip {
+		background: #eff6ff;
+		color: #1e40af;
+		border: 1px solid #bfdbfe;
+	}
+
+	.timing-chip {
+		background: #f0fdf4;
+		color: #166534;
+		border: 1px solid #bbf7d0;
 	}
 
 	.card-footer {
