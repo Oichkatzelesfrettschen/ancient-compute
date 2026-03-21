@@ -1,8 +1,8 @@
 # Project Status Dashboard
 
-**Auto-generated**: 2026-03-21 05:12 UTC
+**Auto-generated**: 2026-03-21 05:49 UTC
 **Branch**: `main`
-**Last commit**: `cd8b8c9 feat: add 145 unit tests for machine registry + API router; regenerate STATUS`
+**Last commit**: `d43a9fc fix: resolve 8 svelte-check TypeScript errors in new frontend code`
 
 > Regenerate with: `make status`
 
@@ -14,7 +14,7 @@
 |--------|-------|
 | Unit tests collected | 2714 |
 | Collection errors | 0 |
-| Python source lines (backend/src/) | 44,926 |
+| Python source lines (backend/src/) | 44,924 |
 | Active docs (non-archive .md) | 199 |
 
 ## Phase Status
