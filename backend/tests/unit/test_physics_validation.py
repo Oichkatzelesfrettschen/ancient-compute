@@ -462,13 +462,21 @@ class TestPhysicalPlausibility:
     ranges for a 19th-century mechanical computer.
     """
 
+    # Non-metallic materials added for historical machine coverage (Phase 1 audit).
+    # These have properties outside metal-specific ranges by design; skip them in
+    # the four checks below that were written for structural engineering metals only.
+    _NON_METALS = frozenset({"mercury", "bakelite", "boxwood", "ivory", "organic_fiber"})
+
     # ----- material density -----
 
     def test_all_densities_between_2000_and_9000(self, lib):
-        """All materials are engineering metals with densities in the
+        """Structural engineering metals have densities in the
         2000-9000 kg/m3 range (aluminum alloys to copper alloys).
+        Non-metallic materials (woods, plastics, liquid metals) are excluded.
         """
         for mat in lib.all_materials():
+            if mat.name in self._NON_METALS:
+                continue
             assert 2000 <= mat.density_kg_m3 <= 9000, (
                 f"{mat.name}: density {mat.density_kg_m3} kg/m3 " f"outside [2000, 9000]"
             )
@@ -476,8 +484,12 @@ class TestPhysicalPlausibility:
     # ----- Young's modulus -----
 
     def test_all_youngs_moduli_between_50_and_250_GPa(self, lib):
-        """Engineering metals span roughly 50-250 GPa."""
+        """Engineering metals span roughly 50-250 GPa.
+        Non-metallic materials (polymers, wood, liquid metal) are excluded.
+        """
         for mat in lib.all_materials():
+            if mat.name in self._NON_METALS:
+                continue
             e_min, e_max = mat.youngs_modulus_GPa
             assert e_min >= 50, f"{mat.name}: E_min={e_min} GPa below 50"
             assert e_max <= 250, f"{mat.name}: E_max={e_max} GPa above 250"
@@ -485,8 +497,12 @@ class TestPhysicalPlausibility:
     # ----- Poisson's ratio -----
 
     def test_all_poissons_ratios_between_0_2_and_0_5(self, lib):
-        """Metals have nu in [0.2, 0.5); rubber approaches 0.5."""
+        """Metals have nu in [0.2, 0.5); rubber approaches 0.5.
+        Non-metallic materials are excluded from this metal-specific check.
+        """
         for mat in lib.all_materials():
+            if mat.name in self._NON_METALS:
+                continue
             assert (
                 0.2 <= mat.poissons_ratio < 0.5
             ), f"{mat.name}: nu={mat.poissons_ratio} outside [0.2, 0.5)"
@@ -494,8 +510,12 @@ class TestPhysicalPlausibility:
     # ----- yield strength -----
 
     def test_all_yield_strengths_between_50_and_2000_MPa(self, lib):
-        """From soft grey iron (~165 MPa) to spring steel (~1200 MPa)."""
+        """From soft grey iron (~165 MPa) to spring steel (~1200 MPa).
+        Non-metallic materials are excluded from this metal-specific check.
+        """
         for mat in lib.all_materials():
+            if mat.name in self._NON_METALS:
+                continue
             sy_min, sy_max = mat.yield_strength_MPa
             assert sy_min >= 50, f"{mat.name}: Sy_min={sy_min} MPa below 50"
             assert sy_max <= 2000, f"{mat.name}: Sy_max={sy_max} MPa above 2000"

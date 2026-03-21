@@ -355,3 +355,105 @@ class TestMachinesAPI:
             [1, 1, 0, 0, 1, 1, 0, 0],
             [0, 0, 1, 1, 0, 0, 1, 1],
         ]
+
+    def test_materials_in_detail_response(self, api_client: Any) -> None:
+        resp = api_client.get("/machines/pascaline")
+        assert resp.status_code == 200
+        data = resp.json()
+        assert "materials" in data
+        assert data["materials"]["gears"] == "brass"
+
+    def test_operation_time_ms_in_detail_response(self, api_client: Any) -> None:
+        resp = api_client.get("/machines/eniac")
+        assert resp.status_code == 200
+        data = resp.json()
+        assert "operation_time_ms" in data
+        assert abs(data["operation_time_ms"]["add"] - 0.2) < 0.01
+
+    def test_list_machines_includes_materials_and_timing(self, api_client: Any) -> None:
+        resp = api_client.get("/machines")
+        assert resp.status_code == 200
+        for item in resp.json():
+            assert "materials" in item, f"Missing 'materials' on {item['id']}"
+            assert "operation_time_ms" in item, f"Missing 'operation_time_ms' on {item['id']}"
+
+
+# ---------------------------------------------------------------------------
+# Registry data: materials and timing constants
+# ---------------------------------------------------------------------------
+
+
+_SYMBOLIC_MACHINES = {"tally-marks", "clay-tokens", "quipu"}
+
+
+class TestMaterialsAndTiming:
+    def test_all_non_symbolic_machines_have_materials(self) -> None:
+        for m in MACHINES:
+            if m.id in _SYMBOLIC_MACHINES:
+                continue
+            assert len(m.materials) >= 1, f"{m.id}: no materials assigned"
+
+    def test_known_material_assignments(self) -> None:
+        from backend.src.emulator.machine_registry import MACHINE_BY_ID
+
+        pascaline = MACHINE_BY_ID["pascaline"]
+        antikythera = MACHINE_BY_ID["antikythera"]
+        eniac = MACHINE_BY_ID["eniac"]
+
+        assert pascaline.materials["gears"] == "brass"
+        assert antikythera.materials["frame"] == "corinthian_bronze"
+        assert eniac.materials["panels"] == "aluminum_alloy_1940s"
+
+    def test_operation_time_ms_plausible(self) -> None:
+        for m in MACHINES:
+            for op, ms in m.operation_time_ms.items():
+                assert ms > 0, f"{m.id} op={op}: timing must be positive"
+
+    def test_edsac_timing_ms_instruction(self) -> None:
+        from backend.src.emulator.machine_registry import MACHINE_BY_ID
+
+        edsac = MACHINE_BY_ID["edsac"]
+        assert abs(edsac.operation_time_ms["instruction"] - 1.5) < 0.01
+
+    def test_eniac_add_faster_than_mark_i_add(self) -> None:
+        from backend.src.emulator.machine_registry import MACHINE_BY_ID
+
+        eniac = MACHINE_BY_ID["eniac"]
+        mark1 = MACHINE_BY_ID["harvard-mark-i"]
+        assert eniac.operation_time_ms["add"] < mark1.operation_time_ms["add"]
+
+    def test_colossus_char_read_faster_than_eniac_add(self) -> None:
+        from backend.src.emulator.machine_registry import MACHINE_BY_ID
+
+        colossus = MACHINE_BY_ID["colossus"]
+        eniac = MACHINE_BY_ID["eniac"]
+        # Both are 0.2 ms (5000 ops/sec); Colossus char_read <= ENIAC add
+        assert colossus.operation_time_ms["char_read"] <= eniac.operation_time_ms["add"]
+
+    def test_materials_are_valid_library_keys_or_note(self) -> None:
+        from backend.src.emulator.materials import MaterialLibrary
+
+        lib = MaterialLibrary()
+        valid_keys = set(lib.names())
+        for m in MACHINES:
+            for role, mat_key in m.materials.items():
+                if role == "note":
+                    continue
+                assert (
+                    mat_key in valid_keys
+                ), f"{m.id}: material role '{role}' -> '{mat_key}' not in MaterialLibrary"
+
+    def test_adapter_get_operation_time_ms(self) -> None:
+        """Adapters with timing constants return the right values."""
+        _, eniac_adapter = build_machine("eniac")  # type: ignore[misc]
+        timing = eniac_adapter.get_operation_time_ms()
+        assert isinstance(timing, dict)
+        assert abs(timing["add"] - 0.2) < 0.01
+
+    def test_adapter_base_returns_empty_dict_when_no_timing(self) -> None:
+        """Adapters without timing overrides return empty dict from base."""
+        _, tally_adapter = build_machine("tally-marks")  # type: ignore[misc]
+        timing = tally_adapter.get_operation_time_ms()
+        assert isinstance(timing, dict)
+        # tally-marks has no timing constants (symbolic)
+        assert len(timing) == 0

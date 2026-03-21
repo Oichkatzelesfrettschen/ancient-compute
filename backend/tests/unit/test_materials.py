@@ -29,9 +29,9 @@ class TestSchemaLoading:
     def test_loads_without_error(self, lib):
         assert lib is not None
 
-    def test_has_five_materials(self, lib):
-        # 5 original + wrought_iron + gun_metal added in Phase 4 (P2 materials buildout)
-        assert len(lib) == 7
+    def test_has_fourteen_materials(self, lib):
+        # 5 original + wrought_iron + gun_metal + 7 new (Phase 1 machine materials audit)
+        assert len(lib) == 14
 
     def test_expected_material_names(self, lib):
         expected = {
@@ -42,13 +42,70 @@ class TestSchemaLoading:
             "steel",
             "wrought_iron",
             "gun_metal",
+            "corinthian_bronze",
+            "ivory",
+            "boxwood",
+            "aluminum_alloy_1940s",
+            "bakelite",
+            "organic_fiber",
+            "mercury",
         }
         assert set(lib.names()) == expected
 
     def test_all_materials_returns_list(self, lib):
         mats = lib.all_materials()
-        assert len(mats) == 7
+        assert len(mats) == 14
         assert all(isinstance(m, MaterialProperties) for m in mats)
+
+    # -- New Materials (Phase 1: Machine Materials Audit) --
+
+    def test_new_materials_loaded(self, lib):
+        new_names = [
+            "corinthian_bronze",
+            "ivory",
+            "boxwood",
+            "aluminum_alloy_1940s",
+            "bakelite",
+            "organic_fiber",
+            "mercury",
+        ]
+        for name in new_names:
+            assert name in lib, f"Missing material: {name}"
+
+    def test_corinthian_bronze_e_range(self, lib):
+        mat = lib.get("corinthian_bronze")
+        e_min, e_max = mat.youngs_modulus_GPa
+        assert 90 <= e_min <= 110
+        assert 95 <= e_max <= 115
+
+    def test_ivory_density_range(self, lib):
+        mat = lib.get("ivory")
+        assert 1800 <= mat.density_kg_m3 <= 1900
+
+    def test_boxwood_e_range(self, lib):
+        mat = lib.get("boxwood")
+        e_min, e_max = mat.youngs_modulus_GPa
+        assert 11 <= e_min <= 14
+        assert 14 <= e_max <= 18
+
+    def test_aluminum_1940s_yield(self, lib):
+        mat = lib.get("aluminum_alloy_1940s")
+        yield_min, _ = mat.yield_strength_MPa
+        assert yield_min >= 300
+
+    def test_mercury_density(self, lib):
+        mat = lib.get("mercury")
+        assert abs(mat.density_kg_m3 - 13534) < 10
+
+    def test_organic_fiber_zero_strength_fields(self, lib):
+        # Fibers have no compressive strength field; compressive_strength_MPa is None
+        mat = lib.get("organic_fiber")
+        assert mat.compressive_strength_MPa is None
+
+    def test_bakelite_high_thermal_expansion(self, lib):
+        mat = lib.get("bakelite")
+        # Bakelite has 30-80e-6 /K thermal expansion -- much higher than metals
+        assert mat.thermal_expansion_coeff_per_K >= 30e-6
 
     def test_contains_check(self, lib):
         assert "brass" in lib
@@ -57,7 +114,7 @@ class TestSchemaLoading:
     def test_repr(self, lib):
         r = repr(lib)
         assert "MaterialLibrary" in r
-        assert "7 materials" in r
+        assert "14 materials" in r
 
     def test_missing_material_raises_key_error(self, lib):
         with pytest.raises(KeyError, match="Unknown material 'unobtanium'"):
@@ -198,22 +255,31 @@ class TestSpringSteel:
 class TestPropertyRanges:
     """Sanity checks that all materials have physically reasonable values."""
 
+    # Mercury is a liquid metal; its mechanical-property fields are zero by design.
+    # Tests that expect positive structural values skip it explicitly.
+    _NON_STRUCTURAL = frozenset({"mercury"})
+
     def test_all_densities_positive(self, lib):
         for mat in lib.all_materials():
             assert mat.density_kg_m3 > 0, f"{mat.name}: density must be positive"
 
-    def test_all_densities_in_metal_range(self, lib):
+    def test_all_densities_in_material_range(self, lib):
+        # Range covers all modelled materials: wood (~900) to mercury (13534).
         for mat in lib.all_materials():
-            assert 1000 < mat.density_kg_m3 < 25000, f"{mat.name}: density out of range"
+            assert 100 < mat.density_kg_m3 < 25000, f"{mat.name}: density out of range"
 
     def test_all_youngs_modulus_positive(self, lib):
         for mat in lib.all_materials():
+            if mat.name in self._NON_STRUCTURAL:
+                continue
             e_min, e_max = mat.youngs_modulus_GPa
             assert e_min > 0, f"{mat.name}: E_min must be positive"
             assert e_max >= e_min, f"{mat.name}: E_max < E_min"
 
     def test_all_poissons_ratio_in_range(self, lib):
         for mat in lib.all_materials():
+            if mat.name in self._NON_STRUCTURAL:
+                continue
             assert 0.0 < mat.poissons_ratio < 0.5, f"{mat.name}: nu out of [0, 0.5)"
 
     def test_all_yield_below_uts(self, lib):
@@ -230,6 +296,8 @@ class TestPropertyRanges:
 
     def test_all_friction_positive(self, lib):
         for mat in lib.all_materials():
+            if mat.name in self._NON_STRUCTURAL:
+                continue
             assert 0.0 < mat.friction_coeff < 1.0, f"{mat.name}: friction out of range"
 
     def test_all_thermal_expansion_positive(self, lib):
@@ -246,6 +314,8 @@ class TestPropertyRanges:
 
     def test_all_hardness_positive(self, lib):
         for mat in lib.all_materials():
+            if mat.name in self._NON_STRUCTURAL:
+                continue
             hb_min, hb_max = mat.hardness_HB
             assert hb_min > 0, f"{mat.name}: hardness must be positive"
             assert hb_max >= hb_min, f"{mat.name}: HB_max < HB_min"
@@ -260,7 +330,9 @@ class TestPropertyRanges:
 
     def test_all_creep_threshold_above_ambient(self, lib):
         for mat in lib.all_materials():
-            assert mat.creep_threshold_C > 40, f"{mat.name}: creep threshold below ambient"
+            if mat.name in self._NON_STRUCTURAL:
+                continue  # Mercury melts at -38.8 C; creep concept does not apply
+            assert mat.creep_threshold_C >= 40, f"{mat.name}: creep threshold below ambient"
 
     def test_temperature_range_covers_ambient(self, lib):
         for mat in lib.all_materials():
