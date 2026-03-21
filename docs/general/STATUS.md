@@ -1,8 +1,8 @@
 # Project Status Dashboard
 
-**Auto-generated**: 2026-03-21 05:08 UTC
+**Auto-generated**: 2026-03-21 05:12 UTC
 **Branch**: `main`
-**Last commit**: `dc39a9f feat: generic machine gallery + step API for all 23 historical emulators`
+**Last commit**: `cd8b8c9 feat: add 145 unit tests for machine registry + API router; regenerate STATUS`
 
 > Regenerate with: `make status`
 
@@ -14,7 +14,7 @@
 |--------|-------|
 | Unit tests collected | 2714 |
 | Collection errors | 0 |
-| Python source lines (backend/src/) | 44,914 |
+| Python source lines (backend/src/) | 44,926 |
 | Active docs (non-archive .md) | 199 |
 
 ## Phase Status

@@ -481,7 +481,19 @@ MACHINES: list[MachineEntry] = [
         brief="First design for a general-purpose programmable computer; Ada wrote Note G.",
         program_input_type="assembly",
         manual=_load_manual(_BASE + "analytical_engine.engine"),
-        example_payload={"source": ("SET 0, 7\n" "SET 1, 6\n" "MULT 2, 0, 1\n" "PRINT 2\n" "HALT")},
+        example_payload={
+            "source": (
+                "LOAD A, 7\n"
+                "STOR A, [0]\n"
+                "LOAD A, 6\n"
+                "STOR A, [1]\n"
+                "LOAD A, [0]\n"
+                "LOAD B, [1]\n"
+                "MULT A, B\n"
+                "WRPRN A\n"
+                "HALT"
+            )
+        },
         factory=_make_ae,
         tags=["Ada Lovelace", "Turing complete", "Victorian"],
     ),

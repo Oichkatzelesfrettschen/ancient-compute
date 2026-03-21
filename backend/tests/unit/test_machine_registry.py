@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 from typing import Any
 
 import pytest
@@ -10,12 +9,10 @@ import pytest
 from backend.src.emulator.machine_registry import (
     MACHINE_BY_ID,
     MACHINES,
-    MachineEntry,
     build_machine,
     get_machine,
     list_machines,
 )
-
 
 # ---------------------------------------------------------------------------
 # Registry metadata
@@ -69,9 +66,9 @@ class TestMachineRegistry:
 
     def test_example_payloads_are_dicts(self) -> None:
         for m in MACHINES:
-            assert isinstance(m.example_payload, dict), (
-                f"{m.id}: example_payload must be a dict, got {type(m.example_payload)}"
-            )
+            assert isinstance(
+                m.example_payload, dict
+            ), f"{m.id}: example_payload must be a dict, got {type(m.example_payload)}"
 
     def test_machine_count(self) -> None:
         # The registry should have at least 20 machines.
@@ -206,10 +203,10 @@ class TestMachineStep:
 
 @pytest.fixture
 def api_client():  # type: ignore[no-untyped-def]
+    from fastapi import FastAPI
     from fastapi.testclient import TestClient
 
     from backend.src.api.machines import router
-    from fastapi import FastAPI
 
     app = FastAPI()
     app.include_router(router)
