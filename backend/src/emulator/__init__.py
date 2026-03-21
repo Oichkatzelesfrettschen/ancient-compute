@@ -1,6 +1,7 @@
 from backend.src.emulator.abacus import AbacusEmulator as Abacus
 from backend.src.emulator.analytical_engine import Engine
 from backend.src.emulator.antikythera import AntikytheraMechanism, Gear, Mesh
+from backend.src.emulator.astrolabe import AstrolabeEmulator
 from backend.src.emulator.barrels import BarrelController, MicroOp
 from backend.src.emulator.bernoulli import (
     ada_lovelace_bernoulli_series,
@@ -8,19 +9,26 @@ from backend.src.emulator.bernoulli import (
 from backend.src.emulator.bernoulli import (
     bernoulli_numbers as bernoulli_number,
 )
+from backend.src.emulator.bombe import Bombe, BombeMenu
 from backend.src.emulator.card_reader import CardReader
 from backend.src.emulator.carry import AnticipatingCarriage
 from backend.src.emulator.clay_tokens import ClayTokensEmulator as ClayTokens
+from backend.src.emulator.colossus import Colossus, LorenzSZ42
 from backend.src.emulator.columns import ColumnBank
 from backend.src.emulator.columns import DigitColumn as Column
 from backend.src.emulator.curta import CurtaTypeI
 from backend.src.emulator.debugger import Debugger
+from backend.src.emulator.edsac import EDSAC
+from backend.src.emulator.eniac import ENIAC
 from backend.src.emulator.enigma import EnigmaMachine
 from backend.src.emulator.fourmilab_compat import (
     fourmilab_to_instructions,
     parse_fourmilab_deck,
     run_fourmilab_deck,
 )
+from backend.src.emulator.grant_difference_engine import GrantDifferenceEngine
+from backend.src.emulator.harvard_mark_i import HarvardMarkI
+from backend.src.emulator.hollerith_tabulator import HollerithTabulator, PunchedCard
 from backend.src.emulator.jacquard import JacquardEmulator as JacquardLoom
 from backend.src.emulator.leibniz_reckoner import LeibnizReckonerEmulator as LeibnizReckoner
 from backend.src.emulator.lovelace_notes import (
@@ -33,7 +41,11 @@ from backend.src.emulator.lovelace_notes import (
 )
 from backend.src.emulator.ludgate import LudgateMachine
 from backend.src.emulator.machine import DEMachine
+from backend.src.emulator.manchester_baby import ManchesterBaby
+from backend.src.emulator.millionaire_calculator import MillionaireCalculator
 from backend.src.emulator.napiers_bones import NapiersBones
+from backend.src.emulator.note_g_assembly import generate_note_g_assembly_text
+from backend.src.emulator.odhner_arithmometer import OdhnerArithmometer
 from backend.src.emulator.pascaline import PascalineEmulator as Pascaline
 from backend.src.emulator.performance import PerformanceAnalyzer
 from backend.src.emulator.printer import Printer
@@ -41,6 +53,7 @@ from backend.src.emulator.quipu import QuipuEmulator as Quipu
 from backend.src.emulator.scheutz import ScheutzDifferenceEngine
 from backend.src.emulator.slide_rule import SlideRuleEmulator as SlideRule
 from backend.src.emulator.tally_marks import TallyMarksEmulator as TallyMarks
+from backend.src.emulator.thomas_arithmometer import ThomasArithmometer
 from backend.src.emulator.timing import TimingController
 from backend.src.emulator.torres_quevedo import TorresQuevedo
 from backend.src.emulator.types import (
@@ -55,19 +68,6 @@ from backend.src.emulator.types import (
     OperationCard,
     VariableCard,
 )
-from backend.src.emulator.astrolabe import AstrolabeEmulator
-from backend.src.emulator.bombe import Bombe, BombeMenu
-from backend.src.emulator.colossus import Colossus, LorenzSZ42
-from backend.src.emulator.edsac import EDSAC
-from backend.src.emulator.eniac import ENIAC
-from backend.src.emulator.grant_difference_engine import GrantDifferenceEngine
-from backend.src.emulator.harvard_mark_i import HarvardMarkI
-from backend.src.emulator.hollerith_tabulator import HollerithTabulator, PunchedCard
-from backend.src.emulator.manchester_baby import ManchesterBaby
-from backend.src.emulator.millionaire_calculator import MillionaireCalculator
-from backend.src.emulator.note_g_assembly import generate_note_g_assembly_text
-from backend.src.emulator.odhner_arithmometer import OdhnerArithmometer
-from backend.src.emulator.thomas_arithmometer import ThomasArithmometer
 from backend.src.emulator.zuse_z1 import ZuseZ1
 from backend.src.emulator.zuse_z3 import ZuseZ3
 

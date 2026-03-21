@@ -10,6 +10,7 @@
 
 	const navItems: NavItem[] = [
 		{ label: 'Home', path: '/', description: 'Welcome page' },
+		{ label: 'Machines', path: '/machines', description: '24 historical machine emulators' },
 		{ label: 'Modules', path: '/modules', description: 'Browse learning modules' },
 		{ label: 'Timeline', path: '/timeline', description: 'Interactive historical timeline' },
 		{ label: 'MINIX Metrics', path: '/infra/minix', description: 'MINIX in QEMU metrics' },
@@ -17,7 +18,8 @@
 	];
 
 	function isActive(path: string): boolean {
-		return $page.url.pathname === path;
+		if (path === '/') return $page.url.pathname === '/';
+		return $page.url.pathname.startsWith(path);
 	}
 </script>
 

@@ -5,16 +5,16 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Literal
 
+from .algol68_service import ALGOL68Service
 from .babbage_assembly_service import BabbageAssemblyService
 from .c_service import CService
+from .cpp_service import CppService
 from .haskell_service import HaskellService
 from .idris_service import IDRISService
 from .java_service import JavaService
 from .lisp_service import LISPService
-from .python_service import PythonService
-from .algol68_service import ALGOL68Service
-from .cpp_service import CppService
 from .micropython_service import MicroPythonService
+from .python_service import PythonService
 from .systemf_service import SystemFService
 
 ImplementationStatus = Literal["implemented", "partial", "stub"]

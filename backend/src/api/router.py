@@ -14,6 +14,7 @@ from ..models import Era, Module
 from .code_execution import router as code_execution_router
 from .emulator import router as emulator_router
 from .execution import router as exercise_execution_router
+from .machines import router as machines_router
 from .timeline import router as timeline_router
 
 logger = logging.getLogger(__name__)
@@ -32,6 +33,9 @@ api_router.include_router(timeline_router)
 
 # Include exercise execution routes (code submission and validation)
 api_router.include_router(exercise_execution_router)
+
+# Include machines routes (historical machine emulator gallery + step API)
+api_router.include_router(machines_router)
 
 
 @api_router.get("/status")
