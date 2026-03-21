@@ -1,0 +1,137 @@
+# exp(x) via Maclaurin series -- Analytical Engine program
+#
+# Computes e^x = 1 + x + x^2/2! + x^3/3! + x^4/4! + ... + x^10/10!
+# (11 terms; absolute error < 1e-7 for |x| <= 1)
+#
+# Variable layout:
+#   [0]  x         -- input
+#   [1]  result    -- accumulator
+#   [2]  power     -- x^k
+#
+# Preload: x = 1.0, so e^x = 2.718281828...
+#
+# Reference: Euler, L. (1748). Introductio in Analysin Infinitorum.
+#            (Defines e and its series; Euler's number named after him.)
+
+# --- Initialisation ---
+LOAD A, 1               # x = 1.0
+STOR A, [0]
+
+LOAD A, 1
+STOR A, [1]             # result = 1 (term_0)
+STOR A, [2]             # power = x^0 = 1 (will mult by x each step)
+
+# --- Term 1: x^1/1! = x ---
+LOAD A, [2]
+LOAD B, [0]
+MULT A, B               # x^1
+STOR A, [2]
+LOAD B, 1
+DIV A, B                # /1! = 1
+LOAD B, [1]
+ADD B, A
+STOR B, [1]
+
+# --- Term 2: x^2/2! ---
+LOAD A, [2]
+LOAD B, [0]
+MULT A, B
+STOR A, [2]
+LOAD B, 2
+DIV A, B
+LOAD B, [1]
+ADD B, A
+STOR B, [1]
+
+# --- Term 3: x^3/6 ---
+LOAD A, [2]
+LOAD B, [0]
+MULT A, B
+STOR A, [2]
+LOAD B, 6
+DIV A, B
+LOAD B, [1]
+ADD B, A
+STOR B, [1]
+
+# --- Term 4: x^4/24 ---
+LOAD A, [2]
+LOAD B, [0]
+MULT A, B
+STOR A, [2]
+LOAD B, 24
+DIV A, B
+LOAD B, [1]
+ADD B, A
+STOR B, [1]
+
+# --- Term 5: x^5/120 ---
+LOAD A, [2]
+LOAD B, [0]
+MULT A, B
+STOR A, [2]
+LOAD B, 120
+DIV A, B
+LOAD B, [1]
+ADD B, A
+STOR B, [1]
+
+# --- Term 6: x^6/720 ---
+LOAD A, [2]
+LOAD B, [0]
+MULT A, B
+STOR A, [2]
+LOAD B, 720
+DIV A, B
+LOAD B, [1]
+ADD B, A
+STOR B, [1]
+
+# --- Term 7: x^7/5040 ---
+LOAD A, [2]
+LOAD B, [0]
+MULT A, B
+STOR A, [2]
+LOAD B, 5040
+DIV A, B
+LOAD B, [1]
+ADD B, A
+STOR B, [1]
+
+# --- Term 8: x^8/40320 ---
+LOAD A, [2]
+LOAD B, [0]
+MULT A, B
+STOR A, [2]
+LOAD B, 40320
+DIV A, B
+LOAD B, [1]
+ADD B, A
+STOR B, [1]
+
+# --- Term 9: x^9/362880 ---
+LOAD A, [2]
+LOAD B, [0]
+MULT A, B
+STOR A, [2]
+LOAD B, 362880
+DIV A, B
+LOAD B, [1]
+ADD B, A
+STOR B, [1]
+
+# --- Term 10: x^10/3628800 ---
+LOAD A, [2]
+LOAD B, [0]
+MULT A, B
+STOR A, [2]
+LOAD B, 3628800
+DIV A, B
+LOAD B, [1]
+ADD B, A
+STOR B, [1]
+
+# --- Output ---
+LOAD A, [1]
+WRPRN A                 # print e^x
+HALT

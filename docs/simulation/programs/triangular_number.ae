@@ -1,0 +1,58 @@
+# Triangular number T(n) = 1 + 2 + ... + n -- Analytical Engine program
+#
+# Demonstrates Ada Lovelace's "backing" mechanism (Note C, 1843, pp. 686-689):
+# the loop body (LOOP: through JMP LOOP) is the "combination card" group;
+# the JMP LOOP at the bottom is the backing card that rewinds the card chain
+# to the start of the group while i <= n.
+#
+# When the backing condition fails (i > n), the engine steps past the
+# combination card group to END: -- the same "stepping over" mechanism
+# Ada describes for exiting the iteration.
+#
+# Variable layout:
+#   [0]  n    -- upper limit (preloaded)
+#   [1]  i    -- counter (1..n)
+#   [2]  sum  -- running total
+#
+# Preload: n = 5, so T(5) = 1+2+3+4+5 = 15.
+#
+# Reference: Menabrea, L. F. / Lovelace, A. A. (1843). Sketch of the
+#            Analytical Engine. Taylor's Scientific Memoirs, Vol. 3,
+#            pp. 686-689 (Note C: iteration via backing cards).
+
+# --- Initialisation ---
+LOAD A, 5
+STOR A, [0]             # n = 5
+
+LOAD A, 1
+STOR A, [1]             # i = 1 (counter starts at 1)
+
+LOAD A, 0
+STOR A, [2]             # sum = 0
+
+# --- Combination card group: loop while i <= n ---
+LOOP:
+LOAD A, [1]             # A = i
+LOAD B, [0]             # B = n
+CMP A, B                # flags <- compare i vs n
+JGT END                 # backing condition false: i > n -- exit combination card
+
+# Loop body: sum = sum + i
+LOAD A, [2]             # A = sum
+LOAD B, [1]             # B = i
+ADD A, B                # A = sum + i
+STOR A, [2]             # sum = A
+
+# Increment counter: i = i + 1
+LOAD A, [1]             # A = i
+LOAD B, 1               # B = 1
+ADD A, B                # A = i + 1
+STOR A, [1]             # i = A
+
+JMP LOOP                # backing card: rewind combination card to LOOP:
+
+# --- Output ---
+END:
+LOAD A, [2]
+WRPRN A                 # print T(n)
+HALT

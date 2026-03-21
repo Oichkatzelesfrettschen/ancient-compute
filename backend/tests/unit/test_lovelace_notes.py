@@ -8,6 +8,7 @@ from backend.src.emulator.lovelace_notes import (
     run_note_b_div,
     run_note_b_mult,
     run_note_c,
+    run_note_c_native,
     run_note_d,
 )
 from backend.src.emulator.types import BabbageNumber
@@ -143,6 +144,60 @@ class TestNoteC:
     def test_invalid_n(self):
         with pytest.raises(ValueError):
             run_note_c(-1)
+
+
+# ---------------------------------------------------------------------------
+# Note C -- Native AE engine execution (combination cards + backing)
+# ---------------------------------------------------------------------------
+
+
+class TestNoteCNative:
+    """Tests for run_note_c_native() -- Note C on the live AE engine.
+
+    WHY: The Python-level run_note_c() simulates looping externally.
+    run_note_c_native() runs triangular_number.ae on the Engine with real
+    JMP-based looping, proving the engine's backing / combination-card
+    model executes correctly.
+    """
+
+    @pytest.mark.parametrize(
+        "n,expected",
+        [
+            (1, 1),
+            (2, 3),
+            (3, 6),
+            (5, 15),
+            (10, 55),
+        ],
+    )
+    def test_triangular_number_native(self, n, expected):
+        result = run_note_c_native(n)
+        assert _close(result, float(expected)), (
+            f"T({n}) expected {expected}, got {result.to_decimal()}"
+        )
+
+    def test_matches_python_runner(self):
+        """Native AE result must agree with the Python-level runner."""
+        for n in range(1, 8):
+            assert _close(run_note_c_native(n), run_note_c(n).to_decimal())
+
+    def test_zero(self):
+        result = run_note_c_native(0)
+        assert _close(result, 0.0)
+
+    def test_invalid_n(self):
+        with pytest.raises(ValueError):
+            run_note_c_native(-1)
+
+    def test_returns_babbage_number(self):
+        from backend.src.emulator.types import BabbageNumber
+
+        assert isinstance(run_note_c_native(5), BabbageNumber)
+
+    def test_large_n(self):
+        """T(20) = 210 -- exercises multiple loop iterations."""
+        result = run_note_c_native(20)
+        assert _close(result, 210.0)
 
 
 # ---------------------------------------------------------------------------

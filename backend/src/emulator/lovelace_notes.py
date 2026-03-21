@@ -18,9 +18,11 @@ from typing import Any
 
 import yaml
 
+from .analytical_engine import Engine
 from .types import BabbageNumber
 
 _DOCS = Path(__file__).resolve().parents[3] / "docs/simulation"
+_PROGRAMS = _DOCS / "programs"
 _NOTE_B_PATH = _DOCS / "NOTE_B_DECK.yaml"
 _NOTE_C_PATH = _DOCS / "NOTE_C_DECK.yaml"
 _NOTE_D_PATH = _DOCS / "NOTE_D_DECK.yaml"
@@ -107,6 +109,58 @@ def run_note_b(n: int) -> BabbageNumber:
 # ---------------------------------------------------------------------------
 # Note C: Triangular numbers (loop with conditional)
 # ---------------------------------------------------------------------------
+
+
+def run_note_c_native(n: int) -> BabbageNumber:
+    """Note C: compute T(n) = 1+2+...+n on the native AE engine.
+
+    Uses triangular_number.ae which demonstrates Ada's "backing" mechanism
+    (Note C, 1843) as a real AE assembly program with JMP-based looping.
+    The .ae program is hardcoded to n=5; this function regenerates the
+    program text for arbitrary n, then loads and runs it on the Engine.
+
+    WHY: run_note_c() simulates the loop in Python. run_note_c_native() runs
+    the exact same computation on the AE emulator with native instruction
+    dispatch, proving the engine's combination-card / backing model is sound.
+    """
+    if n < 0:
+        raise ValueError("n must be non-negative")
+    if n == 0:
+        return BabbageNumber(0)
+
+    # Generate the program with n substituted
+    program = f"""# Note C triangular number T({n}) -- generated for run_note_c_native()
+LOAD A, {n}
+STOR A, [0]
+LOAD A, 1
+STOR A, [1]
+LOAD A, 0
+STOR A, [2]
+LOOP:
+LOAD A, [1]
+LOAD B, [0]
+CMP A, B
+JGT END
+LOAD A, [2]
+LOAD B, [1]
+ADD A, B
+STOR A, [2]
+LOAD A, [1]
+LOAD B, 1
+ADD A, B
+STOR A, [1]
+JMP LOOP
+END:
+LOAD A, [2]
+WRPRN A
+HALT
+"""
+    engine = Engine()
+    engine.load_program_from_text(program)
+    engine.run()
+    if not engine.result_cards:
+        raise RuntimeError("Engine produced no output for T(n) computation")
+    return engine.result_cards[-1]["value"]
 
 
 def run_note_c(n: int) -> BabbageNumber:

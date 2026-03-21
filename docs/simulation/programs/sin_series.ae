@@ -1,0 +1,104 @@
+# sin(x) via Maclaurin series -- Analytical Engine program
+#
+# Computes sin(x) = x - x^3/3! + x^5/5! - x^7/7! + x^9/9! - x^11/11!
+# (6 terms; absolute error < 1e-8 for |x| <= pi/4)
+#
+# Variable layout (memory addresses):
+#   [0]  x         -- input angle (radians)
+#   [1]  result    -- accumulator for sum
+#   [2]  term      -- current power term (x^(2k+1))
+#   [3]  sign      -- +1 or -1
+#   [4]  tmp       -- scratch
+#   [5]  denom     -- factorial denominator for current term
+#
+# Ada Lovelace (Note A, 1843): "The engine might compute trigonometrical
+# functions by developing the appropriate series."
+#
+# Usage: set memory[0] to angle in radians before running.
+# Result: memory[1] = sin(x) after HALT.
+#
+# Preload: x = 0.5235987756 (= pi/6, so sin = 0.5 exactly to test)
+#
+# Reference: Gregory, J. (1668). Exercitationes Geometricae.
+#            Taylor, B. (1715). Methodus Incrementorum Directa et Inversa.
+
+# --- Initialisation ---
+LOAD A, 0.5235987756    # x = pi/6
+STOR A, [0]             # mem[0] = x
+
+LOAD A, [0]
+STOR A, [1]             # result = x (term_0 = x)
+STOR A, [2]             # term = x
+
+LOAD A, 1
+STOR A, [3]             # sign = +1 (next term is negative, flip after use)
+
+# --- Term 1: -x^3/3! = -x^3/6 ---
+LOAD A, [2]
+LOAD B, [0]
+MULT A, B               # x^2
+LOAD B, [0]
+MULT A, B               # x^3
+STOR A, [2]             # term = x^3
+LOAD B, 6               # 3! = 6
+DIV A, B                # term / 6
+LOAD B, [1]
+SUB B, A                # result - term/6
+STOR B, [1]
+
+# --- Term 2: +x^5/5! = +x^5/120 ---
+LOAD A, [2]
+LOAD B, [0]
+MULT A, B               # x^4
+LOAD B, [0]
+MULT A, B               # x^5
+STOR A, [2]
+LOAD B, 120             # 5! = 120
+DIV A, B
+LOAD B, [1]
+ADD B, A
+STOR B, [1]
+
+# --- Term 3: -x^7/7! = -x^7/5040 ---
+LOAD A, [2]
+LOAD B, [0]
+MULT A, B               # x^6
+LOAD B, [0]
+MULT A, B               # x^7
+STOR A, [2]
+LOAD B, 5040            # 7! = 5040
+DIV A, B
+LOAD B, [1]
+SUB B, A
+STOR B, [1]
+
+# --- Term 4: +x^9/9! = +x^9/362880 ---
+LOAD A, [2]
+LOAD B, [0]
+MULT A, B               # x^8
+LOAD B, [0]
+MULT A, B               # x^9
+STOR A, [2]
+LOAD B, 362880          # 9! = 362880
+DIV A, B
+LOAD B, [1]
+ADD B, A
+STOR B, [1]
+
+# --- Term 5: -x^11/11! = -x^11/39916800 ---
+LOAD A, [2]
+LOAD B, [0]
+MULT A, B               # x^10
+LOAD B, [0]
+MULT A, B               # x^11
+STOR A, [2]
+LOAD B, 39916800        # 11! = 39916800
+DIV A, B
+LOAD B, [1]
+SUB B, A
+STOR B, [1]
+
+# --- Output ---
+LOAD A, [1]
+WRPRN A                 # print sin(x)
+HALT

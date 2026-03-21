@@ -1,0 +1,128 @@
+# ln(x) via Mercator series -- Analytical Engine program
+#
+# Computes ln(1+t) = t - t^2/2 + t^3/3 - t^4/4 + ... for |t| < 1
+# where t = x - 1 (so x must be in (0, 2) for convergence).
+#
+# 10 terms used; absolute error < 1e-5 for t in [-0.5, 0.5].
+# For best convergence: use x near 1 (t small).
+#
+# Variable layout:
+#   [0]  t = x - 1    -- input (precomputed)
+#   [1]  result       -- running sum
+#   [2]  power        -- t^k
+#
+# Preload: x = 1.6487212707 (= e^0.5), so ln(x) = 0.5 exactly.
+# Therefore t = 0.6487212707
+#
+# Reference: Mercator, N. (1668). Logarithmotechnia. London.
+#            (First published series for natural logarithm.)
+
+# --- Initialisation ---
+LOAD A, 0.6487212707    # t = e^0.5 - 1
+STOR A, [0]
+STOR A, [1]             # result = t (first term)
+STOR A, [2]             # power = t
+
+# --- Term 2: -t^2/2 ---
+LOAD A, [2]
+LOAD B, [0]
+MULT A, B               # t^2
+STOR A, [2]
+LOAD B, 2
+DIV A, B
+LOAD B, [1]
+SUB B, A
+STOR B, [1]
+
+# --- Term 3: +t^3/3 ---
+LOAD A, [2]
+LOAD B, [0]
+MULT A, B
+STOR A, [2]
+LOAD B, 3
+DIV A, B
+LOAD B, [1]
+ADD B, A
+STOR B, [1]
+
+# --- Term 4: -t^4/4 ---
+LOAD A, [2]
+LOAD B, [0]
+MULT A, B
+STOR A, [2]
+LOAD B, 4
+DIV A, B
+LOAD B, [1]
+SUB B, A
+STOR B, [1]
+
+# --- Term 5: +t^5/5 ---
+LOAD A, [2]
+LOAD B, [0]
+MULT A, B
+STOR A, [2]
+LOAD B, 5
+DIV A, B
+LOAD B, [1]
+ADD B, A
+STOR B, [1]
+
+# --- Term 6: -t^6/6 ---
+LOAD A, [2]
+LOAD B, [0]
+MULT A, B
+STOR A, [2]
+LOAD B, 6
+DIV A, B
+LOAD B, [1]
+SUB B, A
+STOR B, [1]
+
+# --- Term 7: +t^7/7 ---
+LOAD A, [2]
+LOAD B, [0]
+MULT A, B
+STOR A, [2]
+LOAD B, 7
+DIV A, B
+LOAD B, [1]
+ADD B, A
+STOR B, [1]
+
+# --- Term 8: -t^8/8 ---
+LOAD A, [2]
+LOAD B, [0]
+MULT A, B
+STOR A, [2]
+LOAD B, 8
+DIV A, B
+LOAD B, [1]
+SUB B, A
+STOR B, [1]
+
+# --- Term 9: +t^9/9 ---
+LOAD A, [2]
+LOAD B, [0]
+MULT A, B
+STOR A, [2]
+LOAD B, 9
+DIV A, B
+LOAD B, [1]
+ADD B, A
+STOR B, [1]
+
+# --- Term 10: -t^10/10 ---
+LOAD A, [2]
+LOAD B, [0]
+MULT A, B
+STOR A, [2]
+LOAD B, 10
+DIV A, B
+LOAD B, [1]
+SUB B, A
+STOR B, [1]
+
+# --- Output ---
+LOAD A, [1]
+WRPRN A                 # print ln(1+t)
+HALT

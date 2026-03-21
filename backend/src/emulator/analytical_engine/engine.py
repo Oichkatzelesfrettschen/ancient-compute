@@ -289,7 +289,10 @@ class Engine:
             else:
                 raise IndexError(f"Memory address out of bounds: {mem_address}")
         else:
-            return BabbageNumber(int(operand_str))
+            try:
+                return BabbageNumber(int(operand_str))
+            except ValueError:
+                return BabbageNumber(float(operand_str))
 
     # ========================================================================
     # Arithmetic Operations (Mill)
@@ -571,25 +574,25 @@ class Engine:
         # For now, FETCH_VAR_CARD is a symbolic trigger.
 
     def _execute_MULT_micro(self, reg_dest: str, operand_src: Any) -> None:
+        """Execute MULT using fixed-point arithmetic.
+
+        Uses BabbageNumber.__mul__ for full 40-digit fractional precision.
+        The historical AE mill performed fixed-point multiplication; the
+        barrel micro-op scheme (digit-by-digit repeated addition) was an
+        implementation detail for integer multiplicands and is not correct
+        for fractional values. Product stored in reg_dest.
+
+        WHY: The transcendental series programs (sin, cos, ln, exp) multiply
+        by fractional values such as pi/6 = 0.5235987756. The old barrel
+        scheme extracted int(decimal) % 10 as the repeat count, yielding 0
+        for any value in (0,1), so the product was always 0.
         """
-        Execute MULT using micro-ops, leveraging repeated additions and shifts.
-        """
-        self.barrels.select_barrel("MULT")
-
-        # Setup: multiplicand into operand_buffer
-        self.mill_operand_buffer = self._get_operand_value(reg_dest)
-        # Clear product accumulator (conceptual reset)
-        self.mill_product_accumulator = BabbageNumber(0)
-
-        # Micro-op execution loop
-        while self.barrels.active_barrel:
-            ops = self.barrels.step()
-            for op in ops:
-                self._execute_micro_op(op, reg_dest, operand_src)
-
-        # Store result back from egress/accumulator
-        self.registers[reg_dest] = self.mill_product_accumulator
-        self._update_flags(self.mill_product_accumulator)
+        multiplicand = self._get_operand_value(reg_dest)
+        multiplier = self._get_operand_value(operand_src)
+        product = multiplicand * multiplier  # BabbageNumber.__mul__: (a*b)//SCALE
+        self.registers[reg_dest] = product
+        self.mill_product_accumulator = product
+        self._update_flags(product)
 
     def _execute_DIV_micro(self, reg_dest: str, operand_src: Any) -> None:
         """Execute DIV using fixed-point arithmetic.
@@ -1286,7 +1289,7 @@ class Engine:
                 continue
 
             opcode_name = parts[0]
-            operands = parts[1:] if len(parts) > 1 else []
+            operands = [p.rstrip(",") for p in parts[1:]] if len(parts) > 1 else []
             instructions.append(Instruction(opcode_name, operands))
             current_instruction_address += 1
 
