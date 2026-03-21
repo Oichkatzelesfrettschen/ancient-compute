@@ -76,6 +76,8 @@ class MachineListItem(BaseModel):
     brief: str
     program_input_type: str
     tags: list[str]
+    materials: dict[str, str]
+    operation_time_ms: dict[str, float]
 
 
 class MachineDetail(MachineListItem):
@@ -118,6 +120,8 @@ def _entry_to_list_item(e: MachineEntry) -> MachineListItem:
         brief=e.brief,
         program_input_type=e.program_input_type,
         tags=e.tags,
+        materials=e.materials,
+        operation_time_ms=e.operation_time_ms,
     )
 
 
@@ -134,6 +138,8 @@ def _entry_to_detail(e: MachineEntry) -> MachineDetail:
         tags=e.tags,
         manual=e.manual,
         example_payload=e.example_payload,
+        materials=e.materials,
+        operation_time_ms=e.operation_time_ms,
     )
 
 
