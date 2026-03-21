@@ -570,12 +570,11 @@ MACHINES: list[MachineEntry] = [
         program_input_type="instructions_json",
         manual=_load_manual(_BASE + "zuse_z1"),
         example_payload={
-            "memory": {0: 2.0},
+            "memory": {"0": 3.5, "1": 1.5},
             "program": [
-                {"op": "LOAD", "address": 0},
-                {"op": "SQRT"},
-                {"op": "PRINT"},
-                {"op": "HALT"},
+                {"op": "load", "address": 0},
+                {"op": "add", "address": 1},
+                {"op": "output", "address": 0},
             ],
         },
         factory=_make_zuse_z1,
