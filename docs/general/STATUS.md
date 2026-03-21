@@ -1,8 +1,8 @@
 # Project Status Dashboard
 
-**Auto-generated**: 2026-03-21 04:41 UTC
+**Auto-generated**: 2026-03-21 05:08 UTC
 **Branch**: `main`
-**Last commit**: `25edec7 fix: run uvicorn from repo root with PYTHONPATH=. (absolute backend.src imports require it)`
+**Last commit**: `dc39a9f feat: generic machine gallery + step API for all 23 historical emulators`
 
 > Regenerate with: `make status`
 
@@ -12,9 +12,9 @@
 
 | Metric | Value |
 |--------|-------|
-| Unit tests collected | 2569 |
+| Unit tests collected | 2714 |
 | Collection errors | 0 |
-| Python source lines (backend/src/) | 43,760 |
+| Python source lines (backend/src/) | 44,914 |
 | Active docs (non-archive .md) | 199 |
 
 ## Phase Status
