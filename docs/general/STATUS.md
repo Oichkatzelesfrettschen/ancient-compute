@@ -1,8 +1,8 @@
 # Project Status Dashboard
 
-**Auto-generated**: 2026-03-21 07:10 UTC
+**Auto-generated**: 2026-03-21 07:45 UTC
 **Branch**: `main`
-**Last commit**: `c298226 chore: regenerate STATUS.md (2714 tests, 0 mypy errors, 0 svelte-check errors)`
+**Last commit**: `9b5198c feat: Ludgate/Torres step() dispatch + Torres conditional branching`
 
 > Regenerate with: `make status`
 
@@ -12,9 +12,9 @@
 
 | Metric | Value |
 |--------|-------|
-| Unit tests collected | 2742 |
+| Unit tests collected | 2775 |
 | Collection errors | 0 |
-| Python source lines (backend/src/) | 45,081 |
+| Python source lines (backend/src/) | 45,148 |
 | Active docs (non-archive .md) | 199 |
 
 ## Phase Status
