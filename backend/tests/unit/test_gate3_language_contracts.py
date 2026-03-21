@@ -303,3 +303,120 @@ class TestSystemFContract:
     def test_systemf_rejected_untyped_lambda(self):
         """Lambda with no type annotation is rejected."""
         _err_systemf("\\x => x")
+
+
+# =============================================================================
+# JAVA -- OOP, generics, exception handling, lambdas
+# =============================================================================
+
+_JAVA_JAVAC = "/usr/lib/jvm/java-17-openjdk/bin/javac"
+
+
+def _java(code: str, input_data: str = "") -> object:
+    import asyncio
+
+    from backend.src.services.languages.java_service import JavaService
+
+    return asyncio.run(JavaService().execute(code, input_data))
+
+
+def _ok_java(code: str, input_data: str = "") -> None:
+    from backend.src.services.languages.java_service import ExecutionStatus
+
+    r = _java(code, input_data)
+    assert r.status == ExecutionStatus.SUCCESS, f"Expected SUCCESS: {r.stderr}"
+
+
+def _err_java(code: str) -> None:
+    from backend.src.services.languages.java_service import ExecutionStatus
+
+    r = _java(code)
+    assert r.status != ExecutionStatus.SUCCESS, f"Expected failure: {r.stdout}"
+
+
+@pytest.mark.skipif(
+    not os.path.exists(_JAVA_JAVAC),
+    reason="OpenJDK 17 javac not found at expected path",
+)
+class TestJavaContract:
+    """Java Gate 3 contract: compile + run OOP programs.
+
+    Verifies that the JavaService can compile and execute well-formed Java 17
+    programs exercising OOP, generics, lambdas, and exception handling.
+    """
+
+    def test_java_hello_world(self):
+        """Hello World compiles and prints output."""
+        r = _java(
+            "public class Main {\n"
+            "    public static void main(String[] args) {\n"
+            '        System.out.println("Hello, Java!");\n'
+            "    }\n"
+            "}"
+        )
+        from backend.src.services.languages.java_service import ExecutionStatus
+
+        assert r.status == ExecutionStatus.SUCCESS
+        assert "Hello, Java!" in r.stdout
+
+    def test_java_oop_inheritance(self):
+        """Subclass overrides a method and is called via base reference."""
+        _ok_java(
+            "public class Main {\n"
+            '    static class Shape { String name() { return "shape"; } }\n'
+            "    static class Circle extends Shape {\n"
+            '        @Override String name() { return "circle"; }\n'
+            "    }\n"
+            "    public static void main(String[] args) {\n"
+            "        Shape s = new Circle();\n"
+            "        System.out.println(s.name());\n"
+            "    }\n"
+            "}"
+        )
+
+    def test_java_generics(self):
+        """Generic method called with integer argument."""
+        _ok_java(
+            "public class Main {\n"
+            "    static <T> T identity(T x) { return x; }\n"
+            "    public static void main(String[] args) {\n"
+            "        System.out.println(identity(42));\n"
+            "    }\n"
+            "}"
+        )
+
+    def test_java_lambda(self):
+        """Lambda expression via functional interface."""
+        _ok_java(
+            "public class Main {\n"
+            "    interface Fn { int apply(int x); }\n"
+            "    public static void main(String[] args) {\n"
+            "        Fn square = x -> x * x;\n"
+            "        System.out.println(square.apply(7));\n"
+            "    }\n"
+            "}"
+        )
+
+    def test_java_exception_handling(self):
+        """try/catch block handles a thrown exception gracefully."""
+        _ok_java(
+            "public class Main {\n"
+            "    public static void main(String[] args) {\n"
+            "        try {\n"
+            '            throw new IllegalArgumentException("bad input");\n'
+            "        } catch (IllegalArgumentException e) {\n"
+            '            System.out.println("caught: " + e.getMessage());\n'
+            "        }\n"
+            "    }\n"
+            "}"
+        )
+
+    def test_java_rejected_missing_brace(self):
+        """Missing closing brace produces COMPILE_ERROR."""
+        _err_java(
+            "public class Main {\n"
+            "    public static void main(String[] args) {\n"
+            '        System.out.println("unclosed");\n'
+            "    }\n"
+            # missing closing brace for class
+        )

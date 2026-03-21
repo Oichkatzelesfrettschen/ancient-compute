@@ -10,7 +10,7 @@
 | Gate 0 | Assembler Stability | Babbage Assembly | Golden corpus deterministic, hex output matches |
 | Gate 1 | ABI Conformance | Assembly + C | Register preservation, return convention, stack balance |
 | Gate 2 | Freestanding C | C subset | Scalar core compiles; unsupported features rejected with diagnostics |
-| Gate 3 | Language Promotion | All non-Java languages | Compile + execute round-trip; paradigm-specific contract |
+| Gate 3 | Language Promotion | All languages | Compile + execute round-trip; paradigm-specific contract |
 
 ## Language Readiness
 
@@ -26,7 +26,7 @@
 | ALGOL68 (a68g 3.10.12) | FULL | N/A | N/A | N/A | N/A | GREEN | READY |
 | C++ (g++ 15.2.1) | FULL | N/A | N/A | N/A | N/A | GREEN | READY |
 | MicroPython 1.27.0 | FULL | N/A | N/A | N/A | N/A | GREEN | READY |
-| Java | STUB | FULL | N/A | N/A | N/A | BLOCKED | NOT READY |
+| Java (OpenJDK 17.0.18) | FULL | N/A | N/A | N/A | N/A | GREEN | READY |
 
 ## Gate Test Files
 
@@ -36,13 +36,14 @@
 | Gate 1 | test_babbage_abi_contract.py | PASSING | 3 tests |
 | Gate 2 | test_c_freestanding_subset.py | PASSING | 6 tests |
 | Gate 2 | test_c_gate2_programs.py | PASSING | 20+ tests |
-| Gate 3 | test_gate3_language_contracts.py | PASSING | 32 tests |
+| Gate 3 | test_gate3_language_contracts.py | PASSING | 38 tests |
 | Gate 3 | test_c_gate3_contract.py | PASSING | 6 tests |
 | Gate 3 | test_python_gate3_contract.py | PASSING | 6 tests |
 | Gate 3 | test_haskell_service.py | PASSING | 8 tests |
 | Gate 3 | test_algol68_gate3_contract.py | PASSING | 6 tests |
 | Gate 3 | test_cpp_gate3_contract.py | PASSING | 6 tests |
 | Gate 3 | test_micropython_gate3_contract.py | PASSING | 6 tests |
+| Gate 3 | test_java_service.py | PASSING | 22 tests |
 
 ## CI Tier Mapping
 
@@ -54,8 +55,12 @@
 
 ## Notes
 
-- **Java**: Compiler exists (java_compiler.py) but service returns stub message.
-  JVM seccomp profile complexity defers this past Gate 3.  See DEFERRED_WORK.md.
+- **Java**: Now fully implemented (2026-03-20) via OpenJDK 17.0.18 with a two-step
+  compile+run pipeline (javac Main.java, java -cp . Main). JavaService in
+  java_service.py handles compile errors (COMPILE_ERROR) and runtime errors
+  (RUNTIME_ERROR) distinctly. 22 unit tests in test_java_service.py and 6 Gate 3
+  contract tests in test_gate3_language_contracts.py, all passing.
+  Java binary paths: /usr/lib/jvm/java-17-openjdk/bin/{javac,java}.
 - **LISP**: Now uses real SBCL 2.6.2 execution (sbcl --script). Upgraded from
   Babbage IR compilation path on 2026-03-20. Gate 3: 11/11 tests pass.
   Note: function names that clash with SB-ALIEN (e.g. 'double') must be avoided.
@@ -66,4 +71,4 @@
 - **Gate 0/1 are GREEN**: Assembler and ABI conformance tests pass.
 - **Gate 2 is GREEN**: C freestanding subset end-to-end; 4 code-gen bugs fixed
   (emitter label addresses, trailing labels, comparison encoding, return terminator).
-- **Gate 3 is GREEN**: 9 of 10 languages; Java deferred per DEFERRED_WORK.md.
+- **Gate 3 is GREEN**: 10 of 10 languages (Java promoted 2026-03-20).

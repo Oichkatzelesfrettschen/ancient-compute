@@ -1,8 +1,8 @@
 # Project Status Dashboard
 
-**Auto-generated**: 2026-03-21 06:54 UTC
+**Auto-generated**: 2026-03-21 07:10 UTC
 **Branch**: `main`
-**Last commit**: `00750a3 fix: resolve all 238 svelte-check TypeScript errors in frontend codebase`
+**Last commit**: `c298226 chore: regenerate STATUS.md (2714 tests, 0 mypy errors, 0 svelte-check errors)`
 
 > Regenerate with: `make status`
 
@@ -12,9 +12,9 @@
 
 | Metric | Value |
 |--------|-------|
-| Unit tests collected | 2714 |
+| Unit tests collected | 2742 |
 | Collection errors | 0 |
-| Python source lines (backend/src/) | 44,924 |
+| Python source lines (backend/src/) | 45,081 |
 | Active docs (non-archive .md) | 199 |
 
 ## Phase Status

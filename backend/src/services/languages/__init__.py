@@ -138,13 +138,13 @@ _LANGUAGE_CAPABILITIES: tuple[LanguageCapability, ...] = (
     LanguageCapability(
         id="java",
         name="Java",
-        version="OpenJDK 17 (stub)",
-        description="Java service skeleton; execution path not implemented",
+        version="OpenJDK 17.0.18",
+        description="Java 17 via OpenJDK; compile + run via javac + java",
         aliases=("java",),
         timeout=15,
         memory_limit_mb=256,
-        implementation_status="stub",
-        execution_mode="placeholder",
+        implementation_status="implemented",
+        execution_mode="native_subprocess",
         service_cls=JavaService,
     ),
     LanguageCapability(

@@ -42,12 +42,19 @@ def test_get_executor_is_case_insensitive_and_rejects_unknown() -> None:
 
 
 @pytest.mark.asyncio
-async def test_java_stub_returns_placeholder_success() -> None:
-    """Java (only remaining stub) should return a placeholder message."""
+async def test_java_compiles_hello_world() -> None:
+    """Java service compiles and runs a well-formed Hello World program."""
     executor = get_executor("java")
-    result = await executor.execute("main = 0")
-    assert result.status == BaseExecutionStatus.SUCCESS
-    assert "not yet implemented" in result.stdout.lower()
+    code = (
+        "public class Main {\n"
+        "    public static void main(String[] args) {\n"
+        '        System.out.println("Hello");\n'
+        "    }\n"
+        "}"
+    )
+    result = await executor.execute(code)
+    assert result.status.value == BaseExecutionStatus.SUCCESS.value
+    assert "Hello" in result.stdout
 
 
 @pytest.mark.asyncio
