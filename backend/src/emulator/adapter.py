@@ -23,6 +23,7 @@ if TYPE_CHECKING:
     from .grant_difference_engine import GrantDifferenceEngine
     from .harvard_mark_i import HarvardMarkI
     from .hollerith_tabulator import HollerithTabulator
+    from .jacquard import JacquardLoom
     from .leibniz_reckoner import LeibnizReckonerEmulator
     from .manchester_baby import ManchesterBaby
     from .millionaire_calculator import MillionaireCalculator
@@ -1110,3 +1111,57 @@ class EDSACAdapter(MachineAdapter):
 
     def get_snapshot(self) -> Any:
         return self.machine.state_snapshot()
+
+
+class JacquardAdapter(MachineAdapter):
+    """Adapter for JacquardLoom (France, 1804).
+
+    One step = one card advance (one weft row woven).
+    The loom has no program counter; step() reads the next card in the deck.
+    """
+
+    def __init__(self, machine: JacquardLoom) -> None:
+        self.machine = machine
+        self._last_card: list[int] = [0] * machine.num_hooks
+
+    def load_deck(self, cards: list[list[int]]) -> None:
+        """Load a punch card deck and reset the loom."""
+        self.machine.load_deck(cards)
+        self._last_card = [0] * self.machine.num_hooks
+
+    def get_cycle_count(self) -> int:
+        return self.machine.weft_count
+
+    def get_current_phase(self) -> MechanicalPhase | None:
+        return None
+
+    def get_column_values(self) -> list[int]:
+        return list(self._last_card)
+
+    def get_register_values(self) -> dict[str, Any]:
+        return {
+            "weft_count": self.machine.weft_count,
+            "card_index": self.machine.card_index,
+            "num_hooks": self.machine.num_hooks,
+            "deck_size": len(self.machine.state.card_deck),
+        }
+
+    def get_memory_value(self, address: int) -> Any:
+        pattern = self.machine.get_pattern()
+        if 0 <= address < len(pattern):
+            return pattern[address]
+        return [0] * self.machine.num_hooks
+
+    def step(self) -> None:
+        card = self.machine.step()
+        if card is not None:
+            self._last_card = card
+
+    def get_snapshot(self) -> Any:
+        return {
+            "weft_count": self.machine.weft_count,
+            "card_index": self.machine.card_index,
+            "last_card": list(self._last_card),
+            "pattern": self.machine.get_pattern(),
+            "num_hooks": self.machine.num_hooks,
+        }

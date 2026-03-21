@@ -28,6 +28,7 @@ from .adapter import (
     GrantDEAdapter,
     HarvardMarkIAdapter,
     HollerithAdapter,
+    JacquardAdapter,
     LeibnizAdapter,
     LudgateAdapter,
     MachineAdapter,
@@ -245,6 +246,19 @@ def _make_curta() -> tuple[Any, MachineAdapter]:
     return m, CurtaAdapter(m)
 
 
+def _make_jacquard() -> tuple[Any, MachineAdapter]:
+    from .jacquard import JacquardLoom
+
+    m = JacquardLoom(num_hooks=8)
+    m.load_deck(
+        [
+            [1, 0, 1, 0, 1, 0, 1, 0],
+            [0, 1, 0, 1, 0, 1, 0, 1],
+        ]
+    )
+    return m, JacquardAdapter(m)
+
+
 def _make_ae() -> tuple[Any, MachineAdapter]:
     from .analytical_engine import Engine
 
@@ -431,6 +445,27 @@ MACHINES: list[MachineEntry] = [
     # -----------------------------------------------------------------------
     # Analytical Engines / Programmable
     # -----------------------------------------------------------------------
+    MachineEntry(
+        id="jacquard-loom",
+        name="Jacquard Loom",
+        year=1804,
+        country="France",
+        inventor="Joseph Marie Jacquard",
+        category="analytical_engine",
+        brief="First stored, reusable program: punch cards control warp threads one row at a time.",
+        program_input_type="data_deck",
+        manual=_load_manual(_BASE + "jacquard"),
+        example_payload={
+            "cards": [
+                [1, 0, 1, 0, 1, 0, 1, 0],
+                [0, 1, 0, 1, 0, 1, 0, 1],
+                [1, 1, 0, 0, 1, 1, 0, 0],
+                [0, 0, 1, 1, 0, 0, 1, 1],
+            ]
+        },
+        factory=_make_jacquard,
+        tags=["punch card", "textile", "precursor", "Babbage"],
+    ),
     MachineEntry(
         id="ludgate",
         name="Ludgate Analytical Machine",
