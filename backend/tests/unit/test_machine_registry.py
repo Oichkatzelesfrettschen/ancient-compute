@@ -309,3 +309,49 @@ class TestMachinesAPI:
     def test_unknown_machine_step_404(self, api_client: Any) -> None:
         resp = api_client.post("/machines/fake-machine/step")
         assert resp.status_code == 404
+
+    def test_jacquard_load_and_step(self, api_client: Any) -> None:
+        """Load a 2-card Jacquard deck via the API and step through it."""
+        api_client.post("/machines/jacquard-loom/reset")
+        payload = {
+            "payload": {
+                "cards": [
+                    [1, 0, 1, 0, 1, 0, 1, 0],
+                    [0, 1, 0, 1, 0, 1, 0, 1],
+                ]
+            }
+        }
+        resp = api_client.post("/machines/jacquard-loom/load", json=payload)
+        assert resp.status_code == 200
+        # Step once -- processes card 0
+        resp = api_client.post("/machines/jacquard-loom/step")
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["cycle_count"] == 1
+        assert data["columns"] == [1, 0, 1, 0, 1, 0, 1, 0]
+        # Step again -- processes card 1
+        resp = api_client.post("/machines/jacquard-loom/step")
+        assert resp.json()["columns"] == [0, 1, 0, 1, 0, 1, 0, 1]
+        assert resp.json()["cycle_count"] == 2
+
+    def test_jacquard_snapshot_accumulates_pattern(self, api_client: Any) -> None:
+        """After 2 steps, get_snapshot() has the full 2-row pattern."""
+        api_client.post("/machines/jacquard-loom/reset")
+        payload = {
+            "payload": {
+                "cards": [
+                    [1, 1, 0, 0, 1, 1, 0, 0],
+                    [0, 0, 1, 1, 0, 0, 1, 1],
+                ]
+            }
+        }
+        api_client.post("/machines/jacquard-loom/load", json=payload)
+        api_client.post("/machines/jacquard-loom/step")
+        api_client.post("/machines/jacquard-loom/step")
+        snap_resp = api_client.get("/machines/jacquard-loom/state")
+        assert snap_resp.status_code == 200
+        snap = snap_resp.json()["snapshot"]
+        assert snap["pattern"] == [
+            [1, 1, 0, 0, 1, 1, 0, 0],
+            [0, 0, 1, 1, 0, 0, 1, 1],
+        ]
