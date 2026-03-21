@@ -17,4 +17,5 @@ from backend.src.emulator.types import BabbageNumber  # noqa: F401
 # Legacy CLI entry point -- delegates to the canonical Click app.
 if __name__ == "__main__":
     from backend.src.emulator.cli.app import cli
+
     cli()

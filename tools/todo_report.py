@@ -11,10 +11,9 @@ Usage:
 
 from __future__ import annotations
 
-import re
 import os
+import re
 from pathlib import Path
-from typing import Dict, List, Tuple
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "TODO_REPORT.md"
@@ -23,9 +22,9 @@ PATTERNS = [r"TODO", r"FIXME", r"XXX", r"TBD", r"HACK"]
 REGEX = re.compile(r"|".join(PATTERNS), re.IGNORECASE)
 
 
-def iter_project_files() -> List[Path]:
+def iter_project_files() -> list[Path]:
     ignore_dirs = {".git", "venv", "node_modules", "dist", "build", "__pycache__"}
-    files: List[Path] = []
+    files: list[Path] = []
     for root, dirs, filenames in os.walk(ROOT):
         # prune ignored directories
         dirs[:] = [d for d in dirs if d not in ignore_dirs]
@@ -38,8 +37,8 @@ def iter_project_files() -> List[Path]:
     return files
 
 
-def scan_file(path: Path) -> List[Tuple[int, str]]:
-    results: List[Tuple[int, str]] = []
+def scan_file(path: Path) -> list[tuple[int, str]]:
+    results: list[tuple[int, str]] = []
     try:
         with path.open("r", encoding="utf-8", errors="ignore") as f:
             for i, line in enumerate(f, start=1):
@@ -51,7 +50,7 @@ def scan_file(path: Path) -> List[Tuple[int, str]]:
 
 
 def main() -> None:
-    index: Dict[str, List[Tuple[int, str]]] = {}
+    index: dict[str, list[tuple[int, str]]] = {}
     for p in iter_project_files():
         matches = scan_file(p)
         if matches:
@@ -75,4 +74,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

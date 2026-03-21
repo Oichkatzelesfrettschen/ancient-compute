@@ -21,7 +21,15 @@ from pathlib import Path
 
 DEFAULT_BOM = Path(__file__).resolve().parents[1] / "hardware_twin" / "bom" / "bom_v0.csv"
 
-REQUIRED_COLUMNS = {"part_id", "subsystem", "component", "material", "quantity", "mass_kg", "spec_ref"}
+REQUIRED_COLUMNS = {
+    "part_id",
+    "subsystem",
+    "component",
+    "material",
+    "quantity",
+    "mass_kg",
+    "spec_ref",
+}
 SPEC_REF_RE = re.compile(r"^(SOURCE:[A-Z0-9_-]+|ASSUMPTION)$")
 
 
@@ -32,7 +40,7 @@ def validate_bom(path: Path) -> list[str]:
     if not path.exists():
         return [f"File not found: {path}"]
 
-    with open(path, "r", newline="") as f:
+    with open(path, newline="") as f:
         reader = csv.DictReader(f)
 
         # Check required columns
@@ -104,7 +112,7 @@ def main() -> None:
         sys.exit(1)
     else:
         # Summary stats
-        with open(path, "r", newline="") as f:
+        with open(path, newline="") as f:
             reader = csv.DictReader(f)
             rows = list(reader)
 

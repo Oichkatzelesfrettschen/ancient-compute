@@ -13,12 +13,8 @@ from pathlib import Path
 
 import yaml
 
-
 TIMING_YAML = (
-    Path(__file__).parent.parent.parent
-    / "docs"
-    / "simulation"
-    / "TIMING_PROVISIONAL.yaml"
+    Path(__file__).parent.parent.parent / "docs" / "simulation" / "TIMING_PROVISIONAL.yaml"
 )
 
 

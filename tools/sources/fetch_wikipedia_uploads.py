@@ -14,7 +14,6 @@ from urllib.parse import urlparse
 
 import requests
 
-
 UPLOAD_RE = re.compile(r"https://upload\.wikimedia\.org/wikipedia/commons/[^\"]+")
 
 
@@ -50,4 +49,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

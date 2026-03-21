@@ -1,8 +1,8 @@
 # Project Status Dashboard
 
-**Auto-generated**: 2026-03-21 08:36 UTC
+**Auto-generated**: 2026-03-21 09:23 UTC
 **Branch**: `main`
-**Last commit**: `9c2cecc feat: add Abacus, Slide Rule, Quipu, and Astrolabe as machines 25-28`
+**Last commit**: `759baa0 feat: add Tally Marks and Clay Tokens as machines 29-30`
 
 > Regenerate with: `make status`
 
@@ -12,10 +12,10 @@
 
 | Metric | Value |
 |--------|-------|
-| Unit tests collected | 2840 |
+| Unit tests collected | 2920 |
 | Collection errors | 0 |
-| Python source lines (backend/src/) | 45,662 |
-| Active docs (non-archive .md) | 199 |
+| Python source lines (backend/src/) | 46,446 |
+| Active docs (non-archive .md) | 200 |
 
 ## Phase Status
 

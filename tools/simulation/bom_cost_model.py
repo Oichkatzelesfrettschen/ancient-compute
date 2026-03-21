@@ -30,58 +30,73 @@ def estimate_bom(config: SimulationConfig) -> list[dict]:
 
     # 1. Main shaft
     shaft_mass = cylinder_mass_kg(
-        config.shaft_diameter_mm, config.shaft_length_mm, config.shaft_material,
+        config.shaft_diameter_mm,
+        config.shaft_length_mm,
+        config.shaft_material,
     )
-    items.append({
-        "subsystem": "Main shaft",
-        "material": config.shaft_material,
-        "mass_kg": shaft_mass,
-        "count": 1,
-    })
+    items.append(
+        {
+            "subsystem": "Main shaft",
+            "material": config.shaft_material,
+            "mass_kg": shaft_mass,
+            "count": 1,
+        }
+    )
 
     # 2. Bearings (journal bearings)
     bearing_od = config.shaft_diameter_mm + 2 * 5.0  # 5mm wall thickness
-    bearing_mass = (
-        cylinder_mass_kg(bearing_od, config.bearing_length_mm, config.bearing_material)
-        - cylinder_mass_kg(config.shaft_diameter_mm, config.bearing_length_mm, config.bearing_material)
+    bearing_mass = cylinder_mass_kg(
+        bearing_od, config.bearing_length_mm, config.bearing_material
+    ) - cylinder_mass_kg(
+        config.shaft_diameter_mm, config.bearing_length_mm, config.bearing_material
     )
-    items.append({
-        "subsystem": "Journal bearings",
-        "material": config.bearing_material,
-        "mass_kg": bearing_mass,
-        "count": config.bearing_count,
-    })
+    items.append(
+        {
+            "subsystem": "Journal bearings",
+            "material": config.bearing_material,
+            "mass_kg": bearing_mass,
+            "count": config.bearing_count,
+        }
+    )
 
     # 3. Spur gears (approximate as solid disc)
     gear_od = config.gear_tooth_count * config.gear_module_mm
     gear_mass = cylinder_mass_kg(
-        gear_od, config.gear_face_width_mm, config.gear_material,
+        gear_od,
+        config.gear_face_width_mm,
+        config.gear_material,
     )
-    items.append({
-        "subsystem": "Spur gears",
-        "material": config.gear_material,
-        "mass_kg": gear_mass,
-        "count": 8,  # Approximate gear count
-    })
+    items.append(
+        {
+            "subsystem": "Spur gears",
+            "material": config.gear_material,
+            "mass_kg": gear_mass,
+            "count": 8,  # Approximate gear count
+        }
+    )
 
     # 4. Frame (cast iron, approximate as fraction of total machine mass)
     frame_mass = config.machine_mass_kg * 0.6  # 60% of machine is frame
-    items.append({
-        "subsystem": "Frame (cast iron)",
-        "material": "cast_iron",
-        "mass_kg": frame_mass,
-        "count": 1,
-    })
+    items.append(
+        {
+            "subsystem": "Frame (cast iron)",
+            "material": "cast_iron",
+            "mass_kg": frame_mass,
+            "count": 1,
+        }
+    )
 
     # 5. Digit columns (brass wheels)
     # Babbage planned 1000 columns of 50 digits each
     wheel_mass = cylinder_mass_kg(30.0, 5.0, "brass")  # 30mm dia, 5mm thick
-    items.append({
-        "subsystem": "Digit wheels",
-        "material": "brass",
-        "mass_kg": wheel_mass,
-        "count": 50000,  # 1000 columns x 50 digits
-    })
+    items.append(
+        {
+            "subsystem": "Digit wheels",
+            "material": "brass",
+            "mass_kg": wheel_mass,
+            "count": 50000,  # 1000 columns x 50 digits
+        }
+    )
 
     return items
 

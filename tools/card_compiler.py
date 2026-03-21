@@ -24,11 +24,10 @@ import sys
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import List, Optional
-
 
 # --- Opcodes ---
 # Canonical source: docs/hardware/OPCODES.yaml -- keep in sync
+
 
 class Opcode(Enum):
     ADD = 0x0
@@ -56,15 +55,17 @@ class CardClass(Enum):
 
 # --- Card data structures ---
 
+
 @dataclass(frozen=True)
 class CardData:
     """Decoded card content."""
+
     card_class: CardClass
     # Operation cards
-    opcode: Optional[Opcode] = None
+    opcode: Opcode | None = None
     modifier: int = 0
     # Variable cards
-    direction: Optional[str] = None  # "read" or "write"
+    direction: str | None = None  # "read" or "write"
     column: int = 0
     # Number cards
     sign: int = 0  # 0=positive, 1=negative
@@ -79,11 +80,13 @@ CARD_BYTES = 32  # Fixed card payload size (256 bits)
 @dataclass(frozen=True)
 class EncodedCard:
     """Raw card as bytes."""
+
     class_byte: int  # 0=operation, 1=variable, 2=number
-    payload: bytes    # CARD_BYTES bytes
+    payload: bytes  # CARD_BYTES bytes
 
 
 # --- Encoder ---
+
 
 def encode_card(card: CardData) -> EncodedCard:
     """Encode a CardData into an EncodedCard."""
@@ -120,6 +123,7 @@ def encode_card(card: CardData) -> EncodedCard:
 
 
 # --- Decoder ---
+
 
 def decode_card(enc: EncodedCard) -> CardData:
     """Decode an EncodedCard back to CardData."""
@@ -258,7 +262,8 @@ def card_to_source(card: CardData) -> str:
 
 # --- Deck-level operations ---
 
-def compile_deck(source: str) -> List[EncodedCard]:
+
+def compile_deck(source: str) -> list[EncodedCard]:
     """Compile a multi-line source into a list of encoded cards."""
     cards = []
     for line in source.splitlines():
@@ -270,7 +275,7 @@ def compile_deck(source: str) -> List[EncodedCard]:
     return cards
 
 
-def decompile_deck(encoded: List[EncodedCard]) -> str:
+def decompile_deck(encoded: list[EncodedCard]) -> str:
     """Decompile a list of encoded cards back to source text."""
     lines = []
     for enc in encoded:
@@ -284,8 +289,9 @@ def round_trip(source: str) -> bool:
 
     Returns True if recovered source matches original (after normalization).
     """
+
     # Normalize: strip comments, blank lines, whitespace
-    def normalize(text: str) -> List[str]:
+    def normalize(text: str) -> list[str]:
         lines = []
         for line in text.splitlines():
             stripped = line.split("#")[0].strip()
@@ -302,6 +308,7 @@ def round_trip(source: str) -> bool:
 
 
 # --- CLI ---
+
 
 def main() -> None:
     if len(sys.argv) > 1 and sys.argv[1] == "--round-trip":

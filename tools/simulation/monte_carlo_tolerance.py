@@ -21,8 +21,6 @@ import math
 import random
 import sys
 from dataclasses import dataclass
-from typing import List, Tuple
-
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -38,6 +36,7 @@ INTERFERENCE_THRESHOLD = 0.001  # 0.1%
 # Tolerance = manufacturing capability for 19th century precision machining.
 # Sigma = tolerance / 3 for 3-sigma process capability.
 # ---------------------------------------------------------------------------
+
 
 @dataclass
 class ParamDist:
@@ -79,6 +78,7 @@ GEAR_TANGENTIAL_LOAD = ParamDist("gear_load_N", 318.0, 30.0)  # from torque calc
 # Monte Carlo checks
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class MCResult:
     name: str
@@ -96,7 +96,7 @@ def check_gear_backlash(rng: random.Random, n: int) -> MCResult:
     Interference occurs when thermal expansion reduces backlash to zero.
     """
     failures = 0
-    margins: List[float] = []
+    margins: list[float] = []
 
     for _ in range(n):
         backlash = GEAR_BACKLASH.sample(rng)
@@ -138,7 +138,7 @@ def check_bearing_clearance(rng: random.Random, n: int) -> MCResult:
     Interference occurs when thermal expansion closes the clearance gap.
     """
     failures = 0
-    margins: List[float] = []
+    margins: list[float] = []
 
     for _ in range(n):
         bore = BEARING_BORE.sample(rng)
@@ -181,7 +181,7 @@ def check_structural_safety(rng: random.Random, n: int) -> MCResult:
     Uses simplified gear tooth bending stress vs yield strength.
     """
     failures = 0
-    margins: List[float] = []
+    margins: list[float] = []
 
     for _ in range(n):
         yield_mpa = STEEL_YIELD.sample(rng)
@@ -212,7 +212,7 @@ def check_structural_safety(rng: random.Random, n: int) -> MCResult:
 def check_shaft_deflection(rng: random.Random, n: int) -> MCResult:
     """Check probability of shaft deflection exceeding L/10000."""
     failures = 0
-    margins: List[float] = []
+    margins: list[float] = []
 
     for _ in range(n):
         load = SHAFT_LOAD.sample(rng)
@@ -248,23 +248,24 @@ def check_shaft_deflection(rng: random.Random, n: int) -> MCResult:
 
 # --- Phase III: Fatigue with stress concentration ---
 
+
 def check_fatigue_with_Kt(rng: random.Random, n: int) -> MCResult:
     """Check probability that fatigue safety factor < 1.5 including K_t."""
     failures = 0
-    margins: List[float] = []
+    margins: list[float] = []
 
     for _ in range(n):
         # Varied parameters
         yield_mpa = STEEL_YIELD.sample(rng)
         load_n = SHAFT_LOAD.sample(rng)
-        fillet_r = rng.gauss(2.0, 0.3)    # fillet radius +/- 0.3mm
+        fillet_r = rng.gauss(2.0, 0.3)  # fillet radius +/- 0.3mm
         diameter = rng.gauss(50.0, 0.025 / 3.0)
 
         # Stress concentration (Peterson power-law)
         rd = fillet_r / diameter if diameter > 0 else 0.01
         if rd <= 0:
             rd = 0.01
-        Kt = 0.9 * rd**(-0.33)
+        Kt = 0.9 * rd ** (-0.33)
         Kt = max(Kt, 1.0)
 
         # Neuber notch sensitivity (steel, r ~ 2mm)
@@ -303,10 +304,11 @@ def check_fatigue_with_Kt(rng: random.Random, n: int) -> MCResult:
 
 # --- Phase V+VI: Combined thermal + wear clearance ---
 
+
 def check_thermal_wear_clearance(rng: random.Random, n: int) -> MCResult:
     """Check combined thermal + wear clearance after 100 hours at 30 RPM."""
     failures = 0
-    margins: List[float] = []
+    margins: list[float] = []
 
     for _ in range(n):
         bore = BEARING_BORE.sample(rng)
@@ -355,10 +357,11 @@ def check_thermal_wear_clearance(rng: random.Random, n: int) -> MCResult:
 
 # --- Phase III: Torsional vibration margin ---
 
+
 def check_torsional_margin(rng: random.Random, n: int) -> MCResult:
     """Check probability of torsional vibration margin < 3."""
     failures = 0
-    margins: List[float] = []
+    margins: list[float] = []
 
     for _ in range(n):
         # Shaft properties (steel)
@@ -371,7 +374,7 @@ def check_torsional_margin(rng: random.Random, n: int) -> MCResult:
         L_m = length / 1000.0
         G_Pa = G_GPa * 1e9
         J_p = math.pi * d_m**4 / 32.0  # polar moment
-        J_disk = disk_mass * (d_m / 2.0)**2  # disk mass moment of inertia
+        J_disk = disk_mass * (d_m / 2.0) ** 2  # disk mass moment of inertia
 
         if L_m <= 0 or J_disk <= 0:
             margins.append(100.0)
@@ -401,11 +404,12 @@ def check_torsional_margin(rng: random.Random, n: int) -> MCResult:
 # Main
 # ---------------------------------------------------------------------------
 
+
 def main() -> int:
     rng = random.Random(RANDOM_SEED)
     n = N_ITERATIONS
 
-    print(f"Monte Carlo Tolerance Stack-up Analysis")
+    print("Monte Carlo Tolerance Stack-up Analysis")
     print(f"Iterations: {n}")
     print(f"Interference threshold: {INTERFERENCE_THRESHOLD * 100:.1f}%")
     print(f"Random seed: {RANDOM_SEED}")
@@ -427,7 +431,9 @@ def main() -> int:
         if status == "FAIL":
             any_failed = True
         print(f"[{status}] {result.name}")
-        print(f"  Failures:         {result.n_failures}/{result.n_iterations} ({result.failure_probability * 100:.3f}%)")
+        print(
+            f"  Failures:         {result.n_failures}/{result.n_iterations} ({result.failure_probability * 100:.3f}%)"
+        )
         print(f"  Mean margin:      {result.mean_margin:.6f}")
         print(f"  Min margin:       {result.min_margin:.6f}")
         print(f"  P1 margin:        {result.p99_margin:.6f}")
@@ -437,7 +443,9 @@ def main() -> int:
         print("RESULT: One or more checks exceed interference threshold.")
         return 1
     else:
-        print("RESULT: All interference probabilities below threshold. Mechanical feasibility confirmed.")
+        print(
+            "RESULT: All interference probabilities below threshold. Mechanical feasibility confirmed."
+        )
         return 0
 
 

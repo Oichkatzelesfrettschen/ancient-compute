@@ -24,9 +24,8 @@ from __future__ import annotations
 
 import math
 import sys
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable, List, Tuple
-
 
 # ---------------------------------------------------------------------------
 # Baseline parameter values (from sim_schema.yaml)
@@ -34,68 +33,60 @@ from typing import Callable, List, Tuple
 
 PARAMS = {
     # Gear parameters
-    "tooth_count_driver":   20,
-    "tooth_count_driven":   60,
-    "module_mm":            2.5,
-    "pressure_angle_deg":   20.0,
-    "face_width_mm":        15.0,
-    "gear_youngs_GPa":      97.5,      # brass midpoint
-    "gear_yield_MPa":       285.0,     # brass midpoint
-
+    "tooth_count_driver": 20,
+    "tooth_count_driven": 60,
+    "module_mm": 2.5,
+    "pressure_angle_deg": 20.0,
+    "face_width_mm": 15.0,
+    "gear_youngs_GPa": 97.5,  # brass midpoint
+    "gear_yield_MPa": 285.0,  # brass midpoint
     # Shaft parameters
-    "shaft_diameter_mm":    50.0,
-    "shaft_span_mm":        375.0,     # bearing spacing
-    "shaft_youngs_GPa":     205.0,     # steel midpoint
-    "shaft_load_N":         500.0,     # estimated radial
-
+    "shaft_diameter_mm": 50.0,
+    "shaft_span_mm": 375.0,  # bearing spacing
+    "shaft_youngs_GPa": 205.0,  # steel midpoint
+    "shaft_load_N": 500.0,  # estimated radial
     # Bearing parameters
-    "bearing_friction":     0.15,      # brass
-    "bearing_load_N":       125.0,     # 500N / 4 bearings
-    "shaft_rpm":            30.0,
-
+    "bearing_friction": 0.15,  # brass
+    "bearing_load_N": 125.0,  # 500N / 4 bearings
+    "shaft_rpm": 30.0,
     # Thermal parameters
-    "brass_alpha_per_K":    20.5e-6,
-    "steel_alpha_per_K":    11.7e-6,
-    "component_length_mm":  100.0,
-    "delta_T_K":            20.0,      # 20C to 40C
-
+    "brass_alpha_per_K": 20.5e-6,
+    "steel_alpha_per_K": 11.7e-6,
+    "component_length_mm": 100.0,
+    "delta_T_K": 20.0,  # 20C to 40C
     # Wear parameters
-    "archard_K":            5e-6,      # brass-on-steel lubricated
-    "normal_force_N":       50.0,
-    "sliding_distance_mm":  1000.0,
-    "hardness_HB":          120.0,     # brass
-
+    "archard_K": 5e-6,  # brass-on-steel lubricated
+    "normal_force_N": 50.0,
+    "sliding_distance_mm": 1000.0,
+    "hardness_HB": 120.0,  # brass
     # Electromagnetic
-    "B_field_T":            50e-6,     # Earth's field
-    "eddy_thickness_m":     0.050,     # shaft diameter
-    "eddy_volume_m3":       0.0002,    # shaft volume
-    "resistivity_ohm_m":    1.59e-7,   # steel
-
+    "B_field_T": 50e-6,  # Earth's field
+    "eddy_thickness_m": 0.050,  # shaft diameter
+    "eddy_volume_m3": 0.0002,  # shaft volume
+    "resistivity_ohm_m": 1.59e-7,  # steel
     # Structural
-    "column_height_mm":     600.0,
-    "column_width_mm":      25.0,
-    "column_youngs_GPa":    205.0,     # steel
-
+    "column_height_mm": 600.0,
+    "column_width_mm": 25.0,
+    "column_youngs_GPa": 205.0,  # steel
     # Phase III: Stress concentration / critical speed
-    "fillet_radius_mm":     2.0,
-    "shaft_density_kg_m3":  7850.0,    # steel
-
+    "fillet_radius_mm": 2.0,
+    "shaft_density_kg_m3": 7850.0,  # steel
     # Phase V: Running-in wear
-    "running_in_K_init":    1e-5,
-    "running_in_K_steady":  1e-6,
-    "running_in_s0_mm":     1e7,
-
+    "running_in_K_init": 1e-5,
+    "running_in_K_steady": 1e-6,
+    "running_in_s0_mm": 1e7,
     # Phase VI: Radiation / thermal coupling
-    "emissivity":           0.8,
-    "surface_area_m2":      7.2,
-    "h_convection_W_m2K":   10.0,
-    "machine_mass_kg":      500.0,
+    "emissivity": 0.8,
+    "surface_area_m2": 7.2,
+    "h_convection_W_m2K": 10.0,
+    "machine_mass_kg": 500.0,
 }
 
 
 # ---------------------------------------------------------------------------
 # Physics equations (return single scalar output)
 # ---------------------------------------------------------------------------
+
 
 def lewis_stress(p: dict) -> float:
     """Lewis bending stress: sigma = W_t / (b * m * Y) [MPa].
@@ -164,10 +155,11 @@ def euler_buckling(p: dict) -> float:
     I = w_m**4 / 12.0  # square cross section
     K = 0.5  # fixed-fixed
     L_m = p["column_height_mm"] / 1000.0
-    return math.pi**2 * E_Pa * I / (K * L_m)**2
+    return math.pi**2 * E_Pa * I / (K * L_m) ** 2
 
 
 # --- Phase III: Stress concentration ---
+
 
 def stress_concentration_stepped(p: dict) -> float:
     """Peterson power-law K_t for stepped shaft."""
@@ -177,7 +169,7 @@ def stress_concentration_stepped(p: dict) -> float:
     rd = r / d
     if rd <= 0:
         return 3.0
-    return 0.9 * rd**(-0.33)
+    return 0.9 * rd ** (-0.33)
 
 
 def critical_speed_margin(p: dict) -> float:
@@ -197,6 +189,7 @@ def critical_speed_margin(p: dict) -> float:
 
 # --- Phase V: Running-in wear ---
 
+
 def running_in_wear_coeff(p: dict) -> float:
     """Running-in wear coefficient at 50% of s_0."""
     s = p["running_in_s0_mm"] * 0.5  # halfway through running-in
@@ -207,6 +200,7 @@ def running_in_wear_coeff(p: dict) -> float:
 
 
 # --- Phase VI: Steady-state temperature ---
+
 
 def steady_state_temperature(p: dict) -> float:
     """Steady-state temperature rise: dT = Q_gen / (h * A) [C]."""
@@ -233,6 +227,7 @@ def steady_state_temperature(p: dict) -> float:
 # ---------------------------------------------------------------------------
 # Sensitivity calculation
 # ---------------------------------------------------------------------------
+
 
 @dataclass
 class SensitivityResult:
@@ -284,46 +279,121 @@ def compute_sensitivity(
 # ---------------------------------------------------------------------------
 
 OUTPUT_FUNCTIONS = [
-    ("Lewis stress [MPa]", lewis_stress, [
-        "tooth_count_driver", "module_mm", "face_width_mm", "shaft_rpm",
-    ]),
-    ("Bearing heat [W]", bearing_heat, [
-        "bearing_friction", "bearing_load_N", "shaft_diameter_mm", "shaft_rpm",
-    ]),
-    ("Shaft deflection [mm]", shaft_deflection, [
-        "shaft_load_N", "shaft_span_mm", "shaft_youngs_GPa", "shaft_diameter_mm",
-    ]),
-    ("Thermal clearance change [um]", thermal_clearance_change, [
-        "brass_alpha_per_K", "steel_alpha_per_K", "component_length_mm", "delta_T_K",
-    ]),
-    ("Archard wear [mm^3]", archard_wear, [
-        "archard_K", "normal_force_N", "sliding_distance_mm", "hardness_HB",
-    ]),
-    ("Eddy current loss [W]", eddy_loss, [
-        "B_field_T", "eddy_thickness_m", "shaft_rpm", "resistivity_ohm_m",
-    ]),
-    ("Euler buckling [N]", euler_buckling, [
-        "column_youngs_GPa", "column_width_mm", "column_height_mm",
-    ]),
-    ("Stress concentration K_t", stress_concentration_stepped, [
-        "fillet_radius_mm", "shaft_diameter_mm",
-    ]),
-    ("Critical speed margin", critical_speed_margin, [
-        "shaft_diameter_mm", "shaft_span_mm", "shaft_youngs_GPa",
-        "shaft_density_kg_m3", "shaft_rpm",
-    ]),
-    ("Running-in K(s) at 50% s_0", running_in_wear_coeff, [
-        "running_in_K_init", "running_in_K_steady", "running_in_s0_mm",
-    ]),
-    ("Steady-state dT [C]", steady_state_temperature, [
-        "bearing_friction", "bearing_load_N", "shaft_diameter_mm",
-        "shaft_rpm", "emissivity", "surface_area_m2", "h_convection_W_m2K",
-    ]),
+    (
+        "Lewis stress [MPa]",
+        lewis_stress,
+        [
+            "tooth_count_driver",
+            "module_mm",
+            "face_width_mm",
+            "shaft_rpm",
+        ],
+    ),
+    (
+        "Bearing heat [W]",
+        bearing_heat,
+        [
+            "bearing_friction",
+            "bearing_load_N",
+            "shaft_diameter_mm",
+            "shaft_rpm",
+        ],
+    ),
+    (
+        "Shaft deflection [mm]",
+        shaft_deflection,
+        [
+            "shaft_load_N",
+            "shaft_span_mm",
+            "shaft_youngs_GPa",
+            "shaft_diameter_mm",
+        ],
+    ),
+    (
+        "Thermal clearance change [um]",
+        thermal_clearance_change,
+        [
+            "brass_alpha_per_K",
+            "steel_alpha_per_K",
+            "component_length_mm",
+            "delta_T_K",
+        ],
+    ),
+    (
+        "Archard wear [mm^3]",
+        archard_wear,
+        [
+            "archard_K",
+            "normal_force_N",
+            "sliding_distance_mm",
+            "hardness_HB",
+        ],
+    ),
+    (
+        "Eddy current loss [W]",
+        eddy_loss,
+        [
+            "B_field_T",
+            "eddy_thickness_m",
+            "shaft_rpm",
+            "resistivity_ohm_m",
+        ],
+    ),
+    (
+        "Euler buckling [N]",
+        euler_buckling,
+        [
+            "column_youngs_GPa",
+            "column_width_mm",
+            "column_height_mm",
+        ],
+    ),
+    (
+        "Stress concentration K_t",
+        stress_concentration_stepped,
+        [
+            "fillet_radius_mm",
+            "shaft_diameter_mm",
+        ],
+    ),
+    (
+        "Critical speed margin",
+        critical_speed_margin,
+        [
+            "shaft_diameter_mm",
+            "shaft_span_mm",
+            "shaft_youngs_GPa",
+            "shaft_density_kg_m3",
+            "shaft_rpm",
+        ],
+    ),
+    (
+        "Running-in K(s) at 50% s_0",
+        running_in_wear_coeff,
+        [
+            "running_in_K_init",
+            "running_in_K_steady",
+            "running_in_s0_mm",
+        ],
+    ),
+    (
+        "Steady-state dT [C]",
+        steady_state_temperature,
+        [
+            "bearing_friction",
+            "bearing_load_N",
+            "shaft_diameter_mm",
+            "shaft_rpm",
+            "emissivity",
+            "surface_area_m2",
+            "h_convection_W_m2K",
+        ],
+    ),
 ]
 
 
 def main() -> int:
-    all_results: List[SensitivityResult] = []
+    all_results: list[SensitivityResult] = []
 
     for output_name, output_fn, param_names in OUTPUT_FUNCTIONS:
         print(f"\n--- {output_name} ---")

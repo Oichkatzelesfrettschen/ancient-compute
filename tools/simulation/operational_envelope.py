@@ -19,8 +19,8 @@ import argparse
 import csv
 import sys
 
-from backend.src.emulator.simulation.state import SimulationConfig
 from backend.src.emulator.simulation.engine import SimulationEngine
+from backend.src.emulator.simulation.state import SimulationConfig
 
 
 def sweep_rpm(
@@ -38,37 +38,47 @@ def sweep_rpm(
         if result.final_state.bearing_wear_volumes_mm3:
             max_wear = max(result.final_state.bearing_wear_volumes_mm3)
 
-        results.append({
-            "rpm": rpm,
-            "max_temp_C": result.final_state.temperature_C,
-            "failure_time_s": result.failure_time_s,
-            "limiting_component": result.limiting_component or "none",
-            "max_wear_mm3": max_wear,
-            "shaft_deflection_mm": result.final_state.shaft_deflection_mm,
-            "gear_backlash_mm": result.final_state.gear_backlash_mm,
-            "lubrication_regime": result.final_state.lubrication_regime,
-            "energy_consumed_J": result.final_state.energy_consumed_J,
-            "steps": result.steps,
-        })
+        results.append(
+            {
+                "rpm": rpm,
+                "max_temp_C": result.final_state.temperature_C,
+                "failure_time_s": result.failure_time_s,
+                "limiting_component": result.limiting_component or "none",
+                "max_wear_mm3": max_wear,
+                "shaft_deflection_mm": result.final_state.shaft_deflection_mm,
+                "gear_backlash_mm": result.final_state.gear_backlash_mm,
+                "lubrication_regime": result.final_state.lubrication_regime,
+                "energy_consumed_J": result.final_state.energy_consumed_J,
+                "steps": result.steps,
+            }
+        )
     return results
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Operational Envelope sweep")
     parser.add_argument(
-        "--max-hours", type=float, default=100.0,
+        "--max-hours",
+        type=float,
+        default=100.0,
         help="Maximum simulation hours per RPM point (default: 100)",
     )
     parser.add_argument(
-        "--rpm-start", type=float, default=10.0,
+        "--rpm-start",
+        type=float,
+        default=10.0,
         help="Starting RPM (default: 10)",
     )
     parser.add_argument(
-        "--rpm-end", type=float, default=120.0,
+        "--rpm-end",
+        type=float,
+        default=120.0,
         help="Ending RPM (default: 120)",
     )
     parser.add_argument(
-        "--rpm-step", type=float, default=10.0,
+        "--rpm-step",
+        type=float,
+        default=10.0,
         help="RPM increment (default: 10)",
     )
     args = parser.parse_args()
@@ -79,17 +89,27 @@ def main() -> None:
         rpm_values.append(r)
         r += args.rpm_step
 
-    print(f"# Operational Envelope Sweep: {len(rpm_values)} RPM points, "
-          f"max {args.max_hours}h each", file=sys.stderr)
+    print(
+        f"# Operational Envelope Sweep: {len(rpm_values)} RPM points, "
+        f"max {args.max_hours}h each",
+        file=sys.stderr,
+    )
 
     results = sweep_rpm(rpm_values, max_hours=args.max_hours)
 
     writer = csv.DictWriter(
         sys.stdout,
         fieldnames=[
-            "rpm", "max_temp_C", "failure_time_s", "limiting_component",
-            "max_wear_mm3", "shaft_deflection_mm", "gear_backlash_mm",
-            "lubrication_regime", "energy_consumed_J", "steps",
+            "rpm",
+            "max_temp_C",
+            "failure_time_s",
+            "limiting_component",
+            "max_wear_mm3",
+            "shaft_deflection_mm",
+            "gear_backlash_mm",
+            "lubrication_regime",
+            "energy_consumed_J",
+            "steps",
         ],
     )
     writer.writeheader()

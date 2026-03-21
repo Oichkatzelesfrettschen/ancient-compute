@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import re
-import sys
 from pathlib import Path
 from typing import Any
 
@@ -148,7 +147,9 @@ def main() -> int:
                 entry = mat_by_name[mat_name]
                 for field in REQUIRED_MATERIAL_FIELDS:
                     if field not in entry or _is_placeholder(entry[field]):
-                        failures.append(f"Material '{mat_name}' missing or placeholder field: {field}")
+                        failures.append(
+                            f"Material '{mat_name}' missing or placeholder field: {field}"
+                        )
 
     for key in REQUIRED_CITATION_KEYS:
         citation = citation_lines.get(key)

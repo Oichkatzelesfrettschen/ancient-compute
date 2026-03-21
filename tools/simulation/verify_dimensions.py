@@ -13,7 +13,6 @@ from __future__ import annotations
 
 import sys
 
-
 # ---------------------------------------------------------------------------
 # Lightweight unit representation
 # ---------------------------------------------------------------------------
@@ -22,27 +21,27 @@ import sys
 # For example: Force [N] = kg*m/s^2 => (1, 1, -2, 0, 0)
 
 DIMENSIONLESS = (0, 0, 0, 0, 0)
-METER    = (0, 1, 0, 0, 0)
+METER = (0, 1, 0, 0, 0)
 KILOGRAM = (1, 0, 0, 0, 0)
-SECOND   = (0, 0, 1, 0, 0)
-KELVIN   = (0, 0, 0, 1, 0)
-AMPERE   = (0, 0, 0, 0, 1)
+SECOND = (0, 0, 1, 0, 0)
+KELVIN = (0, 0, 0, 1, 0)
+AMPERE = (0, 0, 0, 0, 1)
 
 # Derived units
-NEWTON   = (1, 1, -2, 0, 0)     # kg*m/s^2
-PASCAL   = (1, -1, -2, 0, 0)    # N/m^2 = kg/(m*s^2)
-JOULE    = (1, 2, -2, 0, 0)     # N*m = kg*m^2/s^2
-WATT     = (1, 2, -3, 0, 0)     # J/s = kg*m^2/s^3
-RAD_PER_S = (0, 0, -1, 0, 0)    # rad/s (radians are dimensionless)
-M_PER_S  = (0, 1, -1, 0, 0)     # m/s
-M2       = (0, 2, 0, 0, 0)      # m^2
-M3       = (0, 3, 0, 0, 0)      # m^3
-M4       = (0, 4, 0, 0, 0)      # m^4
-PER_K    = (0, 0, 0, -1, 0)     # 1/K
+NEWTON = (1, 1, -2, 0, 0)  # kg*m/s^2
+PASCAL = (1, -1, -2, 0, 0)  # N/m^2 = kg/(m*s^2)
+JOULE = (1, 2, -2, 0, 0)  # N*m = kg*m^2/s^2
+WATT = (1, 2, -3, 0, 0)  # J/s = kg*m^2/s^3
+RAD_PER_S = (0, 0, -1, 0, 0)  # rad/s (radians are dimensionless)
+M_PER_S = (0, 1, -1, 0, 0)  # m/s
+M2 = (0, 2, 0, 0, 0)  # m^2
+M3 = (0, 3, 0, 0, 0)  # m^3
+M4 = (0, 4, 0, 0, 0)  # m^4
+PER_K = (0, 0, 0, -1, 0)  # 1/K
 J_PER_KG_K = (0, 2, -2, -1, 0)  # J/(kg*K) = m^2/(s^2*K)
-W_PER_M_K = (1, 1, -3, -1, 0)   # W/(m*K) = kg*m/(s^3*K)
-OHM_M    = (1, 3, -3, 0, -2)    # Ohm*m = kg*m^3/(s^3*A^2)
-TESLA    = (1, 0, -2, 0, -1)    # T = kg/(s^2*A)
+W_PER_M_K = (1, 1, -3, -1, 0)  # W/(m*K) = kg*m/(s^3*K)
+OHM_M = (1, 3, -3, 0, -2)  # Ohm*m = kg*m^3/(s^3*A^2)
+TESLA = (1, 0, -2, 0, -1)  # T = kg/(s^2*A)
 
 
 def mul(*units):
@@ -80,6 +79,7 @@ def unit_name(u):
 # ---------------------------------------------------------------------------
 # Equation checks
 # ---------------------------------------------------------------------------
+
 
 def check(equation_name: str, expected, computed) -> bool:
     """Check that computed unit matches expected unit."""
@@ -246,7 +246,9 @@ def verify_all() -> int:
     # All sigma terms [Pa], SF [dimless]
     total += 1
     goodman_unit = div(PASCAL, PASCAL)
-    if not check("Goodman fatigue (sigma_a/sigma_e + sigma_m/sigma_u)", DIMENSIONLESS, goodman_unit):
+    if not check(
+        "Goodman fatigue (sigma_a/sigma_e + sigma_m/sigma_u)", DIMENSIONLESS, goodman_unit
+    ):
         failures += 1
 
     # Euler buckling: P_cr = pi^2*E*I / (K*L)^2 [N]
@@ -294,7 +296,7 @@ def verify_all() -> int:
     total += 1
     ei = mul(PASCAL, M4)  # kg*m^3/s^2
     RHO = (1, -3, 0, 0, 0)  # kg/m^3
-    rho_a = mul(RHO, M2)    # kg/m
+    rho_a = mul(RHO, M2)  # kg/m
     ei_rho_a = div(ei, rho_a)  # m^4/s^2
     # sqrt -> m^2/s
     sqrt_ei_rho = tuple(x // 2 for x in ei_rho_a)  # half the exponents
@@ -327,10 +329,10 @@ def verify_all() -> int:
     # G*J/(L*J_disk) = (kg*m^3/s^2)/(kg*m^3) = 1/s^2
     # sqrt(...) = 1/s
     total += 1
-    gj = mul(PASCAL, M4)         # kg*m^3/s^2
-    KG_M2 = (1, 2, 0, 0, 0)     # kg*m^2 (mass moment of inertia)
+    gj = mul(PASCAL, M4)  # kg*m^3/s^2
+    KG_M2 = (1, 2, 0, 0, 0)  # kg*m^2 (mass moment of inertia)
     l_jdisk = mul(METER, KG_M2)  # kg*m^3
-    gj_ljd = div(gj, l_jdisk)   # 1/s^2
+    gj_ljd = div(gj, l_jdisk)  # 1/s^2
     torsion_freq = tuple(x // 2 for x in gj_ljd)  # 1/s
     if not check("Torsional natural frequency (omega_n = sqrt(GJ/LJ_d))", RAD_PER_S, torsion_freq):
         failures += 1
@@ -370,7 +372,7 @@ def verify_all() -> int:
     # Den: dimless * N * m/s = N*m/s = W
     # J/W = s
     total += 1
-    ttf_num = mul(M3, PASCAL)   # m^3 * kg/(m*s^2) = kg*m^2/s^2 = J
+    ttf_num = mul(M3, PASCAL)  # m^3 * kg/(m*s^2) = kg*m^2/s^2 = J
     ttf_den = mul(NEWTON, M_PER_S)  # N*m/s = kg*m^2/s^3 = W
     ttf_unit = div(ttf_num, ttf_den)
     if not check("Time to failure (t = c*pi*d*L*H/(K*F*s_rate))", SECOND, ttf_unit):
