@@ -30,6 +30,7 @@ class IDRISService:
     """Type-checks Idris2 programs via idris2 0.8.0."""
 
     def __init__(self, timeout: float = _DEFAULT_TIMEOUT) -> None:
+        self.language = "idris"
         self.timeout = timeout
 
     async def execute(self, code: str, input_data: str = "") -> ExecutionResult:

@@ -328,7 +328,8 @@ class TestAsyncServices:
         from backend.src.services.languages.java_service import JavaService
 
         service = JavaService()
-        result = await service.execute("class T {}")
+        code = "public class Main { public static void main(String[] args) { } }"
+        result = await service.execute(code)
         assert result.status == ExecutionStatus.SUCCESS
 
     @pytest.mark.asyncio
@@ -528,7 +529,7 @@ class TestCrossLanguageFeatures:
 
         # IDRIS2
         idris_compiler = IDRIS2Compiler()
-        idris_ir = idris_compiler.compile("42")
+        idris_ir = idris_compiler.compile("main = 42")
         assert idris_ir is not None
 
         # System F

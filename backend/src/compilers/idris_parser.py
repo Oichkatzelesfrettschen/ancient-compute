@@ -85,6 +85,16 @@ def p_atom_paren(p: Any) -> None:
         p[0] = None
 
 
+def p_program_module(p: Any) -> None:
+    """program : module"""
+    p[0] = p[1]
+
+
+def p_program_body(p: Any) -> None:
+    """program : body"""
+    p[0] = p[1]
+
+
 def p_error(p: Any) -> None:
     if p:
         print(f"Syntax error at '{p.value}' (type: {p.type}) at line {p.lineno}")
@@ -92,6 +102,7 @@ def p_error(p: Any) -> None:
         print("Syntax error at EOF")
 
 
+start = "program"
 parser = yacc.yacc(debug=False, write_tables=False)
 
 

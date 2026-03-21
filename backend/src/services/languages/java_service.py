@@ -24,26 +24,8 @@ import os
 import shutil
 import tempfile
 import time
-from dataclasses import dataclass
-from enum import Enum
 
-
-class ExecutionStatus(Enum):
-    SUCCESS = "success"
-    COMPILE_ERROR = "compile_error"
-    RUNTIME_ERROR = "runtime_error"
-    TIMEOUT = "timeout"
-
-
-@dataclass
-class ExecutionResult:
-    status: ExecutionStatus
-    stdout: str
-    stderr: str
-    compile_output: str = ""
-    execution_time: float = 0.0
-    exit_code: int = 0
-
+from ..base_executor import ExecutionResult, ExecutionStatus  # re-exported for tests
 
 _JAVAC = "/usr/lib/jvm/java-17-openjdk/bin/javac"
 _JAVA = "/usr/lib/jvm/java-17-openjdk/bin/java"
@@ -58,6 +40,7 @@ class JavaService:
     """
 
     def __init__(self, timeout: float = _DEFAULT_TIMEOUT) -> None:
+        self.language = "java"
         self.timeout = timeout
 
     async def execute(self, code: str, input_data: str = "") -> ExecutionResult:
