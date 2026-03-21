@@ -924,3 +924,69 @@ class TestBabbageNumberFuzz:
             b = rng.randint(0, 99999)
             result = (BabbageNumber(a) + BabbageNumber(b)) - BabbageNumber(b)
             assert result.to_decimal() == float(a)
+
+
+# ============================================================================
+# Extension Opcode Timing Tests
+# ============================================================================
+
+
+def test_extension_opcodes_have_nonzero_timing():
+    """All extension opcodes must have explicit non-zero timing entries.
+
+    Verifies that SHL, SHR, AND, OR, XOR, CHKS, PLAY, SETMODE, MOV, ABS,
+    NEG, and all conditional branches are not silently defaulting to 0 cycles.
+    """
+    extension_opcodes = [
+        "SHL",
+        "SHR",
+        "AND",
+        "OR",
+        "XOR",
+        "CHKS",
+        "PLAY",
+        "SETMODE",
+        "MOV",
+        "ABS",
+        "NEG",
+        "JNZ",
+        "JLT",
+        "JGT",
+        "JLE",
+        "JGE",
+        "HALT",
+    ]
+    for op in extension_opcodes:
+        assert op in TIMING_TABLE, f"{op} missing from TIMING_TABLE"
+        assert TIMING_TABLE[op] > 0, f"{op} has 0-cycle cost in TIMING_TABLE"
+
+
+def test_extension_opcode_timing_clock_accumulates():
+    """Executing SHL accumulates its timing cost in clock_time."""
+    engine = Engine()
+    engine.registers["A"] = BabbageNumber(8)
+    engine.execute_instruction(Instruction("SHL", ["A", "1"]))
+    assert engine.clock_time == TIMING_TABLE["SHL"]
+
+
+def test_bitwise_and_timing_clock_accumulates():
+    """Executing AND accumulates its timing cost (same cost as ADD)."""
+    engine = Engine()
+    engine.registers["A"] = BabbageNumber(0xFF)
+    engine.registers["B"] = BabbageNumber(0x0F)
+    engine.execute_instruction(Instruction("AND", ["A", "B"]))
+    assert engine.clock_time == TIMING_TABLE["AND"]
+
+
+def test_jnz_timing_matches_jz():
+    """JNZ and JZ have the same timing cost (same branch hardware)."""
+    assert TIMING_TABLE["JNZ"] == TIMING_TABLE["JZ"]
+
+
+def test_conditional_branches_have_consistent_timing():
+    """All conditional branch opcodes have the same timing cost as JMP."""
+    branches = ["JZ", "JNZ", "JLT", "JGT", "JLE", "JGE"]
+    for branch in branches:
+        assert (
+            TIMING_TABLE[branch] == TIMING_TABLE["JMP"]
+        ), f"{branch} timing {TIMING_TABLE[branch]} != JMP timing {TIMING_TABLE['JMP']}"

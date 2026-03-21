@@ -59,30 +59,60 @@ class MechanicalFailureError(Exception):
 
 
 TIMING_TABLE = {
+    # Core historical operations (cycle counts from Babbage's design notes)
     "NOP": 0,
     "ADD": 8,
     "SUB": 8,
     "CMP": 4,
-    "JMP": 4,
-    "JZ": 4,
-    "LOAD": 15,
-    "STOR": 15,
+    "CMPZ": 1,
     "MULT": 400,
     "DIV": 750,
     "SQRT": 250,
+    # Store axis operations (15 cycles: 2 store-axis moves + mill transfer)
+    "LOAD": 15,
+    "STOR": 15,
+    "MOV": 15,  # Register-to-register via store axis path
+    # Mill sign operations (4 cycles: sign inspection + conditional complement)
+    "ABS": 4,
+    "NEG": 4,
+    "CLR": 1,  # Zero-load shortcut (clear latch)
+    # Control flow (4 cycles: program drum advance + conditional test)
+    "JMP": 4,
+    "BR": 4,  # Unconditional branch alias
+    "JZ": 4,
+    "JNZ": 4,
+    "JLT": 4,
+    "JGT": 4,
+    "JLE": 4,
+    "JGE": 4,
+    "CALL": 8,  # Branch + stack push
+    "RET": 4,  # Stack pop + branch
+    # Stack operations
+    "PUSH": 4,
+    "POP": 4,
+    # I/O operations
     "RDCRD": 30,
     "WRPCH": 30,
     "WRPRN": 2,
-    "CALL": 8,
-    "RET": 4,
-    "PUSH": 4,
-    "POP": 4,
+    "PRINT": 2,  # Alias for WRPRN
+    "STEP": 1,  # Card-drum advance (logical NOP)
+    "HALT": 1,  # Mechanical latch release
+    # Lubrication event
     "OIL": 100,
-    "CMPZ": 1,
-    "CLR": 1,
-    "BR": 4,
-    "STEP": 1,
-    "PRINT": 2,
+    # Extension opcodes (non-historical; synthetic barrel-step cost estimates).
+    # Each occupies a single barrel step, costed by analogy with similar ops.
+    # Bit-shifts: one column-wise multiply/divide step -- similar to CMP cost.
+    "SHL": 4,
+    "SHR": 4,
+    # Bitwise logic: iterate over all 50 decimal digits -- similar to ADD cost.
+    "AND": 8,
+    "OR": 8,
+    "XOR": 8,
+    # Checksum: read register + sum all digits -- similar to LOAD + ADD.
+    "CHKS": 15,
+    # Lovelace extensions
+    "PLAY": 4,  # Engage music attachment (Lovelace Note A proposal)
+    "SETMODE": 2,  # Set symbolic/numeric mode flag
 }
 
 

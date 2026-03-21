@@ -215,6 +215,7 @@ function getEraX(index: number): number {
             class="era-marker"
             class:selected={isSelected}
             on:click={() => handleEraClick(era)}
+            on:keydown={(e) => e.key === 'Enter' && handleEraClick(era)}
             role="button"
             tabindex="0"
           />
@@ -463,7 +464,7 @@ function getEraX(index: number): number {
 
   .era-marker:hover {
     filter: brightness(1.1);
-    r: 10;
+    transform: scale(1.15);
   }
 
   .era-marker.selected {

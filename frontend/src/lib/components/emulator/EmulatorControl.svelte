@@ -168,12 +168,13 @@
 				<p class="polynomial-display">f(x) = {getPolynomialExpression()}</p>
 
 				<div class="coefficients-input">
-					<label>Coefficients (a₀, a₁, a₂, ..., aₙ)</label>
+					<p class="coefficients-label">Coefficients (a₀, a₁, a₂, ..., aₙ)</p>
 					<div class="coefficients-grid">
 						{#each coefficients as coeff, index (index)}
 							<div class="coefficient-input">
-								<label>a<sub>{index}</sub></label>
+								<label for="coeff-{index}">a<sub>{index}</sub></label>
 								<input
+									id="coeff-{index}"
 									type="number"
 									bind:value={coefficients[index]}
 									on:change={() => handleCoefficientChange(index)}
@@ -342,6 +343,14 @@
 		color: #b0b8d4;
 		font-size: 0.9rem;
 		margin-bottom: 0.75rem;
+		font-weight: 500;
+	}
+
+	.coefficients-label {
+		display: block;
+		color: #b0b8d4;
+		font-size: 0.9rem;
+		margin: 0 0 0.75rem 0;
 		font-weight: 500;
 	}
 
