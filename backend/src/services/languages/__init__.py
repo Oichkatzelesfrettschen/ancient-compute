@@ -12,6 +12,9 @@ from .idris_service import IDRISService
 from .java_service import JavaService
 from .lisp_service import LISPService
 from .python_service import PythonService
+from .algol68_service import ALGOL68Service
+from .cpp_service import CppService
+from .micropython_service import MicroPythonService
 from .systemf_service import SystemFService
 
 ImplementationStatus = Literal["implemented", "partial", "stub"]
@@ -51,7 +54,7 @@ _LANGUAGE_CAPABILITIES: tuple[LanguageCapability, ...] = (
     LanguageCapability(
         id="c",
         name="C",
-        version="GCC 12.2",
+        version="GCC 15.2.1",
         description="C language service targeting Babbage ISA",
         aliases=("c",),
         timeout=30,
@@ -75,7 +78,7 @@ _LANGUAGE_CAPABILITIES: tuple[LanguageCapability, ...] = (
     LanguageCapability(
         id="haskell",
         name="Haskell",
-        version="GHC 9.2",
+        version="GHC 9.6.6",
         description="Haskell language service targeting Babbage ISA",
         aliases=("haskell",),
         timeout=10,
@@ -99,7 +102,7 @@ _LANGUAGE_CAPABILITIES: tuple[LanguageCapability, ...] = (
     LanguageCapability(
         id="lisp",
         name="Common LISP",
-        version="SBCL 2.3 (partial)",
+        version="SBCL 2.6.2",
         description="LISP parser/compiler path targeting Babbage IR",
         aliases=("lisp",),
         timeout=10,
@@ -111,7 +114,7 @@ _LANGUAGE_CAPABILITIES: tuple[LanguageCapability, ...] = (
     LanguageCapability(
         id="idris",
         name="IDRIS2",
-        version="0.6.0 (partial)",
+        version="0.8.0",
         description="IDRIS2 compiler targeting Babbage IR",
         aliases=("idris", "idris2"),
         timeout=10,
@@ -144,6 +147,42 @@ _LANGUAGE_CAPABILITIES: tuple[LanguageCapability, ...] = (
         execution_mode="placeholder",
         service_cls=JavaService,
     ),
+    LanguageCapability(
+        id="algol68",
+        name="ALGOL 68",
+        version="a68g 3.10.12",
+        description="ALGOL 68 via Algol 68 Genie; syntax-check + full execution",
+        aliases=("algol68", "algol"),
+        timeout=10,
+        memory_limit_mb=128,
+        implementation_status="implemented",
+        execution_mode="native_subprocess",
+        service_cls=ALGOL68Service,
+    ),
+    LanguageCapability(
+        id="cpp",
+        name="C++",
+        version="g++ 15.2.1 (C++20)",
+        description="C++20 via g++; syntax-check + full compilation",
+        aliases=("cpp", "c++"),
+        timeout=30,
+        memory_limit_mb=256,
+        implementation_status="implemented",
+        execution_mode="native_subprocess",
+        service_cls=CppService,
+    ),
+    LanguageCapability(
+        id="micropython",
+        name="MicroPython",
+        version="MicroPython 1.27.0",
+        description="MicroPython 1.27.0 (Unix port); direct execution",
+        aliases=("micropython",),
+        timeout=10,
+        memory_limit_mb=64,
+        implementation_status="implemented",
+        execution_mode="native_subprocess",
+        service_cls=MicroPythonService,
+    ),
 )
 
 _CANONICAL_BY_ALIAS: dict[str, str] = {
@@ -162,6 +201,9 @@ __all__ = [
     "IDRISService",
     "SystemFService",
     "JavaService",
+    "ALGOL68Service",
+    "CppService",
+    "MicroPythonService",
     "LanguageCapability",
     "normalize_language_id",
     "get_executor",

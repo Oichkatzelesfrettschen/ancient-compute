@@ -55,7 +55,21 @@ from backend.src.emulator.types import (
     OperationCard,
     VariableCard,
 )
+from backend.src.emulator.astrolabe import AstrolabeEmulator
+from backend.src.emulator.bombe import Bombe, BombeMenu
+from backend.src.emulator.colossus import Colossus, LorenzSZ42
+from backend.src.emulator.edsac import EDSAC
+from backend.src.emulator.eniac import ENIAC
+from backend.src.emulator.grant_difference_engine import GrantDifferenceEngine
+from backend.src.emulator.harvard_mark_i import HarvardMarkI
+from backend.src.emulator.hollerith_tabulator import HollerithTabulator, PunchedCard
+from backend.src.emulator.manchester_baby import ManchesterBaby
+from backend.src.emulator.millionaire_calculator import MillionaireCalculator
+from backend.src.emulator.note_g_assembly import generate_note_g_assembly_text
+from backend.src.emulator.odhner_arithmometer import OdhnerArithmometer
+from backend.src.emulator.thomas_arithmometer import ThomasArithmometer
 from backend.src.emulator.zuse_z1 import ZuseZ1
+from backend.src.emulator.zuse_z3 import ZuseZ3
 
 __all__ = [
     "Abacus",
@@ -97,7 +111,24 @@ __all__ = [
     "TimingController",
     "TorresQuevedo",
     "VariableCard",
+    "AstrolabeEmulator",
+    "Bombe",
+    "BombeMenu",
+    "Colossus",
+    "EDSAC",
+    "ENIAC",
+    "GrantDifferenceEngine",
+    "HarvardMarkI",
+    "HollerithTabulator",
+    "LorenzSZ42",
+    "ManchesterBaby",
+    "MillionaireCalculator",
+    "OdhnerArithmometer",
+    "PunchedCard",
+    "ThomasArithmometer",
+    "generate_note_g_assembly_text",
     "ZuseZ1",
+    "ZuseZ3",
     "ada_lovelace_bernoulli_series",
     "analytical_engine_bernoulli_algorithm",
     "bernoulli_number",

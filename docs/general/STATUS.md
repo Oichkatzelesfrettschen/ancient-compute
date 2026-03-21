@@ -1,8 +1,8 @@
 # Project Status Dashboard
 
-**Auto-generated**: 2026-03-21 03:47 UTC
+**Auto-generated**: 2026-03-21 04:41 UTC
 **Branch**: `main`
-**Last commit**: `ff5a977 feat: Historical Machine Buildout -- 10 new emulators + MachineAdapters (2150 tests)`
+**Last commit**: `25edec7 fix: run uvicorn from repo root with PYTHONPATH=. (absolute backend.src imports require it)`
 
 > Regenerate with: `make status`
 
@@ -14,7 +14,7 @@
 |--------|-------|
 | Unit tests collected | 2569 |
 | Collection errors | 0 |
-| Python source lines (backend/src/) | 43,687 |
+| Python source lines (backend/src/) | 43,760 |
 | Active docs (non-archive .md) | 199 |
 
 ## Phase Status
