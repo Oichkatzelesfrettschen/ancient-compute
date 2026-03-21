@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections import Counter
+from typing import Any
 
 
 class ClayTokensEmulator:
@@ -16,7 +17,7 @@ class ClayTokensEmulator:
         self._sealed = False
         self._impression = Counter()
 
-    def state(self) -> dict[str, object]:
+    def state(self) -> dict[str, Any]:
         return {
             "tokens": dict(self._tokens),
             "sealed": self._sealed,

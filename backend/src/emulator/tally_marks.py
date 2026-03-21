@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 
 class TallyMarksEmulator:
     def __init__(self) -> None:
@@ -19,7 +21,7 @@ class TallyMarksEmulator:
             self.step(delta)
         return self._count
 
-    def state(self) -> dict[str, object]:
+    def state(self) -> dict[str, Any]:
         return {
             "count": self._count,
             "tally": self.render(),

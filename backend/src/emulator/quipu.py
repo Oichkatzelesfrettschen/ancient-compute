@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 
 class QuipuEmulator:
     def __init__(self) -> None:
@@ -10,7 +12,7 @@ class QuipuEmulator:
     def reset(self) -> None:
         self._records = []
 
-    def state(self) -> dict[str, object]:
+    def state(self) -> dict[str, Any]:
         return {
             "records": list(self._records),
         }
