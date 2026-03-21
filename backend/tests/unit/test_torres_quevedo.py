@@ -239,3 +239,212 @@ class TestTorresArithmeticEdgeCases:
         t.load_register(1, FloatingPointNumber.from_float(-3.0))
         result = t.add(0, 1, dest=2)
         assert _close(result.to_float(), 7.0)
+
+
+# =============================================================================
+# step() / load_program() / conditional branching tests
+# =============================================================================
+
+
+class TestStepAndProgram:
+    """Tests for load_program() + step() and conditional branching (Torres 1914)."""
+
+    def test_load_program_sets_tape(self):
+        """load_program stores the tape and resets program_pointer to 0."""
+        t = TorresQuevedo()
+        t.load_register(0, FloatingPointNumber.from_float(2.0))
+        t.load_register(1, FloatingPointNumber.from_float(3.0))
+        tape = [("add", 0, 1, 2)]
+        t.load_program(tape)
+        assert t.state.program_tape == tape
+        assert t.state.program_pointer == 0
+
+    def test_step_executes_add(self):
+        """One step on an add instruction updates the destination register."""
+        t = TorresQuevedo()
+        t.load_register(0, FloatingPointNumber.from_float(4.0))
+        t.load_register(1, FloatingPointNumber.from_float(5.0))
+        t.load_program([("add", 0, 1, 2)])
+        t.step()
+        assert _close(t.state.registers[2].to_float(), 9.0)
+
+    def test_step_advances_program_pointer(self):
+        """Program pointer increments by 1 after a non-jump instruction."""
+        t = TorresQuevedo()
+        t.load_register(0, FloatingPointNumber.from_float(1.0))
+        t.load_register(1, FloatingPointNumber.from_float(2.0))
+        t.load_program([("add", 0, 1, 2), ("mul", 0, 1, 3)])
+        assert t.state.program_pointer == 0
+        t.step()
+        assert t.state.program_pointer == 1
+
+    def test_step_past_end_does_not_raise(self):
+        """Stepping beyond the program end is a safe no-op."""
+        t = TorresQuevedo()
+        t.load_program([("print", 0)])
+        t.step()  # executes instruction 0
+        t.step()  # beyond end -- should not raise
+        assert t.state.program_pointer == 2
+
+    def test_cycle_count_increments_per_step(self):
+        """cycle_count increments by 1 for each step, including no-op steps."""
+        t = TorresQuevedo()
+        t.load_program([("print", 0), ("print", 0)])
+        t.step()
+        t.step()
+        assert t.state.cycle_count == 2
+
+    def test_step_three_instruction_sequence(self):
+        """A 3-instruction program produces the correct final register value."""
+        t = TorresQuevedo()
+        t.load_register(0, FloatingPointNumber.from_float(6.0))
+        t.load_register(1, FloatingPointNumber.from_float(2.0))
+        tape = [
+            ("mul", 0, 1, 2),  # R2 = 12.0
+            ("add", 2, 0, 3),  # R3 = 18.0
+            ("sub", 3, 1, 4),  # R4 = 16.0
+        ]
+        t.load_program(tape)
+        for _ in range(3):
+            t.step()
+        assert _close(t.state.registers[2].to_float(), 12.0)
+        assert _close(t.state.registers[3].to_float(), 18.0)
+        assert _close(t.state.registers[4].to_float(), 16.0)
+
+    def test_halt_terminates_execution(self):
+        """halt sets program_pointer past the end so subsequent steps are no-ops."""
+        t = TorresQuevedo()
+        t.load_register(0, FloatingPointNumber.from_float(1.0))
+        t.load_register(1, FloatingPointNumber.from_float(2.0))
+        t.load_program([("add", 0, 1, 2), ("halt",), ("add", 0, 0, 0)])
+        t.step()  # add
+        t.step()  # halt -- pp jumps to end
+        t.step()  # should be a no-op (past end)
+        # R0 is still 1.0 (the final add never executed)
+        assert _close(t.state.registers[0].to_float(), 1.0)
+
+
+class TestConditionalBranching:
+    """Torres 1914 conditional branching via relay sign-select logic."""
+
+    def test_jmp_unconditional(self):
+        """jmp jumps to the target regardless of register values."""
+        t = TorresQuevedo()
+        t.load_register(0, FloatingPointNumber.from_float(3.0))
+        t.load_register(1, FloatingPointNumber.from_float(7.0))
+        #  0: jmp 2   -- skip the add
+        #  1: add 0, 1, 2  -- should be skipped
+        #  2: mul 0, 1, 3  -- should execute
+        tape = [("jmp", 2), ("add", 0, 1, 2), ("mul", 0, 1, 3)]
+        t.load_program(tape)
+        t.step()  # jmp -> pp=2
+        t.step()  # mul
+        assert _close(t.state.registers[2].to_float(), 0.0)  # add was skipped
+        assert _close(t.state.registers[3].to_float(), 21.0)
+
+    def test_jz_jumps_when_register_is_zero(self):
+        """jz takes the branch when the tested register holds exactly 0.0."""
+        t = TorresQuevedo()
+        t.load_register(0, FloatingPointNumber())  # 0.0
+        t.load_register(1, FloatingPointNumber.from_float(5.0))
+        #  0: jz 0, 2  -- R0==0, so jump to 2
+        #  1: add 1,1,1 -- should be skipped
+        #  2: mul 1,1,2 -- should execute: R2 = 25
+        tape = [("jz", 0, 2), ("add", 1, 1, 1), ("mul", 1, 1, 2)]
+        t.load_program(tape)
+        t.step()  # jz triggers
+        t.step()  # mul
+        assert _close(t.state.registers[1].to_float(), 5.0)  # unchanged
+        assert _close(t.state.registers[2].to_float(), 25.0)
+
+    def test_jz_no_jump_when_register_nonzero(self):
+        """jz does not branch when the tested register is non-zero."""
+        t = TorresQuevedo()
+        t.load_register(0, FloatingPointNumber.from_float(3.0))
+        t.load_register(1, FloatingPointNumber.from_float(2.0))
+        #  0: jz 0, 2  -- R0 != 0, fall through
+        #  1: add 0,1,2 -- executes: R2 = 5
+        #  2: halt
+        tape = [("jz", 0, 2), ("add", 0, 1, 2), ("halt",)]
+        t.load_program(tape)
+        t.step()  # jz -- no jump
+        t.step()  # add
+        assert _close(t.state.registers[2].to_float(), 5.0)
+
+    def test_jnz_jumps_when_nonzero(self):
+        """jnz branches when the tested register is non-zero."""
+        t = TorresQuevedo()
+        t.load_register(0, FloatingPointNumber.from_float(1.0))
+        tape = [("jnz", 0, 2), ("halt",), ("halt",)]
+        t.load_program(tape)
+        t.step()  # jnz -> pp=2
+        assert t.state.program_pointer == 2
+
+    def test_jnz_no_jump_when_zero(self):
+        """jnz does not branch when the tested register is zero."""
+        t = TorresQuevedo()
+        t.load_register(0, FloatingPointNumber())  # 0.0
+        tape = [("jnz", 0, 2), ("halt",), ("halt",)]
+        t.load_program(tape)
+        t.step()  # jnz -- no jump, pp advances to 1
+        assert t.state.program_pointer == 1
+
+    def test_jlt_jumps_when_negative(self):
+        """jlt (sign relay = negative) branches when register value < 0."""
+        t = TorresQuevedo()
+        t.load_register(0, FloatingPointNumber.from_float(-4.0))
+        tape = [("jlt", 0, 3), ("halt",), ("halt",), ("halt",)]
+        t.load_program(tape)
+        t.step()  # jlt -> pp=3
+        assert t.state.program_pointer == 3
+
+    def test_jlt_no_jump_when_positive(self):
+        """jlt does not branch when register value is positive."""
+        t = TorresQuevedo()
+        t.load_register(0, FloatingPointNumber.from_float(2.0))
+        tape = [("jlt", 0, 3), ("halt",), ("halt",), ("halt",)]
+        t.load_program(tape)
+        t.step()  # jlt -- no jump
+        assert t.state.program_pointer == 1
+
+    def test_jgt_jumps_when_positive(self):
+        """jgt (sign relay = positive) branches when register value > 0."""
+        t = TorresQuevedo()
+        t.load_register(0, FloatingPointNumber.from_float(7.5))
+        tape = [("jgt", 0, 2), ("halt",), ("halt",)]
+        t.load_program(tape)
+        t.step()  # jgt -> pp=2
+        assert t.state.program_pointer == 2
+
+    def test_jgt_no_jump_when_negative(self):
+        """jgt does not branch when register value is negative."""
+        t = TorresQuevedo()
+        t.load_register(0, FloatingPointNumber.from_float(-1.0))
+        tape = [("jgt", 0, 2), ("halt",), ("halt",)]
+        t.load_program(tape)
+        t.step()  # jgt -- no jump
+        assert t.state.program_pointer == 1
+
+    def test_counted_loop_via_branching(self):
+        """A counted loop: add 1.0 to R0 three times using jlt to loop back.
+
+        WHY: Torres 1914 Section 5 describes using sign detection to implement
+        loop termination -- this exercises the full relay-based branch mechanism.
+
+        Program (R0 starts at -3.0, R1 = 1.0, R2 = 0.0 = terminator):
+            0: add 0, 1, 0   -- R0 += 1
+            1: jlt 0, 0      -- if R0 < 0, loop back to 0
+            2: halt
+        After 3 iterations R0 == 0.0, jlt does not fire, halt terminates.
+        """
+        t = TorresQuevedo()
+        t.load_register(0, FloatingPointNumber.from_float(-3.0))
+        t.load_register(1, FloatingPointNumber.from_float(1.0))
+        tape = [("add", 0, 1, 0), ("jlt", 0, 0), ("halt",)]
+        t.load_program(tape)
+        max_steps = 20
+        for _ in range(max_steps):
+            if t.state.program_pointer >= len(tape):
+                break
+            t.step()
+        assert _close(t.state.registers[0].to_float(), 0.0)

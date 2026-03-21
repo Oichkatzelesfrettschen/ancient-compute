@@ -218,3 +218,105 @@ class TestLudgateStoreEdgeCases:
         m = LudgateMachine()
         result = m.subtract(3, 10)
         assert result == -7
+
+
+# =============================================================================
+# step() / load_program() tests
+# =============================================================================
+
+
+class TestStepAndProgram:
+    """Tests for load_program() + step() -- the perforated-cylinder model."""
+
+    def test_load_program_sets_tape(self):
+        """load_program stores the tape and resets program_pointer to 0."""
+        m = LudgateMachine()
+        tape = [("add", 3, 4), ("mult", 2, 5)]
+        m.load_program(tape)
+        assert m.state.program_tape == tape
+        assert m.state.program_pointer == 0
+
+    def test_step_executes_add(self):
+        """One step on an add instruction updates the accumulator."""
+        m = LudgateMachine()
+        m.load_program([("add", 10, 7)])
+        m.step()
+        assert m.state.accumulator == 17
+
+    def test_step_executes_subtract(self):
+        """One step on a subtract instruction updates the accumulator."""
+        m = LudgateMachine()
+        m.load_program([("sub", 20, 6)])
+        m.step()
+        assert m.state.accumulator == 14
+
+    def test_step_executes_multiply(self):
+        """One step on a multiply instruction updates the accumulator."""
+        m = LudgateMachine()
+        m.load_program([("mult", 6, 7)])
+        m.step()
+        assert m.state.accumulator == 42
+
+    def test_step_executes_divide(self):
+        """One step on a divide instruction updates the accumulator."""
+        m = LudgateMachine()
+        m.load_program([("div", 15, 3)])
+        m.step()
+        assert m.state.accumulator == 5
+
+    def test_step_advances_program_pointer(self):
+        """Program pointer increments by 1 after each step."""
+        m = LudgateMachine()
+        m.load_program([("add", 1, 2), ("mult", 3, 4)])
+        assert m.state.program_pointer == 0
+        m.step()
+        assert m.state.program_pointer == 1
+
+    def test_step_past_end_does_not_raise(self):
+        """Stepping beyond the program end is a safe no-op."""
+        m = LudgateMachine()
+        m.load_program([("add", 1, 2)])
+        m.step()  # executes instruction 0
+        m.step()  # beyond end -- should not raise
+        assert m.state.program_pointer == 2
+
+    def test_cycle_count_increments_per_step(self):
+        """cycle_count increments by 1 per step including no-op steps."""
+        m = LudgateMachine()
+        m.load_program([("add", 1, 1), ("add", 2, 2)])
+        m.step()
+        m.step()
+        assert m.state.cycle_count == 2
+
+    def test_step_three_instruction_sequence(self):
+        """A 3-step program: add, mult, print produces correct accumulator value."""
+        m = LudgateMachine()
+        tape = [
+            ("add", 4, 6),  # acc = 10
+            ("mult", 10, 3),  # acc = 30
+            ("print", 30),  # output_tape gets 30
+        ]
+        m.load_program(tape)
+        for _ in range(3):
+            m.step()
+        assert m.state.accumulator == 30
+        assert m.state.output_tape == [30]
+
+    def test_step_does_not_clobber_unrelated_state(self):
+        """step() only changes accumulator and cycle_count; output_tape unaffected by add."""
+        m = LudgateMachine()
+        m.load_program([("add", 5, 3)])
+        m.step()
+        assert m.state.output_tape == []  # no print instruction
+
+    def test_run_five_steps_via_step_loop(self):
+        """Running 5 arithmetic steps via step() gives same result as run()."""
+        m = LudgateMachine()
+        tape = [("add", 1, 0)] * 5  # acc = 0+1 five times = 5 (each adds 1 to prev)
+        # Note: add(a,b) sets accumulator = a+b independently each time
+        m.load_program(tape)
+        for _ in range(5):
+            m.step()
+        # Each add(1, 0) sets acc=1; last step leaves acc=1
+        assert m.state.accumulator == 1
+        assert m.state.cycle_count == 5

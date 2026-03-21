@@ -210,8 +210,26 @@ class TorresQuevedo:
 
         WHY: Fixes P1 -- the original step() was a PC-increment stub. One step
         corresponds to one relay cycle: an instruction is selected and executed.
+
+        Supported opcodes (program tape tuple formats):
+            ('add',   r1, r2, dest)  -- dest = r1 + r2
+            ('sub',   r1, r2, dest)  -- dest = r1 - r2
+            ('mul',   r1, r2, dest)  -- dest = r1 * r2
+            ('div',   r1, r2, dest)  -- dest = r1 / r2
+            ('print', reg)           -- typewriter output of reg
+            ('jmp',   target)        -- unconditional jump to target
+            ('jz',    reg, target)   -- jump if reg == 0
+            ('jnz',   reg, target)   -- jump if reg != 0
+            ('jlt',   reg, target)   -- jump if reg < 0  (sign relay = negative)
+            ('jgt',   reg, target)   -- jump if reg > 0  (sign relay = positive)
+            ('halt',)                -- stop execution (pp set past end of tape)
+
+        Conditional branching was proposed by Torres Quevedo in his 1914 paper
+        (Ensayos sobre automatica, pp. 415-418) as relay-logic selectors that
+        route execution based on the sign output of the last arithmetic operation.
         """
         pp = self.state.program_pointer
+        jumped = False
         if pp < len(self.state.program_tape):
             instr = self.state.program_tape[pp]
             op = instr[0]
@@ -225,7 +243,30 @@ class TorresQuevedo:
                 self.divide(instr[1], instr[2], instr[3])
             elif op == "print":
                 self.typewriter_print(instr[1])
-        self.state.program_pointer += 1
+            elif op == "jmp":
+                self.state.program_pointer = instr[1]
+                jumped = True
+            elif op == "jz":
+                if self.state.registers[instr[1]].to_float() == 0.0:
+                    self.state.program_pointer = instr[2]
+                    jumped = True
+            elif op == "jnz":
+                if self.state.registers[instr[1]].to_float() != 0.0:
+                    self.state.program_pointer = instr[2]
+                    jumped = True
+            elif op == "jlt":
+                if self.state.registers[instr[1]].to_float() < 0.0:
+                    self.state.program_pointer = instr[2]
+                    jumped = True
+            elif op == "jgt":
+                if self.state.registers[instr[1]].to_float() > 0.0:
+                    self.state.program_pointer = instr[2]
+                    jumped = True
+            elif op == "halt":
+                self.state.program_pointer = len(self.state.program_tape)
+                jumped = True
+        if not jumped:
+            self.state.program_pointer += 1
         self.state.cycle_count += 1
 
     def state_dict(self) -> dict[str, object]:

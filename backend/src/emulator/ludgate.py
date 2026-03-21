@@ -178,20 +178,17 @@ class LudgateMachine:
     def add(self, a: int, b: int) -> int:
         """Add two integers via the accumulator."""
         self.state.accumulator = a + b
-        self.state.cycle_count += 1
         return self.state.accumulator
 
     def subtract(self, a: int, b: int) -> int:
         """Subtract b from a via the accumulator."""
         self.state.accumulator = a - b
-        self.state.cycle_count += 1
         return self.state.accumulator
 
     def multiply(self, a: int, b: int) -> int:
         """Multiply using Irish logarithms."""
         result = self.irish_multiply(a, b)
         self.state.accumulator = result
-        self.state.cycle_count += 1
         return result
 
     def divide(self, a: int, b: int) -> tuple[int, int]:
@@ -200,7 +197,6 @@ class LudgateMachine:
             raise ZeroDivisionError("Division by zero")
         q, r = divmod(a, b)
         self.state.accumulator = q
-        self.state.cycle_count += 1
         return q, r
 
     def print_output(self, value: int) -> None:
