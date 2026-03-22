@@ -259,3 +259,69 @@ class TestCLIDeckExtended:
     def test_deck_n2_output_non_empty(self) -> None:
         result = CliRunner().invoke(cli, ["deck", "--note", "g", "--n", "2"])
         assert len(result.output.strip()) > 0
+
+
+class TestCliVersionAndHelp:
+    """Version, help, and subcommand presence."""
+
+    def test_version_exits_zero(self) -> None:
+        result = CliRunner().invoke(cli, ["--version"])
+        assert result.exit_code == 0
+
+    def test_version_output_non_empty(self) -> None:
+        result = CliRunner().invoke(cli, ["--version"])
+        assert len(result.output.strip()) > 0
+
+    def test_help_lists_run_command(self) -> None:
+        result = CliRunner().invoke(cli, ["--help"])
+        assert "run" in result.output
+
+    def test_help_lists_deck_command(self) -> None:
+        result = CliRunner().invoke(cli, ["--help"])
+        assert "deck" in result.output
+
+    def test_help_lists_assemble_command(self) -> None:
+        result = CliRunner().invoke(cli, ["--help"])
+        assert "assemble" in result.output
+
+    def test_help_lists_trace_command(self) -> None:
+        result = CliRunner().invoke(cli, ["--help"])
+        assert "trace" in result.output
+
+    def test_run_help_exits_zero(self) -> None:
+        result = CliRunner().invoke(cli, ["run", "--help"])
+        assert result.exit_code == 0
+
+    def test_deck_help_exits_zero(self) -> None:
+        result = CliRunner().invoke(cli, ["deck", "--help"])
+        assert result.exit_code == 0
+
+    def test_assemble_help_exits_zero(self) -> None:
+        result = CliRunner().invoke(cli, ["assemble", "--help"])
+        assert result.exit_code == 0
+
+
+class TestDeckCommandNotes:
+    """Deck command with different Lovelace notes."""
+
+    def test_deck_note_b_exits_zero(self) -> None:
+        result = CliRunner().invoke(cli, ["deck", "--note", "b"])
+        assert result.exit_code == 0
+
+    def test_deck_note_c_exits_zero(self) -> None:
+        result = CliRunner().invoke(cli, ["deck", "--note", "c"])
+        assert result.exit_code == 0
+
+    def test_deck_note_d_exits_zero(self) -> None:
+        result = CliRunner().invoke(cli, ["deck", "--note", "d"])
+        assert result.exit_code == 0
+
+    def test_deck_g_n1_output_non_empty(self) -> None:
+        result = CliRunner().invoke(cli, ["deck", "--note", "g", "--n", "1"])
+        assert result.exit_code == 0
+        assert len(result.output.strip()) > 0
+
+    def test_deck_g_n2_output_has_two_bernoulli(self) -> None:
+        result = CliRunner().invoke(cli, ["deck", "--note", "g", "--n", "2"])
+        assert result.exit_code == 0
+        assert result.output.count("B_") >= 2

@@ -210,3 +210,88 @@ class TestAbacusStateReturn:
         emu.set_value(77)
         emu.add(0)
         assert emu.state()["value"] == 77
+
+
+class TestAbacusArithmetic:
+    """Multi-step arithmetic and boundary checks."""
+
+    def test_chain_add_three_values(self) -> None:
+        emu = AbacusEmulator()
+        emu.add(10)
+        emu.add(20)
+        emu.add(30)
+        assert emu.state()["value"] == 60
+
+    def test_add_then_sub_net_zero(self) -> None:
+        emu = AbacusEmulator()
+        emu.add(50)
+        emu.sub(50)
+        assert emu.state()["value"] == 0
+
+    def test_multiple_sets_final_value_wins(self) -> None:
+        emu = AbacusEmulator()
+        emu.set_value(100)
+        emu.set_value(200)
+        emu.set_value(300)
+        assert emu.state()["value"] == 300
+
+    def test_reset_after_large_value(self) -> None:
+        emu = AbacusEmulator()
+        emu.set_value(9999999)
+        emu.reset()
+        assert emu.state()["value"] == 0
+
+    def test_add_one_hundred_times(self) -> None:
+        emu = AbacusEmulator()
+        for _ in range(100):
+            emu.add(1)
+        assert emu.state()["value"] == 100
+
+    def test_sub_from_large_value(self) -> None:
+        emu = AbacusEmulator()
+        emu.set_value(1000)
+        emu.sub(999)
+        assert emu.state()["value"] == 1
+
+    def test_state_returns_dict(self) -> None:
+        emu = AbacusEmulator()
+        s = emu.state()
+        assert isinstance(s, dict)
+
+    def test_state_has_value_key(self) -> None:
+        emu = AbacusEmulator()
+        assert "value" in emu.state()
+
+    def test_state_has_digits_key(self) -> None:
+        emu = AbacusEmulator()
+        assert "digits" in emu.state()
+
+
+class TestAbacusEdgeCases:
+    """Boundary and edge case behaviors."""
+
+    def test_default_value_is_zero(self) -> None:
+        emu = AbacusEmulator()
+        assert emu.state()["value"] == 0
+
+    def test_set_single_digit_value(self) -> None:
+        emu = AbacusEmulator()
+        emu.set_value(7)
+        assert emu.state()["value"] == 7
+
+    def test_add_returns_updated_value(self) -> None:
+        emu = AbacusEmulator()
+        result = emu.add(5)
+        assert result == 5
+
+    def test_sub_returns_updated_value(self) -> None:
+        emu = AbacusEmulator()
+        emu.set_value(10)
+        result = emu.sub(3)
+        assert result == 7
+
+    def test_reset_returns_zero_state(self) -> None:
+        emu = AbacusEmulator()
+        emu.set_value(42)
+        emu.reset()
+        assert emu.state()["value"] == 0

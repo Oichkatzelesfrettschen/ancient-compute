@@ -233,3 +233,68 @@ class TestAEResultPrecision:
 
     def test_triangular_result_is_fifteen(self) -> None:
         assert _run("triangular_number.ae") == 15.0
+
+
+class TestAETranscendentalAccuracy:
+    """Precision tests for the transcendental series programs."""
+
+    def test_sin_close_to_pi_over_six(self) -> None:
+        # sin_series.ae computes sin(pi/6) = 0.5
+        val = _run("sin_series.ae")
+        assert abs(float(val) - 0.5) < 0.01
+
+    def test_cos_between_zero_and_one(self) -> None:
+        val = _run("cos_series.ae")
+        assert 0.0 <= float(val) <= 1.0
+
+    def test_ln_positive(self) -> None:
+        val = _run("ln_series.ae")
+        assert float(val) > 0.0
+
+    def test_exp_exceeds_e(self) -> None:
+        # e = 2.71828...
+        val = _run("exp_series.ae")
+        assert float(val) > 2.71
+
+    def test_exp_less_than_three(self) -> None:
+        val = _run("exp_series.ae")
+        assert float(val) < 3.0
+
+    def test_triangular_15_is_integer(self) -> None:
+        val = _run("triangular_number.ae")
+        assert float(val) == 15.0
+
+    def test_addition_result_is_exactly_5(self) -> None:
+        val = _run("babbage_addition.ae")
+        assert float(val) == 5.0
+
+    def test_cos_result_matches_sin_result_at_same_angle(self) -> None:
+        # Both programs evaluate at the same fixed angle where sin = cos = 0.5
+        s = float(_run("sin_series.ae"))
+        c = float(_run("cos_series.ae"))
+        assert abs(s - c) < 0.01  # both evaluate near 0.5
+
+
+class TestAEMultipleOutputPrograms:
+    """Programs that emit multiple result cards."""
+
+    def test_bitwise_outputs_non_empty(self) -> None:
+        outputs = _run_all_outputs("babbage_bitwise_test.ae")
+        assert len(outputs) >= 1
+
+    def test_triangular_has_single_output(self) -> None:
+        outputs = _run_all_outputs("triangular_number.ae")
+        assert len(outputs) >= 1
+
+    def test_addition_has_single_output(self) -> None:
+        outputs = _run_all_outputs("babbage_addition.ae")
+        assert len(outputs) == 1
+
+    def test_sin_output_is_numeric(self) -> None:
+        outputs = _run_all_outputs("sin_series.ae")
+        assert all(isinstance(v, (int, float)) or hasattr(v, "__float__") for v in outputs)
+
+    def test_independent_engine_runs_are_consistent(self) -> None:
+        r1 = _run("exp_series.ae")
+        r2 = _run("exp_series.ae")
+        assert abs(float(r1) - float(r2)) < 1e-30

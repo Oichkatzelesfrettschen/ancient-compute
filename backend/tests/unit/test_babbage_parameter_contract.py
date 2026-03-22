@@ -260,3 +260,105 @@ class TestSimSchemaConfigValues:
     def test_jam_rate_non_negative(self) -> None:
         val = self._schema()["mechanisms"]["card_feed"]["jam_rate_per_1k"]
         assert val >= 0
+
+
+class TestSimSchemaNewMaterials:
+    """Verify all 7 new historical materials are present in MaterialLibrary."""
+
+    def test_corinthian_bronze_loaded(self) -> None:
+        from backend.src.emulator.materials import MaterialLibrary
+
+        lib = MaterialLibrary()
+        assert "corinthian_bronze" in lib.names()
+
+    def test_ivory_loaded(self) -> None:
+        from backend.src.emulator.materials import MaterialLibrary
+
+        lib = MaterialLibrary()
+        assert "ivory" in lib.names()
+
+    def test_boxwood_loaded(self) -> None:
+        from backend.src.emulator.materials import MaterialLibrary
+
+        lib = MaterialLibrary()
+        assert "boxwood" in lib.names()
+
+    def test_aluminum_alloy_1940s_loaded(self) -> None:
+        from backend.src.emulator.materials import MaterialLibrary
+
+        lib = MaterialLibrary()
+        assert "aluminum_alloy_1940s" in lib.names()
+
+    def test_bakelite_loaded(self) -> None:
+        from backend.src.emulator.materials import MaterialLibrary
+
+        lib = MaterialLibrary()
+        assert "bakelite" in lib.names()
+
+    def test_organic_fiber_loaded(self) -> None:
+        from backend.src.emulator.materials import MaterialLibrary
+
+        lib = MaterialLibrary()
+        assert "organic_fiber" in lib.names()
+
+    def test_mercury_loaded(self) -> None:
+        from backend.src.emulator.materials import MaterialLibrary
+
+        lib = MaterialLibrary()
+        assert "mercury" in lib.names()
+
+    def test_total_material_count_at_least_fourteen(self) -> None:
+        from backend.src.emulator.materials import MaterialLibrary
+
+        lib = MaterialLibrary()
+        assert len(lib.all_materials()) >= 14
+
+
+class TestSimSchemaCoreProperties:
+    """Core material property range checks for the original materials."""
+
+    def test_steel_density_range(self) -> None:
+        from backend.src.emulator.materials import MaterialLibrary
+
+        lib = MaterialLibrary()
+        steel = lib.get("steel")
+        assert 7700 <= steel.density_kg_m3 <= 8050
+
+    def test_brass_youngs_modulus_range(self) -> None:
+        from backend.src.emulator.materials import MaterialLibrary
+
+        lib = MaterialLibrary()
+        brass = lib.get("brass")
+        e_min, e_max = brass.youngs_modulus_Pa
+        assert 85e9 <= e_min <= 115e9
+
+    def test_cast_iron_density_range(self) -> None:
+        from backend.src.emulator.materials import MaterialLibrary
+
+        lib = MaterialLibrary()
+        ci = lib.get("cast_iron")
+        assert 7000 <= ci.density_kg_m3 <= 7400
+
+    def test_phosphor_bronze_density_positive(self) -> None:
+        from backend.src.emulator.materials import MaterialLibrary
+
+        lib = MaterialLibrary()
+        pb = lib.get("phosphor_bronze")
+        assert pb.density_kg_m3 > 0
+
+    def test_all_materials_have_positive_density(self) -> None:
+        from backend.src.emulator.materials import MaterialLibrary
+
+        lib = MaterialLibrary()
+        for mat in lib.all_materials():
+            assert mat.density_kg_m3 > 0, f"{mat.name} has non-positive density"
+
+    def test_all_structural_materials_have_youngs_modulus_tuple(self) -> None:
+        from backend.src.emulator.materials import MaterialLibrary
+
+        lib = MaterialLibrary()
+        non_structural = {"organic_fiber", "mercury"}
+        for mat in lib.all_materials():
+            if mat.name not in non_structural:
+                e_min, e_max = mat.youngs_modulus_Pa
+                assert e_min > 0, f"{mat.name} has non-positive E_min"

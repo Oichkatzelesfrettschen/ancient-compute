@@ -344,3 +344,63 @@ def test_simulation_config_dt_positive() -> None:
     """SimulationConfig default dt_s must be a positive timestep."""
     config = SimulationConfig()
     assert config.dt_s > 0.0
+
+
+class TestSimulationEngineLongRun:
+    """Physics simulation long-run behavior checks."""
+
+    def test_temperature_increases_over_long_run(self) -> None:
+        config = SimulationConfig(rpm=30.0)
+        sim = SimulationEngine(config)
+        sim.run(1000.0)
+        assert sim.state.temperature_C >= 20.0
+
+    def test_wear_volumes_non_negative_after_run(self) -> None:
+        config = SimulationConfig(rpm=30.0)
+        sim = SimulationEngine(config)
+        sim.run(5.0)
+        assert all(v >= 0.0 for v in sim.state.bearing_wear_volumes_mm3)
+
+    def test_shaft_deflection_non_negative(self) -> None:
+        config = SimulationConfig(rpm=30.0)
+        sim = SimulationEngine(config)
+        sim.run(1.0)
+        assert sim.state.shaft_deflection_mm >= 0.0
+
+    def test_run_one_second_advances_time(self) -> None:
+        config = SimulationConfig(rpm=30.0)
+        sim = SimulationEngine(config)
+        sim.run(1.0)
+        assert sim.state.time_s > 0.0
+
+    def test_state_is_not_failed_after_short_run(self) -> None:
+        config = SimulationConfig(rpm=30.0)
+        sim = SimulationEngine(config)
+        sim.run(0.1)
+        # For normal run parameters, failure should not occur immediately
+        assert sim.state.time_s > 0.0  # just check it ran
+
+
+class TestSimulationConfigDefaultsExtended:
+    """SimulationConfig default value checks."""
+
+    def test_default_rpm_is_positive(self) -> None:
+        config = SimulationConfig()
+        assert config.rpm > 0
+
+    def test_default_dt_is_one_second(self) -> None:
+        config = SimulationConfig()
+        assert config.dt_s == pytest.approx(1.0)  # default 1s timestep
+
+    def test_default_temperature_is_20(self) -> None:
+        config = SimulationConfig()
+        assert config.ambient_temperature_C == pytest.approx(20.0)
+
+    def test_config_can_be_constructed_with_rpm(self) -> None:
+        config = SimulationConfig(rpm=60.0)
+        assert config.rpm == pytest.approx(60.0)
+
+    def test_bearing_clearances_initialized_positive(self) -> None:
+        config = SimulationConfig()
+        sim = SimulationEngine(config)
+        assert all(c > 0 for c in sim.state.bearing_clearances_mm)

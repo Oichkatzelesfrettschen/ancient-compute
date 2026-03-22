@@ -260,3 +260,78 @@ class TestExecutorServiceInterface:
 
         svc = get_executor("java")
         assert inspect.iscoroutinefunction(svc.execute)
+
+
+class TestExecutorResultShape:
+    """Result object field verification for each executor."""
+
+    def test_python_result_has_status(self) -> None:
+        import asyncio
+        svc = get_executor("python")
+        r = asyncio.run(svc.execute("def f(x):\n    return x\n"))
+        assert hasattr(r, "status")
+
+    def test_python_result_has_machine_code(self) -> None:
+        import asyncio
+        svc = get_executor("python")
+        r = asyncio.run(svc.execute("def f(x):\n    return x\n"))
+        assert hasattr(r, "machine_code")
+
+    def test_c_result_has_status(self) -> None:
+        import asyncio
+        svc = get_executor("c")
+        r = asyncio.run(svc.execute("int f(int x) { return x; }"))
+        assert hasattr(r, "status")
+
+    def test_c_success_has_non_empty_machine_code(self) -> None:
+        import asyncio
+        svc = get_executor("c")
+        r = asyncio.run(svc.execute("int f(int x) { return x; }"))
+        assert r.machine_code != ""
+
+    def test_python_compile_error_returns_compile_error_status(self) -> None:
+        import asyncio
+        svc = get_executor("python")
+        r = asyncio.run(svc.execute("def bad(:\n    pass"))
+        assert r.status.value == "compile_error"
+
+    def test_c_compile_error_returns_compile_error_status(self) -> None:
+        import asyncio
+        svc = get_executor("c")
+        r = asyncio.run(svc.execute("int f { return 1; }"))
+        assert r.status.value == "compile_error"
+
+    def test_all_executor_results_have_stderr_attr(self) -> None:
+        import asyncio
+        for lang in ["python", "c"]:
+            svc = get_executor(lang)
+            r = asyncio.run(svc.execute("invalid code !!!"))
+            assert hasattr(r, "stderr"), f"{lang} result missing stderr"
+
+
+class TestGetExecutorCapabilities:
+    """get_capabilities() API tests."""
+
+    def test_python_capabilities_is_dict(self) -> None:
+        import asyncio
+        svc = get_executor("python")
+        caps = asyncio.run(svc.get_capabilities())
+        assert isinstance(caps, dict)
+
+    def test_c_capabilities_has_language_key(self) -> None:
+        import asyncio
+        svc = get_executor("c")
+        caps = asyncio.run(svc.get_capabilities())
+        assert len(caps) > 0
+
+    def test_python_capabilities_non_empty(self) -> None:
+        import asyncio
+        svc = get_executor("python")
+        caps = asyncio.run(svc.get_capabilities())
+        assert len(caps) > 0
+
+    def test_haskell_capabilities_non_empty(self) -> None:
+        import asyncio
+        svc = get_executor("haskell")
+        caps = asyncio.run(svc.get_capabilities())
+        assert len(caps) > 0

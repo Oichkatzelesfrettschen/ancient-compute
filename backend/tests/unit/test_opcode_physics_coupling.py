@@ -361,3 +361,66 @@ class TestBridgeOpcodeAdvance:
         _, bridge = _make_physics_engine()
         report = bridge.physics_report()
         assert isinstance(report, dict)
+
+
+class TestBridgeStateFieldsExtended:
+    """SimulationBridge state fields after instruction execution."""
+
+    def test_initial_temperature_is_20(self) -> None:
+        _, bridge = _make_physics_engine()
+        assert bridge.state.temperature_C == pytest.approx(20.0)
+
+    def test_add_advance_increments_simulated_time(self) -> None:
+        _, bridge = _make_physics_engine()
+        t0 = bridge.state.time_s
+        bridge.opcode_advance("ADD")
+        assert bridge.state.time_s > t0
+
+    def test_mult_advance_increments_more_than_add(self) -> None:
+        _, b1 = _make_physics_engine()
+        _, b2 = _make_physics_engine()
+        b1.opcode_advance("ADD")
+        b2.opcode_advance("MULT")
+        assert b2.state.time_s >= b1.state.time_s
+
+    def test_physics_report_has_temperature_key(self) -> None:
+        _, bridge = _make_physics_engine()
+        report = bridge.physics_report()
+        assert "temperature_C" in report
+
+    def test_physics_report_has_simulated_time_key(self) -> None:
+        _, bridge = _make_physics_engine()
+        report = bridge.physics_report()
+        assert "simulated_time_s" in report
+
+    def test_bridge_failed_is_false_initially(self) -> None:
+        _, bridge = _make_physics_engine()
+        assert bridge.failed is False
+
+    def test_multiple_adds_accumulate_time(self) -> None:
+        _, bridge = _make_physics_engine()
+        for _ in range(10):
+            bridge.opcode_advance("ADD")
+        assert bridge.state.time_s >= 10.0
+
+
+class TestBridgeReset:
+    """Bridge reset returns to initial state."""
+
+    def test_reset_restores_time_to_zero(self) -> None:
+        _, bridge = _make_physics_engine()
+        bridge.opcode_advance("ADD")
+        bridge.reset()
+        assert bridge.state.time_s == pytest.approx(0.0)
+
+    def test_reset_restores_temperature(self) -> None:
+        _, bridge = _make_physics_engine()
+        for _ in range(100):
+            bridge.opcode_advance("ADD")
+        bridge.reset()
+        assert bridge.state.temperature_C == pytest.approx(20.0)
+
+    def test_reset_clears_failed_flag(self) -> None:
+        _, bridge = _make_physics_engine()
+        bridge.reset()
+        assert bridge.failed is False

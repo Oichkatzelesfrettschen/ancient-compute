@@ -220,3 +220,73 @@ class TestParseFourmilabEdgeCases:
     def test_number_card_large_value(self) -> None:
         cards = parse_fourmilab_deck("N005 +9999")
         assert cards[0].payload == (5, 9999)
+
+
+class TestParseFourmilabCardTypes:
+    """All card kinds parsed correctly."""
+
+    def test_store_card_kind(self) -> None:
+        cards = parse_fourmilab_deck("S003")
+        assert cards[0].kind == "stor"
+
+    def test_store_card_column(self) -> None:
+        cards = parse_fourmilab_deck("S007")
+        col, _ = cards[0].payload
+        assert col == 7
+
+    def test_print_card_no_payload(self) -> None:
+        cards = parse_fourmilab_deck("P")
+        assert cards[0].kind == "print"
+        assert cards[0].payload is None
+
+    def test_number_card_negative_value(self) -> None:
+        cards = parse_fourmilab_deck("N002 -99")
+        assert cards[0].payload == (2, -99)
+
+    def test_number_card_zero(self) -> None:
+        cards = parse_fourmilab_deck("N000 +0")
+        assert cards[0].payload == (0, 0)
+
+    def test_multiple_cards_all_parsed(self) -> None:
+        cards = parse_fourmilab_deck("N000 +5\nL000\nP")
+        assert len(cards) == 3
+
+    def test_load_card_non_destructive_default(self) -> None:
+        cards = parse_fourmilab_deck("L000")
+        _, destructive = cards[0].payload
+        assert destructive is False
+
+    def test_load_card_column_zero(self) -> None:
+        cards = parse_fourmilab_deck("L000")
+        col, _ = cards[0].payload
+        assert col == 0
+
+
+class TestFourmilabToInstructionsExtended:
+    """fourmilab_to_instructions translation tests."""
+
+    def test_number_card_gives_instructions(self) -> None:
+        cards = parse_fourmilab_deck("N000 +42")
+        instrs = fourmilab_to_instructions(cards)
+        assert len(instrs) >= 1
+
+    def test_load_card_gives_instructions(self) -> None:
+        cards = parse_fourmilab_deck("L000")
+        instrs = fourmilab_to_instructions(cards)
+        assert len(instrs) >= 1
+
+    def test_print_card_gives_wrprn_instruction(self) -> None:
+        cards = parse_fourmilab_deck("P")
+        instrs = fourmilab_to_instructions(cards)
+        assert any(i.opcode in ("WRPRN", "PRINT") for i in instrs)
+
+    def test_deck_with_number_gives_instructions(self) -> None:
+        cards = parse_fourmilab_deck("N000 +5\nP")
+        instrs = fourmilab_to_instructions(cards)
+        # At least the number load and print instructions
+        assert len(instrs) >= 1
+
+    def test_instructions_are_list(self) -> None:
+        cards = parse_fourmilab_deck("N000 +1\nP")
+        instrs = fourmilab_to_instructions(cards)
+        assert isinstance(instrs, list)

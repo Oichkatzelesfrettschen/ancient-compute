@@ -199,3 +199,68 @@ class TestKFGMultipleArtifacts:
     def test_qu001_clusters_all_non_empty_strings(self) -> None:
         a = load_kfg_normalized(_KFG_DIR / "QU001.json")
         assert all(isinstance(c, str) and len(c) > 0 for c in a.clusters)
+
+
+class TestKFGCordFields:
+    """Field-level tests for individual cord entries."""
+
+    def _qu001(self) -> "KFGArtifact":
+        return load_kfg_normalized(_KFG_DIR / "QU001.json")
+
+    def test_first_cord_has_cord_name_field(self) -> None:
+        a = self._qu001()
+        assert "Cord_Name" in a.cords[0]
+
+    def test_first_cord_has_knots_field(self) -> None:
+        a = self._qu001()
+        assert "Knots" in a.cords[0]
+
+    def test_first_cord_has_color_field(self) -> None:
+        a = self._qu001()
+        assert "Color" in a.cords[0]
+
+    def test_all_cords_have_cord_name(self) -> None:
+        a = self._qu001()
+        for cord in a.cords:
+            assert "Cord_Name" in cord
+
+    def test_cord_count_matches_expected(self) -> None:
+        a = self._qu001()
+        # QU001 has 33 cords per KFG normalized database
+        assert len(a.cords) == 33
+
+    def test_investigator_num_starts_with_qu(self) -> None:
+        a = self._qu001()
+        assert a.investigator_num.startswith("QU")
+
+
+class TestKFGParserUR001Extended:
+    """Tests specific to the UR001 artifact."""
+
+    def _ur001(self) -> "KFGArtifact":
+        return load_kfg_normalized(_KFG_DIR / "UR001.json")
+
+    def test_ur001_loads_without_error(self) -> None:
+        a = self._ur001()
+        assert a is not None
+
+    def test_ur001_investigator_num(self) -> None:
+        a = self._ur001()
+        assert a.investigator_num == "UR001"
+
+    def test_ur001_khipu_is_dict(self) -> None:
+        a = self._ur001()
+        assert isinstance(a.khipu, dict)
+
+    def test_ur001_cords_is_list(self) -> None:
+        a = self._ur001()
+        assert isinstance(a.cords, list)
+
+    def test_ur001_has_expected_cord_count(self) -> None:
+        a = self._ur001()
+        # UR001 has 572 cords per KFG normalized database
+        assert len(a.cords) == 572
+
+    def test_ur001_clusters_is_list(self) -> None:
+        a = self._ur001()
+        assert isinstance(a.clusters, list)

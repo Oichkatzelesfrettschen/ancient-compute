@@ -264,3 +264,74 @@ class TestCardDataFields:
         original = "STORE V3"
         card = parse_line(original)
         assert card_to_source(card) == original
+
+
+class TestCompileDecompileRoundTrip:
+    """compile_deck + decompile_deck round-trip tests."""
+
+    def test_halt_only_program_round_trips(self) -> None:
+        src = "HALT"
+        assert decompile_deck(compile_deck(src)) == src
+
+    def test_load_halt_round_trips(self) -> None:
+        src = "LOAD V1\nHALT"
+        assert decompile_deck(compile_deck(src)) == src
+
+    def test_store_halt_round_trips(self) -> None:
+        src = "STORE V2\nHALT"
+        assert decompile_deck(compile_deck(src)) == src
+
+    def test_add_instruction_round_trips(self) -> None:
+        src = "ADD\nHALT"
+        assert decompile_deck(compile_deck(src)) == src
+
+    def test_compile_multi_line_gives_multiple_cards(self) -> None:
+        src = "LOAD V1\nLOAD V2\nADD\nSTORE V3\nHALT"
+        cards = compile_deck(src)
+        assert len(cards) == 5
+
+    def test_decompile_preserves_line_count(self) -> None:
+        src = "LOAD V1\nLOAD V2\nADD\nSTORE V3\nHALT"
+        back = decompile_deck(compile_deck(src))
+        assert back.count("\n") == 4
+
+    def test_compile_produces_list_of_encoded_cards(self) -> None:
+        cards = compile_deck("NOP\nHALT")
+        assert isinstance(cards, list)
+        assert len(cards) == 2
+
+
+class TestCardEncodingProperties:
+    """Property checks for the card encoding layer."""
+
+    def test_operation_card_has_class_byte_zero(self) -> None:
+        card = CardData(card_class=CardClass.OPERATION, opcode=Opcode.HALT)
+        enc = encode_card(card)
+        assert enc.class_byte == 0
+
+    def test_variable_card_has_class_byte_one(self) -> None:
+        card = CardData(card_class=CardClass.VARIABLE, direction="read", column=1)
+        enc = encode_card(card)
+        assert enc.class_byte == 1
+
+    def test_number_card_has_class_byte_two(self) -> None:
+        card = CardData(card_class=CardClass.NUMBER, sign=0, magnitude="1")
+        enc = encode_card(card)
+        assert enc.class_byte == 2
+
+    def test_encoded_payload_is_bytes(self) -> None:
+        enc = encode_card(CardData(card_class=CardClass.OPERATION, opcode=Opcode.ADD))
+        assert isinstance(enc.payload, bytes)
+
+    def test_all_operation_opcodes_encode_without_error(self) -> None:
+        for op in Opcode:
+            card = CardData(card_class=CardClass.OPERATION, opcode=op)
+            enc = encode_card(card)
+            assert enc is not None
+
+    def test_decode_after_encode_preserves_opcode(self) -> None:
+        for op in Opcode:
+            card = CardData(card_class=CardClass.OPERATION, opcode=op)
+            enc = encode_card(card)
+            dec = decode_card(enc)
+            assert dec.opcode == op

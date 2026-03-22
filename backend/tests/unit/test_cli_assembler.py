@@ -259,3 +259,61 @@ class TestTokenizeEdgeCases:
     def test_parse_source_returns_list(self) -> None:
         result = parse_source("NOP")
         assert isinstance(result, list)
+
+
+class TestTokenizeOperands:
+    """Additional tokenize_line operand and label parsing cases."""
+
+    def test_two_operand_instruction(self) -> None:
+        _, opcode, operands = tokenize_line("MOV A, 5")
+        assert opcode == "MOV"
+        assert operands == ["A", "5"]
+
+    def test_label_extracted_from_labeled_line(self) -> None:
+        label, opcode, _ = tokenize_line("start: NOP")
+        assert label == "start"
+        assert opcode == "NOP"
+
+    def test_comment_stripped(self) -> None:
+        _, opcode, _ = tokenize_line("NOP ; this is a comment")
+        assert opcode == "NOP"
+
+    def test_empty_operands_for_no_arg_instruction(self) -> None:
+        _, opcode, operands = tokenize_line("HALT")
+        assert opcode == "HALT"
+        assert operands == []
+
+    def test_add_opcode_parsed(self) -> None:
+        _, opcode, operands = tokenize_line("ADD A, B")
+        assert opcode == "ADD"
+        assert "A" in operands
+
+
+class TestParseSources:
+    """parse_source tests for instruction lists and label resolution."""
+
+    def test_single_nop_returns_one_instruction(self) -> None:
+        instrs = parse_source("NOP")
+        assert len(instrs) == 1
+
+    def test_three_instructions_returns_three(self) -> None:
+        instrs = parse_source("NOP\nNOP\nHALT")
+        assert len(instrs) == 3
+
+    def test_instruction_has_opcode_attribute(self) -> None:
+        instrs = parse_source("HALT")
+        assert hasattr(instrs[0], "opcode")
+        assert instrs[0].opcode == "HALT"
+
+    def test_mov_instruction_has_operands(self) -> None:
+        instrs = parse_source("MOV A, 5")
+        assert hasattr(instrs[0], "operands")
+
+    def test_label_line_not_counted_as_instruction(self) -> None:
+        instrs = parse_source("start:\nNOP\nHALT")
+        assert len(instrs) == 2
+
+    def test_jmp_target_resolved_to_integer_string(self) -> None:
+        instrs = parse_source("start:\nNOP\nJMP start")
+        jmp = next(i for i in instrs if i.opcode == "JMP")
+        assert jmp.operands[0] == "0"

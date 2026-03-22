@@ -261,3 +261,64 @@ class TestNoteGAssemblyProperties:
         text = generate_note_g_assembly_text(3)
         assert "MULT" in text
         assert "DIV" in text
+
+
+class TestNoteGBernoulliValues:
+    """Verify computed Bernoulli values match the historical oracle."""
+
+    def test_n1_b1_equals_one_sixth(self) -> None:
+        results = _run_note_g_on_ae(1)
+        assert results[0] == Fraction(1, 6)
+
+    def test_n2_b3_equals_negative_one_thirtieth(self) -> None:
+        results = _run_note_g_on_ae(2)
+        assert results[1] == Fraction(-1, 30)
+
+    def test_n3_b5_equals_one_forty_second(self) -> None:
+        results = _run_note_g_on_ae(3)
+        assert results[2] == Fraction(1, 42)
+
+    def test_n1_result_count_is_one(self) -> None:
+        results = _run_note_g_on_ae(1)
+        assert len(results) == 1
+
+    def test_n2_result_count_is_two(self) -> None:
+        results = _run_note_g_on_ae(2)
+        assert len(results) == 2
+
+    def test_n3_result_count_is_three(self) -> None:
+        results = _run_note_g_on_ae(3)
+        assert len(results) == 3
+
+    def test_alternating_signs_b1_b3_b5(self) -> None:
+        results = _run_note_g_on_ae(3)
+        assert results[0] > 0
+        assert results[1] < 0
+        assert results[2] > 0
+
+
+class TestNoteGAssemblyStructure:
+    """Assembly text structural properties."""
+
+    def test_assembly_starts_with_load_or_mov(self) -> None:
+        text = generate_note_g_assembly_text(1)
+        first_line = text.strip().split("\n")[0]
+        assert first_line.startswith("LOAD") or first_line.startswith("MOV")
+
+    def test_assembly_ends_with_halt(self) -> None:
+        text = generate_note_g_assembly_text(1)
+        last_line = text.strip().split("\n")[-1]
+        assert last_line.strip() == "HALT"
+
+    def test_n2_assembly_longer_than_n1(self) -> None:
+        t1 = generate_note_g_assembly_text(1)
+        t2 = generate_note_g_assembly_text(2)
+        assert len(t2) > len(t1)
+
+    def test_assembly_contains_stor_instructions(self) -> None:
+        text = generate_note_g_assembly_text(1)
+        assert "STOR" in text
+
+    def test_assembly_contains_wrprn_instructions(self) -> None:
+        text = generate_note_g_assembly_text(1)
+        assert "WRPRN" in text

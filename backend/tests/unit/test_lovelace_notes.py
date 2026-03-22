@@ -254,3 +254,60 @@ class TestNotesBResultTypes:
             result = run_note_c(n)
             expected = n * (n + 1) // 2
             assert _close(result, float(expected))
+
+
+class TestNoteBFunctions:
+    """Additional Note B and compound function tests."""
+
+    def test_run_note_b_returns_babbage_number(self) -> None:
+        assert isinstance(run_note_b(3), BabbageNumber)
+
+    def test_run_note_b_n3_positive_result(self) -> None:
+        result = run_note_b(3)
+        assert float(result.to_decimal()) > 0
+
+    def test_run_note_b_compound_returns_babbage_number(self) -> None:
+        assert isinstance(run_note_b_compound(1.0, 2.0, 3.0, 4.0), BabbageNumber)
+
+    def test_run_note_b_compound_numeric(self) -> None:
+        result = run_note_b_compound(2.0, 3.0, 4.0, 5.0)
+        assert hasattr(result, "to_decimal")
+
+    def test_run_note_c_native_triangular(self) -> None:
+        result = run_note_c_native(4)
+        assert float(result.to_decimal()) == pytest.approx(10.0)
+
+    def test_run_note_c_native_returns_babbage_number(self) -> None:
+        assert isinstance(run_note_c_native(1), BabbageNumber)
+
+    def test_run_note_d_returns_babbage_number(self) -> None:
+        assert isinstance(run_note_d(2), BabbageNumber)
+
+    def test_run_note_d_default_args_non_raises(self) -> None:
+        run_note_d(1)  # should not raise
+
+
+class TestNoteCNativePrecision:
+    """Precision and consistency of Note C native runner."""
+
+    def test_note_c_n1_is_one(self) -> None:
+        assert _close(run_note_c_native(1), 1.0)
+
+    def test_note_c_n2_is_three(self) -> None:
+        assert _close(run_note_c_native(2), 3.0)
+
+    def test_note_c_n5_is_fifteen(self) -> None:
+        assert _close(run_note_c_native(5), 15.0)
+
+    def test_note_c_n10_is_fifty_five(self) -> None:
+        assert _close(run_note_c_native(10), 55.0)
+
+    def test_note_c_native_vs_formula(self) -> None:
+        """T(n) = n*(n+1)//2 for all n 1..8."""
+        for n in range(1, 9):
+            result = run_note_c_native(n)
+            expected = n * (n + 1) // 2
+            assert _close(result, float(expected))
+
+    def test_note_c_n7_is_twenty_eight(self) -> None:
+        assert _close(run_note_c_native(7), 28.0)

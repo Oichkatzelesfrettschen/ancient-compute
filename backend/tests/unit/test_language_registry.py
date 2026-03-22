@@ -207,3 +207,65 @@ class TestLanguageCapabilityFields:
     def test_assembly_id_in_capabilities(self) -> None:
         ids = {cap["id"] for cap in list_language_capabilities()}
         assert "assembly" in ids
+
+
+class TestLanguageStatusSummaryExtended:
+    """language_status_summary() structure and values."""
+
+    def test_summary_has_total_key(self) -> None:
+        s = language_status_summary()
+        assert "total" in s
+
+    def test_summary_total_is_eleven(self) -> None:
+        s = language_status_summary()
+        assert s["total"] == 11
+
+    def test_summary_has_implemented_key(self) -> None:
+        s = language_status_summary()
+        assert "implemented" in s
+
+    def test_implemented_at_least_five(self) -> None:
+        s = language_status_summary()
+        assert s["implemented"] >= 5
+
+    def test_non_stub_equals_total(self) -> None:
+        s = language_status_summary()
+        assert s["non_stub"] == s["total"]
+
+    def test_summary_has_partial_key(self) -> None:
+        s = language_status_summary()
+        assert "partial" in s
+
+
+class TestCapabilityEntryDetails:
+    """Per-capability entry field value checks."""
+
+    def test_python_capability_has_correct_id(self) -> None:
+        cap = next(c for c in list_language_capabilities() if c["id"] == "python")
+        assert cap["id"] == "python"
+
+    def test_c_capability_has_execution_mode(self) -> None:
+        cap = next(c for c in list_language_capabilities() if c["id"] == "c")
+        assert "execution_mode" in cap
+
+    def test_haskell_has_aliases(self) -> None:
+        cap = next(c for c in list_language_capabilities() if c["id"] == "haskell")
+        assert isinstance(cap["aliases"], list)
+
+    def test_timeout_is_positive_number(self) -> None:
+        for cap in list_language_capabilities():
+            assert cap["timeout"] > 0, f"{cap['id']} has non-positive timeout"
+
+    def test_memory_limit_is_positive(self) -> None:
+        for cap in list_language_capabilities():
+            assert cap["memory_limit_mb"] > 0
+
+    def test_all_ids_are_lowercase(self) -> None:
+        for cap in list_language_capabilities():
+            assert cap["id"] == cap["id"].lower()
+
+    def test_normalize_idris2_alias(self) -> None:
+        assert normalize_language_id("idris2") == "idris"
+
+    def test_normalize_system_f_alias(self) -> None:
+        assert normalize_language_id("system-f") == "systemf"

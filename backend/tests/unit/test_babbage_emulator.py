@@ -303,3 +303,99 @@ class TestEngineStackOps:
         engine.registers["A"] = BabbageNumber(999)
         engine.execute_instruction(Instruction("LOAD", ["A", "0"]))
         assert engine.registers["A"].to_decimal() == 0.0
+
+
+class TestEngineBranchOps:
+    """Branching and conditional execution in BabbageNumber Engine."""
+
+    def test_jmp_skips_intervening_instruction(self) -> None:
+        engine = Engine()
+        engine.load_program_from_text("JMP end\nMOV A, 77\nend:\nHALT\n")
+        engine.run()
+        assert engine.registers["A"].to_decimal() == 0.0
+
+    def test_jz_branch_taken_on_zero_flag(self) -> None:
+        engine = Engine()
+        engine.load_program_from_text(
+            "MOV A, 0\nCMPZ A\nJZ done\nMOV A, 55\ndone:\nHALT\n"
+        )
+        engine.run()
+        assert engine.registers["A"].to_decimal() == 0.0
+
+    def test_jnz_branch_not_taken_on_zero(self) -> None:
+        engine = Engine()
+        engine.load_program_from_text(
+            "MOV A, 0\nCMPZ A\nJNZ notdone\nMOV A, 11\nnotdone:\nHALT\n"
+        )
+        engine.run()
+        assert engine.registers["A"].to_decimal() == 11.0
+
+    def test_running_false_after_halt(self) -> None:
+        engine = Engine()
+        engine.load_program_from_text("HALT\n")
+        engine.run()
+        assert engine.running is False
+
+    def test_call_and_ret_return_to_caller(self) -> None:
+        engine = Engine()
+        engine.load_program_from_text(
+            "CALL sub\nMOV B, 99\nHALT\nsub:\nMOV A, 7\nRET\n"
+        )
+        engine.run()
+        assert engine.registers["A"].to_decimal() == 7.0
+        assert engine.registers["B"].to_decimal() == 99.0
+
+    def test_pc_advances_through_instructions(self) -> None:
+        engine = Engine()
+        engine.load_program_from_text("NOP\nNOP\nHALT\n")
+        engine.run()
+        assert engine.PC > 0
+
+
+class TestEngineArithmeticChain:
+    """Chained arithmetic on the BabbageNumber engine."""
+
+    def test_add_then_mult(self) -> None:
+        engine = Engine()
+        engine.load_program_from_text(
+            "MOV A, 3\nMOV B, 4\nADD A, B\nMOV B, 2\nMULT A, B\nHALT\n"
+        )
+        engine.run()
+        from decimal import Decimal
+        assert engine.registers["A"].to_decimal() == Decimal("14")
+
+    def test_sub_then_div(self) -> None:
+        engine = Engine()
+        engine.load_program_from_text(
+            "MOV A, 20\nMOV B, 5\nSUB A, B\nMOV B, 3\nDIV A, B\nHALT\n"
+        )
+        engine.run()
+        from decimal import Decimal
+        assert engine.registers["A"].to_decimal() == Decimal("5")
+
+    def test_sqrt_of_nine(self) -> None:
+        engine = Engine()
+        engine.load_program_from_text("MOV A, 9\nSQRT A\nHALT\n")
+        engine.run()
+        import pytest
+        assert float(engine.registers["A"].to_decimal()) == pytest.approx(3.0, abs=1e-6)
+
+    def test_neg_twice_gives_original(self) -> None:
+        engine = Engine()
+        engine.load_program_from_text("MOV A, 5\nNEG A\nNEG A\nHALT\n")
+        engine.run()
+        assert engine.registers["A"].to_decimal() == 5.0
+
+    def test_clr_then_load(self) -> None:
+        engine = Engine()
+        engine.load_program_from_text("MOV A, 42\nCLR A\nMOV A, 13\nHALT\n")
+        engine.run()
+        assert engine.registers["A"].to_decimal() == 13.0
+
+    def test_multiple_registers_independent(self) -> None:
+        engine = Engine()
+        engine.load_program_from_text("MOV A, 10\nMOV B, 20\nMOV C, 30\nHALT\n")
+        engine.run()
+        assert engine.registers["A"].to_decimal() == 10.0
+        assert engine.registers["B"].to_decimal() == 20.0
+        assert engine.registers["C"].to_decimal() == 30.0

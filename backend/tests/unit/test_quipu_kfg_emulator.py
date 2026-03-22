@@ -197,3 +197,65 @@ class TestQuipuKFGArtifactLoading:
     def test_artifact_clusters_is_list(self) -> None:
         a = self._artifact("QU001.json")
         assert isinstance(a.clusters, list)
+
+
+class TestQuipuKFGEmulatorSummary:
+    """Summary field value checks."""
+
+    def _emu(self, filename: str) -> "QuipuKFGEmulator":
+        a = load_kfg_normalized(_KFG_DIR / filename)
+        return QuipuKFGEmulator(a)
+
+    def test_qu001_cord_count_in_summary(self) -> None:
+        emu = self._emu("QU001.json")
+        assert emu.summarize().cord_count == 33
+
+    def test_ur001_cord_count_in_summary(self) -> None:
+        emu = self._emu("UR001.json")
+        assert emu.summarize().cord_count == 572
+
+    def test_summary_investigator_num_qu001(self) -> None:
+        emu = self._emu("QU001.json")
+        assert emu.summarize().investigator_num == "QU001"
+
+    def test_summary_investigator_num_ur001(self) -> None:
+        emu = self._emu("UR001.json")
+        assert emu.summarize().investigator_num == "UR001"
+
+    def test_total_value_is_int_or_float(self) -> None:
+        emu = self._emu("QU001.json")
+        assert isinstance(emu.summarize().total_value, (int, float))
+
+    def test_total_value_method_matches_summary(self) -> None:
+        emu = self._emu("QU001.json")
+        assert emu.total_value() == emu.summarize().total_value
+
+
+class TestQuipuKFGEmulatorAPI:
+    """Emulator API and artifact access."""
+
+    def _emu(self, filename: str) -> "QuipuKFGEmulator":
+        a = load_kfg_normalized(_KFG_DIR / filename)
+        return QuipuKFGEmulator(a)
+
+    def test_artifact_is_kfg_artifact_instance(self) -> None:
+        emu = self._emu("QU001.json")
+        assert isinstance(emu.artifact, KFGArtifact)
+
+    def test_summarize_returns_quipu_summary_instance(self) -> None:
+        emu = self._emu("QU001.json")
+        assert isinstance(emu.summarize(), QuipuSummary)
+
+    def test_total_value_non_negative(self) -> None:
+        emu = self._emu("QU001.json")
+        assert emu.total_value() >= 0
+
+    def test_two_emus_from_same_artifact_same_summary(self) -> None:
+        a = load_kfg_normalized(_KFG_DIR / "QU001.json")
+        e1 = QuipuKFGEmulator(a)
+        e2 = QuipuKFGEmulator(a)
+        assert e1.summarize().cord_count == e2.summarize().cord_count
+
+    def test_ur001_total_value_is_numeric(self) -> None:
+        emu = self._emu("UR001.json")
+        assert isinstance(emu.total_value(), (int, float))

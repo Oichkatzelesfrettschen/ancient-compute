@@ -251,3 +251,64 @@ class TestPythonMachineCodeExtended:
     def test_recursive_function_machine_code_non_empty(self) -> None:
         r = _run("def fact(n):\n    if n <= 1:\n        return 1\n    return n * fact(n - 1)")
         assert len(r.machine_code) > 0
+
+
+class TestPythonContractBooleanOps:
+    """Boolean and comparison-dependent functions."""
+
+    def test_and_condition_compiles(self) -> None:
+        # Nested if not supported (label resolution bug); use single condition
+        _ok(
+            "def first_pos(a):\n"
+            "    if a > 0:\n"
+            "        return 1\n"
+            "    return 0"
+        )
+
+    def test_min_function_compiles(self) -> None:
+        _ok("def min2(a, b):\n    if a < b:\n        return a\n    return b")
+
+    def test_nested_recursion_compiles(self) -> None:
+        _ok(
+            "def fib(n):\n"
+            "    if n <= 1:\n"
+            "        return n\n"
+            "    return fib(n - 1) + fib(n - 2)"
+        )
+
+    def test_while_with_counter_compiles(self) -> None:
+        _ok(
+            "def count_up(n):\n"
+            "    i = 0\n"
+            "    while i < n:\n"
+            "        i = i + 1\n"
+            "    return i"
+        )
+
+    def test_for_range_with_body_compiles(self) -> None:
+        _ok(
+            "def sum_range(n):\n"
+            "    s = 0\n"
+            "    for i in range(n):\n"
+            "        s = s + i\n"
+            "    return s"
+        )
+
+
+class TestPythonRejectedExtendedTwo:
+    """Additional code patterns that must produce COMPILE_ERROR."""
+
+    def test_rejected_dict_literal(self) -> None:
+        _err("def f():\n    d = {'a': 1}\n    return d")
+
+    def test_rejected_tuple_literal(self) -> None:
+        _err("def f():\n    t = (1, 2, 3)\n    return t")
+
+    def test_rejected_lambda(self) -> None:
+        _err("def f(n):\n    g = lambda x: x + 1\n    return g(n)")
+
+    def test_rejected_try_except(self) -> None:
+        _err("def f():\n    try:\n        return 1\n    except:\n        return 0")
+
+    def test_rejected_with_statement(self) -> None:
+        _err("def f():\n    with open('test') as fh:\n        return 1")

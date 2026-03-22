@@ -241,3 +241,63 @@ class TestRecordCodeExecutionEdgeCases:
 
     def test_record_compilation_large_duration(self) -> None:
         record_code_compilation("assembly", 100.0)
+
+
+class TestExecutionContextStatusTransitions:
+    """ExecutionContext status transition tests."""
+
+    def test_default_status_is_error(self) -> None:
+        ctx = ExecutionContext("python")
+        assert ctx.status == "error"
+
+    def test_mark_success_sets_status(self) -> None:
+        ctx = ExecutionContext("c")
+        ctx.mark_success()
+        assert ctx.status == "success"
+
+    def test_mark_error_keeps_status_error(self) -> None:
+        ctx = ExecutionContext("c")
+        ctx.mark_error()
+        assert ctx.status == "error"
+
+    def test_mark_timeout_sets_status(self) -> None:
+        ctx = ExecutionContext("python")
+        ctx.mark_timeout()
+        assert ctx.status == "timeout"
+
+    def test_success_then_error_is_error(self) -> None:
+        ctx = ExecutionContext("haskell")
+        ctx.mark_success()
+        ctx.mark_error()
+        assert ctx.status == "error"
+
+    def test_language_attribute_preserved(self) -> None:
+        ctx = ExecutionContext("lisp")
+        assert ctx.language == "lisp"
+
+
+class TestMetricsRecordFunctions:
+    """Additional record_* function smoke tests for all languages."""
+
+    def test_record_execution_all_languages(self) -> None:
+        for lang in ["python", "c", "haskell", "lisp", "java", "assembly"]:
+            record_code_execution(lang, 0.1, "success")
+
+    def test_record_compilation_all_languages(self) -> None:
+        for lang in ["python", "c", "haskell"]:
+            record_code_compilation(lang, 0.05)
+
+    def test_record_cache_access_hit_and_miss(self) -> None:
+        record_cache_access("execution", hit=True)
+        record_cache_access("execution", hit=False)
+
+    def test_record_execution_with_timeout_status(self) -> None:
+        record_code_execution("python", 30.0, "timeout")
+
+    def test_metrics_response_content_type(self) -> None:
+        resp = metrics_response()
+        assert "text" in resp.media_type or "plain" in resp.media_type
+
+    def test_metrics_response_status_200(self) -> None:
+        resp = metrics_response()
+        assert resp.status_code == 200

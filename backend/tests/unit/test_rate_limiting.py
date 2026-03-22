@@ -314,3 +314,68 @@ class TestRateLimitMiddlewareExtended:
         max_req, window = self.mw._get_rate_limit("/completely/unknown/path")
         assert max_req == 100
         assert window == 60
+
+
+class TestRateLimiterRetryHeader:
+    """Retry-After header value on rate limit hit."""
+
+    def test_retry_after_positive_on_rejection(self) -> None:
+        rl = RateLimiter()
+        for _ in range(3):
+            rl.is_allowed("ip-test", "/api/v1/execute", 3, 60)
+        allowed, retry = rl.is_allowed("ip-test", "/api/v1/execute", 3, 60)
+        assert allowed is False
+        assert retry is not None
+        assert retry > 0
+
+    def test_retry_after_none_when_allowed(self) -> None:
+        rl = RateLimiter()
+        _, retry = rl.is_allowed("new-ip", "/test", 10, 60)
+        assert retry is None
+
+    def test_exact_limit_allowed_then_blocked(self) -> None:
+        rl = RateLimiter()
+        # max_requests=2: first 2 allowed, third blocked
+        rl.is_allowed("user", "/api", 2, 60)
+        rl.is_allowed("user", "/api", 2, 60)
+        allowed, _ = rl.is_allowed("user", "/api", 2, 60)
+        assert allowed is False
+
+    def test_different_windows_track_separately(self) -> None:
+        rl = RateLimiter()
+        for _ in range(5):
+            rl.is_allowed("ip", "/fast", 5, 1)  # 1 second window
+        # Same ip, different route/window
+        allowed, _ = rl.is_allowed("ip", "/slow", 5, 3600)
+        assert allowed is True
+
+
+class TestRateLimiterBucketStateExtended:
+    """Internal bucket state tests."""
+
+    def test_buckets_dict_populated_after_request(self) -> None:
+        rl = RateLimiter()
+        rl.is_allowed("test-ip", "/route", 10, 60)
+        assert len(rl.buckets) >= 1
+
+    def test_buckets_empty_on_fresh_limiter(self) -> None:
+        rl = RateLimiter()
+        assert len(rl.buckets) == 0
+
+    def test_two_ips_two_bucket_entries(self) -> None:
+        rl = RateLimiter()
+        rl.is_allowed("ip-alpha", "/route", 10, 60)
+        rl.is_allowed("ip-beta", "/route", 10, 60)
+        assert len(rl.buckets) == 2
+
+    def test_repeated_requests_do_not_duplicate_buckets(self) -> None:
+        rl = RateLimiter()
+        for _ in range(10):
+            rl.is_allowed("single-ip", "/route", 100, 60)
+        assert len(rl.buckets) == 1
+
+    def test_is_allowed_returns_tuple(self) -> None:
+        rl = RateLimiter()
+        result = rl.is_allowed("ip", "/route", 10, 60)
+        assert isinstance(result, tuple)
+        assert len(result) == 2

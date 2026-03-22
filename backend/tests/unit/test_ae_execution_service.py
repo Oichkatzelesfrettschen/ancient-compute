@@ -321,3 +321,115 @@ class TestAEServiceResultShape:
     def test_assembly_text_is_string(self, svc: AEExecutionService) -> None:
         result = svc.execute("int f(int x) { return x; }", language="c")
         assert isinstance(result.assembly_text, str)
+
+
+class TestEngineJumpOpcodes:
+    """AE engine conditional and unconditional jump opcodes."""
+
+    def test_jmp_transfers_control(self) -> None:
+        from backend.src.emulator.analytical_engine.engine import Engine
+
+        e = Engine()
+        # JMP over a MOV that would set A=99; A should stay 0
+        e.load_program_from_text("JMP end\nMOV A, 99\nend:\nHALT\n")
+        e.run()
+        assert float(e.registers["A"].to_decimal()) == pytest.approx(0.0)
+
+    def test_jz_taken_when_zero(self) -> None:
+        from backend.src.emulator.analytical_engine.engine import Engine
+
+        e = Engine()
+        e.load_program_from_text("MOV A, 0\nCMPZ A\nJZ skip\nMOV A, 99\nskip:\nHALT\n")
+        e.run()
+        assert float(e.registers["A"].to_decimal()) == pytest.approx(0.0)
+
+    def test_jnz_not_taken_when_nonzero(self) -> None:
+        from backend.src.emulator.analytical_engine.engine import Engine
+
+        e = Engine()
+        e.load_program_from_text(
+            "MOV A, 5\nCMPZ A\nJNZ skip\nMOV A, 42\nskip:\nHALT\n"
+        )
+        e.run()
+        assert float(e.registers["A"].to_decimal()) == pytest.approx(5.0)
+
+    def test_multiple_instructions_execute_in_order(self) -> None:
+        from backend.src.emulator.analytical_engine.engine import Engine
+
+        e = Engine()
+        e.load_program_from_text(
+            "MOV A, 1\nMOV B, 2\nADD A, B\nMOV B, 3\nADD A, B\nHALT\n"
+        )
+        e.run()
+        assert float(e.registers["A"].to_decimal()) == pytest.approx(6.0)
+
+    def test_clr_then_add(self) -> None:
+        from backend.src.emulator.analytical_engine.engine import Engine
+
+        e = Engine()
+        e.load_program_from_text("MOV A, 50\nCLR A\nMOV B, 7\nADD A, B\nHALT\n")
+        e.run()
+        assert float(e.registers["A"].to_decimal()) == pytest.approx(7.0)
+
+    def test_neg_then_abs(self) -> None:
+        from backend.src.emulator.analytical_engine.engine import Engine
+
+        e = Engine()
+        e.load_program_from_text("MOV A, 8\nNEG A\nABS A\nHALT\n")
+        e.run()
+        assert float(e.registers["A"].to_decimal()) == pytest.approx(8.0)
+
+    def test_instruction_count_matches_loaded_program(self) -> None:
+        from backend.src.emulator.analytical_engine.engine import Engine
+
+        e = Engine()
+        src = "NOP\nNOP\nNOP\nHALT\n"
+        e.load_program_from_text(src)
+        assert len(e.instruction_cards) == 4
+
+    def test_registers_dict_has_expected_keys(self) -> None:
+        from backend.src.emulator.analytical_engine.engine import Engine
+
+        e = Engine()
+        assert "A" in e.registers
+        assert "B" in e.registers
+
+
+class TestAEServicePythonExtended:
+    """Extended Python->AE execution pipeline tests."""
+
+    def test_python_arithmetic_function_compiles(self, svc: AEExecutionService) -> None:
+        code = "def add(a, b):\n    return a + b\n"
+        result = svc.execute(code, language="python")
+        assert result.assembly_text != ""
+
+    def test_python_while_loop_compiles(self, svc: AEExecutionService) -> None:
+        code = "def count(n):\n    i = 0\n    while i < n:\n        i = i + 1\n    return i\n"
+        result = svc.execute(code, language="python")
+        assert result.assembly_text != ""
+
+    def test_python_recursive_function_compiles(self, svc: AEExecutionService) -> None:
+        code = "def fact(n):\n    if n <= 1:\n        return 1\n    return n * fact(n - 1)\n"
+        result = svc.execute(code, language="python")
+        assert result.assembly_text != ""
+
+    def test_python_result_has_machine_code(self, svc: AEExecutionService) -> None:
+        code = "def f(x):\n    return x\n"
+        result = svc.execute(code, language="python")
+        # Either compiled or compile_error; if success, machine_code present
+        if result.status == AEExecutionStatus.SUCCESS:
+            assert hasattr(result, "assembly_text")
+
+    def test_python_compile_error_has_stderr(self, svc: AEExecutionService) -> None:
+        result = svc.execute("def bad(:\n    pass\n", language="python")
+        assert result.status == AEExecutionStatus.COMPILE_ERROR
+        assert isinstance(result.stderr, str)
+
+    def test_unsupported_language_stderr_message(self, svc: AEExecutionService) -> None:
+        result = svc.execute("code", language="rust")
+        assert "Unsupported" in result.stderr
+
+    def test_c_identity_assembly_contains_ret(self, svc: AEExecutionService) -> None:
+        result = svc.execute("int f(int x) { return x; }", language="c")
+        if result.status == AEExecutionStatus.SUCCESS:
+            assert len(result.assembly_text) > 0

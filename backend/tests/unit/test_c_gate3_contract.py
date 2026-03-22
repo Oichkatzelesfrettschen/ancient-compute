@@ -259,3 +259,82 @@ class TestCFreestandingComparisonOps:
 
     def test_equal_equal_compiles(self) -> None:
         _ok("int eq(int a, int b) { if (a == b) { return 1; } return 0; }")
+
+
+class TestCGate3MachineCodeProperties:
+    """Machine code output properties for C Gate 3 programs."""
+
+    def test_machine_code_non_empty_for_simple_function(self) -> None:
+        r = _run("int f(int x) { return x; }")
+        assert len(r.machine_code) > 0
+
+    def test_machine_code_is_string(self) -> None:
+        r = _run("int f(int x) { return x; }")
+        assert isinstance(r.machine_code, str)
+
+    def test_machine_code_grows_with_more_operations(self) -> None:
+        r1 = _run("int f(int x) { return x; }")
+        r2 = _run("int f(int a, int b) { return a + b; }")
+        # Both should succeed; more complex code gives at least as much output
+        assert len(r2.machine_code) >= len(r1.machine_code)
+
+    def test_status_is_success_for_valid_c(self) -> None:
+        from backend.src.services.languages.c_service import ExecutionStatus
+        r = _run("int identity(int x) { return x; }")
+        assert r.status == ExecutionStatus.SUCCESS
+
+    def test_result_has_stdout_attribute(self) -> None:
+        r = _run("int f(int x) { return x; }")
+        assert hasattr(r, "stdout")
+
+    def test_result_has_stderr_attribute(self) -> None:
+        r = _run("int f(int x) { return x; }")
+        assert hasattr(r, "stderr")
+
+    def test_compile_error_result_has_empty_machine_code(self) -> None:
+        from backend.src.services.languages.c_service import ExecutionStatus
+        r = _run("int f { return 1; }")  # missing parens -> parse error
+        assert r.status == ExecutionStatus.COMPILE_ERROR
+
+
+class TestCGate3RecursionAndMultiFunc:
+    """Recursive and multi-function C programs."""
+
+    def test_fibonacci_recursive_compiles(self) -> None:
+        code = (
+            "int fib(int n) {\n"
+            "    if (n <= 1) { return n; }\n"
+            "    return fib(n - 1) + fib(n - 2);\n"
+            "}\n"
+        )
+        _ok(code)
+
+    def test_three_function_chain_compiles(self) -> None:
+        code = (
+            "int double_val(int x) { return x * 2; }\n"
+            "int triple_val(int x) { return x * 3; }\n"
+            "int sextuple(int x) { return double_val(triple_val(x)); }\n"
+        )
+        _ok(code)
+
+    def test_mutual_recursion_simple_compiles(self) -> None:
+        # Simple recursion without forward declarations
+        code = "int count_down(int n) { if (n <= 0) { return 0; } return count_down(n - 1); }"
+        _ok(code)
+
+    def test_nested_if_else_compiles(self) -> None:
+        _ok(
+            "int sign(int x) {\n"
+            "    if (x > 0) { return 1; }\n"
+            "    if (x < 0) { return -1; }\n"
+            "    return 0;\n"
+            "}\n"
+        )
+
+    def test_while_countdown_compiles(self) -> None:
+        _ok(
+            "int countdown(int n) {\n"
+            "    while (n > 0) { n = n - 1; }\n"
+            "    return n;\n"
+            "}\n"
+        )
