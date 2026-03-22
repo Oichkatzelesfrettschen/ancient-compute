@@ -303,8 +303,8 @@ class TestMetricsRecordFunctions:
         assert resp.status_code == 200
 
 
-class TestExecutionContextStatusTransitions:
-    """ExecutionContext status state machine invariants."""
+class TestExecutionContextStatusTransitionsExtra:
+    """Additional ExecutionContext status state machine invariants."""
 
     def test_initial_status_is_a_string(self) -> None:
         from backend.src.metrics import ExecutionContext

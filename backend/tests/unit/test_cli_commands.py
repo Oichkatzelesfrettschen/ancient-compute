@@ -332,6 +332,7 @@ class TestCliDeckCommand:
 
     def test_deck_g_n3_exits_zero(self) -> None:
         from click.testing import CliRunner
+
         from backend.src.emulator.cli.app import cli
         result = CliRunner().invoke(cli, ["deck", "--note", "g", "--n", "3"])
         assert result.exit_code == 0

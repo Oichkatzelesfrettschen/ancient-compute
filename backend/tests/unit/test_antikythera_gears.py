@@ -362,6 +362,7 @@ class TestGearTrainSingleEdge:
 
     def test_unit_ratio_identity(self) -> None:
         import math
+
         from backend.src.emulator.antikythera import GearEdge, GearTrain
         train = GearTrain([GearEdge(src="X", dst="Y", ratio=1.0)])
         angles = train.propagate(45.0, "X")

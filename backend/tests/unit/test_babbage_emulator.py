@@ -421,6 +421,6 @@ class TestEngineMemoryOperations:
         assert engine.registers["A"].to_decimal() == 10.0
 
     def test_initial_memory_all_zero(self) -> None:
-        from backend.src.emulator.analytical_engine import Engine, BabbageNumber
+        from backend.src.emulator.analytical_engine import BabbageNumber, Engine
         engine = Engine()
         assert all(engine.memory[i] == BabbageNumber(0) for i in range(10))

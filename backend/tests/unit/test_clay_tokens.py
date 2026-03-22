@@ -313,7 +313,7 @@ class TestClayTokensStateInvariant:
         emu = ClayTokensEmulator()
         emu.add_token("oil", 1)
         s1 = emu.state()
-        s2 = emu.state()
+        emu.state()  # second snapshot (unused; proves state() is pure)
         s1["tokens"]["oil"] = 999
         assert emu.state()["tokens"].get("oil", 0) != 999
 

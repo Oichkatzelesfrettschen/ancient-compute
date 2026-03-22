@@ -310,7 +310,6 @@ class TestSimulationEngineRunExtra:
         assert isinstance(result, SimulationResult)
 
     def test_run_10s_records_produced(self) -> None:
-        from backend.src.emulator.simulation.engine import SimulationResult
         cfg = SimulationConfig(rpm=30.0)
         result = SimulationEngine(cfg).run(120.0, record_interval_s=60.0)
         assert hasattr(result, "history")

@@ -422,7 +422,7 @@ _NON_ZERO = st.integers(1, 50)
 _INT_SMALL = st.integers(0, 50)
 
 
-class TestBabbageNumberHypothesisExtra:
+class TestBabbageNumberHypothesisExtra2:
     """Additional BabbageNumber algebraic properties."""
 
     @given(_INT_SMALL)

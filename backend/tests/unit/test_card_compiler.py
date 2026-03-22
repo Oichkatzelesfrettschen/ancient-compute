@@ -337,15 +337,15 @@ class TestCardEncodingProperties:
             assert dec.opcode == op
 
 
-class TestCardDataFields:
-    """CardData field types and defaults."""
+class TestCardDataFieldsExtra:
+    """Additional CardData field type tests."""
 
     def test_operation_card_class_stored(self) -> None:
-        from card_compiler import CardData, CardClass, Opcode
+        from card_compiler import CardClass, CardData, Opcode
         card = CardData(card_class=CardClass.OPERATION, opcode=Opcode.ADD, modifier=0)
         assert card.card_class == CardClass.OPERATION
 
     def test_operation_opcode_stored(self) -> None:
-        from card_compiler import CardData, CardClass, Opcode
+        from card_compiler import CardClass, CardData, Opcode
         card = CardData(card_class=CardClass.OPERATION, opcode=Opcode.SUB)
         assert card.opcode == Opcode.SUB

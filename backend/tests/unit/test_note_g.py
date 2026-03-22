@@ -314,8 +314,8 @@ class TestRunNoteGProperties:
         from backend.src.emulator.note_g_deck import run_series
         rg = run_note_g(4)
         rs = run_series(4)
-        for a, b in zip(rg, rs):
-            assert abs(a.to_decimal() - b.to_decimal()) < 1e-9
+        for v1, v2 in zip(rg, rs, strict=True):
+            assert abs(v1.to_decimal() - v2.to_decimal()) < 1e-9
 
     def test_n1_result_is_list_of_one(self) -> None:
         assert len(run_note_g(1)) == 1
@@ -334,8 +334,8 @@ class TestRunNoteGExactProperties:
         # run_note_g_exact returns Fraction; run_note_g returns BabbageNumber
         exact = run_note_g_exact(5)
         rg = run_note_g(5)
-        for a, b in zip(exact, rg):
-            assert abs(float(a) - float(b.to_decimal())) < 1e-9
+        for frac, bn in zip(exact, rg, strict=True):
+            assert abs(float(frac) - float(bn.to_decimal())) < 1e-9
 
     def test_all_n2_values_nonzero(self) -> None:
         # run_note_g_exact returns Fraction objects

@@ -408,28 +408,24 @@ class TestSimulationEngineStepDirect:
         assert isinstance(result, StepResult)
 
     def test_step_time_s_positive(self) -> None:
-        from backend.src.emulator.simulation.engine import StepResult
         config = SimulationConfig(rpm=30.0)
         sim = SimulationEngine(config)
         result = sim.step()
         assert result.time_s > 0.0
 
     def test_step_temperature_above_zero(self) -> None:
-        from backend.src.emulator.simulation.engine import StepResult
         config = SimulationConfig(rpm=30.0)
         sim = SimulationEngine(config)
         result = sim.step()
         assert result.temperature_C > 0.0
 
     def test_step_wear_nonneg(self) -> None:
-        from backend.src.emulator.simulation.engine import StepResult
         config = SimulationConfig(rpm=30.0)
         sim = SimulationEngine(config)
         result = sim.step()
         assert result.max_wear_volume_mm3 >= 0.0
 
     def test_step_lubrication_regime_is_string(self) -> None:
-        from backend.src.emulator.simulation.engine import StepResult
         config = SimulationConfig(rpm=30.0)
         sim = SimulationEngine(config)
         result = sim.step()

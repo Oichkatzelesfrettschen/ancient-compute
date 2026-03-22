@@ -328,7 +328,8 @@ class TestDraconicTrainEdgeProperties:
         s1_per_r1 = train.propagate(1.0, "r1")["s1"]
         compound = abs(a1_per_b1) * abs(s1_per_r1)
         model = AntikytheraDraconicModel()
-        assert math.isclose(compound, model.draconic_pointer_rotations_per_b1_rotation(), rel_tol=1e-9)
+        expected = model.draconic_pointer_rotations_per_b1_rotation()
+        assert math.isclose(compound, expected, rel_tol=1e-9)
 
     def test_b1_a1_ratio_is_224_over_50(self) -> None:
         train = draconic_pointer_train_from_arxiv_2104_06181()

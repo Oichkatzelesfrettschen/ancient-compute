@@ -304,8 +304,9 @@ class TestBabbageProgramEngineState:
     """Engine state properties after program execution."""
 
     def test_running_program_leaves_engine_halted(self) -> None:
-        from backend.src.emulator.analytical_engine import Engine
         from pathlib import Path
+
+        from backend.src.emulator.analytical_engine import Engine
         eng = Engine()
         ae_dir = Path(__file__).resolve().parents[3] / "docs" / "simulation" / "programs"
         eng.load_program_from_text((ae_dir / "babbage_addition.ae").read_text())

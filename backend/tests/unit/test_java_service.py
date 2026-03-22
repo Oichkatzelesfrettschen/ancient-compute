@@ -623,7 +623,10 @@ class TestJavaServiceResultShape:
         assert len(r.stderr) > 0
 
     def test_success_stdout_is_string(self) -> None:
-        code = "public class Main { public static void main(String[] a) { System.out.println(1); } }"
+        code = (
+            "public class Main {"
+            " public static void main(String[] a) { System.out.println(1); } }"
+        )
         r = _run(code)
         assert isinstance(r.stdout, str)
 
@@ -633,8 +636,8 @@ class TestJavaServiceResultShape:
         assert isinstance(r.stderr, str)
 
 
-class TestJavaServiceResultShape:
-    """Result object attributes."""
+class TestJavaServiceResultShapeExtra:
+    """Additional result object attribute checks."""
 
     def test_result_has_status_attr(self) -> None:
         code = "public class Main { public static void main(String[] a) {} }"

@@ -254,7 +254,7 @@ class TestAssemblerArithmeticOpcodes:
 
     def _src(self, *body: str) -> str:
         lines = ".global main\n.text\nmain:\n"
-        lines += "\n".join(f"  {l}" for l in body)
+        lines += "\n".join(f"  {line}" for line in body)
         return lines
 
     def test_add_instruction_assembles(self) -> None:

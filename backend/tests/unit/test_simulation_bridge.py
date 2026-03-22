@@ -376,8 +376,8 @@ class TestPhysicsSnapshotExtra:
 
     def _snap(self) -> "PhysicsSnapshot":
         cfg = SimulationConfig(rpm=30.0)
-        from backend.src.emulator.simulation.engine import SimulationEngine
         from backend.src.emulator.simulation.bridge import SimulationBridge
+        from backend.src.emulator.simulation.engine import SimulationEngine
         bridge = SimulationBridge(SimulationEngine(cfg))
         bridge.opcode_advance("ADD")
         return bridge.snapshot()
@@ -395,8 +395,8 @@ class TestPhysicsSnapshotExtra:
         assert self._snap().energy_consumed_J >= 0
 
     def test_two_snapshots_independent(self) -> None:
-        from backend.src.emulator.simulation.engine import SimulationEngine
         from backend.src.emulator.simulation.bridge import SimulationBridge
+        from backend.src.emulator.simulation.engine import SimulationEngine
         cfg = SimulationConfig(rpm=30.0)
         b1 = SimulationBridge(SimulationEngine(cfg))
         b2 = SimulationBridge(SimulationEngine(cfg))
