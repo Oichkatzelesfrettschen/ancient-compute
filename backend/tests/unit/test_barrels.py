@@ -42,7 +42,6 @@ class TestBarrelControllerInit:
 
 
 class TestBarrelSelection:
-
     def test_select_known_barrel(self):
         ctrl = BarrelController()
         ctrl.select_barrel("ADD")
@@ -68,7 +67,6 @@ class TestBarrelSelection:
 
 
 class TestStepSequencing:
-
     def test_step_returns_empty_when_idle(self):
         ctrl = BarrelController()
         assert ctrl.step() == []
@@ -97,7 +95,6 @@ class TestStepSequencing:
 
 
 class TestADDBarrel:
-
     def setup_method(self):
         self.ctrl = BarrelController()
         self.ctrl.select_barrel("ADD")
@@ -148,7 +145,6 @@ class TestADDBarrel:
 
 
 class TestSUBBarrel:
-
     def setup_method(self):
         self.ctrl = BarrelController()
         self.ctrl.select_barrel("SUB")
@@ -170,7 +166,6 @@ class TestSUBBarrel:
 
 
 class TestMULTBarrel:
-
     def setup_method(self):
         self.ctrl = BarrelController()
         self.ctrl.select_barrel("MULT")
@@ -213,7 +208,6 @@ class TestMULTBarrel:
 
 
 class TestDIVBarrel:
-
     def setup_method(self):
         self.ctrl = BarrelController()
         self.ctrl.select_barrel("DIV")
@@ -265,7 +259,6 @@ class TestDIVBarrel:
 
 
 class TestSQRTBarrel:
-
     def setup_method(self):
         self.ctrl = BarrelController()
         self.ctrl.select_barrel("SQRT")
@@ -296,7 +289,6 @@ class TestSQRTBarrel:
 
 
 class TestLOADSTORBarrels:
-
     def setup_method(self):
         self.ctrl = BarrelController()
 

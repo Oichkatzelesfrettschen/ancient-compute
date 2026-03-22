@@ -186,3 +186,185 @@ class TestQueryCacheStats:
 
 
 import pytest  # noqa: E402
+
+# ---------------------------------------------------------------------------
+# QueryCacheEntry -- extended
+# ---------------------------------------------------------------------------
+
+
+class TestQueryCacheEntryExtended:
+    def test_entry_data_preserved(self) -> None:
+        entry = QueryCacheEntry(data=[1, 2, 3], created_at=time.time(), ttl_seconds=60)
+        assert entry.data == [1, 2, 3]
+
+    def test_default_ttl_is_300(self) -> None:
+        entry = QueryCacheEntry(data="x", created_at=time.time())
+        assert entry.ttl_seconds == 300
+
+    def test_just_expired_is_expired(self) -> None:
+        # Created exactly ttl+1 seconds ago -> expired
+        entry = QueryCacheEntry(data="x", created_at=time.time() - 301, ttl_seconds=300)
+        assert entry.is_expired() is True
+
+    def test_just_before_expiry_is_not_expired(self) -> None:
+        entry = QueryCacheEntry(data="x", created_at=time.time() - 1, ttl_seconds=300)
+        assert entry.is_expired() is False
+
+    def test_zero_ttl_is_always_expired(self) -> None:
+        entry = QueryCacheEntry(data="x", created_at=time.time() - 1, ttl_seconds=0)
+        assert entry.is_expired() is True
+
+
+# ---------------------------------------------------------------------------
+# QueryCache -- constructor defaults
+# ---------------------------------------------------------------------------
+
+
+class TestQueryCacheDefaults:
+    def test_default_max_entries(self) -> None:
+        cache = QueryCache()
+        assert cache.max_entries == 500
+
+    def test_default_ttl_seconds(self) -> None:
+        cache = QueryCache()
+        assert cache.default_ttl == 300
+
+    def test_cache_starts_empty(self) -> None:
+        cache = QueryCache()
+        assert len(cache._cache) == 0
+
+    def test_hits_start_at_zero(self) -> None:
+        cache = QueryCache()
+        assert cache.hits == 0
+
+    def test_misses_start_at_zero(self) -> None:
+        cache = QueryCache()
+        assert cache.misses == 0
+
+    def test_custom_max_entries(self) -> None:
+        cache = QueryCache(max_entries=10)
+        assert cache.max_entries == 10
+
+    def test_custom_ttl(self) -> None:
+        cache = QueryCache(default_ttl=60)
+        assert cache.default_ttl == 60
+
+
+# ---------------------------------------------------------------------------
+# QueryCache -- key generation extended
+# ---------------------------------------------------------------------------
+
+
+class TestQueryCacheKeyExtended:
+    def test_key_is_string(self) -> None:
+        cache = QueryCache()
+        key = cache._generate_key("exercise", id=1)
+        assert isinstance(key, str)
+
+    def test_key_contains_query_type(self) -> None:
+        cache = QueryCache()
+        key = cache._generate_key("module", id=7)
+        assert "module" in key
+
+    def test_no_kwargs_produces_stable_key(self) -> None:
+        cache = QueryCache()
+        k1 = cache._generate_key("list")
+        k2 = cache._generate_key("list")
+        assert k1 == k2
+
+    def test_different_integer_values_produce_different_keys(self) -> None:
+        cache = QueryCache()
+        k1 = cache._generate_key("exercise", id=1)
+        k2 = cache._generate_key("exercise", id=2)
+        assert k1 != k2
+
+
+# ---------------------------------------------------------------------------
+# QueryCache -- store and eviction extended
+# ---------------------------------------------------------------------------
+
+
+class TestQueryCacheStoreExtended:
+    def test_store_overwrites_existing_key(self) -> None:
+        cache = QueryCache()
+        cache._store("k", "first")
+        cache._store("k", "second")
+        assert cache._cache["k"].data == "second"
+        assert len(cache._cache) == 1
+
+    def test_store_at_capacity_keeps_size_bounded(self) -> None:
+        cache = QueryCache(max_entries=3)
+        for i in range(5):
+            cache._store(f"key_{i}", i)
+        assert len(cache._cache) <= 3
+
+    def test_custom_ttl_in_store(self) -> None:
+        cache = QueryCache(default_ttl=999)
+        cache._store("k", "v")
+        assert cache._cache["k"].ttl_seconds == 999
+
+
+# ---------------------------------------------------------------------------
+# QueryCache -- stats extended
+# ---------------------------------------------------------------------------
+
+
+class TestQueryCacheStatsExtended:
+    def test_stats_max_entries_matches_init(self) -> None:
+        cache = QueryCache(max_entries=100)
+        stats = cache.get_stats()
+        assert stats["max_entries"] == 100
+
+    def test_stats_entries_reflects_current_count(self) -> None:
+        cache = QueryCache()
+        cache._store("a", 1)
+        cache._store("b", 2)
+        stats = cache.get_stats()
+        assert stats["entries"] == 2
+
+    def test_hit_rate_zero_with_no_requests(self) -> None:
+        cache = QueryCache()
+        assert cache.get_stats()["hit_rate"] == 0.0
+
+    def test_all_misses_gives_zero_hit_rate(self) -> None:
+        cache = QueryCache()
+        cache.hits = 0
+        cache.misses = 10
+        assert cache.get_stats()["hit_rate"] == 0.0
+
+    def test_all_hits_gives_one_hit_rate(self) -> None:
+        cache = QueryCache()
+        cache.hits = 10
+        cache.misses = 0
+        stats = cache.get_stats()
+        assert stats["hit_rate"] == pytest.approx(1.0)
+
+
+# ---------------------------------------------------------------------------
+# QueryCache -- invalidation extended
+# ---------------------------------------------------------------------------
+
+
+class TestQueryCacheInvalidationExtended:
+    def test_wildcard_on_empty_cache_returns_zero(self) -> None:
+        cache = QueryCache()
+        assert cache.invalidate("*") == 0
+
+    def test_prefix_with_colon_star_matches_all_with_prefix(self) -> None:
+        cache = QueryCache()
+        for i in range(4):
+            cache._store(f"exercise:id={i}", i)
+        cache._store("module:id=1", "mod")
+        removed = cache.invalidate("exercise:*")
+        assert removed == 4
+        assert len(cache._cache) == 1
+
+    def test_clear_empty_cache_is_safe(self) -> None:
+        cache = QueryCache()
+        cache.clear()  # Should not raise
+        assert len(cache._cache) == 0
+
+    def test_cleanup_on_fresh_cache_returns_zero(self) -> None:
+        cache = QueryCache()
+        cache._store("k", "v")
+        assert cache.cleanup_expired() == 0

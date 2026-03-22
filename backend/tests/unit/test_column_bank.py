@@ -560,3 +560,167 @@ def test_column_bank_cascading_carries():
     # Each column should carry appropriately
     values = bank.get_all_values()
     assert all(v > 0 for v in values)
+
+
+# ============================================================================
+# Class-based tests: DigitColumn behaviour
+# ============================================================================
+
+
+class TestDigitColumn:
+    """Detailed DigitColumn state transitions and arithmetic."""
+
+    def test_initial_value_is_zero(self) -> None:
+        col = DigitColumn(0)
+        assert col.get_value_as_int() == 0
+
+    def test_set_value_roundtrip(self) -> None:
+        col = DigitColumn(0)
+        col.set_value_from_int(987654321)
+        assert col.get_value_as_int() == 987654321
+
+    def test_add_single_positive(self) -> None:
+        col = DigitColumn(0)
+        col.set_value_from_int(100)
+        col.add_single(5)
+        assert col.get_value_as_int() == 105
+
+    def test_add_single_accumulates(self) -> None:
+        col = DigitColumn(0)
+        for _ in range(10):
+            col.add_single(3)
+        assert col.get_value_as_int() == 30
+
+    def test_get_digit_units_position(self) -> None:
+        col = DigitColumn(0)
+        col.set_value_from_int(7)
+        assert col.get_digit(0) == 7
+
+    def test_set_digit_updates_value(self) -> None:
+        col = DigitColumn(0)
+        col.set_digit(0, 5)
+        assert col.get_digit(0) == 5
+
+    def test_get_digit_out_of_range_raises(self) -> None:
+        col = DigitColumn(0)
+        with pytest.raises(IndexError):
+            col.get_digit(31)
+
+    def test_set_digit_out_of_range_raises(self) -> None:
+        col = DigitColumn(0)
+        with pytest.raises(IndexError):
+            col.set_digit(31, 0)
+
+    def test_reset_zeroes_value(self) -> None:
+        col = DigitColumn(0)
+        col.set_value_from_int(12345)
+        col.reset()
+        assert col.get_value_as_int() == 0
+
+    def test_carry_out_false_initially(self) -> None:
+        col = DigitColumn(0)
+        assert col.get_carry_out() is False
+
+    def test_carry_propagates_on_overflow(self) -> None:
+        col = DigitColumn(0)
+        # Fill ALL 31 digits with 9, then add 1 -> overflow past digit 30
+        for pos in range(31):
+            col.set_digit(pos, 9)
+        diff = [1] + [0] * 30
+        col.add_difference(diff)
+        assert col.get_carry_out() is True
+
+    def test_set_carry_in_false(self) -> None:
+        col = DigitColumn(0)
+        col.set_carry_in(False)
+        assert col.carry_in is False
+
+    def test_set_carry_in_true_affects_add(self) -> None:
+        col = DigitColumn(0)
+        col.set_value_from_int(0)
+        col.set_carry_in(True)
+        diff = [0] * 31
+        col.add_difference(diff)
+        assert col.get_value_as_int() == 1
+
+    def test_snapshot_has_column_index(self) -> None:
+        col = DigitColumn(3)
+        snap = col.get_snapshot()
+        assert snap.column_index == 3
+
+    def test_snapshot_digits_is_31_elements(self) -> None:
+        col = DigitColumn(0)
+        snap = col.get_snapshot()
+        assert len(snap.digits) == 31
+
+    def test_set_phase_stores_name(self) -> None:
+        col = DigitColumn(0)
+        col.set_phase("adding")
+        assert col.phase == "adding"
+
+    def test_repr_contains_index(self) -> None:
+        col = DigitColumn(4)
+        assert "4" in repr(col)
+
+    def test_add_difference_wrong_length_raises(self) -> None:
+        col = DigitColumn(0)
+        with pytest.raises(ValueError):
+            col.add_difference([1, 0])
+
+
+# ============================================================================
+# Class-based tests: ColumnBank extended
+# ============================================================================
+
+
+class TestColumnBankExtended:
+    """ColumnBank set_all_values, reset_all, out-of-range get_column."""
+
+    def test_set_all_values_stores_correctly(self) -> None:
+        bank = ColumnBank()
+        vals = [i * 10 for i in range(8)]
+        bank.set_all_values(vals)
+        assert bank.get_all_values() == vals
+
+    def test_reset_all_zeroes_every_column(self) -> None:
+        bank = ColumnBank(initial_differences=[1, 2, 3, 4, 5, 6, 7, 8])
+        bank.reset_all()
+        for v in bank.get_all_values():
+            assert v == 0
+
+    def test_get_column_in_range(self) -> None:
+        bank = ColumnBank()
+        col = bank.get_column(7)
+        assert isinstance(col, DigitColumn)
+
+    def test_get_column_out_of_range_raises(self) -> None:
+        bank = ColumnBank()
+        with pytest.raises((IndexError, ValueError)):
+            bank.get_column(8)
+
+    def test_set_all_phases_propagates(self) -> None:
+        bank = ColumnBank()
+        bank.set_all_phases("adding")
+        for col in bank.columns:
+            assert col.phase == "adding"
+
+    def test_initial_differences_wrong_length_raises(self) -> None:
+        with pytest.raises(ValueError):
+            ColumnBank(initial_differences=[1, 2, 3])
+
+    def test_get_all_values_returns_eight_items(self) -> None:
+        bank = ColumnBank()
+        assert len(bank.get_all_values()) == 8
+
+    def test_add_difference_row_wrong_count_raises(self) -> None:
+        bank = ColumnBank()
+        with pytest.raises((ValueError, IndexError)):
+            bank.add_difference_row([[0] * 31] * 3)  # only 3 rows, need 8
+
+    def test_carry_propagates_between_columns(self) -> None:
+        bank = ColumnBank()
+        # Fill col[0] digit[0] = 9 so +1 produces carry
+        bank.get_column(0).set_digit(0, 9)
+        diff_rows = [[1] + [0] * 30] + [[0] * 31] * 7
+        bank.add_difference_row(diff_rows)
+        assert bank.get_column(0).get_digit(0) == 0  # wrapped around

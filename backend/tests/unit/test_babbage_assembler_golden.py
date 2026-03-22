@@ -109,9 +109,7 @@ class TestAssemblerBasics:
 
     def test_arithmetic_program_instruction_count(self) -> None:
         # LOAD A + LOAD B + ADD + WRPRN + RET = 5 instructions
-        src = (
-            ".global main\n.text\nmain:\n" "  LOAD A, 10\n  LOAD B, 5\n  ADD A, B\n  WRPRN A\n  RET"
-        )
+        src = ".global main\n.text\nmain:\n  LOAD A, 10\n  LOAD B, 5\n  ADD A, B\n  WRPRN A\n  RET"
         result = Assembler(src).assemble()
         assert result.error_count == 0
         assert len(result.machine_code) == 5
@@ -230,7 +228,7 @@ class TestAssemblerBranchInstructions:
         assert len(result.machine_code) == 3
 
     def test_call_and_ret_assemble(self) -> None:
-        src = ".global main\n.text\nmain:\n" "  CALL sub\n  RET\nsub:\n  RET"
+        src = ".global main\n.text\nmain:\n  CALL sub\n  RET\nsub:\n  RET"
         result = Assembler(src).assemble()
         assert result.error_count == 0
         assert len(result.machine_code) >= 3

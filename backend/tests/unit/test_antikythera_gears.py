@@ -174,3 +174,88 @@ class TestGearTrainBehavior:
         train = GearTrain([GearEdge(src="b1", dst="lunar", ratio=235.0 / 19.0)])
         angles = train.propagate(1.0, "b1")
         assert math.isclose(angles["lunar"], 235.0 / 19.0, rel_tol=1e-12)
+
+
+class TestGearTrainEdgeCases:
+    """Edge cases for GearTrain propagation."""
+
+    def test_float_input_angle_preserved(self) -> None:
+        train = GearTrain([GearEdge(src="A", dst="B", ratio=1.0)])
+        angles = train.propagate(3.14159, "A")
+        assert math.isclose(angles["A"], 3.14159)
+
+    def test_very_large_ratio(self) -> None:
+        train = GearTrain([GearEdge(src="A", dst="B", ratio=1000.0)])
+        angles = train.propagate(1.0, "A")
+        assert math.isclose(angles["B"], 1000.0)
+
+    def test_very_small_ratio(self) -> None:
+        train = GearTrain([GearEdge(src="A", dst="B", ratio=0.001)])
+        angles = train.propagate(1000.0, "A")
+        assert math.isclose(angles["B"], 1.0)
+
+    def test_negative_input_angle(self) -> None:
+        train = GearTrain([GearEdge(src="A", dst="B", ratio=2.0)])
+        angles = train.propagate(-5.0, "A")
+        assert math.isclose(angles["B"], -10.0)
+
+    def test_result_keys_are_strings(self) -> None:
+        train = GearTrain([GearEdge(src="A", dst="B", ratio=1.0)])
+        angles = train.propagate(1.0, "A")
+        for key in angles:
+            assert isinstance(key, str)
+
+    def test_result_values_are_numeric(self) -> None:
+        train = GearTrain([GearEdge(src="A", dst="B", ratio=2.0)])
+        angles = train.propagate(1.0, "A")
+        for value in angles.values():
+            assert isinstance(value, (int, float))
+
+    def test_star_topology_all_children_reachable(self) -> None:
+        train = GearTrain([
+            GearEdge(src="center", dst="A", ratio=2.0),
+            GearEdge(src="center", dst="B", ratio=3.0),
+            GearEdge(src="center", dst="C", ratio=4.0),
+        ])
+        angles = train.propagate(1.0, "center")
+        assert math.isclose(angles["A"], 2.0)
+        assert math.isclose(angles["B"], 3.0)
+        assert math.isclose(angles["C"], 4.0)
+
+
+class TestGearEdgeComparisons:
+    """GearEdge field type and equality tests."""
+
+    def test_two_edges_same_fields_equal(self) -> None:
+        e1 = GearEdge(src="A", dst="B", ratio=2.0)
+        e2 = GearEdge(src="A", dst="B", ratio=2.0)
+        assert e1 == e2
+
+    def test_edges_different_ratio_not_equal(self) -> None:
+        e1 = GearEdge(src="A", dst="B", ratio=2.0)
+        e2 = GearEdge(src="A", dst="B", ratio=3.0)
+        assert e1 != e2
+
+    def test_gear_edge_src_type(self) -> None:
+        e = GearEdge(src="G1", dst="G2", ratio=1.5)
+        assert isinstance(e.src, str)
+
+    def test_gear_edge_dst_type(self) -> None:
+        e = GearEdge(src="G1", dst="G2", ratio=1.5)
+        assert isinstance(e.dst, str)
+
+    def test_gear_edge_ratio_type(self) -> None:
+        e = GearEdge(src="A", dst="B", ratio=5.0)
+        assert isinstance(e.ratio, (int, float))
+
+    def test_gear_edge_with_long_names(self) -> None:
+        e = GearEdge(src="b1_driving", dst="a1_driven", ratio=224.0 / 50.0)
+        train = GearTrain([e])
+        angles = train.propagate(1.0, "b1_driving")
+        assert math.isclose(angles["a1_driven"], 224.0 / 50.0)
+
+    def test_ratio_preserved_exactly(self) -> None:
+        ratio = 7.0 / 3.0
+        train = GearTrain([GearEdge(src="X", dst="Y", ratio=ratio)])
+        angles = train.propagate(1.0, "X")
+        assert math.isclose(angles["Y"], ratio, rel_tol=1e-12)

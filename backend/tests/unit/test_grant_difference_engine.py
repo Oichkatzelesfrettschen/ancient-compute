@@ -315,3 +315,319 @@ class TestGrantOverflowDetection:
         v = e.crank()
         expected = (2 * Decimal(str(large))) % Decimal(10) ** 30
         assert v == expected
+
+
+# ---------------------------------------------------------------------------
+# Higher-order polynomials (4th and 5th order)
+# ---------------------------------------------------------------------------
+
+
+class TestGrantHigherOrderPolynomials:
+    """4th, 5th, and 6th order polynomial tabulation."""
+
+    def test_fourth_order_polynomial(self) -> None:
+        # f(n) = n^4: 1, 16, 81, 256, 625
+        # D0=0, D1=1, D2=14, D3=36, D4=24
+        e = GrantDifferenceEngine()
+        e.load([0.0, 1.0, 14.0, 36.0, 24.0])
+        results = [float(e.crank()) for _ in range(5)]
+        assert results == [1.0, 16.0, 81.0, 256.0, 625.0]
+
+    def test_fifth_order_polynomial(self) -> None:
+        # f(n) = n^5: 1, 32, 243, 1024, 3125
+        # D0=0, D1=1, D2=30, D3=150, D4=240, D5=120
+        e = GrantDifferenceEngine()
+        e.load([0.0, 1.0, 30.0, 150.0, 240.0, 120.0])
+        results = [float(e.crank()) for _ in range(5)]
+        assert results == [1.0, 32.0, 243.0, 1024.0, 3125.0]
+
+    def test_sixth_order_polynomial(self) -> None:
+        # f(n) = n^6: 1, 64, 729, 4096, 15625
+        # D0=0, D1=1, D2=62, D3=540, D4=1560, D5=1800, D6=720
+        e = GrantDifferenceEngine()
+        e.load([0.0, 1.0, 62.0, 540.0, 1560.0, 1800.0, 720.0])
+        results = [float(e.crank()) for _ in range(5)]
+        assert results == [1.0, 64.0, 729.0, 4096.0, 15625.0]
+
+    def test_highest_order_diff_stays_constant(self) -> None:
+        # For f(n) = n^3, D3=6 is constant; crank should not change D3
+        e = GrantDifferenceEngine()
+        e.load([0.0, 1.0, 6.0, 6.0])
+        d3_initial = e.get_register(3)
+        e.tabulate(10)
+        assert e.get_register(3) == d3_initial
+
+    def test_num_orders_matches_load_length_minus_one(self) -> None:
+        for length in range(2, 8):
+            e = GrantDifferenceEngine()
+            e.load([0.0] * length)
+            assert e.state.num_orders == length - 1
+
+
+# ---------------------------------------------------------------------------
+# Max register capacity (15 registers)
+# ---------------------------------------------------------------------------
+
+
+class TestGrantMaxRegisters:
+    """Load up to 15 values; verify register count and max order."""
+
+    def test_load_fifteen_values(self) -> None:
+        e = GrantDifferenceEngine()
+        e.load([float(i) for i in range(15)])
+        assert e.state.num_orders == 14
+
+    def test_load_sixteen_values_raises(self) -> None:
+        e = GrantDifferenceEngine()
+        with pytest.raises(ValueError):
+            e.load([0.0] * 16)
+
+    def test_registers_list_always_fifteen(self) -> None:
+        e = GrantDifferenceEngine()
+        assert len(e.state.registers) == 15
+        e.load([1.0, 2.0, 3.0])
+        assert len(e.state.registers) == 15
+
+    def test_unused_registers_stay_zero_after_load(self) -> None:
+        e = GrantDifferenceEngine()
+        e.load([5.0, 3.0])  # only D0 and D1 set
+        for i in range(2, 15):
+            assert e.get_register(i) == Decimal("0")
+
+    def test_get_register_negative_index_raises(self) -> None:
+        e = GrantDifferenceEngine()
+        with pytest.raises(IndexError):
+            e.get_register(-1)
+
+    def test_get_register_index_14_valid(self) -> None:
+        e = GrantDifferenceEngine()
+        e.load([float(i) for i in range(15)])
+        assert e.get_register(14) == Decimal("14.0")
+
+    def test_get_register_index_15_raises(self) -> None:
+        e = GrantDifferenceEngine()
+        with pytest.raises(IndexError):
+            e.get_register(15)
+
+
+# ---------------------------------------------------------------------------
+# Decimal precision
+# ---------------------------------------------------------------------------
+
+
+class TestGrantDecimalPrecision:
+    """crank() and tabulate() return Decimal values at 30-digit precision."""
+
+    def test_crank_returns_decimal(self) -> None:
+        e = GrantDifferenceEngine()
+        e.load([0.0, 1.0])
+        assert isinstance(e.crank(), Decimal)
+
+    def test_tabulate_returns_list_of_decimals(self) -> None:
+        e = GrantDifferenceEngine()
+        e.load([0.0, 1.0])
+        for r in e.tabulate(5):
+            assert isinstance(r, Decimal)
+
+    def test_get_register_returns_decimal(self) -> None:
+        e = GrantDifferenceEngine()
+        e.load([7.0, 2.0])
+        assert isinstance(e.get_register(0), Decimal)
+
+    def test_integer_sequence_exact(self) -> None:
+        # D0=0, D1=1: after n cranks D0=n (exact integer)
+        e = GrantDifferenceEngine()
+        e.load([0.0, 1.0])
+        results = e.tabulate(50)
+        for i, r in enumerate(results, 1):
+            assert r == Decimal(i)
+
+    def test_tabulate_from_x0_returns_decimals(self) -> None:
+        e = GrantDifferenceEngine()
+        results = e.tabulate_from_x0(lambda x: x**2, x0=0.0, step=1.0, n=4, order=2)
+        for r in results:
+            assert isinstance(r, Decimal)
+
+    def test_non_unit_step_fractional(self) -> None:
+        # f(x) = x^2 at step=0.5: values 0.25, 1.0, 2.25
+        e = GrantDifferenceEngine()
+        results = e.tabulate_from_x0(lambda x: x**2, x0=0.0, step=0.5, n=3, order=2)
+        expected = [0.25, 1.0, 2.25]
+        for r, ex in zip(results, expected, strict=True):
+            assert float(r) == pytest.approx(ex, abs=1e-10)
+
+
+# ---------------------------------------------------------------------------
+# Output table accumulation
+# ---------------------------------------------------------------------------
+
+
+class TestGrantOutputTable:
+    """output_table grows cumulatively; reset clears it."""
+
+    def test_initial_output_table_empty(self) -> None:
+        e = GrantDifferenceEngine()
+        assert e.state.output_table == []
+
+    def test_each_crank_appends_one_entry(self) -> None:
+        e = GrantDifferenceEngine()
+        e.load([0.0, 1.0])
+        for i in range(1, 6):
+            e.crank()
+            assert len(e.state.output_table) == i
+
+    def test_sequential_tabulate_accumulates(self) -> None:
+        e = GrantDifferenceEngine()
+        e.load([0.0, 1.0])
+        e.tabulate(3)
+        e.tabulate(3)
+        assert len(e.state.output_table) == 6
+
+    def test_output_table_matches_returned_values(self) -> None:
+        e = GrantDifferenceEngine()
+        e.load([0.0, 3.0])
+        returned = [e.crank() for _ in range(4)]
+        assert e.state.output_table == returned
+
+    def test_reset_clears_output_table(self) -> None:
+        e = GrantDifferenceEngine()
+        e.load([0.0, 1.0])
+        e.tabulate(5)
+        e.reset()
+        assert e.state.output_table == []
+
+    def test_reset_clears_revolution_count(self) -> None:
+        e = GrantDifferenceEngine()
+        e.load([0.0, 1.0])
+        e.tabulate(5)
+        e.reset()
+        assert e.state.revolution_count == 0
+
+
+# ---------------------------------------------------------------------------
+# Overflow flag reset on non-overflow cranks
+# ---------------------------------------------------------------------------
+
+
+class TestGrantOverflowFlagReset:
+    """overflow_flags[k] resets to False on cranks that don't overflow."""
+
+    def test_overflow_flag_reset_on_non_overflow_crank(self) -> None:
+        # Trigger overflow, then reload small values and verify flag cleared
+        large = 6 * 10**29
+        e = GrantDifferenceEngine()
+        e.load([float(large), float(large)])
+        e.crank()
+        assert e.state.overflow_flags[0] is True
+        # Now reload small values; next crank should clear the flag
+        e.reset()
+        e.load([1.0, 1.0])
+        e.crank()
+        assert e.state.overflow_flags[0] is False
+
+    def test_overflow_flags_all_false_after_clean_run(self) -> None:
+        e = GrantDifferenceEngine()
+        e.load([0.0, 1.0, 2.0])
+        e.tabulate(20)
+        assert not any(e.state.overflow_flags)
+
+    def test_overflow_flag_only_on_affected_register(self) -> None:
+        # Only D0 overflows when D0+D1 exceeds limit
+        large = 6 * 10**29
+        e = GrantDifferenceEngine()
+        e.load([float(large), float(large)])
+        e.crank()
+        # D0 overflowed; D1 (which only gets D2 added -- D2=0) did not
+        assert e.state.overflow_flags[0] is True
+        assert e.state.overflow_flags[1] is False
+
+
+# ---------------------------------------------------------------------------
+# tabulate_from_x0 extended
+# ---------------------------------------------------------------------------
+
+
+class TestGrantTabulateFromX0Extended:
+    """Extended tabulate_from_x0 edge cases and polynomial families."""
+
+    def test_quartic_from_callable(self) -> None:
+        e = GrantDifferenceEngine()
+        results = e.tabulate_from_x0(lambda x: x**4, x0=0.0, step=1.0, n=5, order=4)
+        expected = [1.0, 16.0, 81.0, 256.0, 625.0]
+        for r, ex in zip(results, expected, strict=True):
+            assert float(r) == pytest.approx(ex, abs=1e-6)
+
+    def test_constant_from_callable(self) -> None:
+        e = GrantDifferenceEngine()
+        results = e.tabulate_from_x0(lambda x: 42.0, x0=0.0, step=1.0, n=4, order=1)
+        for r in results:
+            assert float(r) == pytest.approx(42.0)
+
+    def test_negative_polynomial(self) -> None:
+        e = GrantDifferenceEngine()
+        results = e.tabulate_from_x0(lambda x: -(x**2), x0=0.0, step=1.0, n=4, order=2)
+        expected = [-1.0, -4.0, -9.0, -16.0]
+        for r, ex in zip(results, expected, strict=True):
+            assert float(r) == pytest.approx(ex, abs=1e-10)
+
+    def test_resets_state_with_new_load(self) -> None:
+        # tabulate_from_x0 calls load(), which sets num_orders
+        e = GrantDifferenceEngine()
+        e.tabulate_from_x0(lambda x: x**2, x0=0.0, step=1.0, n=3, order=2)
+        assert e.state.num_orders == 2
+
+    def test_large_step_size(self) -> None:
+        # f(x) = x at step=10: values 10, 20, 30
+        e = GrantDifferenceEngine()
+        results = e.tabulate_from_x0(lambda x: x, x0=0.0, step=10.0, n=3, order=1)
+        expected = [10.0, 20.0, 30.0]
+        for r, ex in zip(results, expected, strict=True):
+            assert float(r) == pytest.approx(ex, abs=1e-10)
+
+
+# ---------------------------------------------------------------------------
+# Zero polynomial and edge cases
+# ---------------------------------------------------------------------------
+
+
+class TestGrantEdgeCases:
+    """Zero polynomial, identity, and boundary edge cases."""
+
+    def test_zero_polynomial_all_zero(self) -> None:
+        e = GrantDifferenceEngine()
+        e.load([0.0, 0.0])
+        results = e.tabulate(5)
+        assert all(r == Decimal("0") for r in results)
+
+    def test_tabulate_zero_steps_returns_empty(self) -> None:
+        e = GrantDifferenceEngine()
+        e.load([1.0, 1.0])
+        assert e.tabulate(0) == []
+
+    def test_reset_allows_different_order_reload(self) -> None:
+        e = GrantDifferenceEngine()
+        e.load([0.0, 1.0, 2.0])
+        e.tabulate(3)
+        e.reset()
+        e.load([5.0, 1.0])  # 1st order now
+        results = e.tabulate(3)
+        assert results[0] == Decimal("6")
+
+    def test_revolution_count_matches_total_cranks(self) -> None:
+        e = GrantDifferenceEngine()
+        e.load([0.0, 1.0])
+        e.tabulate(7)
+        e.tabulate(3)
+        assert e.state.revolution_count == 10
+
+    def test_crank_without_load_raises_runtime_error(self) -> None:
+        e = GrantDifferenceEngine()
+        with pytest.raises(RuntimeError):
+            e.crank()
+
+    def test_load_min_two_values(self) -> None:
+        e = GrantDifferenceEngine()
+        e.load([3.0, 7.0])
+        assert e.state.num_orders == 1
+        assert e.get_register(0) == Decimal("3.0")
+        assert e.get_register(1) == Decimal("7.0")

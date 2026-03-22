@@ -332,9 +332,9 @@ class TestKinematicChainIntegration:
             v = GearAnalysis.pitch_line_velocity_m_s(gp, rpm)
             wt = GearAnalysis.tangential_force_N(50.0, v)
             sigma = GearAnalysis.lewis_bending_stress_MPa(gp, wt)
-            assert (
-                sigma < brass.yield_strength_MPa[0]
-            ), f"{gp.name}: Lewis stress {sigma:.1f} MPa >= yield"
+            assert sigma < brass.yield_strength_MPa[0], (
+                f"{gp.name}: Lewis stress {sigma:.1f} MPa >= yield"
+            )
             rpm = GearAnalysis.output_rpm(gp, rpm)
 
 
@@ -461,3 +461,292 @@ class TestShaftLateralDynamics:
         reactions = ShaftLateralDynamics.bearing_reactions_N(400.0, 4)
         for r in reactions:
             assert r == pytest.approx(100.0)
+
+
+# ---------------------------------------------------------------------------
+# GearPair dataclass properties
+# ---------------------------------------------------------------------------
+
+
+class TestGearPairProperties:
+    """GearPair computed properties: ratio, pitch diameters, center distance."""
+
+    def test_ratio_formula(self, primary_gear):
+        assert primary_gear.ratio == pytest.approx(60 / 20)
+
+    def test_pitch_diameter_driver(self, primary_gear):
+        # pd_driver = module * tooth_count_driver
+        assert primary_gear.pitch_diameter_driver_mm == pytest.approx(
+            primary_gear.module_mm * primary_gear.tooth_count_driver
+        )
+
+    def test_pitch_diameter_driven(self, primary_gear):
+        assert primary_gear.pitch_diameter_driven_mm == pytest.approx(
+            primary_gear.module_mm * primary_gear.tooth_count_driven
+        )
+
+    def test_addendum_equals_module(self, primary_gear):
+        assert primary_gear.addendum_mm == pytest.approx(primary_gear.module_mm)
+
+    def test_dedendum_is_1_25_module(self, primary_gear):
+        assert primary_gear.dedendum_mm == pytest.approx(1.25 * primary_gear.module_mm)
+
+    def test_center_distance_formula(self, primary_gear):
+        expected = primary_gear.module_mm * (20 + 60) / 2.0
+        assert primary_gear.center_distance_mm == pytest.approx(expected)
+
+    def test_gear_pair_is_frozen(self, primary_gear):
+        with pytest.raises((AttributeError, TypeError)):
+            primary_gear.module_mm = 5.0  # type: ignore[misc]
+
+
+# ---------------------------------------------------------------------------
+# GearAnalysis extended
+# ---------------------------------------------------------------------------
+
+
+class TestGearAnalysisExtended:
+    """Tangential force, velocity ratio formula, pitch velocity formula."""
+
+    def test_velocity_ratio_formula(self, primary_gear):
+        # VR = N_driver / N_driven
+        vr = GearAnalysis.velocity_ratio(primary_gear)
+        assert vr == pytest.approx(20.0 / 60.0, rel=1e-6)
+
+    def test_tangential_force_formula(self):
+        # W_t = P / V
+        wt = GearAnalysis.tangential_force_N(100.0, 2.0)
+        assert wt == pytest.approx(50.0)
+
+    def test_tangential_force_zero_at_zero_velocity(self):
+        wt = GearAnalysis.tangential_force_N(100.0, 0.0)
+        assert wt == pytest.approx(0.0)
+
+    def test_pitch_velocity_formula(self, primary_gear):
+        # V = pi * d * n / 60000
+        v = GearAnalysis.pitch_line_velocity_m_s(primary_gear, 30.0)
+        expected = math.pi * primary_gear.pitch_diameter_driver_mm * 30.0 / 60000.0
+        assert v == pytest.approx(expected, rel=1e-6)
+
+    def test_output_rpm_formula(self, primary_gear):
+        rpm = GearAnalysis.output_rpm(primary_gear, 30.0)
+        assert rpm == pytest.approx(30.0 * GearAnalysis.velocity_ratio(primary_gear))
+
+    def test_lewis_form_factor_lt_12_teeth(self):
+        y = GearAnalysis.lewis_form_factor(10)
+        assert y == pytest.approx(0.245)
+
+    def test_lewis_bending_stress_proportional_to_force(self, primary_gear):
+        s1 = GearAnalysis.lewis_bending_stress_MPa(primary_gear, 100.0)
+        s2 = GearAnalysis.lewis_bending_stress_MPa(primary_gear, 200.0)
+        assert s2 == pytest.approx(2.0 * s1, rel=1e-6)
+
+    def test_contact_ratio_lower_for_fewer_teeth(self):
+        # A gear pair with lower tooth counts generally has lower CR
+        small_gear = GearPair(
+            "small", 12, 24, 2.5, 20, 15, "brass"
+        )
+        large_gear = GearPair(
+            "large", 20, 60, 2.5, 20, 15, "brass"
+        )
+        cr_small = GearAnalysis.contact_ratio(small_gear)
+        cr_large = GearAnalysis.contact_ratio(large_gear)
+        # Both must exceed 1.0; large gear typically higher CR
+        assert cr_small > 1.0
+        assert cr_large > 1.0
+
+
+# ---------------------------------------------------------------------------
+# CamFollower and CamAnalysis extended
+# ---------------------------------------------------------------------------
+
+
+class TestCamFollowerExtended:
+    """Return phase, dwell endpoint, velocity sign."""
+
+    def test_displacement_at_return_end_is_zero(self, column_latch_cam):
+        # End of return = rise + dwell + return
+        end_angle = (
+            column_latch_cam.rise_angle_deg
+            + column_latch_cam.dwell_angle_deg
+            + column_latch_cam.return_angle_deg
+        )
+        s = CamAnalysis.displacement_mm(column_latch_cam, end_angle)
+        assert s == pytest.approx(0.0, abs=0.02)
+
+    def test_displacement_during_dwell_constant(self, column_latch_cam):
+        h = column_latch_cam.total_lift_mm
+        for theta in [70.0, 100.0, 150.0]:
+            s = CamAnalysis.displacement_mm(column_latch_cam, theta)
+            assert s == pytest.approx(h, abs=0.01)
+
+    def test_velocity_negative_during_return(self, column_latch_cam):
+        # Midway through return phase
+        theta = (
+            column_latch_cam.rise_angle_deg
+            + column_latch_cam.dwell_angle_deg
+            + column_latch_cam.return_angle_deg / 2.0
+        )
+        v = CamAnalysis.velocity_mm_per_deg(column_latch_cam, theta)
+        assert v < 0
+
+    def test_velocity_zero_at_dwell_start(self, column_latch_cam):
+        # Just into dwell
+        v = CamAnalysis.velocity_mm_per_deg(column_latch_cam, 61.0)
+        assert abs(v) < 0.05
+
+    def test_acceleration_returns_float(self, column_latch_cam):
+        a = CamAnalysis.acceleration_mm_per_deg2(column_latch_cam, 30.0)
+        assert isinstance(a, float)
+
+    def test_jerk_returns_float(self, column_latch_cam):
+        j = CamAnalysis.jerk_mm_per_deg3(column_latch_cam, 30.0)
+        assert isinstance(j, float)
+
+    def test_follower_force_at_zero_displacement_is_zero(self, column_latch_cam):
+        # At theta=0, displacement=0 -> spring force=0; inertia near zero
+        omega = 2.0 * math.pi * 30.0 / 60.0
+        f = CamAnalysis.follower_force_N(column_latch_cam, 0.0, omega)
+        assert f == pytest.approx(0.0, abs=1.0)
+
+
+# ---------------------------------------------------------------------------
+# DOFAnalysis extended
+# ---------------------------------------------------------------------------
+
+
+class TestDOFAnalysisExtended:
+    """Various link/joint configurations."""
+
+    def test_dof_five_bar(self):
+        # 5 links, 5 joints: M = 3*(5-1) - 2*5 = 12-10 = 2
+        assert DOFAnalysis.grubler_kutzbach(5, 5) == 2
+
+    def test_dof_zero_joints(self):
+        # 4 links, 0 joints: M = 3*(4-1) - 0 = 9 (not a mechanism)
+        assert DOFAnalysis.grubler_kutzbach(4, 0) == 9
+
+    def test_dof_with_half_joints(self):
+        # 4 links, 4 full, 1 half: M = 9 - 8 - 1 = 0 (locked)
+        assert DOFAnalysis.grubler_kutzbach(4, 4, 1) == 0
+
+    def test_dof_result_type_is_int(self):
+        result = DOFAnalysis.grubler_kutzbach(4, 4, 0)
+        assert isinstance(result, int)
+
+
+# ---------------------------------------------------------------------------
+# MainShaftModel extended
+# ---------------------------------------------------------------------------
+
+
+class TestMainShaftModelExtended:
+    """KE scaling, torque formula, mass proportionality."""
+
+    @pytest.fixture
+    def shaft(self):
+        return MainShaftModel(
+            diameter_mm=50.0,
+            length_mm=1500.0,
+            density_kg_m3=7850.0,
+            rpm=30.0,
+        )
+
+    def test_angular_velocity_formula(self, shaft):
+        expected = 2.0 * math.pi * 30.0 / 60.0
+        assert shaft.angular_velocity_rad_s == pytest.approx(expected, rel=1e-6)
+
+    def test_ke_proportional_to_omega_squared(self):
+        s1 = MainShaftModel(50.0, 1500.0, 7850.0, 30.0)
+        s2 = MainShaftModel(50.0, 1500.0, 7850.0, 60.0)
+        # KE = 0.5*I*omega^2: doubling omega -> 4x KE
+        assert s2.rotational_ke_J == pytest.approx(4.0 * s1.rotational_ke_J, rel=1e-6)
+
+    def test_torque_inversely_proportional_to_omega(self):
+        s1 = MainShaftModel(50.0, 1500.0, 7850.0, 30.0)
+        s2 = MainShaftModel(50.0, 1500.0, 7850.0, 60.0)
+        # T = P / omega: doubling omega halves torque for same P
+        assert s2.torque_at_power_Nm(500.0) == pytest.approx(
+            s1.torque_at_power_Nm(500.0) / 2.0, rel=1e-6
+        )
+
+    def test_mass_proportional_to_length(self):
+        s1 = MainShaftModel(50.0, 1000.0, 7850.0, 30.0)
+        s2 = MainShaftModel(50.0, 2000.0, 7850.0, 30.0)
+        assert s2.mass_kg == pytest.approx(2.0 * s1.mass_kg, rel=1e-6)
+
+    def test_torque_zero_at_zero_rpm(self):
+        s = MainShaftModel(50.0, 1500.0, 7850.0, 0.0)
+        assert s.torque_at_power_Nm(500.0) == pytest.approx(0.0)
+
+    def test_moment_of_inertia_formula(self, shaft):
+        # I = 0.5 * m * r^2
+        r = shaft.radius_m
+        expected = 0.5 * shaft.mass_kg * r**2
+        assert shaft.moment_of_inertia_kg_m2 == pytest.approx(expected, rel=1e-6)
+
+
+# ---------------------------------------------------------------------------
+# HertzianContact extended
+# ---------------------------------------------------------------------------
+
+
+class TestHertzianContactExtended:
+    """Elastic coefficient, geometry factor, pitting SF."""
+
+    def test_elastic_coefficient_same_material(self):
+        # Same material -> lower denom -> higher Cp
+        Cp = HertzianContact.elastic_coefficient(200.0, 0.3, 200.0, 0.3)
+        assert Cp > 0
+
+    def test_elastic_coefficient_lower_for_stiffer_material(self):
+        # Higher E -> lower elastic coefficient (less deformation)
+        Cp_soft = HertzianContact.elastic_coefficient(97.0, 0.34, 97.0, 0.34)
+        Cp_hard = HertzianContact.elastic_coefficient(200.0, 0.3, 200.0, 0.3)
+        assert Cp_hard > Cp_soft
+
+    def test_geometry_factor_increases_with_ratio(self):
+        # Higher gear ratio -> larger I
+        I_low = HertzianContact.geometry_factor_I(20, 40)
+        I_high = HertzianContact.geometry_factor_I(20, 120)
+        assert I_high > I_low
+
+    def test_geometry_factor_is_float(self):
+        I_geom = HertzianContact.geometry_factor_I(20, 60)
+        assert isinstance(I_geom, float)
+
+    def test_pitting_sf_returns_square_of_ratio(self):
+        sf = HertzianContact.pitting_safety_factor(400.0, 200.0)
+        assert sf == pytest.approx(4.0)
+
+
+# ---------------------------------------------------------------------------
+# TorsionalVibration extended
+# ---------------------------------------------------------------------------
+
+
+class TestTorsionalVibrationExtended:
+    """Natural frequency formula, RPM conversion, diameter effect."""
+
+    def test_natural_frequency_is_float(self):
+        omega = TorsionalVibration.natural_frequency_rad_s(80.0, 50.0, 500.0, 0.5)
+        assert isinstance(omega, float)
+
+    def test_torsional_frequency_rpm_formula(self):
+        omega = 100.0  # rad/s
+        rpm = TorsionalVibration.torsional_frequency_rpm(omega)
+        assert rpm == pytest.approx(omega * 60.0 / (2.0 * math.pi), rel=1e-6)
+
+    def test_vibration_margin_formula(self):
+        margin = TorsionalVibration.vibration_margin(3000.0, 30.0)
+        assert margin == pytest.approx(100.0)
+
+    def test_larger_diameter_higher_frequency(self):
+        o_small = TorsionalVibration.natural_frequency_rad_s(80.0, 25.0, 500.0, 0.5)
+        o_large = TorsionalVibration.natural_frequency_rad_s(80.0, 50.0, 500.0, 0.5)
+        assert o_large > o_small
+
+    def test_longer_shaft_lower_frequency(self):
+        o_short = TorsionalVibration.natural_frequency_rad_s(80.0, 50.0, 250.0, 0.5)
+        o_long = TorsionalVibration.natural_frequency_rad_s(80.0, 50.0, 1000.0, 0.5)
+        assert o_long < o_short

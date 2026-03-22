@@ -160,3 +160,108 @@ class TestHeapGarbageCollection:
         heap.sweep()
         assert heap.allocated_count == 2
         assert heap.used_words == 8
+
+
+class TestHeapFreeWords:
+    """free_words property and coalescing behavior."""
+
+    def test_initial_free_words_equals_heap_size(self) -> None:
+        heap = MemoryHeap(heap_start=512, heap_end=1024)
+        assert heap.free_words == 1024 - 512
+
+    def test_free_words_decrements_after_malloc(self) -> None:
+        heap = MemoryHeap(heap_start=512, heap_end=1024)
+        heap.malloc(10)
+        assert heap.free_words == (1024 - 512) - 10
+
+    def test_free_words_recovers_after_free(self) -> None:
+        heap = MemoryHeap(heap_start=512, heap_end=1024)
+        total = heap.free_words
+        ptr = heap.malloc(20)
+        heap.free(ptr)
+        assert heap.free_words == total
+
+    def test_used_plus_free_equals_total(self) -> None:
+        heap = MemoryHeap(heap_start=512, heap_end=1024)
+        heap.malloc(10)
+        heap.malloc(5)
+        total = heap.heap_end - heap.heap_start
+        assert heap.used_words + heap.free_words == total
+
+    def test_sweep_reclaims_free_words(self) -> None:
+        heap = MemoryHeap()
+        ptrs = [heap.malloc(8) for _ in range(3)]
+        free_before = heap.free_words
+        heap.mark(ptrs[0])
+        heap.sweep()
+        assert heap.free_words > free_before
+
+
+class TestHeapEdgeCases:
+    """Edge cases: custom bounds, coalescing, sequential allocation."""
+
+    def test_custom_heap_bounds(self) -> None:
+        heap = MemoryHeap(heap_start=100, heap_end=200)
+        assert heap.heap_start == 100
+        assert heap.heap_end == 200
+
+    def test_invalid_bounds_raise(self) -> None:
+        with pytest.raises(ValueError):
+            MemoryHeap(heap_start=100, heap_end=50)
+
+    def test_sequential_pointers_do_not_overlap(self) -> None:
+        heap = MemoryHeap()
+        ptr1 = heap.malloc(10)
+        ptr2 = heap.malloc(10)
+        assert ptr2 >= ptr1 + 10
+
+    def test_read_freed_block_raises(self) -> None:
+        heap = MemoryHeap()
+        ptr = heap.malloc(4)
+        heap.free(ptr)
+        with pytest.raises(KeyError):
+            heap.read(ptr, 0)
+
+    def test_coalesce_after_free_allows_large_alloc(self) -> None:
+        heap = MemoryHeap(heap_start=512, heap_end=600)
+        ptr1 = heap.malloc(10)
+        ptr2 = heap.malloc(10)
+        heap.free(ptr1)
+        heap.free(ptr2)
+        # After coalescing, the full 88 words should be free again
+        big = heap.malloc(20)
+        assert big >= heap.heap_start
+
+    def test_mark_sweep_survivors_unmarked_for_next_cycle(self) -> None:
+        heap = MemoryHeap()
+        ptr = heap.malloc(4)
+        heap.mark(ptr)
+        heap.sweep()
+        # After sweep, survivors are unmarked. A new sweep (no mark) should collect ptr.
+        heap.sweep()
+        assert heap.allocated_count == 0
+
+    def test_write_negative_offset_raises(self) -> None:
+        heap = MemoryHeap()
+        ptr = heap.malloc(4)
+        with pytest.raises(IndexError):
+            heap.write(ptr, -1, 1.0)
+
+    def test_read_negative_offset_raises(self) -> None:
+        heap = MemoryHeap()
+        ptr = heap.malloc(4)
+        with pytest.raises(IndexError):
+            heap.read(ptr, -1)
+
+    def test_mark_invalid_ptr_is_noop(self) -> None:
+        heap = MemoryHeap()
+        # Marking an unallocated ptr should not raise.
+        heap.mark(99999)
+        assert heap.allocated_count == 0
+
+    def test_free_twice_raises(self) -> None:
+        heap = MemoryHeap()
+        ptr = heap.malloc(4)
+        heap.free(ptr)
+        with pytest.raises(KeyError):
+            heap.free(ptr)

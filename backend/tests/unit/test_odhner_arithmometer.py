@@ -276,4 +276,246 @@ class TestState:
         m.clear_result()
         m.clear_counter()
         assert m.result.get() == 0
+
+
+# ---------------------------------------------------------------------------
+# Extended ResultRegister tests
+# ---------------------------------------------------------------------------
+
+
+class TestResultRegisterExtended:
+    def test_add_at_position_1_is_tens(self) -> None:
+        r = ResultRegister()
+        r.add_at(1, 3)  # +30
+        assert r.get() == 30
+
+    def test_add_at_position_2_is_hundreds(self) -> None:
+        r = ResultRegister()
+        r.add_at(2, 5)  # +500
+        assert r.get() == 500
+
+    def test_carry_propagates_two_levels(self) -> None:
+        r = ResultRegister()
+        r.add_at(0, 99)  # 99 -> digit[0]=9, carry 9 -> digit[1]=9
+        assert r.get() == 99
+        r.add_at(0, 1)  # 100 -> carry propagates to digit[2]
+        assert r.get() == 100
+
+    def test_sub_at_with_borrow(self) -> None:
+        r = ResultRegister()
+        r.add_at(0, 100)
+        r.sub_at(0, 1)  # 100 - 1 = 99
+        assert r.get() == 99
+
+    def test_sub_at_multi_digit_borrow(self) -> None:
+        r = ResultRegister()
+        r.add_at(0, 1000)
+        r.sub_at(0, 1)
+        assert r.get() == 999
+
+    def test_multiple_adds_accumulate(self) -> None:
+        r = ResultRegister()
+        for _ in range(10):
+            r.add_at(0, 7)
+        assert r.get() == 70
+
+    def test_clear_after_large_value(self) -> None:
+        r = ResultRegister()
+        r.add_at(0, 99999)
+        r.clear()
+        assert r.get() == 0
+
+    def test_digits_constant(self) -> None:
+        assert ResultRegister.DIGITS == 13
+
+
+# ---------------------------------------------------------------------------
+# Extended RevolutionCounter tests
+# ---------------------------------------------------------------------------
+
+
+class TestRevolutionCounterExtended:
+    def test_get_after_zero_inits(self) -> None:
+        c = RevolutionCounter()
+        assert c.get() == 0
+
+    def test_increment_ten_times(self) -> None:
+        c = RevolutionCounter()
+        for _ in range(10):
+            c.increment()
+        assert c.get() == 10
+
+    def test_decrement_to_zero(self) -> None:
+        c = RevolutionCounter()
+        c.increment()
+        c.decrement()
+        assert c.get() == 0
+
+    def test_digits_constant(self) -> None:
+        assert RevolutionCounter.DIGITS == 8
+
+    def test_clear_resets_to_zero(self) -> None:
+        c = RevolutionCounter()
+        for _ in range(5):
+            c.increment()
+        c.clear()
+        assert c.get() == 0
+
+    def test_increment_100_times(self) -> None:
+        c = RevolutionCounter()
+        for _ in range(100):
+            c.increment()
+        assert c.get() == 100
+
+    def test_decrement_past_zero_wraps(self) -> None:
+        # Decrement from 0 wraps (borrow goes out of MSB)
+        c = RevolutionCounter()
+        c.decrement()
+        # Should wrap to max 8-digit value
+        assert c.get() == 10**8 - 1
+
+
+# ---------------------------------------------------------------------------
+# Direction and turn_crank
+# ---------------------------------------------------------------------------
+
+
+class TestDirectionAndCrank:
+    def test_direction_default_is_add(self) -> None:
+        m = OdhnerArithmometer()
+        assert m.direction == CrankDirection.ADD
+
+    def test_set_direction_subtract(self) -> None:
+        m = OdhnerArithmometer()
+        m.set_direction(CrankDirection.SUBTRACT)
+        assert m.direction == CrankDirection.SUBTRACT
+
+    def test_set_direction_back_to_add(self) -> None:
+        m = OdhnerArithmometer()
+        m.set_direction(CrankDirection.SUBTRACT)
+        m.set_direction(CrankDirection.ADD)
+        assert m.direction == CrankDirection.ADD
+
+    def test_turn_crank_add_increments_counter(self) -> None:
+        m = OdhnerArithmometer()
+        m.set_input(5)
+        m.set_direction(CrankDirection.ADD)
+        m.turn_crank()
+        assert m.counter.get() == 1
+
+    def test_turn_crank_subtract_decrements_counter(self) -> None:
+        m = OdhnerArithmometer()
+        m.set_input(5)
+        m.set_direction(CrankDirection.ADD)
+        m.turn_crank()  # counter = 1
+        m.set_direction(CrankDirection.SUBTRACT)
+        m.turn_crank()  # counter = 0
         assert m.counter.get() == 0
+
+    def test_turn_crank_add_result(self) -> None:
+        m = OdhnerArithmometer()
+        m.set_input(7)
+        m.set_direction(CrankDirection.ADD)
+        m.turn_crank()
+        assert m.result.get() == 7
+
+    def test_turn_crank_subtract_result(self) -> None:
+        m = OdhnerArithmometer()
+        m.set_input(10)
+        m.set_direction(CrankDirection.ADD)
+        m.turn_crank()  # result = 10
+        m.set_direction(CrankDirection.SUBTRACT)
+        m.set_input(3)
+        m.turn_crank()  # result = 7
+        assert m.result.get() == 7
+
+    def test_crank_direction_add_str_value(self) -> None:
+        assert CrankDirection.ADD == "ADD"
+
+    def test_crank_direction_subtract_str_value(self) -> None:
+        assert CrankDirection.SUBTRACT == "SUBTRACT"
+
+
+# ---------------------------------------------------------------------------
+# Extended state and integration tests
+# ---------------------------------------------------------------------------
+
+
+class TestOdhnerStateExtended:
+    def test_state_direction_value_is_string(self) -> None:
+        m = OdhnerArithmometer()
+        s = m.state()
+        assert isinstance(s["direction"], str)
+
+    def test_state_direction_reflects_set(self) -> None:
+        m = OdhnerArithmometer()
+        m.set_direction(CrankDirection.SUBTRACT)
+        s = m.state()
+        assert s["direction"] == "SUBTRACT"
+
+    def test_state_result_reflects_add(self) -> None:
+        m = OdhnerArithmometer()
+        m.add(42)
+        s = m.state()
+        assert s["result"] == 42
+
+    def test_state_counter_reflects_turns(self) -> None:
+        m = OdhnerArithmometer()
+        m.add(1)
+        m.add(1)
+        s = m.state()
+        assert s["counter"] == 2
+
+    def test_state_input_reflects_set_input(self) -> None:
+        m = OdhnerArithmometer()
+        m.set_input(123456)
+        s = m.state()
+        assert s["input"] == 123456
+
+    def test_clear_input_resets_pinwheels(self) -> None:
+        m = OdhnerArithmometer()
+        m.set_input(9999)
+        m.clear_input()
+        for pw in m.pinwheels:
+            assert pw.value == 0
+
+
+class TestOdhnerIntegration:
+    def test_multiply_is_commutative(self) -> None:
+        m = OdhnerArithmometer()
+        assert m.multiply(7, 13) == m.multiply(13, 7)
+
+    def test_divide_multiply_inverse(self) -> None:
+        m = OdhnerArithmometer()
+        product = m.multiply(37, 24)
+        q, r = m.divide(product, 37)
+        assert q == 24
+        assert r == 0
+
+    def test_add_then_subtract_back_to_zero(self) -> None:
+        m = OdhnerArithmometer()
+        m.add(555)
+        m.subtract(555)
+        assert m.result.get() == 0
+
+    def test_multiply_via_shift_and_crank_matches_multiply_method(self) -> None:
+        # Manual shift-and-crank for 5 * 12
+        m = OdhnerArithmometer()
+        m.set_input(5)
+        m.shift_carriage(0)
+        m.set_direction(CrankDirection.ADD)
+        for _ in range(2):  # 2 units
+            m.turn_crank()
+        m.shift_carriage(1)
+        m.turn_crank()  # 1 ten
+        manual = m.result.get()
+
+        m2 = OdhnerArithmometer()
+        method = m2.multiply(5, 12)
+        assert manual == method
+
+    def test_quotient_times_divisor_plus_remainder_equals_dividend(self) -> None:
+        for dividend, divisor in [(17, 5), (100, 7), (999, 13)]:
+            m = OdhnerArithmometer()
+            q, r = m.divide(dividend, divisor)
+            assert q * divisor + r == dividend

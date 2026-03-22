@@ -66,9 +66,9 @@ class TestMachineRegistry:
 
     def test_example_payloads_are_dicts(self) -> None:
         for m in MACHINES:
-            assert isinstance(
-                m.example_payload, dict
-            ), f"{m.id}: example_payload must be a dict, got {type(m.example_payload)}"
+            assert isinstance(m.example_payload, dict), (
+                f"{m.id}: example_payload must be a dict, got {type(m.example_payload)}"
+            )
 
     def test_machine_count(self) -> None:
         # The registry should have at least 20 machines.
@@ -505,9 +505,9 @@ class TestMaterialsAndTiming:
             for role, mat_key in m.materials.items():
                 if role == "note":
                     continue
-                assert (
-                    mat_key in valid_keys
-                ), f"{m.id}: material role '{role}' -> '{mat_key}' not in MaterialLibrary"
+                assert mat_key in valid_keys, (
+                    f"{m.id}: material role '{role}' -> '{mat_key}' not in MaterialLibrary"
+                )
 
     def test_adapter_get_operation_time_ms(self) -> None:
         """Adapters with timing constants return the right values."""

@@ -149,3 +149,61 @@ class TestLanguageStatusSummary:
         # All 11 languages are implemented or partial, none are stubs
         s = language_status_summary()
         assert s["stub"] == 0
+
+
+class TestGetExecutorAllLanguages:
+    """get_executor() coverage for all 11 registered languages."""
+
+    def test_algol68_returns_service(self) -> None:
+        from backend.src.services.languages.algol68_service import ALGOL68Service
+
+        assert isinstance(get_executor("algol68"), ALGOL68Service)
+
+    def test_cpp_returns_service(self) -> None:
+        from backend.src.services.languages.cpp_service import CppService
+
+        assert isinstance(get_executor("cpp"), CppService)
+
+    def test_cpp_alias_cxx_returns_service(self) -> None:
+        from backend.src.services.languages.cpp_service import CppService
+
+        assert isinstance(get_executor("c++"), CppService)
+
+    def test_micropython_returns_service(self) -> None:
+        from backend.src.services.languages.micropython_service import MicroPythonService
+
+        assert isinstance(get_executor("micropython"), MicroPythonService)
+
+    def test_c_and_cpp_are_different_service_types(self) -> None:
+        assert type(get_executor("c")) is not type(get_executor("cpp"))
+
+    def test_normalize_strips_surrounding_whitespace(self) -> None:
+        assert normalize_language_id(" python ") == "python"
+
+    def test_all_eleven_languages_non_none(self) -> None:
+        for lang in [
+            "c", "python", "haskell", "assembly", "lisp",
+            "idris", "systemf", "java", "algol68", "cpp", "micropython",
+        ]:
+            assert get_executor(lang) is not None, f"get_executor({lang!r}) returned None"
+
+
+class TestLanguageCapabilityFields:
+    """list_language_capabilities() entry field types and values."""
+
+    def test_version_field_is_string(self) -> None:
+        for cap in list_language_capabilities():
+            assert isinstance(cap["version"], str), f"{cap['id']} version not str"
+
+    def test_name_field_is_string(self) -> None:
+        for cap in list_language_capabilities():
+            assert isinstance(cap["name"], str), f"{cap['id']} name not str"
+
+    def test_description_field_is_nonempty_string(self) -> None:
+        for cap in list_language_capabilities():
+            assert isinstance(cap["description"], str)
+            assert len(cap["description"]) > 0
+
+    def test_assembly_id_in_capabilities(self) -> None:
+        ids = {cap["id"] for cap in list_language_capabilities()}
+        assert "assembly" in ids

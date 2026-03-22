@@ -251,3 +251,96 @@ class TestSimulationFailurePropagation:
             engine.step_one_instruction()
         except MechanicalFailureError as exc:
             assert "bearing_seizure" in str(exc)
+
+
+class TestSimulationConfigDefaults:
+    """SimulationConfig default field values and randomize_tolerances."""
+
+    def test_default_rpm_is_30(self) -> None:
+        cfg = SimulationConfig()
+        assert cfg.rpm == pytest.approx(30.0)
+
+    def test_default_initial_clearance_positive(self) -> None:
+        cfg = SimulationConfig()
+        assert cfg.initial_clearance_mm > 0.0
+
+    def test_default_ambient_temperature(self) -> None:
+        cfg = SimulationConfig()
+        assert 15.0 <= cfg.ambient_temperature_C <= 25.0
+
+    def test_randomize_does_not_preserve_defaults(self) -> None:
+        cfg = SimulationConfig()
+        orig_clearance = cfg.initial_clearance_mm
+        cfg.randomize_tolerances(seed=99)
+        assert cfg.initial_clearance_mm != orig_clearance
+
+    def test_randomize_backlash_positive(self) -> None:
+        cfg = SimulationConfig()
+        cfg.randomize_tolerances(seed=7)
+        assert cfg.initial_gear_backlash_mm > 0.0
+
+    def test_randomize_clearance_within_bounds(self) -> None:
+        for seed in range(10):
+            cfg = SimulationConfig()
+            cfg.randomize_tolerances(seed=seed)
+            assert cfg.initial_clearance_mm > 0.0
+
+
+class TestMechanicalFailureErrorType:
+    """MechanicalFailureError is an Exception subclass with message."""
+
+    def test_is_exception_subclass(self) -> None:
+        assert issubclass(MechanicalFailureError, Exception)
+
+    def test_message_preserved(self) -> None:
+        err = MechanicalFailureError("bearing_seizure")
+        assert "bearing_seizure" in str(err)
+
+    def test_can_be_raised(self) -> None:
+        with pytest.raises(MechanicalFailureError):
+            raise MechanicalFailureError("test")
+
+    def test_is_exception_instance(self) -> None:
+        err = MechanicalFailureError("test")
+        assert isinstance(err, Exception)
+
+
+class TestPhysicsStateFields:
+    """SimulationState fields remain in valid ranges during brief run."""
+
+    def test_temperature_positive_after_run(self) -> None:
+        config = SimulationConfig(rpm=30.0)
+        sim = SimulationEngine(config)
+        sim.run(1.0)
+        assert sim.state.temperature_C > 0.0
+
+    def test_shaft_deflection_nonneg_after_run(self) -> None:
+        config = SimulationConfig(rpm=30.0)
+        sim = SimulationEngine(config)
+        sim.run(1.0)
+        assert sim.state.shaft_deflection_mm >= 0.0
+
+    def test_bearing_clearances_length_is_4(self) -> None:
+        config = SimulationConfig()
+        sim = SimulationEngine(config)
+        assert len(sim.state.bearing_clearances_mm) == 4
+
+    def test_bearing_wear_nonneg_after_run(self) -> None:
+        config = SimulationConfig(rpm=30.0)
+        sim = SimulationEngine(config)
+        sim.run(1.0)
+        assert all(v >= 0.0 for v in sim.state.bearing_wear_volumes_mm3)
+
+    def test_time_s_advances_proportionally(self) -> None:
+        config = SimulationConfig(rpm=30.0)
+        sim1 = SimulationEngine(config)
+        sim2 = SimulationEngine(config)
+        sim1.run(1.0)
+        sim2.run(2.0)
+        assert sim2.state.time_s > sim1.state.time_s
+
+
+def test_simulation_config_dt_positive() -> None:
+    """SimulationConfig default dt_s must be a positive timestep."""
+    config = SimulationConfig()
+    assert config.dt_s > 0.0

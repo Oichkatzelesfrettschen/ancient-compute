@@ -129,3 +129,71 @@ class TestQuipuKFGEmulatorSyntheticArtifact:
         assert s.investigator_num == "SYN001"
         assert s.cord_count == 2
         assert s.total_value == 3
+
+    def test_large_number_of_cords(self) -> None:
+        cords = [{"Value": i} for i in range(100)]
+        emu = self._make(cords)
+        assert emu.total_value() == sum(range(100))  # 4950
+
+    def test_all_zero_values(self) -> None:
+        cords = [{"Value": 0}] * 10
+        emu = self._make(cords)
+        assert emu.total_value() == 0
+        assert emu.summarize().cord_count == 10
+
+    def test_float_value_truncated_or_added(self) -> None:
+        emu = self._make([{"Value": 1.9}])
+        # Should not raise; value treated as numeric
+        val = emu.total_value()
+        assert isinstance(val, int)
+
+    def test_summary_cord_count_matches_cords_length(self) -> None:
+        cords = [{"Value": 1}] * 7
+        emu = self._make(cords)
+        assert emu.summarize().cord_count == 7
+
+    def test_synthetic_total_equals_summary_total(self) -> None:
+        cords = [{"Value": 10}, {"Value": 20}, {"Value": 30}]
+        emu = self._make(cords)
+        assert emu.total_value() == emu.summarize().total_value
+
+    def test_empty_artifact_summary(self) -> None:
+        emu = self._make([])
+        s = emu.summarize()
+        assert s.cord_count == 0
+        assert s.total_value == 0
+
+
+class TestQuipuKFGArtifactLoading:
+    """Verify KFGArtifact fields from load_kfg_normalized."""
+
+    def _artifact(self, filename: str) -> KFGArtifact:
+        return load_kfg_normalized(_KFG_DIR / filename)
+
+    def test_qu001_investigator_num(self) -> None:
+        a = self._artifact("QU001.json")
+        assert a.investigator_num == "QU001"
+
+    def test_qu001_cords_is_list(self) -> None:
+        a = self._artifact("QU001.json")
+        assert isinstance(a.cords, list)
+
+    def test_qu001_cord_count_33(self) -> None:
+        a = self._artifact("QU001.json")
+        assert len(a.cords) == 33
+
+    def test_ur001_cord_count_572(self) -> None:
+        a = self._artifact("UR001.json")
+        assert len(a.cords) == 572
+
+    def test_artifact_has_primary_cord(self) -> None:
+        a = self._artifact("QU001.json")
+        assert isinstance(a.primary_cord, dict)
+
+    def test_artifact_has_khipu(self) -> None:
+        a = self._artifact("QU001.json")
+        assert isinstance(a.khipu, dict)
+
+    def test_artifact_clusters_is_list(self) -> None:
+        a = self._artifact("QU001.json")
+        assert isinstance(a.clusters, list)

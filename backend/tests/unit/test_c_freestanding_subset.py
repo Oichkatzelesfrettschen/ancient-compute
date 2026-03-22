@@ -84,25 +84,23 @@ class TestCFreestandingSubsetSupported:
 
     def test_recursive_function_compiles(self) -> None:
         result = _execute(
-            "int fact(int n) {\n" "  if (n <= 1) { return 1; }\n" "  return n * fact(n - 1);\n" "}"
+            "int fact(int n) {\n  if (n <= 1) { return 1; }\n  return n * fact(n - 1);\n}"
         )
         assert result.status == ExecutionStatus.SUCCESS
 
     def test_if_else_compiles(self) -> None:
         result = _execute(
-            "int abs_val(int x) {\n" "  if (x >= 0) { return x; } else { return -x; }\n" "}"
+            "int abs_val(int x) {\n  if (x >= 0) { return x; } else { return -x; }\n}"
         )
         assert result.status == ExecutionStatus.SUCCESS
 
     def test_while_loop_compiles(self) -> None:
-        result = _execute(
-            "int countdown(int n) {\n" "  while (n > 0) { n = n - 1; }\n" "  return n;\n" "}"
-        )
+        result = _execute("int countdown(int n) {\n  while (n > 0) { n = n - 1; }\n  return n;\n}")
         assert result.status == ExecutionStatus.SUCCESS
 
     def test_multiple_functions_compile(self) -> None:
         result = _execute(
-            "int square(int x) { return x * x; }\n" "int cube(int x) { return x * square(x); }"
+            "int square(int x) { return x * x; }\nint cube(int x) { return x * square(x); }"
         )
         assert result.status == ExecutionStatus.SUCCESS
 

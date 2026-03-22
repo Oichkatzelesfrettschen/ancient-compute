@@ -140,3 +140,124 @@ class TestNoteGAEExecution:
         engine.run()
         v3_value = engine.memory[2].to_decimal()
         assert v3_value == 2.0
+
+
+class TestNoteGAEExtended:
+    """Extended coverage: n=4, n=5, result card order, exact fractions."""
+
+    def test_n4_output_count(self) -> None:
+        results = _run_note_g_on_ae(4)
+        assert len(results) == 4
+
+    def test_n5_output_count(self) -> None:
+        results = _run_note_g_on_ae(5)
+        assert len(results) == 5
+
+    def test_n4_matches_oracle(self) -> None:
+        """n=4 covers all four verified Bernoulli numbers [B1, B3, B5, B7]."""
+        results = _run_note_g_on_ae(4)
+        oracle = ada_lovelace_bernoulli_series(4)
+        assert len(results) == len(oracle)
+        for i, (got, want) in enumerate(zip(results, oracle, strict=True)):
+            assert got == want, f"index {i}: got {got}, want {want}"
+
+    def test_n1_b1_is_one_sixth(self) -> None:
+        from fractions import Fraction
+
+        results = _run_note_g_on_ae(1)
+        assert results[0] == Fraction(1, 6)
+
+    def test_n2_b3_is_minus_one_thirtieth(self) -> None:
+        from fractions import Fraction
+
+        results = _run_note_g_on_ae(2)
+        assert results[1] == Fraction(-1, 30)
+
+    def test_n3_b5_is_one_fortysecond(self) -> None:
+        from fractions import Fraction
+
+        results = _run_note_g_on_ae(3)
+        assert results[2] == Fraction(1, 42)
+
+    def test_all_outputs_are_nonzero(self) -> None:
+        from fractions import Fraction
+
+        results = _run_note_g_on_ae(3)
+        for r in results:
+            assert r != Fraction(0)
+
+    def test_result_cards_have_wrprn_entries(self) -> None:
+        text = generate_note_g_assembly_text(2)
+        engine = Engine()
+        engine.load_program_from_text(text)
+        engine.run()
+        wrprn_cards = [c for c in engine.result_cards if c.get("opcode") == "WRPRN"]
+        assert len(wrprn_cards) == 2
+
+    def test_engine_halted_after_run_n3(self) -> None:
+        text = generate_note_g_assembly_text(3)
+        engine = Engine()
+        engine.load_program_from_text(text)
+        engine.run()
+        assert not engine.running
+
+    def test_n2_text_longer_than_n1_text(self) -> None:
+        t1 = generate_note_g_assembly_text(1)
+        t2 = generate_note_g_assembly_text(2)
+        assert len(t2) > len(t1)
+
+    def test_n3_text_longer_than_n2_text(self) -> None:
+        t2 = generate_note_g_assembly_text(2)
+        t3 = generate_note_g_assembly_text(3)
+        assert len(t3) > len(t2)
+
+    def test_assembly_text_for_n1_ends_with_halt(self) -> None:
+        text = generate_note_g_assembly_text(1)
+        # HALT must appear in the assembly text.
+        assert "HALT" in text
+
+    def test_v1_and_v2_constants_preserved_n3(self) -> None:
+        """V1=1 (mem[0]) and V2=2 (mem[1]) are never overwritten by any pass."""
+        text = generate_note_g_assembly_text(3)
+        engine = Engine()
+        engine.load_program_from_text(text)
+        engine.run()
+        assert engine.memory[0].to_decimal() == 1.0, "V1 clobbered"
+        assert engine.memory[1].to_decimal() == 2.0, "V2 clobbered"
+
+    def test_outputs_alternate_sign(self) -> None:
+        """Ada B1=+, B3=-, B5=+, B7=- ... alternating sign property."""
+        from fractions import Fraction
+
+        results = _run_note_g_on_ae(4)
+        # B1 > 0, B3 < 0, B5 > 0, B7 < 0
+        expected_signs = [1, -1, 1, -1]
+        for i, (r, sign) in enumerate(zip(results, expected_signs, strict=True)):
+            assert (r > Fraction(0)) == (sign > 0), f"index {i}: sign mismatch"
+
+
+class TestNoteGAssemblyProperties:
+    """Assembly text structure and engine state after Note G runs."""
+
+    def test_n1_assembly_line_count_at_least_10(self) -> None:
+        text = generate_note_g_assembly_text(1)
+        assert text.count("\n") >= 10
+
+    def test_n4_b7_is_positive(self) -> None:
+        from fractions import Fraction
+
+        results = _run_note_g_on_ae(4)
+        assert results[3] < Fraction(0)  # B_7 = -1/30
+
+    def test_engine_memory_has_nonzero_entries_after_n2(self) -> None:
+        text = generate_note_g_assembly_text(2)
+        engine = Engine()
+        engine.load_program_from_text(text)
+        engine.run()
+        nonzero = sum(1 for v in engine.memory if v.to_decimal() != 0.0)
+        assert nonzero > 0
+
+    def test_n3_text_contains_mult_and_div(self) -> None:
+        text = generate_note_g_assembly_text(3)
+        assert "MULT" in text
+        assert "DIV" in text

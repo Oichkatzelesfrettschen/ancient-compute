@@ -417,9 +417,9 @@ class TestThermalClearanceFeedback:
                 20.0,
             )
             c = ThermalClearanceFeedback.combined_clearance_mm(0.05, delta, 0.0)
-            assert not ThermalClearanceFeedback.is_seized(
-                c
-            ), f"Seizure at T={T} C, clearance={c:.4f} mm"
+            assert not ThermalClearanceFeedback.is_seized(c), (
+                f"Seizure at T={T} C, clearance={c:.4f} mm"
+            )
 
 
 # ---------------------------------------------------------------------------
@@ -628,3 +628,296 @@ class TestCrankNicolsonConvergence:
         err_cn = abs(T_cn - T_exact)
         err_eu = abs(T_eu - T_exact)
         assert err_cn <= err_eu, f"CN error {err_cn:.4e} > Euler error {err_eu:.4e} at dt={dt}"
+
+
+# ---------------------------------------------------------------------------
+# FrictionHeatModel extended
+# ---------------------------------------------------------------------------
+
+
+class TestFrictionHeatExtended:
+    """Zero-input guards, proportionality, and edge cases."""
+
+    def test_bearing_heat_zero_at_zero_omega(self):
+        q = FrictionHeatModel.bearing_heat_W(0.10, 1000.0, 50.0, 0.0)
+        assert q == pytest.approx(0.0)
+
+    def test_bearing_heat_zero_at_zero_load(self):
+        q = FrictionHeatModel.bearing_heat_W(0.10, 0.0, 50.0, math.pi)
+        assert q == pytest.approx(0.0)
+
+    def test_bearing_heat_proportional_to_omega(self):
+        q1 = FrictionHeatModel.bearing_heat_W(0.10, 500.0, 50.0, 1.0)
+        q2 = FrictionHeatModel.bearing_heat_W(0.10, 500.0, 50.0, 2.0)
+        assert q2 == pytest.approx(2.0 * q1, rel=1e-6)
+
+    def test_bearing_heat_proportional_to_diameter(self):
+        q1 = FrictionHeatModel.bearing_heat_W(0.10, 500.0, 25.0, math.pi)
+        q2 = FrictionHeatModel.bearing_heat_W(0.10, 500.0, 50.0, math.pi)
+        assert q2 == pytest.approx(2.0 * q1, rel=1e-6)
+
+    def test_gear_mesh_heat_proportional_to_power(self):
+        q1 = FrictionHeatModel.gear_mesh_heat_W(100.0, 0.95)
+        q2 = FrictionHeatModel.gear_mesh_heat_W(200.0, 0.95)
+        assert q2 == pytest.approx(2.0 * q1, rel=1e-6)
+
+    def test_gear_mesh_heat_higher_for_lower_efficiency(self):
+        q_good = FrictionHeatModel.gear_mesh_heat_W(100.0, 0.99)
+        q_poor = FrictionHeatModel.gear_mesh_heat_W(100.0, 0.90)
+        assert q_poor > q_good
+
+    def test_cam_friction_zero_at_zero_velocity(self):
+        q = FrictionHeatModel.cam_friction_heat_W(0.12, 200.0, 0.0)
+        assert q == pytest.approx(0.0)
+
+    def test_cam_friction_zero_at_zero_force(self):
+        q = FrictionHeatModel.cam_friction_heat_W(0.12, 0.0, 0.05)
+        assert q == pytest.approx(0.0)
+
+    def test_cam_friction_proportional_to_force(self):
+        q1 = FrictionHeatModel.cam_friction_heat_W(0.12, 100.0, 0.05)
+        q2 = FrictionHeatModel.cam_friction_heat_W(0.12, 200.0, 0.05)
+        assert q2 == pytest.approx(2.0 * q1, rel=1e-6)
+
+
+# ---------------------------------------------------------------------------
+# ThermalExpansionModel extended
+# ---------------------------------------------------------------------------
+
+
+class TestThermalExpansionExtended:
+    """Proportionality, sign, and zero-input behavior."""
+
+    def test_linear_expansion_proportional_to_length(self):
+        d1 = ThermalExpansionModel.linear_expansion_mm(19e-6, 100.0, 30.0)
+        d2 = ThermalExpansionModel.linear_expansion_mm(19e-6, 200.0, 30.0)
+        assert d2 == pytest.approx(2.0 * d1, rel=1e-6)
+
+    def test_linear_expansion_proportional_to_alpha(self):
+        d1 = ThermalExpansionModel.linear_expansion_mm(10e-6, 100.0, 30.0)
+        d2 = ThermalExpansionModel.linear_expansion_mm(20e-6, 100.0, 30.0)
+        assert d2 == pytest.approx(2.0 * d1, rel=1e-6)
+
+    def test_linear_expansion_negative_for_cooling(self):
+        delta = ThermalExpansionModel.linear_expansion_mm(19e-6, 100.0, -10.0)
+        assert delta < 0
+
+    def test_linear_expansion_zero_at_zero_length(self):
+        delta = ThermalExpansionModel.linear_expansion_mm(19e-6, 0.0, 30.0)
+        assert delta == pytest.approx(0.0)
+
+    def test_dissimilar_clearance_zero_for_same_alpha(self):
+        # Same alpha, same length -> no differential expansion
+        alpha = 12e-6
+        delta = ThermalExpansionModel.dissimilar_metal_clearance_change_mm(
+            alpha, 50.0, alpha, 50.0, 20.0
+        )
+        assert delta == pytest.approx(0.0)
+
+    def test_dissimilar_clearance_negative_when_shaft_expands_more(self, lib):
+        brass = lib.get("brass")
+        steel = lib.get("steel")
+        # Shaft = brass (higher CTE), bushing = steel (lower) -> clearance shrinks
+        delta = ThermalExpansionModel.dissimilar_metal_clearance_change_mm(
+            steel.thermal_expansion_coeff_per_K,
+            50.0,
+            brass.thermal_expansion_coeff_per_K,
+            50.0,
+            20.0,
+        )
+        assert delta < 0
+
+    def test_gear_backlash_zero_at_same_alpha(self):
+        delta = ThermalExpansionModel.gear_backlash_change_mm(
+            12e-6, 12e-6, 100.0, 20.0
+        )
+        assert delta == pytest.approx(0.0)
+
+    def test_bearing_clearance_proportional_to_diameter(self):
+        d1 = ThermalExpansionModel.bearing_clearance_change_mm(19e-6, 12e-6, 50.0, 20.0)
+        d2 = ThermalExpansionModel.bearing_clearance_change_mm(19e-6, 12e-6, 100.0, 20.0)
+        assert d2 == pytest.approx(2.0 * d1, rel=1e-6)
+
+
+# ---------------------------------------------------------------------------
+# Thermal time constant / steady state extended
+# ---------------------------------------------------------------------------
+
+
+class TestThermalTimeConstantExtended:
+    """Proportionality, zero area guard, steady state."""
+
+    def test_time_constant_proportional_to_mass(self):
+        tau1 = compute_thermal_time_constant_s(250.0, 490.0, 7.0, 10.0)
+        tau2 = compute_thermal_time_constant_s(500.0, 490.0, 7.0, 10.0)
+        assert tau2 == pytest.approx(2.0 * tau1, rel=1e-6)
+
+    def test_time_constant_proportional_to_cp(self):
+        tau1 = compute_thermal_time_constant_s(500.0, 245.0, 7.0, 10.0)
+        tau2 = compute_thermal_time_constant_s(500.0, 490.0, 7.0, 10.0)
+        assert tau2 == pytest.approx(2.0 * tau1, rel=1e-6)
+
+    def test_time_constant_larger_h_smaller(self):
+        tau_low = compute_thermal_time_constant_s(500.0, 490.0, 7.0, 5.0)
+        tau_high = compute_thermal_time_constant_s(500.0, 490.0, 7.0, 20.0)
+        assert tau_high < tau_low
+
+    def test_steady_state_rise_proportional_to_Q(self):
+        dt1 = compute_steady_state_rise_C(20.0, 7.0, 10.0)
+        dt2 = compute_steady_state_rise_C(40.0, 7.0, 10.0)
+        assert dt2 == pytest.approx(2.0 * dt1, rel=1e-6)
+
+    def test_steady_state_rise_zero_for_zero_Q(self):
+        dt = compute_steady_state_rise_C(0.0, 7.0, 10.0)
+        assert dt == pytest.approx(0.0)
+
+    def test_steady_state_rise_larger_area_smaller(self):
+        dt_small = compute_steady_state_rise_C(20.0, 3.5, 10.0)
+        dt_large = compute_steady_state_rise_C(20.0, 7.0, 10.0)
+        assert dt_large < dt_small
+
+    def test_zero_h_gives_inf_time_constant(self):
+        tau = compute_thermal_time_constant_s(500.0, 490.0, 7.0, 0.0)
+        assert tau == float("inf")
+
+
+# ---------------------------------------------------------------------------
+# RadiationHeatModel extended
+# ---------------------------------------------------------------------------
+
+
+class TestRadiationHeatModelExtended:
+    """Proportionality, sign, and linearized coefficient."""
+
+    def test_radiation_proportional_to_emissivity(self):
+        q1 = RadiationHeatModel.radiation_heat_W(0.5, 1.0, 313.0, 293.0)
+        q2 = RadiationHeatModel.radiation_heat_W(1.0, 1.0, 313.0, 293.0)
+        assert q2 == pytest.approx(2.0 * q1, rel=1e-6)
+
+    def test_radiation_negative_when_surface_cooler(self):
+        # Surface cooler than ambient -> negative Q (absorbs radiation)
+        q = RadiationHeatModel.radiation_heat_W(0.9, 1.0, 273.0, 293.0)
+        assert q < 0
+
+    def test_radiation_proportional_to_area(self):
+        q1 = RadiationHeatModel.radiation_heat_W(0.9, 1.0, 313.0, 293.0)
+        q2 = RadiationHeatModel.radiation_heat_W(0.9, 2.0, 313.0, 293.0)
+        assert q2 == pytest.approx(2.0 * q1, rel=1e-6)
+
+    def test_linearized_h_rad_increases_with_T_surface(self):
+        h1 = RadiationHeatModel.linearized_h_rad_W_m2K(0.9, 313.0, 293.0)
+        h2 = RadiationHeatModel.linearized_h_rad_W_m2K(0.9, 373.0, 293.0)
+        assert h2 > h1
+
+    def test_linearized_h_rad_positive(self):
+        h = RadiationHeatModel.linearized_h_rad_W_m2K(0.9, 313.0, 293.0)
+        assert h > 0
+
+    def test_linearized_h_rad_proportional_to_emissivity(self):
+        h1 = RadiationHeatModel.linearized_h_rad_W_m2K(0.5, 313.0, 293.0)
+        h2 = RadiationHeatModel.linearized_h_rad_W_m2K(1.0, 313.0, 293.0)
+        assert h2 == pytest.approx(2.0 * h1, rel=1e-6)
+
+
+# ---------------------------------------------------------------------------
+# TransientThermalSolver extended
+# ---------------------------------------------------------------------------
+
+
+class TestTransientThermalSolverExtended:
+    """Steady-state formula, time constant, warmup curve properties."""
+
+    def test_steady_state_T_formula(self):
+        # T_ss = T_amb + Q / (h*A)
+        T_ss = TransientThermalSolver.steady_state_T_C(20.0, 10.0, 7.0, 20.0)
+        expected = 20.0 + 20.0 / (10.0 * 7.0)
+        assert T_ss == pytest.approx(expected, rel=1e-6)
+
+    def test_steady_state_T_zero_Q_equals_ambient(self):
+        T_ss = TransientThermalSolver.steady_state_T_C(0.0, 10.0, 7.0, 25.0)
+        assert T_ss == pytest.approx(25.0)
+
+    def test_time_constant_formula(self):
+        # tau = m*cp / (h*A)
+        tau = TransientThermalSolver.time_constant_s(500.0, 460.0, 10.0, 7.0)
+        assert tau == pytest.approx(500.0 * 460.0 / (10.0 * 7.0), rel=1e-6)
+
+    def test_warmup_curve_starts_at_ambient(self):
+        curve = TransientThermalSolver.warmup_curve(
+            20.0, 10.0, 7.0, 500.0, 460.0, 20.0, duration_s=100.0, dt_s=10.0
+        )
+        assert curve[0] == pytest.approx((0.0, 20.0), rel=1e-6)
+
+    def test_warmup_curve_monotone_increasing(self):
+        curve = TransientThermalSolver.warmup_curve(
+            20.0, 10.0, 7.0, 500.0, 460.0, 20.0, duration_s=5000.0, dt_s=100.0
+        )
+        temps = [t for _, t in curve]
+        assert all(temps[i] <= temps[i + 1] for i in range(len(temps) - 1))
+
+    def test_warmup_curve_returns_list_of_tuples(self):
+        curve = TransientThermalSolver.warmup_curve(
+            20.0, 10.0, 7.0, 500.0, 460.0, 20.0, duration_s=100.0, dt_s=10.0
+        )
+        assert isinstance(curve, list)
+        assert all(isinstance(pt, tuple) and len(pt) == 2 for pt in curve)
+
+    def test_euler_step_at_steady_state_returns_steady(self):
+        # At T_ss, dT/dt = 0, so T stays constant
+        Q, h, A, m, cp, T_amb = 20.0, 10.0, 7.0, 500.0, 460.0, 20.0
+        T_ss = TransientThermalSolver.steady_state_T_C(Q, h, A, T_amb)
+        T_next = TransientThermalSolver.forward_euler_step(
+            T_ss, Q, h, A, m, cp, T_amb, 100.0
+        )
+        assert T_next == pytest.approx(T_ss, rel=1e-6)
+
+    def test_cn_step_at_steady_state_returns_steady(self):
+        Q, h, A, m, cp, T_amb = 20.0, 10.0, 7.0, 500.0, 460.0, 20.0
+        T_ss = TransientThermalSolver.steady_state_T_C(Q, h, A, T_amb)
+        T_next = TransientThermalSolver.crank_nicolson_step(
+            T_ss, Q, h, A, m, cp, T_amb, 100.0
+        )
+        assert T_next == pytest.approx(T_ss, rel=1e-4)
+
+
+# ---------------------------------------------------------------------------
+# ThermalClearanceFeedback extended
+# ---------------------------------------------------------------------------
+
+
+class TestThermalClearanceFeedbackExtended:
+    """Combined clearance formula, seizure, and proportionality."""
+
+    def test_combined_clearance_sums_parts(self):
+        c = ThermalClearanceFeedback.combined_clearance_mm(0.05, 0.003, 0.002)
+        assert c == pytest.approx(0.055)
+
+    def test_seizure_at_negative_clearance(self):
+        assert ThermalClearanceFeedback.is_seized(-0.001)
+
+    def test_seizure_at_zero_clearance(self):
+        assert ThermalClearanceFeedback.is_seized(0.0)
+
+    def test_no_seizure_at_positive_clearance(self):
+        assert not ThermalClearanceFeedback.is_seized(0.001)
+
+    def test_thermal_clearance_zero_at_reference_T(self):
+        # T_current == T_ref -> no change
+        delta = ThermalClearanceFeedback.thermal_clearance_mm(19e-6, 12e-6, 50.0, 20.0, 20.0)
+        assert delta == pytest.approx(0.0)
+
+    def test_thermal_clearance_increases_for_higher_alpha_bushing(self):
+        # Bushing expands more -> clearance increases
+        delta = ThermalClearanceFeedback.thermal_clearance_mm(
+            19e-6, 12e-6, 50.0, 40.0, 20.0
+        )
+        assert delta > 0
+
+    def test_thermal_clearance_proportional_to_diameter(self):
+        d1 = ThermalClearanceFeedback.thermal_clearance_mm(19e-6, 12e-6, 50.0, 40.0, 20.0)
+        d2 = ThermalClearanceFeedback.thermal_clearance_mm(19e-6, 12e-6, 100.0, 40.0, 20.0)
+        assert d2 == pytest.approx(2.0 * d1, rel=1e-6)
+
+    def test_combined_clearance_with_wear_positive(self):
+        c = ThermalClearanceFeedback.combined_clearance_mm(0.05, 0.001, 0.005)
+        assert c > 0.05  # wear always adds to clearance

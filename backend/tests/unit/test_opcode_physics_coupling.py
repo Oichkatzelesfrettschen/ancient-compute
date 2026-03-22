@@ -87,9 +87,9 @@ class TestTemperatureIncrease:
             physics_engine.execute_instruction(_add(1))
 
         final_temp = physics_engine.physical_engine.state.temperature_C
-        assert (
-            final_temp > initial_temp
-        ), f"Temperature should increase: {initial_temp} -> {final_temp}"
+        assert final_temp > initial_temp, (
+            f"Temperature should increase: {initial_temp} -> {final_temp}"
+        )
 
     def test_temperature_stays_ambient_without_physics(self, plain_engine):
         """Without physics, no temperature tracking."""
@@ -117,9 +117,9 @@ class TestWearAccumulation:
             engine_mult.execute_instruction(_mult(1))
         mult_time = bridge_mult.state.time_s
 
-        assert (
-            mult_time > add_time
-        ), f"MULT should take longer: {mult_time:.3f}s vs ADD {add_time:.3f}s"
+        assert mult_time > add_time, (
+            f"MULT should take longer: {mult_time:.3f}s vs ADD {add_time:.3f}s"
+        )
 
 
 class TestMechanicalFailure:
@@ -273,3 +273,91 @@ class TestPhysicsReportExtended:
             engine.execute_instruction(_add(1))
         report = engine.physics_report()
         assert report["energy_consumed_J"] > 0
+
+
+class TestOpcodeTimeCosts:
+    """Verify time costs are consistent with TIMING_TABLE cycle counts."""
+
+    def test_add_advances_time(self):
+        engine, bridge = _make_physics_engine()
+        t0 = bridge.state.time_s
+        engine.execute_instruction(_add(0))
+        assert bridge.state.time_s > t0
+
+    def test_mult_advances_more_than_add(self):
+        """MULT barrel takes more degrees than ADD barrel."""
+        _, bridge_add = _make_physics_engine()
+        bridge_add.opcode_advance("ADD")
+        add_time = bridge_add.state.time_s
+
+        _, bridge_mult = _make_physics_engine()
+        bridge_mult.opcode_advance("MULT")
+        mult_time = bridge_mult.state.time_s
+
+        assert mult_time > add_time
+
+    def test_load_advances_time(self):
+        engine, bridge = _make_physics_engine()
+        t0 = bridge.state.time_s
+        engine.execute_instruction(_load(0))
+        assert bridge.state.time_s > t0
+
+    def test_sequential_ops_accumulate_time(self):
+        engine, bridge = _make_physics_engine()
+        for _ in range(5):
+            engine.execute_instruction(_load(0))
+            engine.execute_instruction(_add(1))
+        assert bridge.state.time_s > 0.0
+
+
+class TestBridgeResetIntegration:
+    """After bridge.reset(), state returns to baseline."""
+
+    def test_reset_zeroes_time(self):
+        engine, bridge = _make_physics_engine()
+        engine.execute_instruction(_add(0))
+        bridge.reset()
+        assert bridge.state.time_s == pytest.approx(0.0)
+
+    def test_reset_clears_opcode_counts(self):
+        engine, bridge = _make_physics_engine()
+        engine.execute_instruction(_add(0))
+        bridge.reset()
+        report = bridge.physics_report()
+        assert report["opcode_counts"] == {}
+
+    def test_not_failed_after_reset(self):
+        engine, bridge = _make_physics_engine()
+        bridge.reset()
+        assert not bridge.failed
+
+    def test_temperature_returns_to_ambient_after_reset(self):
+        engine, bridge = _make_physics_engine()
+        for _ in range(50):
+            engine.execute_instruction(_add(0))
+        bridge.reset()
+        # After reset temperature should be back at ambient (20.0)
+        assert bridge.state.temperature_C == pytest.approx(20.0)
+
+
+class TestBridgeOpcodeAdvance:
+    """opcode_advance() drives simulation time forward per opcode cost."""
+
+    def test_nop_advance_does_not_raise(self) -> None:
+        _, bridge = _make_physics_engine()
+        bridge.opcode_advance("NOP")  # 0 cycles; must not raise
+
+    def test_halt_advance_does_not_raise(self) -> None:
+        _, bridge = _make_physics_engine()
+        bridge.opcode_advance("HALT")
+
+    def test_load_advance_increases_time(self) -> None:
+        _, bridge = _make_physics_engine()
+        t0 = bridge.state.time_s
+        bridge.opcode_advance("LOAD")
+        assert bridge.state.time_s >= t0
+
+    def test_physics_report_returns_dict(self) -> None:
+        _, bridge = _make_physics_engine()
+        report = bridge.physics_report()
+        assert isinstance(report, dict)

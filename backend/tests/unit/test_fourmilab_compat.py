@@ -207,3 +207,16 @@ class TestRunFourmilabDeck:
         output = []
         engine = run_fourmilab_deck(source, output_callback=output.append)
         assert isinstance(engine, Engine)
+
+
+class TestParseFourmilabEdgeCases:
+    """Additional parse edge cases."""
+
+    def test_load_col_ten(self) -> None:
+        cards = parse_fourmilab_deck("L010")
+        col, _ = cards[0].payload
+        assert col == 10
+
+    def test_number_card_large_value(self) -> None:
+        cards = parse_fourmilab_deck("N005 +9999")
+        assert cards[0].payload == (5, 9999)

@@ -673,3 +673,235 @@ class TestEdgeCasesAndIntegration:
         assert len(system1.printer.printed_lines) == 1
         assert len(system2.printer.printed_lines) == 1
         assert system1.printer.printed_lines[0] != system2.printer.printed_lines[0]
+
+
+# ---------------------------------------------------------------------------
+# Printer state transitions
+# ---------------------------------------------------------------------------
+
+
+class TestPrinterStateTransitions:
+    """Verify print_number cycles through all mechanical states."""
+
+    def test_initial_state_is_idle(self) -> None:
+        p = Printer()
+        assert p.state == PrinterState.IDLE
+
+    def test_state_after_print_is_advancing(self) -> None:
+        p = Printer()
+        p.print_number(42)
+        assert p.state == PrinterState.ADVANCING
+
+    def test_inking_engaged_after_print(self) -> None:
+        p = Printer()
+        p.print_number(0)
+        assert p.inking_engaged is True
+
+    def test_hammer_ready_after_print(self) -> None:
+        p = Printer()
+        p.print_number(1)
+        assert p.hammer_ready is True
+
+    def test_reset_restores_idle(self) -> None:
+        p = Printer()
+        p.print_number(5)
+        p.reset()
+        assert p.state == PrinterState.IDLE
+
+    def test_reset_clears_inking(self) -> None:
+        p = Printer()
+        p.print_number(5)
+        p.reset()
+        assert p.inking_engaged is False
+
+    def test_reset_clears_hammer(self) -> None:
+        p = Printer()
+        p.print_number(5)
+        p.reset()
+        assert p.hammer_ready is False
+
+    def test_platen_increments_after_print(self) -> None:
+        p = Printer()
+        p.print_number(100)
+        assert p.platen_position == 1
+
+    def test_platen_resets_after_advance_page(self) -> None:
+        p = Printer()
+        for _ in range(5):
+            p.print_number(1)
+        p.advance_page()
+        assert p.platen_position == 0
+
+
+# ---------------------------------------------------------------------------
+# Operations count detail
+# ---------------------------------------------------------------------------
+
+
+class TestPrinterOperationsCount:
+    """print_number increments total_operations by exactly 4 per call."""
+
+    def test_single_print_adds_four_ops(self) -> None:
+        p = Printer()
+        p.print_number(0)
+        assert p.total_operations == 4
+
+    def test_two_prints_add_eight_ops(self) -> None:
+        p = Printer()
+        p.print_number(1)
+        p.print_number(2)
+        assert p.total_operations == 8
+
+    def test_advance_line_adds_one_op(self) -> None:
+        p = Printer()
+        p.advance_line()
+        assert p.total_operations == 1
+
+    def test_advance_page_adds_one_op(self) -> None:
+        p = Printer()
+        p.advance_page()
+        assert p.total_operations == 1
+
+    def test_reset_zeroes_ops(self) -> None:
+        p = Printer()
+        p.print_number(0)
+        p.reset()
+        assert p.total_operations == 0
+
+    def test_print_multiple_ops_proportional(self) -> None:
+        p = Printer()
+        p.print_multiple([1, 2, 3])
+        assert p.total_operations == 12  # 3 x 4
+
+
+# ---------------------------------------------------------------------------
+# Stereotyper operations and fullness
+# ---------------------------------------------------------------------------
+
+
+class TestStereotyperOperationsExtended:
+    """Mold fullness, operations count, engrave_digit out-of-range."""
+
+    def test_initial_fullness_zero(self) -> None:
+        s = Stereotyper()
+        assert s.get_mold_fullness() == 0.0
+
+    def test_fullness_after_one_engrave_number(self) -> None:
+        s = Stereotyper()
+        s.engrave_number(42)
+        assert s.get_mold_fullness() == pytest.approx(1 / Stereotyper.MOLD_HEIGHT)
+
+    def test_mold_not_full_initially(self) -> None:
+        s = Stereotyper()
+        assert s.mold_is_full() is False
+
+    def test_mold_full_after_mold_height_engravings(self) -> None:
+        s = Stereotyper()
+        for _ in range(Stereotyper.MOLD_HEIGHT):
+            s.engrave_number(0)
+        assert s.mold_is_full() is True
+
+    def test_engrave_digit_out_of_range_raises(self) -> None:
+        s = Stereotyper()
+        with pytest.raises(ValueError):
+            s.engrave_digit(Stereotyper.MOLD_WIDTH, 5)  # x too large
+
+    def test_engrave_digit_negative_x_raises(self) -> None:
+        s = Stereotyper()
+        with pytest.raises(ValueError):
+            s.engrave_digit(-1, 5)
+
+    def test_operations_increment_on_engrave_number(self) -> None:
+        s = Stereotyper()
+        s.engrave_number(123)
+        assert s.total_operations > 0
+
+    def test_reset_clears_operations_and_position(self) -> None:
+        s = Stereotyper()
+        s.engrave_number(1)
+        s.reset()
+        assert s.total_operations == 0
+        assert s.x_position == 0
+        assert s.y_position == 0
+
+    def test_clear_all_removes_completed_molds(self) -> None:
+        s = Stereotyper()
+        for _ in range(Stereotyper.MOLD_HEIGHT):
+            s.engrave_number(0)
+        s.extract_mold()
+        assert s.get_completed_mold_count() == 1
+        s.clear_all()
+        assert s.get_completed_mold_count() == 0
+
+    def test_get_mold_as_grid_shape(self) -> None:
+        s = Stereotyper()
+        s.engrave_number(42)
+        grid = s.get_mold_as_grid()
+        assert isinstance(grid, list)
+        assert len(grid) == Stereotyper.MOLD_HEIGHT
+
+    def test_snapshot_fields_present(self) -> None:
+        s = Stereotyper()
+        snap = s.get_snapshot()
+        assert isinstance(snap, StereotyperSnapshot)
+        assert hasattr(snap, "x_position")
+        assert hasattr(snap, "y_position")
+        assert hasattr(snap, "molds_completed")
+
+
+# ---------------------------------------------------------------------------
+# Combined system extended
+# ---------------------------------------------------------------------------
+
+
+class TestCombinedSystemExtended:
+    """PrinterStereotyperSystem total_operations, routing, snapshot."""
+
+    def test_output_number_returns_string(self) -> None:
+        system = PrinterStereotyperSystem()
+        result = system.output_number(7)
+        assert isinstance(result, str)
+
+    def test_total_operations_increments_on_output(self) -> None:
+        system = PrinterStereotyperSystem()
+        system.output_number(1)
+        assert system.total_operations >= 1
+
+    def test_output_sequence_length_matches_input(self) -> None:
+        system = PrinterStereotyperSystem()
+        results = system.output_sequence([10, 20, 30, 40])
+        assert len(results) == 4
+
+    def test_output_to_printer_only(self) -> None:
+        system = PrinterStereotyperSystem()
+        system.output_number(5, to_printer=True, to_stereotyper=False)
+        assert len(system.printer.printed_lines) == 1
+        assert system.stereotyper.y_position == 0
+
+    def test_output_to_stereotyper_only(self) -> None:
+        system = PrinterStereotyperSystem()
+        system.output_number(5, to_printer=False, to_stereotyper=True)
+        assert len(system.printer.printed_lines) == 0
+        assert system.stereotyper.y_position == 1
+
+    def test_snapshot_contains_printer_key(self) -> None:
+        system = PrinterStereotyperSystem()
+        snap = system.get_snapshot()
+        assert "printer" in snap
+
+    def test_snapshot_contains_stereotyper_key(self) -> None:
+        system = PrinterStereotyperSystem()
+        snap = system.get_snapshot()
+        assert "stereotyper" in snap
+
+    def test_reset_zeroes_total_ops(self) -> None:
+        system = PrinterStereotyperSystem()
+        system.output_number(99)
+        system.reset()
+        assert system.total_operations == 0
+
+    def test_get_printed_output_joins_with_newline(self) -> None:
+        system = PrinterStereotyperSystem()
+        system.output_sequence([1, 2])
+        out = system.get_printed_output()
+        assert "\n" in out

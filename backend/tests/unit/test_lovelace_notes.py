@@ -124,9 +124,9 @@ class TestNoteC:
     )
     def test_triangular_number(self, n, expected):
         result = run_note_c(n)
-        assert _close(
-            result, float(expected)
-        ), f"T({n}) expected {expected}, got {result.to_decimal()}"
+        assert _close(result, float(expected)), (
+            f"T({n}) expected {expected}, got {result.to_decimal()}"
+        )
 
     def test_matches_python_sum(self):
         for n in range(1, 8):
@@ -172,9 +172,9 @@ class TestNoteCNative:
     )
     def test_triangular_number_native(self, n, expected):
         result = run_note_c_native(n)
-        assert _close(
-            result, float(expected)
-        ), f"T({n}) expected {expected}, got {result.to_decimal()}"
+        assert _close(result, float(expected)), (
+            f"T({n}) expected {expected}, got {result.to_decimal()}"
+        )
 
     def test_matches_python_runner(self):
         """Native AE result must agree with the Python-level runner."""
@@ -222,9 +222,9 @@ class TestNoteD:
             a, b = 5.0, 2.0
             result = run_note_d(n, a=a, b=b)
             expected = a**2 - (b * n) ** 2
-            assert _close(
-                result, expected, tol=1e-4
-            ), f"n={n}: expected {expected}, got {result.to_decimal()}"
+            assert _close(result, expected, tol=1e-4), (
+                f"n={n}: expected {expected}, got {result.to_decimal()}"
+            )
 
     def test_zero_n(self):
         # n=0: (a+0)(a-0) = a*a = a^2
@@ -237,3 +237,20 @@ class TestNoteD:
     def test_cli_interface(self):
         result = run_note_d(1)
         assert isinstance(result, BabbageNumber)
+
+
+class TestNotesBResultTypes:
+    """Return type checks for Note B/C/D runners."""
+
+    def test_note_b_mult_result_is_babbage_number(self) -> None:
+        assert isinstance(run_note_b_mult(3.0, 4.0), BabbageNumber)
+
+    def test_note_b_div_result_is_babbage_number(self) -> None:
+        assert isinstance(run_note_b_div(12.0, 4.0), BabbageNumber)
+
+    def test_note_c_triangular_formula(self) -> None:
+        """T(n) = n*(n+1)//2 for all n in 1..10."""
+        for n in range(1, 11):
+            result = run_note_c(n)
+            expected = n * (n + 1) // 2
+            assert _close(result, float(expected))

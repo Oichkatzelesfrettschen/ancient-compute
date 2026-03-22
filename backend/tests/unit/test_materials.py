@@ -284,15 +284,15 @@ class TestPropertyRanges:
 
     def test_all_yield_below_uts(self, lib):
         for mat in lib.all_materials():
-            assert (
-                mat.yield_strength_MPa[0] <= mat.ultimate_tensile_strength_MPa[1]
-            ), f"{mat.name}: Sy_min > Su_max"
+            assert mat.yield_strength_MPa[0] <= mat.ultimate_tensile_strength_MPa[1], (
+                f"{mat.name}: Sy_min > Su_max"
+            )
 
     def test_all_endurance_below_uts(self, lib):
         for mat in lib.all_materials():
-            assert (
-                mat.endurance_limit_MPa[1] <= mat.ultimate_tensile_strength_MPa[1]
-            ), f"{mat.name}: Se_max > Su_max"
+            assert mat.endurance_limit_MPa[1] <= mat.ultimate_tensile_strength_MPa[1], (
+                f"{mat.name}: Se_max > Su_max"
+            )
 
     def test_all_friction_positive(self, lib):
         for mat in lib.all_materials():

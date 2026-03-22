@@ -242,3 +242,82 @@ class TestNewAdapters:
         assert "last_result" in snap
         assert "operations" in snap
         assert snap["operations"] == 1
+
+
+class TestEngineOpcodes:
+    """Direct AE engine opcode execution tests."""
+
+    def test_add_opcode(self) -> None:
+        from backend.src.emulator.analytical_engine.engine import Engine
+
+        e = Engine()
+        e.load_program_from_text("MOV A, 3\nMOV B, 4\nADD A, B\nHALT\n")
+        e.run()
+        assert float(e.registers["A"].to_decimal()) == pytest.approx(7.0)
+
+    def test_sub_opcode(self) -> None:
+        from backend.src.emulator.analytical_engine.engine import Engine
+
+        e = Engine()
+        e.load_program_from_text("MOV A, 10\nMOV B, 3\nSUB A, B\nHALT\n")
+        e.run()
+        assert float(e.registers["A"].to_decimal()) == pytest.approx(7.0)
+
+    def test_mult_opcode(self) -> None:
+        from backend.src.emulator.analytical_engine.engine import Engine
+
+        e = Engine()
+        e.load_program_from_text("MOV A, 6\nMOV B, 7\nMULT A, B\nHALT\n")
+        e.run()
+        assert float(e.registers["A"].to_decimal()) == pytest.approx(42.0)
+
+    def test_load_resets_pc_to_zero(self) -> None:
+        from backend.src.emulator.analytical_engine.engine import Engine
+
+        e = Engine()
+        e.load_program_from_text("NOP\nNOP\nHALT\n")
+        assert e.PC == 0
+
+    def test_clr_opcode_zeroes_register(self) -> None:
+        from backend.src.emulator.analytical_engine.engine import Engine
+
+        e = Engine()
+        e.load_program_from_text("MOV A, 99\nCLR A\nHALT\n")
+        e.run()
+        assert float(e.registers["A"].to_decimal()) == pytest.approx(0.0)
+
+    def test_engine_not_running_after_halt(self) -> None:
+        from backend.src.emulator.analytical_engine.engine import Engine
+
+        e = Engine()
+        e.load_program_from_text("MOV A, 1\nHALT\n")
+        e.run()
+        assert e.running is False
+
+
+class TestAEServiceResultShape:
+    """AEExecutionService result object field presence and types."""
+
+    def test_result_has_status_field(self, svc: AEExecutionService) -> None:
+        result = svc.execute("int f(int x) { return x; }", language="c")
+        assert hasattr(result, "status")
+
+    def test_result_has_assembly_text_field(self, svc: AEExecutionService) -> None:
+        result = svc.execute("int f(int x) { return x; }", language="c")
+        assert hasattr(result, "assembly_text")
+
+    def test_result_has_clock_cycles_field(self, svc: AEExecutionService) -> None:
+        result = svc.execute("int f(int x) { return x; }", language="c")
+        assert hasattr(result, "clock_cycles")
+
+    def test_result_has_stderr_field(self, svc: AEExecutionService) -> None:
+        result = svc.execute("int f(int x) { return x; }", language="c")
+        assert hasattr(result, "stderr")
+
+    def test_compile_error_returns_compile_error_status(self, svc: AEExecutionService) -> None:
+        result = svc.execute("this is not valid C code !!!", language="c")
+        assert result.status == AEExecutionStatus.COMPILE_ERROR
+
+    def test_assembly_text_is_string(self, svc: AEExecutionService) -> None:
+        result = svc.execute("int f(int x) { return x; }", language="c")
+        assert isinstance(result.assembly_text, str)

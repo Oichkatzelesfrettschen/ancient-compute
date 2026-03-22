@@ -210,3 +210,117 @@ def test_bridge_physics_report_after_engine_run():
     report = bridge.physics_report()
     assert isinstance(report, dict)
     assert report["failed"] is False
+
+
+# ---------------------------------------------------------------------------
+# Extended: snapshot field types and numeric ranges
+# ---------------------------------------------------------------------------
+
+
+class TestSimulationBridgeSnapshotExtended:
+    """PhysicsSnapshot field types and value ranges."""
+
+    def test_snapshot_time_s_is_float(self, bridge: "SimulationBridge") -> None:
+        snap = bridge.snapshot()
+        assert isinstance(snap.time_s, float)
+
+    def test_snapshot_temperature_is_float(self, bridge: "SimulationBridge") -> None:
+        snap = bridge.snapshot()
+        assert isinstance(snap.temperature_C, float)
+
+    def test_snapshot_shaft_deflection_is_float(self, bridge: "SimulationBridge") -> None:
+        snap = bridge.snapshot()
+        assert isinstance(snap.shaft_deflection_mm, float)
+
+    def test_snapshot_gear_backlash_is_float(self, bridge: "SimulationBridge") -> None:
+        snap = bridge.snapshot()
+        assert isinstance(snap.gear_backlash_mm, float)
+
+    def test_snapshot_lubrication_regime_is_str(self, bridge: "SimulationBridge") -> None:
+        snap = bridge.snapshot()
+        assert isinstance(snap.lubrication_regime, str)
+
+    def test_snapshot_energy_is_nonneg(self, bridge: "SimulationBridge") -> None:
+        snap = bridge.snapshot()
+        assert snap.energy_consumed_J >= 0.0
+
+    def test_snapshot_shaft_deflection_nonneg(self, bridge: "SimulationBridge") -> None:
+        snap = bridge.snapshot()
+        assert snap.shaft_deflection_mm >= 0.0
+
+    def test_snapshot_max_clearance_nonneg(self, bridge: "SimulationBridge") -> None:
+        snap = bridge.snapshot()
+        assert snap.max_clearance_mm >= 0.0
+
+
+class TestSimulationBridgeReportExtended:
+    """physics_report value ranges and opcode accumulation."""
+
+    def test_report_temperature_is_positive(self, bridge: "SimulationBridge") -> None:
+        report = bridge.physics_report()
+        assert report["temperature_C"] > 0.0
+
+    def test_report_shaft_deflection_nonneg(self, bridge: "SimulationBridge") -> None:
+        report = bridge.physics_report()
+        assert report["shaft_deflection_mm"] >= 0.0
+
+    def test_report_energy_nonneg(self, bridge: "SimulationBridge") -> None:
+        report = bridge.physics_report()
+        assert report["energy_consumed_J"] >= 0.0
+
+    def test_report_simulated_time_starts_zero(self, bridge: "SimulationBridge") -> None:
+        report = bridge.physics_report()
+        assert report["simulated_time_s"] == pytest.approx(0.0)
+
+    def test_report_instructions_starts_zero(self, bridge: "SimulationBridge") -> None:
+        report = bridge.physics_report()
+        assert report["instructions_executed"] == 0
+
+    def test_report_opcode_count_increments(self, bridge: "SimulationBridge") -> None:
+        bridge.opcode_advance("ADD")
+        bridge.opcode_advance("ADD")
+        report = bridge.physics_report()
+        assert report["opcode_counts"]["ADD"] == 2
+
+    def test_opcode_counts_missing_key_absent(self, bridge: "SimulationBridge") -> None:
+        report = bridge.physics_report()
+        # Before any opcodes, opcode_counts should be empty
+        assert report["opcode_counts"] == {}
+
+
+class TestSimulationBridgeConfig:
+    """Bridge exposes SimulationConfig via .config property."""
+
+    def test_config_rpm_matches_init(self) -> None:
+        from backend.src.emulator.simulation.bridge import SimulationBridge
+        from backend.src.emulator.simulation.engine import SimulationEngine
+        from backend.src.emulator.simulation.state import SimulationConfig
+
+        cfg = SimulationConfig(rpm=45.0)
+        eng = SimulationEngine(cfg)
+        bridge = SimulationBridge(eng)
+        assert bridge.config.rpm == pytest.approx(45.0)
+
+    def test_state_is_simulation_state_instance(self) -> None:
+        from backend.src.emulator.simulation.bridge import SimulationBridge
+        from backend.src.emulator.simulation.engine import SimulationEngine
+        from backend.src.emulator.simulation.state import SimulationConfig, SimulationState
+
+        cfg = SimulationConfig(rpm=30.0)
+        eng = SimulationEngine(cfg)
+        bridge = SimulationBridge(eng)
+        assert isinstance(bridge.state, SimulationState)
+
+    def test_multiple_opcodes_report_all(self) -> None:
+        from backend.src.emulator.simulation.bridge import SimulationBridge
+        from backend.src.emulator.simulation.engine import SimulationEngine
+        from backend.src.emulator.simulation.state import SimulationConfig
+
+        cfg = SimulationConfig(rpm=30.0)
+        eng = SimulationEngine(cfg)
+        bridge = SimulationBridge(eng)
+        for op in ("ADD", "SUB", "MULT", "DIV"):
+            bridge.opcode_advance(op)
+        report = bridge.physics_report()
+        for op in ("ADD", "SUB", "MULT", "DIV"):
+            assert report["opcode_counts"].get(op, 0) >= 1

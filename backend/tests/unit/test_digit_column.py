@@ -525,3 +525,179 @@ def test_digit_column_repr_with_carry():
     col = DigitColumn(1, 100)
     repr_str = repr(col)
     assert "column_index=1" in repr_str or "index=1" in repr_str
+
+
+# ============================================================================
+# Mechanical state tests (latch / advancing / phase)
+# ============================================================================
+
+
+class TestDigitColumnMechanicalState:
+    """Latch, advancing, and phase state transitions."""
+
+    def test_initial_latch_state_is_false(self) -> None:
+        col = DigitColumn(0)
+        assert col.is_latched is False
+
+    def test_latch_sets_latched_true(self) -> None:
+        col = DigitColumn(0)
+        col.latch()
+        assert col.is_latched is True
+
+    def test_unlatch_sets_latched_false(self) -> None:
+        col = DigitColumn(0)
+        col.latch()
+        col.unlatch()
+        assert col.is_latched is False
+
+    def test_is_locked_reflects_latch(self) -> None:
+        col = DigitColumn(0)
+        col.latch()
+        assert col.is_locked() is True
+
+    def test_initial_advancing_is_false(self) -> None:
+        col = DigitColumn(0)
+        assert col.is_advancing is False
+
+    def test_start_advancing_sets_true(self) -> None:
+        col = DigitColumn(0)
+        col.start_advancing()
+        assert col.is_advancing_state() is True
+
+    def test_stop_advancing_sets_false(self) -> None:
+        col = DigitColumn(0)
+        col.start_advancing()
+        col.stop_advancing()
+        assert col.is_advancing_state() is False
+
+    def test_initial_phase_is_idle(self) -> None:
+        col = DigitColumn(0)
+        assert col.phase == "idle"
+
+    def test_set_phase_updates_phase(self) -> None:
+        col = DigitColumn(0)
+        col.set_phase("adding")
+        assert col.phase == "adding"
+
+    def test_set_phase_back_to_idle(self) -> None:
+        col = DigitColumn(0)
+        col.set_phase("adding")
+        col.set_phase("idle")
+        assert col.phase == "idle"
+
+
+# ============================================================================
+# Carry state tests
+# ============================================================================
+
+
+class TestDigitColumnCarryState:
+    """carry_in, carry_out, and reset interactions."""
+
+    def test_initial_carry_in_false(self) -> None:
+        col = DigitColumn(0)
+        assert col.carry_in is False
+
+    def test_initial_carry_out_false(self) -> None:
+        col = DigitColumn(0)
+        assert col.get_carry_out() is False
+
+    def test_set_carry_in_true(self) -> None:
+        col = DigitColumn(0)
+        col.set_carry_in(True)
+        assert col.carry_in is True
+
+    def test_carry_in_zero_plus_carry_increments(self) -> None:
+        col = DigitColumn(0)
+        col.set_carry_in(True)
+        diff = [0] * 31
+        col.add_difference(diff)
+        assert col.get_value_as_int() == 1
+
+    def test_reset_clears_carry_in(self) -> None:
+        col = DigitColumn(0)
+        col.set_carry_in(True)
+        col.reset()
+        assert col.carry_in is False
+
+    def test_reset_clears_carry_out(self) -> None:
+        col = DigitColumn(0, 99999999)
+        col.set_carry_in(False)
+        col.reset()
+        assert col.get_carry_out() is False
+
+
+# ============================================================================
+# Snapshot tests
+# ============================================================================
+
+
+class TestDigitColumnSnapshot:
+    """ColumnSnapshot field types and independence."""
+
+    def test_snapshot_is_column_snapshot(self) -> None:
+        col = DigitColumn(2, 42)
+        snap = col.get_snapshot()
+        assert isinstance(snap, ColumnSnapshot)
+
+    def test_snapshot_digits_match_column(self) -> None:
+        col = DigitColumn(3, 12345)
+        snap = col.get_snapshot()
+        # digits[0] is units digit of 12345 = 5
+        assert snap.digits[0] == 5
+        assert snap.digits[1] == 4
+
+    def test_snapshot_column_index_matches(self) -> None:
+        col = DigitColumn(5, 0)
+        snap = col.get_snapshot()
+        assert snap.column_index == 5
+
+    def test_snapshot_is_independent_of_later_change(self) -> None:
+        col = DigitColumn(0, 100)
+        snap_digits = col.get_snapshot().digits[:]
+        col.add_single(1)
+        # snapshot digits are a copy -- not affected by later change
+        assert snap_digits[0] == 0  # units of 100
+
+    def test_two_snapshots_digits_differ_after_add(self) -> None:
+        col = DigitColumn(0, 0)
+        s1_digits = col.get_snapshot().digits[:]
+        col.add_single(7)
+        s2_digits = col.get_snapshot().digits[:]
+        assert s2_digits != s1_digits
+
+
+# ============================================================================
+# add_single extended tests
+# ============================================================================
+
+
+class TestDigitColumnAddSingle:
+    """add_single() arithmetic and edge cases."""
+
+    def test_add_single_to_zero_gives_value(self) -> None:
+        col = DigitColumn(0)
+        col.add_single(5)
+        assert col.get_value_as_int() == 5
+
+    def test_add_single_cumulative(self) -> None:
+        col = DigitColumn(0)
+        for _ in range(10):
+            col.add_single(3)
+        assert col.get_value_as_int() == 30
+
+    def test_add_single_zero_no_change(self) -> None:
+        col = DigitColumn(0, 50)
+        col.add_single(0)
+        assert col.get_value_as_int() == 50
+
+    def test_add_single_crosses_decade(self) -> None:
+        col = DigitColumn(0, 9)
+        col.add_single(1)
+        assert col.get_value_as_int() == 10
+
+    def test_add_single_many_cascading_carries(self) -> None:
+        # 999 + 1 = 1000
+        col = DigitColumn(0, 999)
+        col.add_single(1)
+        assert col.get_value_as_int() == 1000

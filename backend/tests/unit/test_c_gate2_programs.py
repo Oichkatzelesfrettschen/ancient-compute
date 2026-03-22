@@ -22,9 +22,9 @@ def _run(code: str) -> object:
 
 def _ok(code: str) -> None:
     result = _run(code)
-    assert (
-        result.status == ExecutionStatus.SUCCESS
-    ), f"Expected SUCCESS, got {result.status}. Errors:\n{result.stderr}"
+    assert result.status == ExecutionStatus.SUCCESS, (
+        f"Expected SUCCESS, got {result.status}. Errors:\n{result.stderr}"
+    )
     assert len(result.machine_code) > 0, "Machine code output is empty"
 
 
@@ -316,3 +316,324 @@ class TestDiagnosticContract:
         assert "Unsupported C feature(s) for freestanding subset" in result.stderr
         assert label in result.stderr
         assert "FREESTANDING_C_SUBSET_PROFILE.md" in result.stderr
+
+
+# =============================================================================
+# CompilationResult contract
+# =============================================================================
+
+
+class TestCompilationResultContract:
+    """CService.execute() always returns a well-formed CompilationResult."""
+
+    def test_success_result_has_machine_code(self) -> None:
+        result = asyncio.run(CService().execute("int f() { return 1; }"))
+        assert result.status == ExecutionStatus.SUCCESS
+        assert isinstance(result.machine_code, str)
+        assert len(result.machine_code) > 0
+
+    def test_success_result_has_ir_text(self) -> None:
+        result = asyncio.run(CService().execute("int f() { return 1; }"))
+        assert result.status == ExecutionStatus.SUCCESS
+        assert isinstance(result.ir_text, str)
+        assert len(result.ir_text) > 0
+
+    def test_success_result_has_assembly_text(self) -> None:
+        result = asyncio.run(CService().execute("int f() { return 1; }"))
+        assert result.status == ExecutionStatus.SUCCESS
+        assert isinstance(result.assembly_text, str)
+        assert len(result.assembly_text) > 0
+
+    def test_success_result_has_compilation_time(self) -> None:
+        result = asyncio.run(CService().execute("int f() { return 1; }"))
+        assert result.status == ExecutionStatus.SUCCESS
+        assert result.compilation_time >= 0.0
+
+    def test_compile_error_has_nonempty_stderr(self) -> None:
+        result = asyncio.run(CService().execute("#include <stdio.h>\nint main() { return 0; }"))
+        assert result.status == ExecutionStatus.COMPILE_ERROR
+        assert len(result.stderr) > 0
+
+    def test_compile_error_machine_code_empty(self) -> None:
+        result = asyncio.run(CService().execute("int f() { goto end; end: return 0; }"))
+        assert result.status == ExecutionStatus.COMPILE_ERROR
+        assert result.machine_code == ""
+
+    def test_status_is_execution_status_enum(self) -> None:
+        result = asyncio.run(CService().execute("int f() { return 0; }"))
+        assert isinstance(result.status, ExecutionStatus)
+
+
+# =============================================================================
+# Additional end-to-end programs: control flow and arithmetic depth
+# =============================================================================
+
+
+class TestAdditionalEndToEndPrograms:
+    """Additional non-trivial programs covering more of the freestanding subset."""
+
+    def test_program_power_function(self) -> None:
+        """Iterative integer power: base^exp via for-loop."""
+        _ok("""
+        int power(int base, int exp) {
+            int result;
+            result = 1;
+            for (int i = 0; i < exp; i = i + 1) {
+                result = result * base;
+            }
+            return result;
+        }
+        """)
+
+    def test_program_absolute_value(self) -> None:
+        """Single if-return pattern: abs(x)."""
+        _ok("""
+        int abs_val(int x) {
+            if (x < 0) {
+                return 0 - x;
+            }
+            return x;
+        }
+        """)
+
+    def test_program_min_two_values(self) -> None:
+        """min() via if/else."""
+        _ok("""
+        int min(int a, int b) {
+            if (a < b) {
+                return a;
+            }
+            return b;
+        }
+        """)
+
+    def test_program_gcd_euclidean(self) -> None:
+        """GCD via subtraction-based Euclidean algorithm (while loops)."""
+        _ok("""
+        int gcd(int a, int b) {
+            while (a != b) {
+                if (a > b) {
+                    a = a - b;
+                } else {
+                    b = b - a;
+                }
+            }
+            return a;
+        }
+        """)
+
+    def test_program_three_functions_chain(self) -> None:
+        """Three functions where third calls both first and second."""
+        _ok("""
+        int double_val(int x) {
+            return x * 2;
+        }
+        int triple_val(int x) {
+            return x * 3;
+        }
+        int combined(int x) {
+            return double_val(x) + triple_val(x);
+        }
+        """)
+
+    def test_program_nested_for_loops(self) -> None:
+        """Nested for-loops: outer * inner iterations."""
+        _ok("""
+        int count_pairs(int n) {
+            int count;
+            count = 0;
+            for (int i = 0; i < n; i = i + 1) {
+                for (int j = 0; j < n; j = j + 1) {
+                    count = count + 1;
+                }
+            }
+            return count;
+        }
+        """)
+
+    def test_program_early_return_in_loop(self) -> None:
+        """Return from inside a while loop (early exit)."""
+        _ok("""
+        int find_first_zero(int n) {
+            int i;
+            i = n;
+            while (i > 0) {
+                if (i == 1) {
+                    return i;
+                }
+                i = i - 1;
+            }
+            return 0;
+        }
+        """)
+
+    def test_program_multiple_local_vars(self) -> None:
+        """Function with 5 local variables, all assigned and used."""
+        _ok("""
+        int five_vars(int x) {
+            int a;
+            int b;
+            int c;
+            int d;
+            int e;
+            a = x + 1;
+            b = a * 2;
+            c = b - x;
+            d = c + a;
+            e = d * b;
+            return e;
+        }
+        """)
+
+    def test_program_float_arithmetic(self) -> None:
+        """Float local variable with arithmetic expressions."""
+        _ok("""
+        float area(float r) {
+            float pi;
+            pi = 3.14159;
+            return pi * r * r;
+        }
+        """)
+
+    def test_program_zero_param_function(self) -> None:
+        """Function with no parameters returns a constant."""
+        _ok("""
+        int get_answer() {
+            return 42;
+        }
+        """)
+
+
+# =============================================================================
+# For-loop edge cases and while-loop variants
+# =============================================================================
+
+
+class TestLoopEdgeCases:
+    """Edge cases for loop forms supported by the freestanding subset."""
+
+    def test_while_loop_single_body_statement(self) -> None:
+        _ok("""
+        int dec(int n) {
+            while (n > 0) {
+                n = n - 1;
+            }
+            return n;
+        }
+        """)
+
+    def test_for_loop_decrement(self) -> None:
+        """Decrementing for loop with i = i - 1 update."""
+        _ok("""
+        int sum_down(int n) {
+            int s;
+            s = 0;
+            for (int i = n; i > 0; i = i - 1) {
+                s = s + i;
+            }
+            return s;
+        }
+        """)
+
+    def test_nested_while_loops(self) -> None:
+        """Two while loops nested: inner resets per outer iteration."""
+        _ok("""
+        int matrix_sum(int n) {
+            int total;
+            int i;
+            int j;
+            total = 0;
+            i = 0;
+            while (i < n) {
+                j = 0;
+                while (j < n) {
+                    total = total + 1;
+                    j = j + 1;
+                }
+                i = i + 1;
+            }
+            return total;
+        }
+        """)
+
+    def test_for_loop_no_body(self) -> None:
+        """For loop with empty body (spin-loop)."""
+        _ok("""
+        int spin(int n) {
+            for (; n > 0; n = n - 1) {
+            }
+            return n;
+        }
+        """)
+
+    def test_while_loop_with_if_inside(self) -> None:
+        """While loop with conditional increment inside body."""
+        _ok("""
+        int count_even(int n) {
+            int count;
+            int i;
+            count = 0;
+            i = 0;
+            while (i < n) {
+                if (i == 0) {
+                    count = count + 1;
+                }
+                i = i + 1;
+            }
+            return count;
+        }
+        """)
+
+
+# =============================================================================
+# Comparison operator coverage
+# =============================================================================
+
+
+class TestComparisonOperators:
+    """All 6 comparison operators compile correctly."""
+
+    def test_less_than(self) -> None:
+        _ok("int f(int a, int b) { if (a < b) { return 1; } return 0; }")
+
+    def test_less_than_or_equal(self) -> None:
+        _ok("int f(int a, int b) { if (a <= b) { return 1; } return 0; }")
+
+    def test_greater_than(self) -> None:
+        _ok("int f(int a, int b) { if (a > b) { return 1; } return 0; }")
+
+    def test_greater_than_or_equal(self) -> None:
+        _ok("int f(int a, int b) { if (a >= b) { return 1; } return 0; }")
+
+    def test_equal(self) -> None:
+        _ok("int f(int a, int b) { if (a == b) { return 1; } return 0; }")
+
+    def test_not_equal(self) -> None:
+        _ok("int f(int a, int b) { if (a != b) { return 1; } return 0; }")
+
+
+# =============================================================================
+# Arithmetic operator coverage
+# =============================================================================
+
+
+class TestArithmeticOperators:
+    """All 4 arithmetic operators compile correctly."""
+
+    def test_addition(self) -> None:
+        _ok("int f(int a, int b) { return a + b; }")
+
+    def test_subtraction(self) -> None:
+        _ok("int f(int a, int b) { return a - b; }")
+
+    def test_multiplication(self) -> None:
+        _ok("int f(int a, int b) { return a * b; }")
+
+    def test_division(self) -> None:
+        _ok("int f(int a, int b) { return a / b; }")
+
+    def test_chained_arithmetic(self) -> None:
+        _ok("int f(int a, int b, int c) { return a + b * c - a / b; }")
+
+    def test_negative_literal(self) -> None:
+        _ok("int f() { int x; x = 0 - 5; return x; }")

@@ -180,3 +180,80 @@ class TestSimulationConfigEdgeCases:
         assert cfg.steam_pressure_bar > 0
         assert cfg.piston_stroke_m > 0
         assert cfg.thermal_efficiency_pct > 0
+
+
+class TestTimingYAMLValueRanges:
+    """Verify TIMING_PROVISIONAL.yaml parameter values are physically plausible."""
+
+    def _cfg(self) -> dict:
+        with open(TIMING_YAML) as f:
+            return yaml.safe_load(f)
+
+    def test_lap_mm_within_plausible_range(self) -> None:
+        lap = self._cfg()["valve_gear"]["parameters"]["lap_mm"]["value"]
+        assert 0.0 < lap < 20.0
+
+    def test_lead_mm_within_plausible_range(self) -> None:
+        lead = self._cfg()["valve_gear"]["parameters"]["lead_mm"]["value"]
+        assert 0.0 < lead < 10.0
+
+    def test_cutoff_pct_is_a_valid_percentage(self) -> None:
+        cutoff = self._cfg()["valve_gear"]["parameters"]["cutoff_pct"]["value"]
+        assert 0.0 < cutoff <= 100.0
+
+    def test_source_strings_are_non_empty(self) -> None:
+        vg = self._cfg()["valve_gear"]["parameters"]
+        for key in ("lap_mm", "lead_mm", "cutoff_pct"):
+            source = vg[key].get("source", "")
+            assert len(source) > 0, f"{key} source is empty"
+
+    def test_all_param_values_are_numeric(self) -> None:
+        vg = self._cfg()["valve_gear"]["parameters"]
+        for key in ("lap_mm", "lead_mm", "cutoff_pct"):
+            value = vg[key]["value"]
+            assert isinstance(value, (int, float)), f"{key} value is not numeric"
+
+    def test_lap_mm_value_is_numeric_type(self) -> None:
+        lap = self._cfg()["valve_gear"]["parameters"]["lap_mm"]["value"]
+        assert isinstance(lap, (int, float))
+
+    def test_lead_smaller_than_lap(self) -> None:
+        vg = self._cfg()["valve_gear"]["parameters"]
+        lap = vg["lap_mm"]["value"]
+        lead = vg["lead_mm"]["value"]
+        # Historical AE steam: lead < lap is the expected relation
+        assert lead < lap
+
+
+class TestSimulationConfigFieldTypes:
+    """SimulationConfig field type and override tests."""
+
+    def test_valve_lap_mm_is_numeric(self) -> None:
+        cfg = SimulationConfig()
+        assert isinstance(cfg.valve_lap_mm, (int, float))
+
+    def test_valve_lead_mm_is_numeric(self) -> None:
+        cfg = SimulationConfig()
+        assert isinstance(cfg.valve_lead_mm, (int, float))
+
+    def test_valve_cutoff_pct_is_numeric(self) -> None:
+        cfg = SimulationConfig()
+        assert isinstance(cfg.valve_cutoff_pct, (int, float))
+
+    def test_steam_pressure_bar_is_numeric(self) -> None:
+        cfg = SimulationConfig()
+        assert isinstance(cfg.steam_pressure_bar, (int, float))
+
+    def test_piston_stroke_m_is_numeric(self) -> None:
+        cfg = SimulationConfig()
+        assert isinstance(cfg.piston_stroke_m, (int, float))
+
+    def test_thermal_efficiency_pct_is_numeric(self) -> None:
+        cfg = SimulationConfig()
+        assert isinstance(cfg.thermal_efficiency_pct, (int, float))
+
+    def test_all_three_valve_fields_override_together(self) -> None:
+        cfg = SimulationConfig(valve_lap_mm=5.0, valve_lead_mm=2.0, valve_cutoff_pct=55.0)
+        assert cfg.valve_lap_mm == 5.0
+        assert cfg.valve_lead_mm == 2.0
+        assert cfg.valve_cutoff_pct == 55.0

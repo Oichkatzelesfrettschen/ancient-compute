@@ -279,3 +279,165 @@ class TestEnsureDockerImage:
             mgr = DockerManager()
         result = mgr.ensure_docker_image("some-image:latest")
         assert result is False
+
+
+# ---------------------------------------------------------------------------
+# BackendInfo dataclass
+# ---------------------------------------------------------------------------
+
+
+class TestBackendInfo:
+    """BackendInfo dataclass initializes correctly."""
+
+    def test_available_true(self) -> None:
+        bi = BackendInfo(ExecutionBackend.DOCKER, True, "ok")
+        assert bi.available is True
+
+    def test_available_false(self) -> None:
+        bi = BackendInfo(ExecutionBackend.DOCKER, False, "not running")
+        assert bi.available is False
+
+    def test_reason_stored(self) -> None:
+        bi = BackendInfo(ExecutionBackend.SUBPROCESS, True, "always available")
+        assert bi.reason == "always available"
+
+    def test_capabilities_default_empty_list(self) -> None:
+        bi = BackendInfo(ExecutionBackend.DOCKER, False, "mocked")
+        assert bi.capabilities == []
+
+    def test_capabilities_explicit(self) -> None:
+        bi = BackendInfo(ExecutionBackend.DOCKER, True, "ok", capabilities=["python", "c"])
+        assert "python" in bi.capabilities
+        assert "c" in bi.capabilities
+
+    def test_backend_type_stored(self) -> None:
+        bi = BackendInfo(ExecutionBackend.RESTRICTED_PYTHON, True, "ok")
+        assert bi.backend_type == ExecutionBackend.RESTRICTED_PYTHON
+
+
+# ---------------------------------------------------------------------------
+# ExecutionBackend enum
+# ---------------------------------------------------------------------------
+
+
+class TestExecutionBackendEnum:
+    """ExecutionBackend values match expected strings."""
+
+    def test_docker_value(self) -> None:
+        assert ExecutionBackend.DOCKER.value == "docker"
+
+    def test_restricted_python_value(self) -> None:
+        assert ExecutionBackend.RESTRICTED_PYTHON.value == "restricted_python"
+
+    def test_subprocess_value(self) -> None:
+        assert ExecutionBackend.SUBPROCESS.value == "subprocess"
+
+    def test_unavailable_value(self) -> None:
+        assert ExecutionBackend.UNAVAILABLE.value == "unavailable"
+
+    def test_four_backends_exist(self) -> None:
+        assert len(ExecutionBackend) == 4
+
+
+# ---------------------------------------------------------------------------
+# Additional container config coverage
+# ---------------------------------------------------------------------------
+
+
+class TestContainerConfigExtended:
+    def setup_method(self) -> None:
+        _reset_singleton()
+
+    def teardown_method(self) -> None:
+        _reset_singleton()
+
+    def _make_manager(self) -> DockerManager:
+        with (
+            patch("backend.src.services.docker_manager.DockerManager._check_docker") as md,
+            patch(
+                "backend.src.services.docker_manager.DockerManager._check_restricted_python"
+            ) as mr,
+        ):
+            md.return_value = BackendInfo(ExecutionBackend.DOCKER, False, "mocked")
+            mr.return_value = BackendInfo(ExecutionBackend.RESTRICTED_PYTHON, False, "mocked")
+            return DockerManager()
+
+    def test_java_image_name(self) -> None:
+        mgr = self._make_manager()
+        cfg = mgr.get_container_config("java", "/tmp/work")
+        assert cfg["image"] == "ancient-compute/java:latest"
+
+    def test_haskell_image_name(self) -> None:
+        mgr = self._make_manager()
+        cfg = mgr.get_container_config("haskell", "/tmp/work")
+        assert cfg["image"] == "ancient-compute/haskell:latest"
+
+    def test_config_has_volumes_key(self) -> None:
+        mgr = self._make_manager()
+        cfg = mgr.get_container_config("c", "/tmp/work")
+        assert "volumes" in cfg
+
+    def test_config_has_image_key(self) -> None:
+        mgr = self._make_manager()
+        cfg = mgr.get_container_config("python", "/tmp/work")
+        assert "image" in cfg
+
+    def test_config_has_network_mode(self) -> None:
+        mgr = self._make_manager()
+        cfg = mgr.get_container_config("python", "/tmp/work")
+        assert "network_mode" in cfg
+
+    def test_config_has_security_opt(self) -> None:
+        mgr = self._make_manager()
+        cfg = mgr.get_container_config("python", "/tmp/work")
+        assert "security_opt" in cfg
+
+
+# ---------------------------------------------------------------------------
+# Backend selection: additional languages
+# ---------------------------------------------------------------------------
+
+
+class TestGetBackendForLanguageExtended:
+    def setup_method(self) -> None:
+        _reset_singleton()
+
+    def teardown_method(self) -> None:
+        _reset_singleton()
+
+    def _make_manager(self, docker_ok: bool, rp_ok: bool) -> DockerManager:
+        caps = (
+            ["c", "python", "haskell", "java", "lisp", "idris", "assembly", "systemf"]
+            if docker_ok
+            else []
+        )
+        with (
+            patch("backend.src.services.docker_manager.DockerManager._check_docker") as md,
+            patch(
+                "backend.src.services.docker_manager.DockerManager._check_restricted_python"
+            ) as mr,
+        ):
+            md.return_value = BackendInfo(
+                ExecutionBackend.DOCKER, docker_ok, "ok", capabilities=caps
+            )
+            rp_caps = ["python"] if rp_ok else []
+            mr.return_value = BackendInfo(
+                ExecutionBackend.RESTRICTED_PYTHON, rp_ok, "ok", capabilities=rp_caps
+            )
+            return DockerManager()
+
+    def test_haskell_docker_available(self) -> None:
+        mgr = self._make_manager(docker_ok=True, rp_ok=False)
+        assert mgr.get_backend_for_language("haskell") == ExecutionBackend.DOCKER
+
+    def test_java_docker_available(self) -> None:
+        mgr = self._make_manager(docker_ok=True, rp_ok=False)
+        assert mgr.get_backend_for_language("java") == ExecutionBackend.DOCKER
+
+    def test_haskell_no_docker_is_unavailable(self) -> None:
+        mgr = self._make_manager(docker_ok=False, rp_ok=True)
+        assert mgr.get_backend_for_language("haskell") == ExecutionBackend.UNAVAILABLE
+
+    def test_empty_language_string_is_unavailable(self) -> None:
+        mgr = self._make_manager(docker_ok=True, rp_ok=True)
+        assert mgr.get_backend_for_language("") == ExecutionBackend.UNAVAILABLE

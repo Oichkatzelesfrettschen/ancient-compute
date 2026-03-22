@@ -136,3 +136,131 @@ class TestAstrolabeEmulatorAdditional:
         q_morning = AstrolabeQuery(latitude_deg=51.5, date="2026-06-21", time="06:00", target="sun")
         q_noon = AstrolabeQuery(latitude_deg=51.5, date="2026-06-21", time="12:00", target="sun")
         assert emu.read_altitude(q_morning) < emu.read_altitude(q_noon)
+
+
+# ---------------------------------------------------------------------------
+# Astronomical accuracy
+# ---------------------------------------------------------------------------
+
+
+class TestAstrolabeAstronomicalAccuracy:
+    """Solar altitude model produces physically plausible values."""
+
+    def test_noon_sun_angle_increases_from_high_to_low_latitude(self) -> None:
+        # At equinox, noon sun is higher at lower latitudes
+        emu = AstrolabeEmulator()
+        latitudes = [60.0, 45.0, 30.0, 0.0]
+        altitudes = [
+            emu.read_altitude(AstrolabeQuery(lat, "2026-03-20", "12:00", "sun"))
+            for lat in latitudes
+        ]
+        # Monotonically increasing (higher altitude at lower latitude)
+        for i in range(len(altitudes) - 1):
+            assert altitudes[i] < altitudes[i + 1]
+
+    def test_south_pole_winter_altitude_negative(self) -> None:
+        # 90S in June: deep polar night
+        emu = AstrolabeEmulator()
+        q = AstrolabeQuery(latitude_deg=-90.0, date="2026-06-21", time="12:00", target="sun")
+        assert emu.read_altitude(q) < 0.0
+
+    def test_sunset_altitude_near_zero_equinox_equator(self) -> None:
+        # At 18:00 on equinox at equator, sun near horizon
+        emu = AstrolabeEmulator()
+        q = AstrolabeQuery(latitude_deg=0.0, date="2026-03-20", time="18:00", target="sun")
+        alt = emu.read_altitude(q)
+        assert abs(alt) < 15.0
+
+    def test_solstice_noon_altitude_difference_is_large(self) -> None:
+        # Difference between summer and winter solstice noon altitude at 51N > 40 degrees
+        emu = AstrolabeEmulator()
+        summer = emu.read_altitude(
+            AstrolabeQuery(latitude_deg=51.5, date="2026-06-21", time="12:00", target="sun")
+        )
+        winter = emu.read_altitude(
+            AstrolabeQuery(latitude_deg=51.5, date="2026-12-21", time="12:00", target="sun")
+        )
+        assert (summer - winter) > 40.0
+
+    def test_midnight_sun_altitude_at_arctic_summer(self) -> None:
+        # 70N in June at midnight: sun above horizon
+        emu = AstrolabeEmulator()
+        q = AstrolabeQuery(latitude_deg=70.0, date="2026-06-21", time="00:00", target="sun")
+        alt = emu.read_altitude(q)
+        assert alt > 0.0
+
+    def test_extreme_time_23_59_produces_valid_altitude(self) -> None:
+        emu = AstrolabeEmulator()
+        q = AstrolabeQuery(latitude_deg=51.5, date="2026-06-21", time="23:59", target="sun")
+        alt = emu.read_altitude(q)
+        assert -90.0 <= alt <= 90.0
+
+    def test_time_00_00_produces_valid_altitude(self) -> None:
+        emu = AstrolabeEmulator()
+        q = AstrolabeQuery(latitude_deg=0.0, date="2026-01-01", time="00:00", target="sun")
+        alt = emu.read_altitude(q)
+        assert -90.0 <= alt <= 90.0
+
+    def test_southern_latitude_summer_noon_altitude(self) -> None:
+        # 30S in December (southern summer): sun altitude > equinox altitude at 30S
+        emu = AstrolabeEmulator()
+        december = emu.read_altitude(
+            AstrolabeQuery(latitude_deg=-30.0, date="2026-12-21", time="12:00", target="sun")
+        )
+        march = emu.read_altitude(
+            AstrolabeQuery(latitude_deg=-30.0, date="2026-03-20", time="12:00", target="sun")
+        )
+        assert december > march
+
+    def test_altitude_symmetric_morning_afternoon(self) -> None:
+        # 09:00 and 15:00 should give same altitude (symmetric around noon solar time)
+        emu = AstrolabeEmulator()
+        q_am = AstrolabeQuery(latitude_deg=51.5, date="2026-06-21", time="09:00", target="sun")
+        q_pm = AstrolabeQuery(latitude_deg=51.5, date="2026-06-21", time="15:00", target="sun")
+        assert abs(emu.read_altitude(q_am) - emu.read_altitude(q_pm)) < 1.0
+
+    def test_altitude_range_all_seasons_all_latitudes(self) -> None:
+        emu = AstrolabeEmulator()
+        for lat in range(-80, 81, 20):
+            for month_day in ["01-15", "04-15", "07-15", "10-15"]:
+                q = AstrolabeQuery(
+                    latitude_deg=float(lat),
+                    date=f"2026-{month_day}",
+                    time="12:00",
+                    target="sun",
+                )
+                alt = emu.read_altitude(q)
+                assert -90.0 <= alt <= 90.0
+
+
+# ---------------------------------------------------------------------------
+# AstrolabeQuery dataclass properties
+# ---------------------------------------------------------------------------
+
+
+class TestAstrolabeQueryExtended:
+    """AstrolabeQuery: frozen, equality, hashability."""
+
+    def test_query_is_frozen(self) -> None:
+        q = AstrolabeQuery(latitude_deg=51.5, date="2026-06-21", time="12:00", target="sun")
+        with pytest.raises((AttributeError, TypeError)):
+            q.latitude_deg = 0.0  # type: ignore[misc]
+
+    def test_two_identical_queries_are_equal(self) -> None:
+        q1 = AstrolabeQuery(latitude_deg=48.8, date="2026-07-14", time="14:30", target="sun")
+        q2 = AstrolabeQuery(latitude_deg=48.8, date="2026-07-14", time="14:30", target="sun")
+        assert q1 == q2
+
+    def test_two_different_queries_not_equal(self) -> None:
+        q1 = AstrolabeQuery(latitude_deg=48.8, date="2026-07-14", time="14:30", target="sun")
+        q2 = AstrolabeQuery(latitude_deg=48.9, date="2026-07-14", time="14:30", target="sun")
+        assert q1 != q2
+
+    def test_query_is_hashable(self) -> None:
+        q = AstrolabeQuery(latitude_deg=0.0, date="2026-01-01", time="12:00", target="sun")
+        s = {q}
+        assert len(s) == 1
+
+    def test_negative_latitude_stored(self) -> None:
+        q = AstrolabeQuery(latitude_deg=-33.9, date="2026-01-01", time="12:00", target="sun")
+        assert q.latitude_deg == -33.9

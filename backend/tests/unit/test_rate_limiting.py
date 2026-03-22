@@ -213,3 +213,104 @@ class TestRateLimitMiddlewareClientIdentifier:
         req = self._make_request("  198.51.100.1  , 10.0.0.1", "10.0.0.1")
         identifier = self.mw._get_client_identifier(req)
         assert identifier == "198.51.100.1"
+
+
+class TestRateLimiterBucketState:
+    def test_bucket_created_on_first_request(self) -> None:
+        rl = RateLimiter()
+        key = rl._get_key("10.0.0.1", "/api")
+        assert key not in rl.buckets
+        rl.is_allowed("10.0.0.1", "/api", 10, 60)
+        assert key in rl.buckets
+
+    def test_bucket_has_tokens_and_timestamp(self) -> None:
+        rl = RateLimiter()
+        rl.is_allowed("1.2.3.4", "/test", 5, 60)
+        key = rl._get_key("1.2.3.4", "/test")
+        tokens, last_update = rl.buckets[key]
+        assert isinstance(tokens, (int, float))
+        assert isinstance(last_update, float)
+
+    def test_tokens_decrease_after_each_request(self) -> None:
+        rl = RateLimiter()
+        rl.is_allowed("1.2.3.4", "/test", 10, 60)
+        key = rl._get_key("1.2.3.4", "/test")
+        tokens_1, _ = rl.buckets[key]
+        rl.is_allowed("1.2.3.4", "/test", 10, 60)
+        tokens_2, _ = rl.buckets[key]
+        assert tokens_2 < tokens_1
+
+    def test_buckets_dict_initially_empty(self) -> None:
+        rl = RateLimiter()
+        assert len(rl.buckets) == 0
+
+    def test_last_cleanup_is_float(self) -> None:
+        rl = RateLimiter()
+        assert isinstance(rl.last_cleanup, float)
+
+    def test_multiple_identifiers_create_separate_buckets(self) -> None:
+        rl = RateLimiter()
+        for i in range(5):
+            rl.is_allowed(f"ip-{i}", "/test", 10, 60)
+        assert len(rl.buckets) == 5
+
+    def test_same_ip_different_routes_separate_buckets(self) -> None:
+        rl = RateLimiter()
+        rl.is_allowed("1.2.3.4", "/route-A", 10, 60)
+        rl.is_allowed("1.2.3.4", "/route-B", 10, 60)
+        assert len(rl.buckets) == 2
+
+
+class TestRateLimitMiddlewareExtended:
+    def setup_method(self) -> None:
+        self.mw = RateLimitMiddleware.__new__(RateLimitMiddleware)
+        self.mw.limiter = RateLimiter()
+        self.mw.route_limits = {
+            "/api/v1/execute": (10, 60),
+            "/api/v1/compile": (20, 60),
+            "/api/v1/auth/login": (5, 300),
+            "default": (100, 60),
+        }
+
+    def test_get_rate_limit_returns_two_element_tuple(self) -> None:
+        limit = self.mw._get_rate_limit("/api/v1/execute")
+        assert len(limit) == 2
+
+    def test_all_configured_routes_have_positive_limits(self) -> None:
+        for path in ("/api/v1/execute", "/api/v1/compile", "/api/v1/auth/login"):
+            max_req, window = self.mw._get_rate_limit(path)
+            assert max_req > 0
+            assert window > 0
+
+    def test_default_max_requests_is_highest(self) -> None:
+        max_exec, _ = self.mw._get_rate_limit("/api/v1/execute")
+        max_default, _ = self.mw._get_rate_limit("/unknown/path")
+        assert max_default > max_exec
+
+    def test_auth_window_longer_than_execute_window(self) -> None:
+        _, exec_window = self.mw._get_rate_limit("/api/v1/execute")
+        _, auth_window = self.mw._get_rate_limit("/api/v1/auth/login")
+        assert auth_window > exec_window
+
+    def test_client_identifier_returns_non_empty_string(self) -> None:
+        mw = RateLimitMiddleware.__new__(RateLimitMiddleware)
+        req = MagicMock()
+        req.headers.get = MagicMock(return_value=None)
+        req.client = None
+        identifier = mw._get_client_identifier(req)
+        assert isinstance(identifier, str)
+        assert len(identifier) > 0
+
+    def test_forwarded_header_first_ip_selected(self) -> None:
+        mw = RateLimitMiddleware.__new__(RateLimitMiddleware)
+        req = MagicMock()
+        req.headers.get = MagicMock(return_value="1.1.1.1, 2.2.2.2, 3.3.3.3")
+        req.client = MagicMock()
+        req.client.host = "10.0.0.1"
+        identifier = mw._get_client_identifier(req)
+        assert identifier == "1.1.1.1"
+
+    def test_unknown_path_uses_default_limit(self) -> None:
+        max_req, window = self.mw._get_rate_limit("/completely/unknown/path")
+        assert max_req == 100
+        assert window == 60

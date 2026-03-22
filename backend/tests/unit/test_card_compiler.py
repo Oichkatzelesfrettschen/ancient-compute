@@ -16,6 +16,7 @@ from card_compiler import (
     CardClass,
     CardData,
     Opcode,
+    card_to_source,
     compile_deck,
     decode_card,
     decompile_deck,
@@ -194,3 +195,72 @@ class TestErrors:
         card = CardData(card_class=CardClass.OPERATION, opcode=None)
         with pytest.raises(ValueError, match="requires opcode"):
             encode_card(card)
+
+
+class TestCardToSource:
+    """card_to_source() converts CardData back to canonical source text."""
+
+    def test_halt_to_source(self) -> None:
+        card = CardData(card_class=CardClass.OPERATION, opcode=Opcode.HALT)
+        assert card_to_source(card) == "HALT"
+
+    def test_add_to_source(self) -> None:
+        card = CardData(card_class=CardClass.OPERATION, opcode=Opcode.ADD)
+        assert card_to_source(card) == "ADD"
+
+    def test_mul_to_source(self) -> None:
+        card = CardData(card_class=CardClass.OPERATION, opcode=Opcode.MUL)
+        assert card_to_source(card) == "MUL"
+
+    def test_load_v5_to_source(self) -> None:
+        card = CardData(card_class=CardClass.VARIABLE, direction="read", column=5)
+        assert card_to_source(card) == "LOAD V5"
+
+    def test_store_v10_to_source(self) -> None:
+        card = CardData(card_class=CardClass.VARIABLE, direction="write", column=10)
+        assert card_to_source(card) == "STORE V10"
+
+    def test_num_positive_to_source(self) -> None:
+        card = CardData(card_class=CardClass.NUMBER, sign=0, magnitude="42")
+        assert card_to_source(card) == "NUM +42"
+
+    def test_num_negative_to_source(self) -> None:
+        card = CardData(card_class=CardClass.NUMBER, sign=1, magnitude="100")
+        assert card_to_source(card) == "NUM -100"
+
+
+class TestCardDataFields:
+    """CardData dataclass field defaults and structure."""
+
+    def test_blank_line_returns_nop(self) -> None:
+        card = parse_line("")
+        assert card.card_class == CardClass.OPERATION
+        assert card.opcode == Opcode.NOP
+
+    def test_decode_returns_card_data_instance(self) -> None:
+        enc = encode_card(CardData(card_class=CardClass.OPERATION, opcode=Opcode.ADD))
+        dec = decode_card(enc)
+        assert isinstance(dec, CardData)
+
+    def test_operation_card_class_value_is_o(self) -> None:
+        assert CardClass.OPERATION.value == "O"
+
+    def test_variable_card_class_value_is_v(self) -> None:
+        assert CardClass.VARIABLE.value == "V"
+
+    def test_number_card_class_value_is_n(self) -> None:
+        assert CardClass.NUMBER.value == "N"
+
+    def test_card_defaults_to_zero_modifier(self) -> None:
+        card = CardData(card_class=CardClass.OPERATION, opcode=Opcode.ADD)
+        assert card.modifier == 0
+
+    def test_parse_nop_is_operation_card(self) -> None:
+        card = parse_line("NOP")
+        assert card.card_class == CardClass.OPERATION
+        assert card.opcode == Opcode.NOP
+
+    def test_card_to_source_round_trip_for_store_v3(self) -> None:
+        original = "STORE V3"
+        card = parse_line(original)
+        assert card_to_source(card) == original

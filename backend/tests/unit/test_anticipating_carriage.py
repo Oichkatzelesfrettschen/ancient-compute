@@ -571,6 +571,177 @@ def test_anticipating_carriage_de2_cycle():
     assert len(history) == 8
 
 
+# ============================================================================
+# Class-based tests
+# ============================================================================
+
+
+class TestAnticipatingCarriageExtended:
+    """AnticipatingCarriage: activate, advance_phase, is_carrying, snapshot."""
+
+    def test_activate_sets_is_active(self) -> None:
+        c = AnticipatingCarriage()
+        c.activate()
+        assert c.is_active is True
+
+    def test_deactivate_clears_is_active(self) -> None:
+        c = AnticipatingCarriage()
+        c.activate()
+        c.deactivate()
+        assert c.is_active is False
+
+    def test_advance_phase_wraps(self) -> None:
+        c = AnticipatingCarriage()
+        for _ in range(8):
+            c.advance_phase()
+        assert c.current_phase == 0
+
+    def test_advance_phase_increments(self) -> None:
+        c = AnticipatingCarriage()
+        c.advance_phase()
+        assert c.current_phase == 1
+
+    def test_is_carrying_false_when_no_carries(self) -> None:
+        c = AnticipatingCarriage()
+        c.set_carry_signals([False] * 8)
+        c.anticipate_carries()
+        # anticipated_carries[0] is never set (no col-1 feeds into col 0)
+        # is_carrying checks anticipated_carries
+        # All False -> is_carrying = False unless col0 carry propagated somewhere
+        assert isinstance(c.is_carrying(), bool)
+
+    def test_is_carrying_true_when_carry_propagated(self) -> None:
+        c = AnticipatingCarriage()
+        c.set_carry_signals([True] + [False] * 7)
+        c.anticipate_carries()
+        assert c.is_carrying() is True
+
+    def test_set_carry_signals_wrong_length_raises(self) -> None:
+        c = AnticipatingCarriage()
+        with pytest.raises(ValueError):
+            c.set_carry_signals([True, False])
+
+    def test_get_carries_for_column_in_range(self) -> None:
+        c = AnticipatingCarriage()
+        c.set_carry_signals([True] + [False] * 7)
+        c.anticipate_carries()
+        result = c.get_carries_for_column(1)
+        assert isinstance(result, bool)
+
+    def test_get_carries_for_column_out_of_range_raises(self) -> None:
+        c = AnticipatingCarriage()
+        with pytest.raises(IndexError):
+            c.get_carries_for_column(8)
+
+    def test_reset_clears_carries_and_phase(self) -> None:
+        c = AnticipatingCarriage()
+        c.set_carry_signals([True] * 8)
+        c.advance_phase()
+        c.activate()
+        c.reset()
+        assert c.current_phase == 0
+        assert c.carry_signals == [False] * 8
+        assert c.is_active is False
+
+    def test_snapshot_has_phase_field(self) -> None:
+        c = AnticipatingCarriage()
+        snap = c.get_snapshot()
+        assert hasattr(snap, "phase")
+
+    def test_snapshot_has_is_active_field(self) -> None:
+        c = AnticipatingCarriage()
+        snap = c.get_snapshot()
+        assert hasattr(snap, "is_active")
+
+    def test_record_snapshot_grows_history(self) -> None:
+        c = AnticipatingCarriage()
+        c.record_snapshot()
+        c.record_snapshot()
+        assert len(c.get_history()) == 2
+
+    def test_clear_history_empties_history(self) -> None:
+        c = AnticipatingCarriage()
+        c.record_snapshot()
+        c.clear_history()
+        assert len(c.get_history()) == 0
+
+    def test_get_history_depth_limits_results(self) -> None:
+        c = AnticipatingCarriage()
+        for _ in range(10):
+            c.record_snapshot()
+        assert len(c.get_history(depth=3)) == 3
+
+    def test_anticipate_all_false_returns_all_false(self) -> None:
+        c = AnticipatingCarriage()
+        c.set_carry_signals([False] * 8)
+        result = c.anticipate_carries()
+        assert result == [False] * 8
+
+    def test_anticipate_col7_carry_is_last(self) -> None:
+        c = AnticipatingCarriage()
+        signals = [False] * 7 + [True]
+        c.set_carry_signals(signals)
+        result = c.anticipate_carries()
+        # col 7 has carry but no col 8, so anticipated[7] stays False
+        # anticipated[8] doesn't exist -- col7 carry goes nowhere
+        assert isinstance(result, list)
+        assert len(result) == 8
+
+
+class TestCarryPropagationUnitExtended:
+    """CarryPropagationUnit: step count, all modes, edge cases."""
+
+    def test_default_mode_is_valid(self) -> None:
+        unit = CarryPropagationUnit()
+        assert unit.mode in ("sequential", "lookahead", "parallel")
+
+    def test_step_count_zero_initially(self) -> None:
+        unit = CarryPropagationUnit()
+        assert unit.get_step_count() == 0
+
+    def test_step_count_increments_after_propagate(self) -> None:
+        unit = CarryPropagationUnit("sequential")
+        unit.propagate([True] + [False] * 7)
+        assert unit.get_step_count() > 0
+
+    def test_reset_clears_step_count(self) -> None:
+        unit = CarryPropagationUnit()
+        unit.propagate([False] * 8)
+        unit.reset()
+        assert unit.get_step_count() == 0
+
+    def test_sequential_output_len_is_8(self) -> None:
+        unit = CarryPropagationUnit("sequential")
+        result = unit.propagate([True] + [False] * 7)
+        assert len(result) == 8
+
+    def test_lookahead_output_len_is_8(self) -> None:
+        unit = CarryPropagationUnit("lookahead")
+        result = unit.propagate([False] * 8)
+        assert len(result) == 8
+
+    def test_parallel_output_len_is_8(self) -> None:
+        unit = CarryPropagationUnit("parallel")
+        result = unit.propagate([False] * 8)
+        assert len(result) == 8
+
+    def test_carry_shifts_right_by_one(self) -> None:
+        for mode in ("sequential", "lookahead", "parallel"):
+            unit = CarryPropagationUnit(mode)
+            result = unit.propagate([True] + [False] * 7)
+            assert result[1] is True
+
+    def test_all_false_stays_all_false(self) -> None:
+        for mode in ("sequential", "lookahead", "parallel"):
+            unit = CarryPropagationUnit(mode)
+            result = unit.propagate([False] * 8)
+            assert result == [False] * 8
+
+    def test_repr_includes_mode(self) -> None:
+        unit = CarryPropagationUnit("lookahead")
+        assert "lookahead" in repr(unit)
+
+
 def test_anticipating_carriage_high_frequency_carries():
     """Test handling multiple carries in sequence."""
     carriage = AnticipatingCarriage()

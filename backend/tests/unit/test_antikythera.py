@@ -2,6 +2,8 @@
 Antikythera Mechanism Tests
 """
 
+import pytest
+
 from backend.src.emulator.antikythera import AntikytheraMechanism
 
 
@@ -265,3 +267,165 @@ class TestAntikytheraMechanismPeriods:
         am2.set_input_date(18.0)
         # 18 years should give double the Saros angle of 9 years
         assert abs(abs(am2.pointers["Saros"]) - 2.0 * abs(am1.pointers["Saros"])) < 0.001
+
+
+# ---------------------------------------------------------------------------
+# Gear and Mesh dataclass properties
+# ---------------------------------------------------------------------------
+
+
+class TestGearDataclass:
+    """Gear and Mesh dataclass field storage."""
+
+    def test_gear_stores_name(self) -> None:
+        from backend.src.emulator.antikythera import Gear
+        g = Gear("b1", 224)
+        assert g.name == "b1"
+
+    def test_gear_stores_teeth(self) -> None:
+        from backend.src.emulator.antikythera import Gear
+        g = Gear("test", 60)
+        assert g.teeth == 60
+
+    def test_gear_default_angle_zero(self) -> None:
+        from backend.src.emulator.antikythera import Gear
+        g = Gear("test", 30)
+        assert g.angle == 0.0
+
+    def test_mesh_stores_src_dst_ratio(self) -> None:
+        from backend.src.emulator.antikythera import Mesh
+        m = Mesh("b1", "a1", -0.5)
+        assert m.src == "b1"
+        assert m.dst == "a1"
+        assert m.ratio == pytest.approx(-0.5)
+
+    def test_mesh_ratio_negative_for_standard_mesh(self) -> None:
+        # Standard external gear mesh reverses rotation -> negative ratio
+        from backend.src.emulator.antikythera import Mesh
+        m = Mesh("I", "II", -(24 / 60))
+        assert m.ratio < 0
+
+
+# ---------------------------------------------------------------------------
+# Internal gear structure tests
+# ---------------------------------------------------------------------------
+
+
+class TestAntikytheraMechanismGears:
+    """Internal gear dictionary and mesh list properties."""
+
+    def test_b1_gear_present_with_224_teeth(self) -> None:
+        am = AntikytheraMechanism()
+        assert "b1" in am.gears
+        assert am.gears["b1"].teeth == 224
+
+    def test_saros_gears_present(self) -> None:
+        am = AntikytheraMechanism()
+        for name in ("SA1", "SA2", "SA3", "SA4"):
+            assert name in am.gears, f"Saros gear {name} missing"
+
+    def test_lunar_gears_present(self) -> None:
+        am = AntikytheraMechanism()
+        assert "LN1" in am.gears
+        assert "LN2" in am.gears
+
+    def test_total_gear_count_at_least_20(self) -> None:
+        am = AntikytheraMechanism()
+        assert len(am.gears) >= 20
+
+    def test_meshes_list_nonempty(self) -> None:
+        am = AntikytheraMechanism()
+        assert len(am.meshes) > 0
+
+    def test_all_mesh_ratios_nonzero(self) -> None:
+        am = AntikytheraMechanism()
+        for mesh in am.meshes:
+            assert mesh.ratio != 0.0, f"Mesh {mesh.src}->{mesh.dst} has zero ratio"
+
+    def test_gear_teeth_all_positive(self) -> None:
+        am = AntikytheraMechanism()
+        for name, gear in am.gears.items():
+            assert gear.teeth > 0, f"Gear {name} has non-positive teeth count"
+
+    def test_exeligmos_gear_present(self) -> None:
+        am = AntikytheraMechanism()
+        assert "EX1" in am.gears and "EX2" in am.gears
+
+    def test_19year_gears_have_correct_teeth(self) -> None:
+        am = AntikytheraMechanism()
+        # I(24) -> II(60) -> III(20) -> IV(48) -> V(18) -> VI(57)
+        assert am.gears["I"].teeth == 24
+        assert am.gears["II"].teeth == 60
+        assert am.gears["VI"].teeth == 57
+
+    def test_saros_train_ratio_is_1_over_18(self) -> None:
+        # SA1(30)->SA2(90): -1/3; SA3(20)->SA4(120): -1/6; product = +1/18
+        am = AntikytheraMechanism()
+        sa1 = am.gears["SA1"].teeth
+        sa2 = am.gears["SA2"].teeth
+        sa3 = am.gears["SA3"].teeth
+        sa4 = am.gears["SA4"].teeth
+        ratio = abs((sa1 / sa2) * (sa3 / sa4))
+        assert abs(ratio - 1 / 18) < 0.001
+
+
+# ---------------------------------------------------------------------------
+# Pointer accuracy tests
+# ---------------------------------------------------------------------------
+
+
+class TestAntikytheraMechanismPointerAccuracy:
+    """Specific pointer angle values for known inputs."""
+
+    def test_lunar_pointer_12_3684_synodic_months_per_year(self) -> None:
+        am = AntikytheraMechanism()
+        am.set_input_date(1.0)
+        lunar_turns = abs(am.pointers["Lunar"]) / 360.0
+        assert abs(lunar_turns - 235 / 19) < 0.001
+
+    def test_19year_pointer_exact_ratio(self) -> None:
+        am = AntikytheraMechanism()
+        am.set_input_date(1.0)
+        turns = abs(am.pointers["19-Year"]) / 360.0
+        assert abs(turns - 1 / 19) < 0.001
+
+    def test_saros_pointer_exact_1_over_18_ratio(self) -> None:
+        am = AntikytheraMechanism()
+        am.set_input_date(1.0)
+        turns = abs(am.pointers["Saros"]) / 360.0
+        assert abs(turns - 1 / 18) < 0.001
+
+    def test_exeligmos_opposite_direction_to_saros(self) -> None:
+        am = AntikytheraMechanism()
+        am.set_input_date(1.0)
+        # Exeligmos and Saros have opposite signs per the gear reversals
+        assert am.pointers["Exeligmos"] * am.pointers["Saros"] < 0
+
+    def test_olympiad_same_magnitude_as_egyptian(self) -> None:
+        am = AntikytheraMechanism()
+        am.set_input_date(3.7)
+        olympiad_turns = abs(am.pointers["Olympiad"]) / 360.0
+        egyptian_turns = abs(am.pointers["Egyptian"]) / 360.0
+        assert abs(olympiad_turns - egyptian_turns) < 0.001
+
+    def test_sun_pointer_initially_zero(self) -> None:
+        am = AntikytheraMechanism()
+        am.set_input_date(0.0)
+        assert am.pointers["Sun"] == 0.0
+
+    def test_two_instances_independent(self) -> None:
+        am1 = AntikytheraMechanism()
+        am2 = AntikytheraMechanism()
+        am1.set_input_date(5.0)
+        am2.set_input_date(10.0)
+        # They should not share state
+        assert am1.pointers["Saros"] != am2.pointers["Saros"]
+
+    def test_set_input_date_twice_uses_latest(self) -> None:
+        am = AntikytheraMechanism()
+        am.set_input_date(3.0)
+        am.set_input_date(6.0)
+        # Pointers should reflect 6.0, not 3.0+6.0=9.0
+        am_ref = AntikytheraMechanism()
+        am_ref.set_input_date(6.0)
+        assert abs(am.pointers["Saros"] - am_ref.pointers["Saros"]) < 0.001

@@ -247,3 +247,15 @@ class TestFourmilabParse:
 
         cards = parse_fourmilab_source("P\nP\nP\n")
         assert len(cards) == 3
+
+
+class TestTokenizeEdgeCases:
+    """Additional tokenize_line edge cases."""
+
+    def test_halt_uppercase(self) -> None:
+        _, opcode, _ = tokenize_line("halt")
+        assert opcode == "HALT"
+
+    def test_parse_source_returns_list(self) -> None:
+        result = parse_source("NOP")
+        assert isinstance(result, list)

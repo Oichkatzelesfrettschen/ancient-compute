@@ -190,3 +190,72 @@ def test_deck_note_g_physics_deferred_message(runner):
     assert result.exit_code == 0
     # Should note that deck physics is deferred
     assert "physics" in result.output.lower() or "deferred" in result.output.lower()
+
+
+class TestCLIHelpAndSubcommands:
+    """CLI --help output exposes all subcommands and key flags."""
+
+    def test_help_mentions_run(self) -> None:
+        result = CliRunner().invoke(cli, ["--help"])
+        assert result.exit_code == 0
+        assert "run" in result.output
+
+    def test_help_mentions_assemble(self) -> None:
+        result = CliRunner().invoke(cli, ["--help"])
+        assert "assemble" in result.output
+
+    def test_help_mentions_trace(self) -> None:
+        result = CliRunner().invoke(cli, ["--help"])
+        assert "trace" in result.output
+
+    def test_help_mentions_deck(self) -> None:
+        result = CliRunner().invoke(cli, ["--help"])
+        assert "deck" in result.output
+
+    def test_version_contains_dot_notation(self) -> None:
+        result = CliRunner().invoke(cli, ["--version"])
+        assert "." in result.output
+
+    def test_run_help_mentions_trace_flag(self) -> None:
+        result = CliRunner().invoke(cli, ["run", "--help"])
+        assert "--trace" in result.output
+
+    def test_run_help_exits_zero(self) -> None:
+        result = CliRunner().invoke(cli, ["run", "--help"])
+        assert result.exit_code == 0
+
+
+class TestCLIDeckExtended:
+    """Extended deck command output tests."""
+
+    def test_deck_n1_outputs_b_value(self) -> None:
+        result = CliRunner().invoke(cli, ["deck", "--note", "g", "--n", "1"])
+        assert result.exit_code == 0
+        assert "B_" in result.output
+
+    def test_deck_n3_outputs_three_b_values(self) -> None:
+        result = CliRunner().invoke(cli, ["deck", "--note", "g", "--n", "3"])
+        assert result.exit_code == 0
+        assert result.output.count("B_") >= 3
+
+    def test_deck_n5_exits_zero(self) -> None:
+        result = CliRunner().invoke(cli, ["deck", "--note", "g", "--n", "5"])
+        assert result.exit_code == 0
+
+    def test_deck_n4_more_output_than_n1(self) -> None:
+        r1 = CliRunner().invoke(cli, ["deck", "--note", "g", "--n", "1"])
+        r4 = CliRunner().invoke(cli, ["deck", "--note", "g", "--n", "4"])
+        assert len(r4.output) >= len(r1.output)
+
+    def test_deck_output_contains_fraction_slash(self) -> None:
+        result = CliRunner().invoke(cli, ["deck", "--note", "g", "--n", "2"])
+        # Bernoulli numbers are fractions like 1/6, -1/30
+        assert "/" in result.output
+
+    def test_deck_physics_flag_exits_zero(self) -> None:
+        result = CliRunner().invoke(cli, ["deck", "--note", "g", "--n", "1", "--physics"])
+        assert result.exit_code == 0
+
+    def test_deck_n2_output_non_empty(self) -> None:
+        result = CliRunner().invoke(cli, ["deck", "--note", "g", "--n", "2"])
+        assert len(result.output.strip()) > 0

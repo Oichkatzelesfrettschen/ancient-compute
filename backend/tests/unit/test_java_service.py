@@ -369,3 +369,164 @@ public class Main {
 
         assert r.status == ExecutionStatus.SUCCESS
         assert "Hello, World!" in r.stdout
+
+
+# ---------------------------------------------------------------------------
+# ExecutionResult contract
+# ---------------------------------------------------------------------------
+
+
+class TestExecutionResultContract:
+    """ExecutionResult fields are well-formed after every execution."""
+
+    def test_stdout_is_string(self) -> None:
+        r = _run(_HELLO)
+        assert isinstance(r.stdout, str)
+
+    def test_stderr_is_string(self) -> None:
+        r = _run(_HELLO)
+        assert isinstance(r.stderr, str)
+
+    def test_success_stdout_nonempty(self) -> None:
+        r = _run(_HELLO)
+        assert len(r.stdout.strip()) > 0
+
+    def test_execution_time_is_positive_float(self) -> None:
+        r = _run(_HELLO)
+        assert isinstance(r.execution_time, float)
+        assert r.execution_time > 0.0
+
+    def test_compile_error_result_has_stderr(self) -> None:
+        r = _run(_MISSING_SEMICOLON)
+        from backend.src.services.languages.java_service import ExecutionStatus
+        assert r.status == ExecutionStatus.COMPILE_ERROR
+        assert len(r.stderr) > 0
+
+    def test_runtime_error_result_has_nonempty_stderr(self) -> None:
+        r = _run(_ARRAY_OUT_OF_BOUNDS)
+        from backend.src.services.languages.java_service import ExecutionStatus
+        assert r.status == ExecutionStatus.RUNTIME_ERROR
+        assert len(r.stderr) > 0
+
+
+# ---------------------------------------------------------------------------
+# JavaService attributes
+# ---------------------------------------------------------------------------
+
+
+class TestJavaServiceAttributes:
+    """JavaService instance attributes are correctly initialized."""
+
+    def test_language_attribute(self) -> None:
+        from backend.src.services.languages.java_service import JavaService
+        svc = JavaService()
+        assert svc.language == "java"
+
+    def test_default_timeout(self) -> None:
+        from backend.src.services.languages.java_service import JavaService
+        svc = JavaService()
+        assert svc.timeout > 0.0
+
+    def test_custom_timeout(self) -> None:
+        from backend.src.services.languages.java_service import JavaService
+        svc = JavaService(timeout=5.0)
+        assert svc.timeout == 5.0
+
+    def test_execute_method_exists(self) -> None:
+        from backend.src.services.languages.java_service import JavaService
+        svc = JavaService()
+        assert hasattr(svc, "execute")
+
+    def test_execute_check_method_exists(self) -> None:
+        from backend.src.services.languages.java_service import JavaService
+        svc = JavaService()
+        assert hasattr(svc, "execute_check")
+
+
+# ---------------------------------------------------------------------------
+# Additional happy-path programs
+# ---------------------------------------------------------------------------
+
+_FACTORIAL = """\
+public class Main {
+    static long factorial(int n) {
+        long result = 1;
+        for (int i = 2; i <= n; i++) result *= i;
+        return result;
+    }
+    public static void main(String[] args) {
+        System.out.println(factorial(10));
+    }
+}
+"""
+
+_STRING_OPS = """\
+public class Main {
+    public static void main(String[] args) {
+        String s = "Ancient Compute";
+        System.out.println(s.length());
+        System.out.println(s.toUpperCase());
+    }
+}
+"""
+
+_ARRAY_SUM = """\
+public class Main {
+    public static void main(String[] args) {
+        int[] nums = {1, 2, 3, 4, 5};
+        int sum = 0;
+        for (int n : nums) sum += n;
+        System.out.println(sum);
+    }
+}
+"""
+
+_STATIC_METHOD = """\
+public class Main {
+    static int square(int x) { return x * x; }
+    public static void main(String[] args) {
+        System.out.println(square(7));
+    }
+}
+"""
+
+
+class TestAdditionalHappyPath:
+    """More programs exercising Java 17 features."""
+
+    def test_factorial_long(self) -> None:
+        r = _run(_FACTORIAL)
+        from backend.src.services.languages.java_service import ExecutionStatus
+        assert r.status == ExecutionStatus.SUCCESS
+        assert "3628800" in r.stdout
+
+    def test_string_operations(self) -> None:
+        r = _run(_STRING_OPS)
+        from backend.src.services.languages.java_service import ExecutionStatus
+        assert r.status == ExecutionStatus.SUCCESS
+        assert "15" in r.stdout  # "Ancient Compute".length()
+        assert "ANCIENT COMPUTE" in r.stdout
+
+    def test_array_sum_foreach(self) -> None:
+        r = _run(_ARRAY_SUM)
+        from backend.src.services.languages.java_service import ExecutionStatus
+        assert r.status == ExecutionStatus.SUCCESS
+        assert "15" in r.stdout
+
+    def test_static_method_call(self) -> None:
+        r = _run(_STATIC_METHOD)
+        from backend.src.services.languages.java_service import ExecutionStatus
+        assert r.status == ExecutionStatus.SUCCESS
+        assert "49" in r.stdout
+
+    def test_check_returns_success_for_valid(self) -> None:
+        from backend.src.services.languages.java_service import ExecutionStatus
+        r = _check(_STATIC_METHOD)
+        assert r.status == ExecutionStatus.SUCCESS
+
+    def test_multiple_stdin_lines(self) -> None:
+        r = _run(_STDIN_ECHO, "line1\nline2\nline3")
+        from backend.src.services.languages.java_service import ExecutionStatus
+        assert r.status == ExecutionStatus.SUCCESS
+        assert "line1" in r.stdout
+        assert "line3" in r.stdout

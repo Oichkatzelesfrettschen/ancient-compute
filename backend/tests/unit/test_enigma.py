@@ -304,3 +304,229 @@ class TestEnigmaAdapterExtended:
         a.step()
         snap = a.get_snapshot()
         assert snap["input_remaining"] == 2
+
+
+# ---------------------------------------------------------------------------
+# Rotor internals
+# ---------------------------------------------------------------------------
+
+from backend.src.emulator.enigma import (  # noqa: E402
+    REFLECTOR_WIRING,
+    ROTOR_NOTCHES,
+    ROTOR_WIRING,
+    Rotor,
+)
+
+
+class TestRotorEncoding:
+    def test_forward_map_length_26(self) -> None:
+        r = Rotor("I", ROTOR_WIRING["I"], ROTOR_NOTCHES["I"])
+        assert len(r.forward_map) == 26
+
+    def test_reverse_map_length_26(self) -> None:
+        r = Rotor("I", ROTOR_WIRING["I"], ROTOR_NOTCHES["I"])
+        assert len(r.reverse_map) == 26
+
+    def test_forward_and_reverse_are_inverses(self) -> None:
+        r = Rotor("I", ROTOR_WIRING["I"], ROTOR_NOTCHES["I"])
+        for i in range(26):
+            assert r.reverse_map[r.forward_map[i]] == i
+
+    def test_rotor_ii_forward_is_permutation(self) -> None:
+        r = Rotor("II", ROTOR_WIRING["II"], ROTOR_NOTCHES["II"])
+        assert sorted(r.forward_map) == list(range(26))
+
+    def test_rotor_iii_forward_is_permutation(self) -> None:
+        r = Rotor("III", ROTOR_WIRING["III"], ROTOR_NOTCHES["III"])
+        assert sorted(r.forward_map) == list(range(26))
+
+    def test_position_default_zero(self) -> None:
+        r = Rotor("I", ROTOR_WIRING["I"], ROTOR_NOTCHES["I"])
+        assert r.position == 0
+
+    def test_ring_setting_default_zero(self) -> None:
+        r = Rotor("I", ROTOR_WIRING["I"], ROTOR_NOTCHES["I"])
+        assert r.ring_setting == 0
+
+    def test_all_rotor_wirings_are_permutations(self) -> None:
+        for name, wiring in ROTOR_WIRING.items():
+            fwd = [ord(c) - 65 for c in wiring]
+            assert sorted(fwd) == list(range(26)), f"Rotor {name} not a permutation"
+
+    def test_rotor_notch_q_for_rotor_i(self) -> None:
+        assert "Q" in ROTOR_NOTCHES["I"]
+
+    def test_rotor_notch_e_for_rotor_ii(self) -> None:
+        assert "E" in ROTOR_NOTCHES["II"]
+
+    def test_rotor_notch_v_for_rotor_iii(self) -> None:
+        assert "V" in ROTOR_NOTCHES["III"]
+
+
+# ---------------------------------------------------------------------------
+# Reflector properties
+# ---------------------------------------------------------------------------
+
+
+class TestReflectorProperties:
+    def test_all_reflectors_are_involutions(self) -> None:
+        # Reflector must be self-inverse: R(R(k)) == k
+        for name, wiring in REFLECTOR_WIRING.items():
+            ref = [ord(c) - 65 for c in wiring]
+            for k in range(26):
+                assert ref[ref[k]] == k, f"Reflector {name}: R(R({k})) != {k}"
+
+    def test_all_reflectors_are_permutations(self) -> None:
+        for name, wiring in REFLECTOR_WIRING.items():
+            ref = [ord(c) - 65 for c in wiring]
+            assert sorted(ref) == list(range(26)), f"Reflector {name} not a permutation"
+
+    def test_reflector_b_wiring_length(self) -> None:
+        assert len(REFLECTOR_WIRING["B"]) == 26
+
+    def test_reflector_no_fixed_point(self) -> None:
+        # Reflector cannot map a letter to itself (no fixed points in Enigma reflectors)
+        for name, wiring in REFLECTOR_WIRING.items():
+            ref = [ord(c) - 65 for c in wiring]
+            for k in range(26):
+                assert ref[k] != k, f"Reflector {name}: R({k}) == {k} (fixed point)"
+
+
+# ---------------------------------------------------------------------------
+# Plugboard internals
+# ---------------------------------------------------------------------------
+
+from backend.src.emulator.enigma import Plugboard  # noqa: E402
+
+
+class TestPlugboardExtended:
+    def test_identity_has_26_entries(self) -> None:
+        pb = Plugboard([])
+        assert len(pb.map) == 26
+
+    def test_identity_maps_each_letter_to_itself(self) -> None:
+        pb = Plugboard([])
+        for i in range(26):
+            assert pb.map[i] == i
+
+    def test_single_swap_ab(self) -> None:
+        pb = Plugboard(["AB"])
+        assert pb.map[0] == 1  # A -> B
+        assert pb.map[1] == 0  # B -> A
+
+    def test_single_swap_is_symmetric(self) -> None:
+        pb = Plugboard(["XZ"])
+        x = ord("X") - 65
+        z = ord("Z") - 65
+        assert pb.map[x] == z
+        assert pb.map[z] == x
+
+    def test_multiple_swaps(self) -> None:
+        pb = Plugboard(["AB", "CD"])
+        assert pb.map[0] == 1  # A -> B
+        assert pb.map[1] == 0  # B -> A
+        assert pb.map[2] == 3  # C -> D
+        assert pb.map[3] == 2  # D -> C
+        assert pb.map[4] == 4  # E unchanged
+
+    def test_unswapped_letters_unchanged(self) -> None:
+        pb = Plugboard(["AB"])
+        for i in range(2, 26):
+            assert pb.map[i] == i
+
+    def test_map_is_permutation(self) -> None:
+        pb = Plugboard(["AB", "YZ", "KL"])
+        assert sorted(pb.map) == list(range(26))
+
+
+# ---------------------------------------------------------------------------
+# EnigmaMachine advanced configuration
+# ---------------------------------------------------------------------------
+
+
+class TestEnigmaMachineAdvanced:
+    def test_rotor_iv_v_construction(self) -> None:
+        m = EnigmaMachine(rotors=["IV", "V", "I"], reflector="B")
+        assert len(m.rotors) == 3
+
+    def test_reflector_a_construction(self) -> None:
+        m = EnigmaMachine(rotors=["I", "II", "III"], reflector="A")
+        assert m is not None
+
+    def test_reflector_c_construction(self) -> None:
+        m = EnigmaMachine(rotors=["I", "II", "III"], reflector="C")
+        assert m is not None
+
+    def test_ring_settings_affect_output(self) -> None:
+        m1 = EnigmaMachine(rotors=["I", "II", "III"], ring_settings=[0, 0, 0])
+        m2 = EnigmaMachine(rotors=["I", "II", "III"], ring_settings=[2, 4, 6])
+        m1.set_rotor_positions("AAA")
+        m2.set_rotor_positions("AAA")
+        assert m1.process_text("HELLO") != m2.process_text("HELLO")
+
+    def test_symmetric_with_ring_settings(self) -> None:
+        m = EnigmaMachine(rotors=["I", "II", "III"], ring_settings=[3, 7, 12])
+        m.set_rotor_positions("BCF")
+        text = "TESTMESSAGE"
+        cipher = m.process_text(text)
+        m.set_rotor_positions("BCF")
+        recovered = m.process_text(cipher)
+        assert recovered == text
+
+    def test_set_rotor_positions_z_is_25(self) -> None:
+        m = EnigmaMachine()
+        m.set_rotor_positions("ZZZ")
+        assert all(r.position == 25 for r in m.rotors)
+
+    def test_process_text_passes_through_non_alpha(self) -> None:
+        m = EnigmaMachine()
+        m.set_rotor_positions("AAA")
+        # "HELLO WORLD" -> space is preserved in output (not enciphered)
+        result = m.process_text("HELLO WORLD")
+        # Output has same length as input (non-alpha passed through)
+        assert len(result) == len("HELLO WORLD")
+
+    def test_different_reflectors_give_different_output(self) -> None:
+        m1 = EnigmaMachine(rotors=["I", "II", "III"], reflector="A")
+        m2 = EnigmaMachine(rotors=["I", "II", "III"], reflector="B")
+        m1.set_rotor_positions("AAA")
+        m2.set_rotor_positions("AAA")
+        assert m1.process_text("TEST") != m2.process_text("TEST")
+
+
+# ---------------------------------------------------------------------------
+# Encipherment edge cases
+# ---------------------------------------------------------------------------
+
+
+class TestEnciphermentEdgeCases:
+    def test_empty_string_produces_empty(self) -> None:
+        m = EnigmaMachine()
+        m.set_rotor_positions("AAA")
+        assert m.process_text("") == ""
+
+    def test_single_character_symmetric(self) -> None:
+        m = EnigmaMachine()
+        m.set_rotor_positions("AAA")
+        c = m.encipher_char("A")
+        m.set_rotor_positions("AAA")
+        recovered = m.encipher_char(c)
+        assert recovered == "A"
+
+    def test_long_message_round_trip(self) -> None:
+        m = EnigmaMachine()
+        m.set_rotor_positions("XYZ")
+        text = "THEENIGMAMACHINEWASUSEDBYGERMANNAZISDURINGWORLDWARTWO"
+        cipher = m.process_text(text)
+        m.set_rotor_positions("XYZ")
+        recovered = m.process_text(cipher)
+        assert recovered == text
+
+    def test_rotor_stepping_during_long_message(self) -> None:
+        # After 26 characters, right rotor has stepped through one full cycle
+        m = EnigmaMachine()
+        m.set_rotor_positions("AAA")
+        initial_r_pos = m.rotors[2].position
+        m.process_text("A" * 26)
+        # Right rotor should be back at initial position after 26 steps
+        assert m.rotors[2].position == initial_r_pos

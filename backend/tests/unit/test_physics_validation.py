@@ -187,9 +187,7 @@ class TestCrossModuleConsistency:
             wt = GearAnalysis.tangential_force_N(TRANSMITTED_POWER_W, v)
             sigma = GearAnalysis.lewis_bending_stress_MPa(gp, wt)
             sy_min = brass.yield_strength_MPa[0]
-            assert sigma < sy_min, (
-                f"{gp.name}: Lewis stress {sigma:.1f} MPa >= " f"yield {sy_min} MPa"
-            )
+            assert sigma < sy_min, f"{gp.name}: Lewis stress {sigma:.1f} MPa >= yield {sy_min} MPa"
             rpm = GearAnalysis.output_rpm(gp, rpm)
 
     def test_structural_gear_tooth_sf_ge_2(
@@ -239,9 +237,7 @@ class TestCrossModuleConsistency:
         assert PVAnalysis.is_within_limit(
             pv,
             PV_LIMIT_BRONZE_ON_STEEL_LUBRICATED,
-        ), (
-            f"Bearing PV={pv:.4f} MPa.m/s >= " f"limit {PV_LIMIT_BRONZE_ON_STEEL_LUBRICATED}"
-        )
+        ), f"Bearing PV={pv:.4f} MPa.m/s >= limit {PV_LIMIT_BRONZE_ON_STEEL_LUBRICATED}"
 
     def test_bearing_pv_also_below_brass_limit(self):
         """Even the more conservative brass PV limit is satisfied."""
@@ -255,9 +251,7 @@ class TestCrossModuleConsistency:
         assert PVAnalysis.is_within_limit(
             pv,
             PV_LIMIT_BRASS_ON_STEEL_LUBRICATED,
-        ), (
-            f"Bearing PV={pv:.4f} MPa.m/s >= " f"brass limit {PV_LIMIT_BRASS_ON_STEEL_LUBRICATED}"
-        )
+        ), f"Bearing PV={pv:.4f} MPa.m/s >= brass limit {PV_LIMIT_BRASS_ON_STEEL_LUBRICATED}"
 
     # ----- electromagnetic vs thermodynamics: eddy << friction --------
 
@@ -310,9 +304,9 @@ class TestCrossModuleConsistency:
         """
         brass = lib.get("brass")
         steel = lib.get("steel")
-        assert (
-            brass.thermal_expansion_coeff_per_K > steel.thermal_expansion_coeff_per_K
-        ), "Brass CTE must exceed steel CTE"
+        assert brass.thermal_expansion_coeff_per_K > steel.thermal_expansion_coeff_per_K, (
+            "Brass CTE must exceed steel CTE"
+        )
 
         # Also verify via ThermalExpansionModel for a concrete length
         length_mm = 100.0
@@ -409,7 +403,7 @@ class TestCrossModuleConsistency:
         )
         limit_mm = total_length_mm * 0.001
         assert deflection_mm < limit_mm, (
-            f"Shaft deflection {deflection_mm:.4f} mm >= " f"{limit_mm:.2f} mm (L/1000)"
+            f"Shaft deflection {deflection_mm:.4f} mm >= {limit_mm:.2f} mm (L/1000)"
         )
 
     # ----- materials vs tribology: wear model uses correct hardness ---
@@ -422,9 +416,9 @@ class TestCrossModuleConsistency:
         pb = lib.get("phosphor_bronze")
         steel = lib.get("steel")
         # Bronze bushings are softer than the steel shaft
-        assert (
-            pb.hardness_HB[0] <= steel.hardness_HB[1]
-        ), "Phosphor bronze min HB should be <= steel max HB"
+        assert pb.hardness_HB[0] <= steel.hardness_HB[1], (
+            "Phosphor bronze min HB should be <= steel max HB"
+        )
 
     # ----- kinematics vs thermodynamics: shaft omega consistent -------
 
@@ -447,9 +441,9 @@ class TestCrossModuleConsistency:
         ss = lib.get("spring_steel")
         for name in lib.names():
             other = lib.get(name)
-            assert (
-                ss.endurance_limit_MPa[1] >= other.endurance_limit_MPa[0]
-            ), f"Spring steel Se_max < {name} Se_min"
+            assert ss.endurance_limit_MPa[1] >= other.endurance_limit_MPa[0], (
+                f"Spring steel Se_max < {name} Se_min"
+            )
 
 
 # ===================================================================
@@ -478,7 +472,7 @@ class TestPhysicalPlausibility:
             if mat.name in self._NON_METALS:
                 continue
             assert 2000 <= mat.density_kg_m3 <= 9000, (
-                f"{mat.name}: density {mat.density_kg_m3} kg/m3 " f"outside [2000, 9000]"
+                f"{mat.name}: density {mat.density_kg_m3} kg/m3 outside [2000, 9000]"
             )
 
     # ----- Young's modulus -----
@@ -503,9 +497,9 @@ class TestPhysicalPlausibility:
         for mat in lib.all_materials():
             if mat.name in self._NON_METALS:
                 continue
-            assert (
-                0.2 <= mat.poissons_ratio < 0.5
-            ), f"{mat.name}: nu={mat.poissons_ratio} outside [0.2, 0.5)"
+            assert 0.2 <= mat.poissons_ratio < 0.5, (
+                f"{mat.name}: nu={mat.poissons_ratio} outside [0.2, 0.5)"
+            )
 
     # ----- yield strength -----
 
@@ -594,7 +588,7 @@ class TestPhysicalPlausibility:
         lam = LubricationModel.lambda_ratio(h_min, Ra_gear, Ra_pinion)
 
         # At 30 RPM, boundary lubrication is expected and correct
-        assert lam < 1.0, f"Lambda {lam:.2f} >= 1.0 -- at 30 RPM boundary " f"regime is expected"
+        assert lam < 1.0, f"Lambda {lam:.2f} >= 1.0 -- at 30 RPM boundary regime is expected"
         regime = LubricationModel.regime(lam)
         assert regime == "boundary"
 
@@ -619,14 +613,12 @@ class TestPhysicalPlausibility:
             entrainment_velocity_m_s=0.16,
             **params,
         )
-        assert h_2x > h_1x, (
-            f"Film at 2x speed ({h_2x:.4f} um) not greater than " f"1x ({h_1x:.4f} um)"
-        )
+        assert h_2x > h_1x, f"Film at 2x speed ({h_2x:.4f} um) not greater than 1x ({h_1x:.4f} um)"
         # U^0.7 scaling: 2^0.7 ~ 1.625
         ratio = h_2x / h_1x
-        assert ratio == pytest.approx(
-            2.0**0.7, rel=0.05
-        ), f"Velocity scaling ratio {ratio:.3f} != expected ~1.625"
+        assert ratio == pytest.approx(2.0**0.7, rel=0.05), (
+            f"Velocity scaling ratio {ratio:.3f} != expected ~1.625"
+        )
 
     def test_lambda_ratio_full_film_with_adequate_film_thickness(self):
         """Lambda ratio > 3 (full-film) when h_min is well above
@@ -699,7 +691,7 @@ class TestPhysicalPlausibility:
                 float(theta_deg),
             )
             assert -0.01 <= s <= h + 0.01, (
-                f"Cam displacement {s:.3f} mm at {theta_deg} deg " f"outside [0, {h}]"
+                f"Cam displacement {s:.3f} mm at {theta_deg} deg outside [0, {h}]"
             )
 
     # ----- galvanic corrosion: copper alloys are cathodic to steel ----
@@ -873,9 +865,9 @@ class TestDimensionalConsistency:
         assert math.isfinite(envelope.operating_T_min_C)
         assert math.isfinite(envelope.operating_T_max_C)
         for src in envelope.heat_sources:
-            assert math.isfinite(
-                src.heat_W
-            ), f"Heat source {src.name} has non-finite heat: {src.heat_W}"
+            assert math.isfinite(src.heat_W), (
+                f"Heat source {src.name} has non-finite heat: {src.heat_W}"
+            )
 
     def test_structural_outputs_finite(self, lib):
         """Shaft deflection, fatigue life, and buckling load must
@@ -950,9 +942,7 @@ class TestDimensionalConsistency:
         """Contact ratio must be >= 1.0 for continuous tooth engagement."""
         for gp in chain.gear_pairs:
             cr = GearAnalysis.contact_ratio(gp)
-            assert cr >= 1.0, (
-                f"{gp.name}: contact ratio {cr:.3f} < 1.0 " f"-- teeth would disengage"
-            )
+            assert cr >= 1.0, f"{gp.name}: contact ratio {cr:.3f} < 1.0 -- teeth would disengage"
 
     # ----- Grubler-Kutzbach DOF = 1 -----
 
@@ -1041,3 +1031,155 @@ class TestDimensionalConsistency:
         vr = GearAnalysis.velocity_ratio(primary_gear)
         tooth_ratio = primary_gear.tooth_count_driver / primary_gear.tooth_count_driven
         assert vr == pytest.approx(tooth_ratio, rel=1e-12)
+
+
+# ===================================================================
+# 4. Material Library Integrity
+# ===================================================================
+
+
+class TestMaterialLibraryIntegrity:
+    """Every material must have numerically valid properties."""
+
+    # Mercury has no structural role (liquid); other non-metals have zero
+    # or near-zero values for structural properties -- exclude from those tests.
+    _NON_STRUCTURAL = frozenset({"mercury", "bakelite", "boxwood", "ivory", "organic_fiber"})
+
+    def test_all_materials_positive_density(self, lib) -> None:
+        for mat in lib.all_materials():
+            assert mat.density_kg_m3 > 0, f"{mat.name}: density <= 0"
+
+    def test_all_materials_positive_youngs_modulus(self, lib) -> None:
+        for mat in lib.all_materials():
+            if mat.name in self._NON_STRUCTURAL:
+                continue
+            assert mat.youngs_modulus_GPa[0] > 0, f"{mat.name}: E_min <= 0"
+
+    def test_all_materials_positive_yield_strength(self, lib) -> None:
+        for mat in lib.all_materials():
+            if mat.name in self._NON_STRUCTURAL:
+                continue
+            assert mat.yield_strength_MPa[0] > 0, f"{mat.name}: Sy_min <= 0"
+
+    def test_all_materials_positive_uts(self, lib) -> None:
+        for mat in lib.all_materials():
+            if mat.name in self._NON_STRUCTURAL:
+                continue
+            assert mat.ultimate_tensile_strength_Pa[0] > 0, f"{mat.name}: UTS_min <= 0"
+
+    def test_all_materials_have_name(self, lib) -> None:
+        for mat in lib.all_materials():
+            assert mat.name, "Material with empty name found"
+
+    def test_uts_ge_yield_for_structural_materials(self, lib) -> None:
+        # UTS_max must exceed Sy_min (the minimum guaranteed yield for the alloy grade)
+        for mat in lib.all_materials():
+            if mat.name in self._NON_STRUCTURAL:
+                continue
+            uts_max_MPa = mat.ultimate_tensile_strength_Pa[1] / 1e6
+            sy_min = mat.yield_strength_MPa[0]
+            assert uts_max_MPa >= sy_min, (
+                f"{mat.name}: UTS_max {uts_max_MPa:.0f} MPa < Sy_min {sy_min:.0f} MPa"
+            )
+
+    def test_thermal_expansion_positive(self, lib) -> None:
+        for mat in lib.all_materials():
+            if mat.name in self._NON_STRUCTURAL:
+                continue
+            assert mat.thermal_expansion_coeff_per_K > 0, f"{mat.name}: CTE <= 0"
+
+    def test_poissons_ratio_in_range_for_structural(self, lib) -> None:
+        for mat in lib.all_materials():
+            if mat.name in self._NON_STRUCTURAL:
+                continue
+            assert 0 < mat.poissons_ratio < 0.5, (
+                f"{mat.name}: nu={mat.poissons_ratio} not in (0, 0.5)"
+            )
+
+
+# ===================================================================
+# 5. Galvanic Matrix Cross-Validation
+# ===================================================================
+
+
+class TestGalvanicMatrixCrossValidation:
+    """GalvanicCorrosionMatrix must cover all standard pairs consistently."""
+
+    def test_full_matrix_ten_pairs(self) -> None:
+        gcm = GalvanicCorrosionMatrix()
+        pairs = gcm.full_matrix()
+        assert len(pairs) == 10
+
+    def test_all_risk_levels_valid(self) -> None:
+        gcm = GalvanicCorrosionMatrix()
+        valid = {"low", "moderate", "high"}
+        for pair in gcm.full_matrix():
+            assert pair.risk_level in valid
+
+    def test_symmetric_potential_difference(self) -> None:
+        gcm = GalvanicCorrosionMatrix()
+        dv_ab = gcm.potential_difference_V("brass", "steel")
+        dv_ba = gcm.potential_difference_V("steel", "brass")
+        assert dv_ab == pytest.approx(dv_ba)
+
+    def test_mitigation_strings_nonempty(self) -> None:
+        gcm = GalvanicCorrosionMatrix()
+        for pair in gcm.full_matrix():
+            assert len(pair.mitigation) > 0
+
+    def test_eddy_loss_at_operating_speed_tiny(self, lib) -> None:
+        """Eddy losses at 30 RPM should be << 1 mW (physics validation)."""
+        steel = lib.get("steel")
+        p = EddyCurrentModel.shaft_eddy_loss_W(
+            50, 1500, 30, steel.electrical_resistivity_ohm_m
+        )
+        assert p < 0.001
+
+
+# ===================================================================
+# 6. Wear Model Quantitative Cross-Checks
+# ===================================================================
+
+
+class TestWearModelCrossValidation:
+    """Archard wear constants and WearModel must agree with material data."""
+
+    def test_archard_k_lubricated_brass_positive(self) -> None:
+        assert ARCHARD_K_LUBRICATED_BRASS_ON_STEEL > 0
+
+    def test_archard_k_lubricated_bronze_positive(self) -> None:
+        assert ARCHARD_K_LUBRICATED_BRONZE_ON_STEEL > 0
+
+    def test_bronze_k_less_than_or_equal_brass_k(self) -> None:
+        """Phosphor bronze is harder and lower-K than brass."""
+        assert ARCHARD_K_LUBRICATED_BRONZE_ON_STEEL <= ARCHARD_K_LUBRICATED_BRASS_ON_STEEL
+
+    def test_pv_limits_are_positive(self) -> None:
+        assert PV_LIMIT_BRASS_ON_STEEL_LUBRICATED > 0
+        assert PV_LIMIT_BRONZE_ON_STEEL_LUBRICATED > 0
+
+    def test_bronze_pv_limit_ge_brass(self) -> None:
+        """Phosphor bronze has higher PV rating than brass."""
+        assert PV_LIMIT_BRONZE_ON_STEEL_LUBRICATED >= PV_LIMIT_BRASS_ON_STEEL_LUBRICATED
+
+    def test_wear_volume_positive_under_load(self, lib) -> None:
+        brass = lib.get("brass")
+        hardness_MPa = brass.hardness_HB[0] * 9.81  # min HB -> MPa
+        vol = WearModel.archard_volume_mm3(
+            K=ARCHARD_K_LUBRICATED_BRASS_ON_STEEL,
+            normal_force_N=100.0,
+            sliding_distance_mm=1000.0,
+            hardness_MPa=hardness_MPa,
+        )
+        assert vol > 0
+
+    def test_wear_zero_at_zero_sliding(self, lib) -> None:
+        brass = lib.get("brass")
+        hardness_MPa = brass.hardness_HB[0] * 9.81
+        vol = WearModel.archard_volume_mm3(
+            K=ARCHARD_K_LUBRICATED_BRASS_ON_STEEL,
+            normal_force_N=100.0,
+            sliding_distance_mm=0.0,
+            hardness_MPa=hardness_MPa,
+        )
+        assert vol == pytest.approx(0.0)

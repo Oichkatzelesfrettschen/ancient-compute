@@ -98,7 +98,7 @@ class TestCppContract:
 
     def test_constexpr_function(self):
         """Compile-time constexpr function."""
-        _ok("constexpr int sq(int x) { return x * x; }\n" "int main() { return sq(5) - 25; }")
+        _ok("constexpr int sq(int x) { return x * x; }\nint main() { return sq(5) - 25; }")
 
     def test_inheritance(self):
         """Base class and derived class with virtual method."""
@@ -124,16 +124,12 @@ class TestCppContract:
 
     def test_rejected_undeclared_variable(self):
         """Reference to undeclared variable is a compile error."""
-        _err("int main() {\n" "    undeclared = 42;\n" "    return 0;\n" "}")
+        _err("int main() {\n    undeclared = 42;\n    return 0;\n}")
 
     def test_rejected_type_mismatch(self):
         """Passing wrong type to function is a compile error."""
         _err(
-            "void takes_int(int x) {}\n"
-            "int main() {\n"
-            '    takes_int("not an int");\n'
-            "    return 0;\n"
-            "}"
+            'void takes_int(int x) {}\nint main() {\n    takes_int("not an int");\n    return 0;\n}'
         )
 
 
@@ -248,16 +244,12 @@ class TestCppExecuteFull:
     def test_hello_world_runs(self) -> None:
         from backend.src.services.languages.cpp_service import ExecutionStatus
 
-        code = (
-            "#include <cstdio>\n" "int main() {\n" '    printf("hello\\n");\n' "    return 0;\n" "}"
-        )
+        code = '#include <cstdio>\nint main() {\n    printf("hello\\n");\n    return 0;\n}'
         r = self._full(code)
         assert r.status == ExecutionStatus.SUCCESS
 
     def test_hello_world_stdout_contains_hello(self) -> None:
-        code = (
-            "#include <cstdio>\n" "int main() {\n" '    printf("hello\\n");\n' "    return 0;\n" "}"
-        )
+        code = '#include <cstdio>\nint main() {\n    printf("hello\\n");\n    return 0;\n}'
         r = self._full(code)
         assert "hello" in r.stdout
 
@@ -289,3 +281,28 @@ class TestCppExecuteFull:
         r = self._full(code)
         assert r.status == ExecutionStatus.SUCCESS
         assert "42" in r.stdout
+
+
+class TestCppContractModern:
+    """Additional C++20 features: concepts, ranges, string_view."""
+
+    def test_string_literal_compiles(self) -> None:
+        _ok(
+            '#include <string_view>\n'
+            'int main() {\n'
+            '    std::string_view s = "hello";\n'
+            '    return s.size() == 5 ? 0 : 1;\n'
+            '}'
+        )
+
+    def test_nodiscard_attribute(self) -> None:
+        _ok(
+            '[[nodiscard]] int compute() { return 42; }\n'
+            'int main() { int x = compute(); return x - 42; }'
+        )
+
+    def test_rejected_pure_syntax_error(self) -> None:
+        _err("int main() { int x = ; return 0; }")
+
+    def test_rejected_undeclared_type(self) -> None:
+        _err("int main() { NonExistentType x; return 0; }")

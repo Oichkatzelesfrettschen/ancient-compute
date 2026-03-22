@@ -62,7 +62,7 @@ class TestOracleMapping:
         modern = bernoulli_numbers(10)
         ada = ada_lovelace_bernoulli_series(5)
         for k in range(1, 6):
-            assert ada[k - 1] == modern[2 * k], f"Ada B_{2*k-1} != modern B_{2*k}"
+            assert ada[k - 1] == modern[2 * k], f"Ada B_{2 * k - 1} != modern B_{2 * k}"
 
 
 class TestDeckStructure:
@@ -134,18 +134,18 @@ class TestRunNoteGFull:
         deck_results = run_note_g_exact(5)
         oracle = ada_lovelace_bernoulli_series(5)
         for i in range(5):
-            assert (
-                deck_results[i] == oracle[i]
-            ), f"B_{2*i+1}: deck={deck_results[i]} != oracle={oracle[i]}"
+            assert deck_results[i] == oracle[i], (
+                f"B_{2 * i + 1}: deck={deck_results[i]} != oracle={oracle[i]}"
+            )
 
     def test_series_matches_oracle_7(self):
         """Extended test through B13."""
         deck_results = run_note_g_exact(7)
         oracle = ada_lovelace_bernoulli_series(7)
         for i in range(7):
-            assert (
-                deck_results[i] == oracle[i]
-            ), f"B_{2*i+1}: deck={deck_results[i]} != oracle={oracle[i]}"
+            assert deck_results[i] == oracle[i], (
+                f"B_{2 * i + 1}: deck={deck_results[i]} != oracle={oracle[i]}"
+            )
 
     def test_invalid_n_target(self):
         with pytest.raises(ValueError):
@@ -209,3 +209,89 @@ class TestRunOnce:
         state = run_once(4)
         v3 = Fraction(state["V3"].value, 10**40).limit_denominator(100)
         assert v3 == 5, "V3 should be n+1=5 after op 25"
+
+
+class TestDeckOperationIntegrity:
+    """Fine-grained checks on deck structure and op numbering."""
+
+    def test_ops_numbered_1_to_25(self) -> None:
+        deck = load_deck()
+        numbers = sorted(s["op"] for s in deck)
+        assert numbers == list(range(1, 26))
+
+    def test_all_ops_have_opcode_field(self) -> None:
+        for step in load_deck():
+            assert step.get("opcode") in ("add", "sub", "mult", "div"), (
+                f"Op {step['op']} has unexpected opcode {step.get('opcode')!r}"
+            )
+
+    def test_op4_and_op5_are_div(self) -> None:
+        deck = {s["op"]: s for s in load_deck()}
+        assert deck[4]["opcode"] == "div"
+        assert deck[5]["opcode"] == "div"
+
+    def test_op24_is_sub(self) -> None:
+        deck = {s["op"]: s for s in load_deck()}
+        assert deck[24]["opcode"] == "sub"
+
+    def test_op25_is_add(self) -> None:
+        deck = {s["op"]: s for s in load_deck()}
+        assert deck[25]["opcode"] == "add"
+
+    def test_ops_lhs_rhs_are_strings(self) -> None:
+        for step in load_deck():
+            assert isinstance(step["lhs"], str)
+            assert isinstance(step["rhs"], str)
+
+    def test_out_is_list(self) -> None:
+        for step in load_deck():
+            assert isinstance(step["out"], list)
+
+
+class TestInitState:
+    """Tests for init_state() V-variable initialization."""
+
+    def test_v1_is_one(self) -> None:
+        state = init_state(1)
+        v1 = Fraction(state["V1"].value, 10**40)
+        assert v1 == 1
+
+    def test_v3_equals_n(self) -> None:
+        for n in [1, 3, 5]:
+            state = init_state(n)
+            v3 = Fraction(state["V3"].value, 10**40)
+            assert v3 == n, f"V3 should be {n}, got {v3}"
+
+    def test_all_variables_are_babbage_numbers(self) -> None:
+        state = init_state(2)
+        for key, val in state.items():
+            assert isinstance(val, BabbageNumber), f"state[{key!r}] is not BabbageNumber"
+
+    def test_state_keys_include_v1_to_v24(self) -> None:
+        state = init_state(1)
+        for i in range(1, 25):
+            assert f"V{i}" in state, f"V{i} missing from init_state"
+
+
+class TestNoteGExactResults:
+    """Exact numerical results for specific n values."""
+
+    def test_run_exact_1_returns_list_of_1(self) -> None:
+        assert len(run_note_g_exact(1)) == 1
+
+    def test_run_exact_4_returns_list_of_4(self) -> None:
+        assert len(run_note_g_exact(4)) == 4
+
+    def test_b1_through_b9_match_oracle(self) -> None:
+        results = run_note_g_exact(5)
+        oracle = ada_lovelace_bernoulli_series(5)
+        for i in range(5):
+            assert results[i] == oracle[i], f"B_{2 * i + 1}: {results[i]} != {oracle[i]}"
+
+    def test_run_note_g_n1_returns_babbage_number(self) -> None:
+        results = run_note_g(1)
+        assert isinstance(results[0], BabbageNumber)
+
+    def test_run_note_g_invalid_n_raises(self) -> None:
+        with pytest.raises(ValueError):
+            run_note_g(-1)

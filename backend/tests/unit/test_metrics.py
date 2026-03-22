@@ -172,3 +172,72 @@ class TestMetricsResponse:
         body = response.body.decode()
         assert "http_requests_total" in body
         assert "code_execution_total" in body
+
+
+# ---------------------------------------------------------------------------
+# ExecutionContext language field and independence
+# ---------------------------------------------------------------------------
+
+
+class TestExecutionContextLanguage:
+    """ExecutionContext stores language; multiple instances are independent."""
+
+    def test_language_stored(self) -> None:
+        ctx = ExecutionContext("rust")
+        assert ctx.language == "rust"
+
+    def test_two_contexts_independent_status(self) -> None:
+        ctx1 = ExecutionContext("python")
+        ctx2 = ExecutionContext("c")
+        ctx1.mark_success()
+        ctx2.mark_timeout()
+        assert ctx1.status == "success"
+        assert ctx2.status == "timeout"
+
+    def test_mark_success_then_error_gives_error(self) -> None:
+        ctx = ExecutionContext("haskell")
+        ctx.mark_success()
+        ctx.mark_error()
+        assert ctx.status == "error"
+
+    def test_mark_error_then_success_gives_success(self) -> None:
+        ctx = ExecutionContext("lisp")
+        ctx.mark_error()
+        ctx.mark_success()
+        assert ctx.status == "success"
+
+    def test_start_time_is_none_before_aenter(self) -> None:
+        ctx = ExecutionContext("python")
+        assert ctx.start_time is None
+
+
+class TestRecordCacheAccessTypes:
+    """record_cache_access handles various cache type strings."""
+
+    def test_compilation_cache_hit(self) -> None:
+        record_cache_access("compilation", hit=True)
+
+    def test_compilation_cache_miss(self) -> None:
+        record_cache_access("compilation", hit=False)
+
+    def test_unknown_cache_type_does_not_raise(self) -> None:
+        record_cache_access("custom_type", hit=True)
+
+
+class TestRecordCodeExecutionEdgeCases:
+    """Edge cases for record_code_execution helper."""
+
+    def test_zero_duration_does_not_raise(self) -> None:
+        record_code_execution("python", 0.0, "success")
+
+    def test_large_duration_does_not_raise(self) -> None:
+        record_code_execution("c", 9999.9, "timeout")
+
+    def test_compile_error_status_does_not_raise(self) -> None:
+        record_code_execution("haskell", 0.1, "compile_error")
+
+    def test_runtime_error_status_does_not_raise(self) -> None:
+        record_code_execution("lisp", 0.5, "runtime_error")
+
+    def test_record_compilation_large_duration(self) -> None:
+        record_code_compilation("assembly", 100.0)

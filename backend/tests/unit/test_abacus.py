@@ -183,3 +183,30 @@ class TestAbacusDigitRepresentation:
             digits = emu.state()["digits"]
             reconstructed = int("".join(str(d) for d in digits))
             assert reconstructed == v, f"Digit mismatch for value {v}"
+
+
+class TestAbacusStateReturn:
+    """Return value consistency and state independence."""
+
+    def test_add_returns_numeric_value(self) -> None:
+        emu = AbacusEmulator()
+        result = emu.add(42)
+        assert isinstance(result, int)
+
+    def test_sub_returns_numeric_value(self) -> None:
+        emu = AbacusEmulator()
+        emu.set_value(100)
+        result = emu.sub(10)
+        assert isinstance(result, int)
+
+    def test_set_value_zero_gives_single_zero_digit(self) -> None:
+        emu = AbacusEmulator()
+        emu.set_value(999)
+        emu.set_value(0)
+        assert emu.state()["digits"] == [0]
+
+    def test_add_zero_leaves_value_unchanged(self) -> None:
+        emu = AbacusEmulator()
+        emu.set_value(77)
+        emu.add(0)
+        assert emu.state()["value"] == 77

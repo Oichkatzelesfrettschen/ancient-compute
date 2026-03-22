@@ -41,7 +41,6 @@ def engine(default_config, lib):
 
 
 class TestSimulationState:
-
     def test_default_state(self):
         s = SimulationState()
         assert s.time_s == 0.0
@@ -67,7 +66,6 @@ class TestSimulationState:
 
 
 class TestSimulationConfig:
-
     def test_omega_rad_s(self):
         cfg = SimulationConfig(rpm=30.0)
         expected = 2.0 * math.pi * 30.0 / 60.0
@@ -88,7 +86,6 @@ class TestSimulationConfig:
 
 
 class TestCouplingFunctions:
-
     def test_viscosity_at_40C_is_base(self):
         """eta(40) = eta_40."""
         assert CouplingFunctions.viscosity_at_temperature(0.1, 40.0) == pytest.approx(0.1)
@@ -133,7 +130,6 @@ class TestCouplingFunctions:
 
 
 class TestEngineInit:
-
     def test_initial_state_temperature(self, engine, default_config):
         assert engine.state.temperature_C == default_config.ambient_temperature_C
 
@@ -165,7 +161,6 @@ class TestEngineInit:
 
 
 class TestSingleStep:
-
     def test_step_advances_time(self, engine, default_config):
         engine.step()
         assert engine.state.time_s == pytest.approx(default_config.dt_s)
@@ -233,7 +228,6 @@ class TestSingleStep:
 
 
 class TestEnergyConservation:
-
     def test_steady_state_heat_balance(self, lib):
         """At thermal steady state, heat generation ~ heat dissipation."""
         cfg = SimulationConfig(dt_s=1.0, rpm=30.0)
@@ -265,9 +259,9 @@ class TestEnergyConservation:
         # At steady state these should match within 20%
         if Q_gen > 0.1:  # Only check if meaningful heat is generated
             ratio = Q_dissipated / Q_gen
-            assert (
-                0.5 < ratio < 2.0
-            ), f"Q_gen={Q_gen:.2f} W, Q_diss={Q_dissipated:.2f} W, ratio={ratio:.2f}"
+            assert 0.5 < ratio < 2.0, (
+                f"Q_gen={Q_gen:.2f} W, Q_diss={Q_dissipated:.2f} W, ratio={ratio:.2f}"
+            )
 
 
 # ---------------------------------------------------------------------------
@@ -276,7 +270,6 @@ class TestEnergyConservation:
 
 
 class TestForceEquilibrium:
-
     def test_bearing_loads_sum_to_total(self, engine):
         """Sum of bearing loads equals total gravity load."""
         engine.step()
@@ -296,7 +289,6 @@ class TestForceEquilibrium:
 
 
 class TestCoupledConvergence:
-
     def test_results_within_10pct_of_uncoupled(self, lib):
         """Coupled steady-state temperature within 10% of simple estimate.
 
@@ -330,9 +322,9 @@ class TestCoupledConvergence:
             delta_coupled = T_coupled - cfg.ambient_temperature_C
             delta_simple = T_simple - cfg.ambient_temperature_C
             ratio = delta_coupled / delta_simple
-            assert (
-                0.3 < ratio < 3.0
-            ), f"T_coupled={T_coupled:.2f}, T_simple={T_simple:.2f}, ratio={ratio:.2f}"
+            assert 0.3 < ratio < 3.0, (
+                f"T_coupled={T_coupled:.2f}, T_simple={T_simple:.2f}, ratio={ratio:.2f}"
+            )
 
 
 # ---------------------------------------------------------------------------
@@ -341,7 +333,6 @@ class TestCoupledConvergence:
 
 
 class TestLongDurationRun:
-
     def test_run_returns_result(self, lib):
         cfg = SimulationConfig(dt_s=1.0, rpm=30.0)
         eng = SimulationEngine(cfg, lib)
@@ -389,7 +380,6 @@ class TestLongDurationRun:
 
 
 class TestPredictMaintenance:
-
     def test_maintenance_returns_result(self, lib):
         cfg = SimulationConfig(dt_s=10.0, rpm=30.0)
         eng = SimulationEngine(cfg, lib)
@@ -410,7 +400,6 @@ class TestPredictMaintenance:
 
 
 class TestFailureDetection:
-
     def test_temperature_limit_triggers(self, lib):
         """Very high heat scenario should trigger temperature failure."""
         cfg = SimulationConfig(
@@ -457,7 +446,6 @@ class TestFailureDetection:
 
 
 class TestMassConservation:
-
     def test_wear_monotonically_increasing(self, lib):
         """Wear volumes never decrease."""
         cfg = SimulationConfig(dt_s=1.0, rpm=30.0)
@@ -489,3 +477,148 @@ class TestMassConservation:
         if dw_first > 0:
             ratio = dw_second / dw_first
             assert 0.5 < ratio < 2.0, f"Wear ratio: {ratio:.2f}"
+
+
+# ---------------------------------------------------------------------------
+# SimulationState copy and field types
+# ---------------------------------------------------------------------------
+
+
+class TestSimulationStateFields:
+    """SimulationState default field types and copy independence."""
+
+    def test_bearing_clearances_is_list(self) -> None:
+        s = SimulationState()
+        assert isinstance(s.bearing_clearances_mm, list)
+
+    def test_bearing_wear_is_list(self) -> None:
+        s = SimulationState()
+        assert isinstance(s.bearing_wear_volumes_mm3, list)
+
+    def test_bearing_loads_is_list(self) -> None:
+        s = SimulationState()
+        assert isinstance(s.bearing_loads_N, list)
+
+    def test_lubrication_regime_default_str(self) -> None:
+        s = SimulationState()
+        assert isinstance(s.lubrication_regime, str)
+
+    def test_time_s_default_zero(self) -> None:
+        s = SimulationState()
+        assert s.time_s == 0.0
+
+    def test_energy_consumed_default_zero(self) -> None:
+        s = SimulationState()
+        assert s.energy_consumed_J == 0.0
+
+    def test_shaft_deflection_default_nonneg(self) -> None:
+        s = SimulationState()
+        assert s.shaft_deflection_mm >= 0.0
+
+    def test_copy_deep(self) -> None:
+        s = SimulationState(bearing_clearances_mm=[0.05, 0.06])
+        c = s.copy()
+        c.bearing_clearances_mm[0] = 99.0
+        assert s.bearing_clearances_mm[0] == pytest.approx(0.05)
+
+
+# ---------------------------------------------------------------------------
+# CouplingFunctions extended
+# ---------------------------------------------------------------------------
+
+
+class TestCouplingFunctionsExtended:
+    """Additional coupling function edge cases and monotonicity."""
+
+    def test_viscosity_at_temperature_positive(self) -> None:
+        eta = CouplingFunctions.viscosity_at_temperature(0.05, 40.0)
+        assert eta > 0.0
+
+    def test_viscosity_monotone_decreasing_with_temp(self) -> None:
+        etas = [CouplingFunctions.viscosity_at_temperature(0.1, t) for t in [40, 60, 80, 100]]
+        for i in range(len(etas) - 1):
+            assert etas[i] > etas[i + 1]
+
+    def test_friction_heat_zero_omega(self) -> None:
+        Q = CouplingFunctions.friction_heat_from_bearings([100.0], 0.0, 0.0, 0.05)
+        assert pytest.approx(0.0) == Q
+
+    def test_friction_heat_proportional_to_loads(self) -> None:
+        Q1 = CouplingFunctions.friction_heat_from_bearings([100.0], 50.0, math.pi, 0.05)
+        Q2 = CouplingFunctions.friction_heat_from_bearings([200.0], 50.0, math.pi, 0.05)
+        assert pytest.approx(2.0 * Q1, rel=0.01) == Q2
+
+    def test_redistribute_sum_conserved(self) -> None:
+        total = 500.0
+        loads = CouplingFunctions.redistribute_bearing_loads(total, 4, [0.04, 0.05, 0.06, 0.07])
+        assert sum(loads) == pytest.approx(total)
+
+
+# ---------------------------------------------------------------------------
+# SimulationConfig extended
+# ---------------------------------------------------------------------------
+
+
+class TestSimulationConfigExtended:
+    """SimulationConfig computed properties and edge cases."""
+
+    def test_omega_zero_rpm(self) -> None:
+        cfg = SimulationConfig(rpm=0.0)
+        assert cfg.omega_rad_s == pytest.approx(0.0)
+
+    def test_period_proportional_to_inverse_rpm(self) -> None:
+        cfg30 = SimulationConfig(rpm=30.0)
+        cfg60 = SimulationConfig(rpm=60.0)
+        assert cfg30.period_s == pytest.approx(2.0 * cfg60.period_s, rel=0.01)
+
+    def test_bearing_count_positive(self) -> None:
+        cfg = SimulationConfig()
+        assert cfg.bearing_count > 0
+
+    def test_dt_s_positive(self) -> None:
+        cfg = SimulationConfig()
+        assert cfg.dt_s > 0.0
+
+    def test_temperature_limit_above_ambient(self) -> None:
+        cfg = SimulationConfig()
+        assert cfg.temperature_limit_C > cfg.ambient_temperature_C
+
+
+# ---------------------------------------------------------------------------
+# SimulationResult fields
+# ---------------------------------------------------------------------------
+
+
+class TestSimulationResultFields:
+    """SimulationResult from run() has expected structure."""
+
+    def test_run_returns_simulation_result(self, engine: "SimulationEngine") -> None:
+        result = engine.run(0.1)
+        assert isinstance(result, SimulationResult)
+
+    def test_result_duration_s_positive(self, engine: "SimulationEngine") -> None:
+        result = engine.run(0.5)
+        assert result.duration_s > 0.0
+
+    def test_result_steps_positive(self, engine: "SimulationEngine") -> None:
+        result = engine.run(0.5)
+        assert result.steps > 0
+
+    def test_result_final_state_is_simulation_state(self, engine: "SimulationEngine") -> None:
+        result = engine.run(0.1)
+        assert isinstance(result.final_state, SimulationState)
+
+    def test_result_history_is_list(self, engine: "SimulationEngine") -> None:
+        result = engine.run(0.1)
+        assert isinstance(result.history, list)
+
+    def test_reset_restores_zero_time(self, engine: "SimulationEngine") -> None:
+        engine.run(1.0)
+        engine.reset()
+        assert engine.state.time_s == pytest.approx(0.0)
+
+    def test_reset_clears_failure(self, engine: "SimulationEngine") -> None:
+        engine.run(1.0)
+        engine.reset()
+        assert not engine.failed
+        assert engine.failure_reason == ""

@@ -54,23 +54,11 @@ class TestPythonContract:
 
     def test_arithmetic_ops(self):
         """All four arithmetic operators in a single function."""
-        _ok(
-            "def calc(a, b):\n"
-            "    s = a + b\n"
-            "    d = a - b\n"
-            "    p = a * b\n"
-            "    return s + d + p"
-        )
+        _ok("def calc(a, b):\n    s = a + b\n    d = a - b\n    p = a * b\n    return s + d + p")
 
     def test_if_else(self):
         """If/else branch compiles to machine code."""
-        _ok(
-            "def abs_val(x):\n"
-            "    if x >= 0:\n"
-            "        return x\n"
-            "    else:\n"
-            "        return -x"
-        )
+        _ok("def abs_val(x):\n    if x >= 0:\n        return x\n    else:\n        return -x")
 
     def test_if_elif_else(self):
         """Sign function with if/elif/else chain."""
@@ -98,17 +86,11 @@ class TestPythonContract:
 
     def test_for_range_loop(self):
         """For loop over range(n) with accumulator."""
-        _ok(
-            "def sum_range(n):\n"
-            "    s = 0\n"
-            "    for i in range(n):\n"
-            "        s = s + i\n"
-            "    return s"
-        )
+        _ok("def sum_range(n):\n    s = 0\n    for i in range(n):\n        s = s + i\n    return s")
 
     def test_recursion_factorial(self):
         """Recursive factorial function."""
-        _ok("def fact(n):\n" "    if n <= 1:\n" "        return 1\n" "    return n * fact(n - 1)")
+        _ok("def fact(n):\n    if n <= 1:\n        return 1\n    return n * fact(n - 1)")
 
     def test_multiple_functions(self):
         """Two functions where one calls the other."""
@@ -152,12 +134,7 @@ class TestPythonContractMachineCode:
     def test_more_ops_gives_more_machine_code(self) -> None:
         r1 = _run("def f(x):\n    return x")
         r2 = _run(
-            "def f(x):\n"
-            "    a = x + 1\n"
-            "    b = a * 2\n"
-            "    c = b - a\n"
-            "    d = c + b\n"
-            "    return d"
+            "def f(x):\n    a = x + 1\n    b = a * 2\n    c = b - a\n    d = c + b\n    return d"
         )
         assert len(r2.machine_code) >= len(r1.machine_code)
 
@@ -188,7 +165,7 @@ class TestPythonContractAdditional:
         _ok("def div(a, b):\n    return a / b")
 
     def test_max_function(self) -> None:
-        _ok("def max2(a, b):\n" "    if a > b:\n" "        return a\n" "    return b")
+        _ok("def max2(a, b):\n    if a > b:\n        return a\n    return b")
 
     def test_recursive_power(self) -> None:
         _ok(
@@ -207,3 +184,70 @@ class TestPythonContractAdditional:
             "def sextuple(x):\n"
             "    return double(triple(x))"
         )
+
+
+class TestPythonContractRejectedExtended:
+    """Additional Python features that must produce COMPILE_ERROR."""
+
+    def test_rejected_import_os_with_usage(self) -> None:
+        _err("import os\ndef f():\n    return os.getcwd()")
+
+    def test_rejected_class_with_method(self) -> None:
+        _err("class Calc:\n    def add(self, a, b):\n        return a + b")
+
+    def test_rejected_list_comprehension_with_filter(self) -> None:
+        _err("def evens(n):\n    return [x for x in range(n) if x % 2 == 0]")
+
+    def test_rejected_syntax_missing_colon(self) -> None:
+        _err("def f(x)\n    return x")
+
+    def test_rejected_syntax_unclosed_param_paren(self) -> None:
+        _err("def f(x, y:\n    return x + y")
+
+    def test_rejected_import_stdlib(self) -> None:
+        _err("import random\ndef f(n):\n    return random.randint(0, n)")
+
+    def test_rejected_bare_class(self) -> None:
+        _err("class Point:\n    pass")
+
+
+class TestPythonMachineCodeExtended:
+    """Additional machine_code and result shape properties."""
+
+    def test_machine_code_contains_hex_dump_marker(self) -> None:
+        r = _run("def f(x):\n    return x * 2")
+        assert "00000000" in r.machine_code
+
+    def test_machine_code_length_greater_than_ten(self) -> None:
+        r = _run("def f(x):\n    return x")
+        assert len(r.machine_code) > 10
+
+    def test_compile_error_status_on_bad_syntax(self) -> None:
+        from backend.src.services.languages.python_service import ExecutionStatus
+
+        r = _run("def bad(:\n    pass")
+        assert r.status == ExecutionStatus.COMPILE_ERROR
+
+    def test_success_result_has_machine_code_attr(self) -> None:
+        r = _run("def f(x):\n    return x")
+        assert hasattr(r, "machine_code")
+
+    def test_success_result_has_stdout_attr(self) -> None:
+        r = _run("def f(x):\n    return x")
+        assert hasattr(r, "stdout")
+
+    def test_while_loop_machine_code_non_empty(self) -> None:
+        r = _run(
+            "def f(n):\n"
+            "    s = 0\n"
+            "    while n > 0:\n"
+            "        s = s + n\n"
+            "        n = n - 1\n"
+            "    return s"
+        )
+        assert isinstance(r.machine_code, str)
+        assert len(r.machine_code) > 0
+
+    def test_recursive_function_machine_code_non_empty(self) -> None:
+        r = _run("def fact(n):\n    if n <= 1:\n        return 1\n    return n * fact(n - 1)")
+        assert len(r.machine_code) > 0

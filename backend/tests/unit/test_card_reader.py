@@ -773,3 +773,238 @@ class TestRegressionAndIntegration:
 
         assert is_valid1 is True
         assert is_valid2 is True
+
+
+# ---------------------------------------------------------------------------
+# CardOperation enum
+# ---------------------------------------------------------------------------
+
+
+class TestCardOperationEnum:
+    """CardOperation enum completeness and distinctness."""
+
+    def test_load_coeff_importable(self) -> None:
+        assert CardOperation.LOAD_COEFF is not None
+
+    def test_set_x_range_importable(self) -> None:
+        assert CardOperation.SET_X_RANGE is not None
+
+    def test_print_result_importable(self) -> None:
+        assert CardOperation.PRINT_RESULT is not None
+
+    def test_halt_importable(self) -> None:
+        assert CardOperation.HALT is not None
+
+    def test_all_legacy_values_distinct(self) -> None:
+        ops = [
+            CardOperation.LOAD_COEFF,
+            CardOperation.SET_X_RANGE,
+            CardOperation.PRINT_RESULT,
+            CardOperation.HALT,
+        ]
+        assert len(set(ops)) == len(ops)
+
+    def test_ae_opcodes_importable(self) -> None:
+        for op in (
+            CardOperation.ADD,
+            CardOperation.SUB,
+            CardOperation.MUL,
+            CardOperation.DIV,
+            CardOperation.MOV,
+            CardOperation.CLR,
+            CardOperation.CMPZ,
+            CardOperation.BR,
+            CardOperation.STEP,
+            CardOperation.NOP,
+            CardOperation.PRINT,
+        ):
+            assert op is not None
+
+    def test_all_enum_values_are_strings(self) -> None:
+        for op in CardOperation:
+            assert isinstance(op.value, str)
+
+
+# ---------------------------------------------------------------------------
+# PunchCard dataclass structure
+# ---------------------------------------------------------------------------
+
+
+class TestPunchCardStructure:
+    """PunchCard dataclass fields and hole-matrix dimensions."""
+
+    def test_holes_matrix_width(self) -> None:
+        reader = CardReader()
+        card = reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=0)
+        assert len(card.holes) == CardReader.CARD_WIDTH
+
+    def test_holes_matrix_height(self) -> None:
+        reader = CardReader()
+        card = reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=0)
+        for col in card.holes:
+            assert len(col) == CardReader.CARD_HEIGHT
+
+    def test_holes_elements_are_bool(self) -> None:
+        reader = CardReader()
+        card = reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=7)
+        assert isinstance(card.holes[0][0], bool)
+
+    def test_card_id_field_is_int(self) -> None:
+        reader = CardReader()
+        card = reader.create_card_from_data(CardOperation.HALT)
+        assert isinstance(card.card_id, int)
+
+    def test_operation_field_matches_input(self) -> None:
+        reader = CardReader()
+        card = reader.create_card_from_data(CardOperation.SET_X_RANGE, x_start=0, x_end=5)
+        assert card.operation == CardOperation.SET_X_RANGE
+
+    def test_error_message_empty_on_valid_card(self) -> None:
+        reader = CardReader()
+        card = reader.create_card_from_data(CardOperation.HALT)
+        assert card.error_message == ""
+
+    def test_coefficient_none_for_non_coeff_op(self) -> None:
+        reader = CardReader()
+        card = reader.create_card_from_data(CardOperation.HALT)
+        assert card.coefficient is None
+
+    def test_x_start_none_for_non_range_op(self) -> None:
+        reader = CardReader()
+        card = reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=1)
+        assert card.x_start is None
+
+    def test_x_end_none_for_non_range_op(self) -> None:
+        reader = CardReader()
+        card = reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=1)
+        assert card.x_end is None
+
+
+# ---------------------------------------------------------------------------
+# CardFormatError
+# ---------------------------------------------------------------------------
+
+
+class TestCardFormatErrorExtended:
+    """CardFormatError is a proper Exception subclass."""
+
+    def test_is_exception_subclass(self) -> None:
+        assert issubclass(CardFormatError, Exception)
+
+    def test_message_preserved(self) -> None:
+        msg = "bad card format at column 42"
+        err = CardFormatError(msg)
+        assert str(err) == msg
+
+    def test_can_be_raised_and_caught(self) -> None:
+        with pytest.raises(CardFormatError):
+            raise CardFormatError("test error")
+
+    def test_caught_as_base_exception(self) -> None:
+        # CardFormatError inherits from Exception; verify isinstance relationship
+        err = CardFormatError("also an exception")
+        assert isinstance(err, Exception)
+
+
+# ---------------------------------------------------------------------------
+# CardReader state and ID sequencing
+# ---------------------------------------------------------------------------
+
+
+class TestCardReaderStateExtended:
+    """cards_read list grows correctly; card IDs are sequential."""
+
+    def test_cards_read_starts_empty(self) -> None:
+        reader = CardReader()
+        assert len(reader.cards_read) == 0
+
+    def test_cards_read_grows_after_create(self) -> None:
+        reader = CardReader()
+        for _ in range(7):
+            reader.create_card_from_data(CardOperation.HALT)
+        assert len(reader.cards_read) == 7
+
+    def test_card_ids_are_sequential_from_one(self) -> None:
+        reader = CardReader()
+        for i in range(1, 6):
+            card = reader.create_card_from_data(CardOperation.HALT)
+            assert card.card_id == i
+
+    def test_separate_readers_have_independent_id_sequences(self) -> None:
+        r1 = CardReader()
+        r2 = CardReader()
+        c1 = r1.create_card_from_data(CardOperation.HALT)
+        c1b = r1.create_card_from_data(CardOperation.HALT)
+        c2 = r2.create_card_from_data(CardOperation.HALT)
+        assert c1.card_id == 1
+        assert c1b.card_id == 2
+        assert c2.card_id == 1
+
+    def test_load_coeff_missing_coefficient_raises(self) -> None:
+        reader = CardReader()
+        with pytest.raises((ValueError, TypeError)):
+            reader.create_card_from_data(CardOperation.LOAD_COEFF)
+
+    def test_set_x_range_missing_args_raises(self) -> None:
+        reader = CardReader()
+        with pytest.raises((ValueError, TypeError)):
+            reader.create_card_from_data(CardOperation.SET_X_RANGE)
+
+    def test_x_start_greater_than_x_end_raises(self) -> None:
+        reader = CardReader()
+        with pytest.raises(ValueError):
+            reader.create_card_from_data(CardOperation.SET_X_RANGE, x_start=10, x_end=5)
+
+    def test_coefficient_out_of_range_raises(self) -> None:
+        reader = CardReader()
+        with pytest.raises(ValueError):
+            reader.create_card_from_data(CardOperation.LOAD_COEFF, coefficient=-1)
+
+
+# ---------------------------------------------------------------------------
+# read_card_sequence and error_log
+# ---------------------------------------------------------------------------
+
+
+class TestReadCardSequenceExtended:
+    """CardSequence completeness and error_log accumulation."""
+
+    def test_empty_sequence_is_complete(self) -> None:
+        reader = CardReader()
+        seq = reader.read_card_sequence([])
+        assert seq.is_complete is True
+
+    def test_sequence_total_cards_matches_input(self) -> None:
+        reader = CardReader()
+        # Build two valid cards to feed back as hole matrices
+        c1 = reader.create_card_from_data(CardOperation.HALT)
+        c2 = reader.create_card_from_data(CardOperation.PRINT_RESULT)
+        # reset reader so IDs restart cleanly for the sequence
+        new_reader = CardReader()
+        seq = new_reader.read_card_sequence([c1.holes, c2.holes])
+        assert seq.total_cards == 2
+
+    def test_sequence_cards_list_len_matches_valid_cards(self) -> None:
+        reader = CardReader()
+        c1 = reader.create_card_from_data(CardOperation.HALT)
+        new_reader = CardReader()
+        seq = new_reader.read_card_sequence([c1.holes])
+        assert len(seq.cards) == 1
+
+    def test_error_log_empty_initially(self) -> None:
+        reader = CardReader()
+        assert reader.get_error_log() == []
+
+    def test_error_log_returns_copy(self) -> None:
+        reader = CardReader()
+        log1 = reader.get_error_log()
+        log2 = reader.get_error_log()
+        assert log1 is not log2
+
+    def test_card_sequence_is_complete_flag_correct(self) -> None:
+        reader = CardReader()
+        c = reader.create_card_from_data(CardOperation.HALT)
+        new_reader = CardReader()
+        seq = new_reader.read_card_sequence([c.holes])
+        # If all cards parsed successfully, is_complete == True
+        assert seq.is_complete is True

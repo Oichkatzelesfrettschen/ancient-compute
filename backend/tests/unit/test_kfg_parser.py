@@ -165,3 +165,37 @@ class TestKFGCordData:
     def test_ur001_cluster_count_positive(self) -> None:
         a = load_kfg_normalized(_KFG_DIR / "UR001.json")
         assert len(a.clusters) > 0
+
+
+class TestKFGMultipleArtifacts:
+    """Cross-artifact comparisons and structural correctness."""
+
+    def test_qu001_khipu_dict_is_non_empty(self) -> None:
+        a = load_kfg_normalized(_KFG_DIR / "QU001.json")
+        assert len(a.khipu) > 0
+
+    def test_ur001_khipu_is_dict(self) -> None:
+        a = load_kfg_normalized(_KFG_DIR / "UR001.json")
+        assert isinstance(a.khipu, dict)
+
+    def test_qu001_primary_cord_is_non_empty(self) -> None:
+        a = load_kfg_normalized(_KFG_DIR / "QU001.json")
+        assert len(a.primary_cord) > 0
+
+    def test_ur001_primary_cord_is_dict(self) -> None:
+        a = load_kfg_normalized(_KFG_DIR / "UR001.json")
+        assert isinstance(a.primary_cord, dict)
+
+    def test_load_nonexistent_path_raises(self) -> None:
+        import pytest
+
+        with pytest.raises(FileNotFoundError):
+            load_kfg_normalized(_KFG_DIR / "NONEXISTENT_99999.json")
+
+    def test_ur001_cords_all_are_dicts(self) -> None:
+        a = load_kfg_normalized(_KFG_DIR / "UR001.json")
+        assert all(isinstance(c, dict) for c in a.cords)
+
+    def test_qu001_clusters_all_non_empty_strings(self) -> None:
+        a = load_kfg_normalized(_KFG_DIR / "QU001.json")
+        assert all(isinstance(c, str) and len(c) > 0 for c in a.clusters)

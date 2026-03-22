@@ -14,6 +14,7 @@ import pytest
 from backend.src.emulator.materials import MaterialLibrary
 from backend.src.emulator.structural import (
     BucklingAnalysis,
+    CumulativeFatigue,
     DynamicLoadFactor,
     FatigueAnalysis,
     GearToothStress,
@@ -447,3 +448,547 @@ class TestNotchSensitivity:
         """When q=1 (large r, strong material): K_f = K_t."""
         Kf = NotchSensitivity.fatigue_concentration_Kf(2.5, 1.0)
         assert Kf == pytest.approx(2.5)
+
+
+# ---------------------------------------------------------------------------
+# ShaftAnalysis extended
+# ---------------------------------------------------------------------------
+
+
+class TestShaftDeflectionExtended:
+    """Moment of inertia scaling, deflection limit, edge cases."""
+
+    def test_moment_of_inertia_proportional_to_d4(self):
+        # I = pi*d^4/64: doubling d -> 16x I
+        i1 = ShaftAnalysis.moment_of_inertia_m4(25.0)
+        i2 = ShaftAnalysis.moment_of_inertia_m4(50.0)
+        assert i2 == pytest.approx(16.0 * i1, rel=1e-6)
+
+    def test_moment_of_inertia_positive(self):
+        assert ShaftAnalysis.moment_of_inertia_m4(10.0) > 0
+
+    def test_deflection_limit_formula(self):
+        # L / 10000 by default
+        limit = ShaftAnalysis.deflection_limit_mm(1000.0)
+        assert limit == pytest.approx(0.1)
+
+    def test_deflection_limit_custom_ratio(self):
+        limit = ShaftAnalysis.deflection_limit_mm(500.0, ratio=500.0)
+        assert limit == pytest.approx(1.0)
+
+    def test_zero_force_gives_zero_deflection(self):
+        d = ShaftAnalysis.max_deflection_simply_supported_mm(0.0, 500.0, 210.0, 50.0)
+        assert d == pytest.approx(0.0)
+
+    def test_larger_diameter_less_deflection(self):
+        d_small = ShaftAnalysis.max_deflection_simply_supported_mm(
+            1000.0, 500.0, 210.0, 25.0
+        )
+        d_large = ShaftAnalysis.max_deflection_simply_supported_mm(
+            1000.0, 500.0, 210.0, 50.0
+        )
+        # I doubles with d^4: 50mm shaft deflects much less than 25mm
+        assert d_large < d_small
+
+    def test_deflection_proportional_to_L3(self):
+        # delta proportional to L^3
+        d1 = ShaftAnalysis.max_deflection_simply_supported_mm(100.0, 500.0, 210.0, 50.0)
+        d2 = ShaftAnalysis.max_deflection_simply_supported_mm(100.0, 1000.0, 210.0, 50.0)
+        assert d2 == pytest.approx(8.0 * d1, rel=1e-6)
+
+    def test_single_bearing_falls_back_to_simply_supported(self):
+        d_multi = ShaftAnalysis.max_deflection_multi_support_mm(
+            100.0, 500.0, 1, 210.0, 50.0
+        )
+        d_single = ShaftAnalysis.max_deflection_simply_supported_mm(
+            100.0, 500.0, 210.0, 50.0
+        )
+        assert d_multi == pytest.approx(d_single, rel=1e-6)
+
+    def test_deflection_mm_is_float(self):
+        d = ShaftAnalysis.max_deflection_simply_supported_mm(500.0, 500.0, 210.0, 50.0)
+        assert isinstance(d, float)
+
+
+# ---------------------------------------------------------------------------
+# GearToothStress extended
+# ---------------------------------------------------------------------------
+
+
+class TestGearToothStressExtended:
+    """Lewis form factor, stress proportionality, safety factor."""
+
+    def test_lewis_form_factor_low_tooth_count(self):
+        # < 12 teeth: Y = 0.245
+        y = GearToothStress.lewis_form_factor(10)
+        assert y == pytest.approx(0.245)
+
+    def test_lewis_form_factor_high_tooth_count(self):
+        # High tooth count: Y = 0.484 - 2.87/N
+        y = GearToothStress.lewis_form_factor(100)
+        assert y == pytest.approx(0.484 - 2.87 / 100, rel=1e-6)
+
+    def test_lewis_form_factor_boundary_12(self):
+        # At exactly 12 teeth: uses formula not constant
+        y = GearToothStress.lewis_form_factor(12)
+        assert y == pytest.approx(0.484 - 2.87 / 12, rel=1e-6)
+
+    def test_lewis_form_factor_increases_with_teeth(self):
+        # More teeth -> larger Y -> lower stress for same force
+        y20 = GearToothStress.lewis_form_factor(20)
+        y80 = GearToothStress.lewis_form_factor(80)
+        assert y80 > y20
+
+    def test_stress_proportional_to_force(self):
+        s1 = GearToothStress.bending_stress_MPa(100.0, 15.0, 2.5, 20)
+        s2 = GearToothStress.bending_stress_MPa(200.0, 15.0, 2.5, 20)
+        assert s2 == pytest.approx(2.0 * s1, rel=1e-6)
+
+    def test_larger_module_less_stress(self):
+        # Larger module m -> lower sigma (sigma = Wt / (b * m * Y))
+        s_small = GearToothStress.bending_stress_MPa(100.0, 15.0, 2.0, 20)
+        s_large = GearToothStress.bending_stress_MPa(100.0, 15.0, 4.0, 20)
+        assert s_large < s_small
+
+    def test_sf_returns_float(self):
+        sf = GearToothStress.safety_factor(200.0, 50.0)
+        assert isinstance(sf, float)
+
+    def test_sf_positive_for_positive_stress(self):
+        sf = GearToothStress.safety_factor(200.0, 50.0)
+        assert sf > 0
+
+    def test_sf_equals_ratio(self):
+        sf = GearToothStress.safety_factor(300.0, 100.0)
+        assert sf == pytest.approx(3.0)
+
+
+# ---------------------------------------------------------------------------
+# FatigueAnalysis extended
+# ---------------------------------------------------------------------------
+
+
+class TestFatigueAnalysisExtended:
+    """Temperature factor, size factor breakpoints, Goodman edge cases."""
+
+    def test_temperature_factor_kd_at_ambient(self):
+        # Below 250 C: kd = 1.0
+        kd = FatigueAnalysis.temperature_factor_kd(30.0)
+        assert kd == pytest.approx(1.0)
+
+    def test_temperature_factor_kd_at_250(self):
+        kd = FatigueAnalysis.temperature_factor_kd(250.0)
+        assert kd == pytest.approx(1.0)
+
+    def test_temperature_factor_kd_above_250(self):
+        # Above 250 C: polynomial - should differ from 1.0
+        kd = FatigueAnalysis.temperature_factor_kd(400.0)
+        assert kd != pytest.approx(1.0)
+
+    def test_size_factor_tiny_diameter(self):
+        # d <= 2.79 mm: kb = 1.0
+        kb = FatigueAnalysis.size_factor_kb(2.0)
+        assert kb == pytest.approx(1.0)
+
+    def test_size_factor_medium_diameter(self):
+        # 2.79 < d <= 51: kb = 1.24 * d^(-0.107), must be < 1
+        kb = FatigueAnalysis.size_factor_kb(25.0)
+        assert 0 < kb < 1.0
+
+    def test_size_factor_large_diameter(self):
+        # 51 < d <= 254: kb = 1.51 * d^(-0.157), also < 1
+        kb = FatigueAnalysis.size_factor_kb(100.0)
+        assert 0 < kb < 1.0
+
+    def test_size_factor_very_large_diameter(self):
+        # d > 254: kb = 0.6 (constant floor)
+        kb = FatigueAnalysis.size_factor_kb(300.0)
+        assert kb == pytest.approx(0.6)
+
+    def test_size_factor_decreases_with_diameter(self):
+        kb_small = FatigueAnalysis.size_factor_kb(10.0)
+        kb_large = FatigueAnalysis.size_factor_kb(50.0)
+        assert kb_large < kb_small
+
+    def test_surface_factor_forged_less_than_machined(self):
+        # Forged (rougher) -> lower ka than machined
+        ka_forged = FatigueAnalysis.surface_factor_ka(500.0, "forged")
+        ka_machined = FatigueAnalysis.surface_factor_ka(500.0, "machined")
+        assert ka_forged < ka_machined
+
+    def test_surface_factor_hot_rolled_less_than_machined(self):
+        ka_hr = FatigueAnalysis.surface_factor_ka(500.0, "hot_rolled")
+        ka_m = FatigueAnalysis.surface_factor_ka(500.0, "machined")
+        assert ka_hr < ka_m
+
+    def test_goodman_sf_infinite_for_zero_amplitude(self):
+        # Zero stress amplitude and zero mean -> 1/SF=0 -> inf
+        sf = FatigueAnalysis.goodman_safety_factor(0.0, 0.0, 200.0, 500.0)
+        assert sf == float("inf")
+
+    def test_goodman_sf_returns_float(self):
+        sf = FatigueAnalysis.goodman_safety_factor(50.0, 10.0, 150.0, 500.0)
+        assert isinstance(sf, float)
+
+    def test_fatigue_life_returns_float(self):
+        N = FatigueAnalysis.fatigue_life_cycles(80.0, 100.0, 500.0)
+        assert isinstance(N, float)
+
+    def test_fatigue_life_at_endurance_limit_is_infinite(self):
+        # Exactly at Se: below endurance limit -> 1e9
+        N = FatigueAnalysis.fatigue_life_cycles(100.0, 100.0, 500.0)
+        assert N >= 1e8
+
+    def test_corrected_endurance_limit_positive(self):
+        Se = FatigueAnalysis.corrected_endurance_limit_MPa(300.0, 600.0, 50.0)
+        assert Se > 0
+
+
+# ---------------------------------------------------------------------------
+# BucklingAnalysis extended
+# ---------------------------------------------------------------------------
+
+
+class TestBucklingAnalysisExtended:
+    """Rectangular section formulas, Euler stress, transition ratio, SF."""
+
+    def test_rectangular_section_area_formula(self):
+        area = BucklingAnalysis.rectangular_section_area_mm2(20.0, 30.0)
+        assert area == pytest.approx(600.0)
+
+    def test_rectangular_section_I_formula(self):
+        # I = b*h^3/12
+        moi = BucklingAnalysis.rectangular_section_I_mm4(10.0, 20.0)
+        assert pytest.approx(10.0 * 20.0**3 / 12.0, rel=1e-6) == moi
+
+    def test_rectangular_section_square_is_symmetric(self):
+        moi_bh = BucklingAnalysis.rectangular_section_I_mm4(20.0, 30.0)
+        moi_hb = BucklingAnalysis.rectangular_section_I_mm4(30.0, 20.0)
+        # Not equal (h is the loaded dimension)
+        assert moi_bh != pytest.approx(moi_hb)
+
+    def test_euler_stress_proportional_to_1_over_sr2(self):
+        # sigma_cr = pi^2*E / (KL/r)^2: doubling sr -> 1/4 stress
+        s1 = BucklingAnalysis.euler_critical_stress_MPa(200.0, 100.0)
+        s2 = BucklingAnalysis.euler_critical_stress_MPa(200.0, 200.0)
+        assert s2 == pytest.approx(s1 / 4.0, rel=1e-6)
+
+    def test_euler_stress_proportional_to_E(self):
+        s1 = BucklingAnalysis.euler_critical_stress_MPa(100.0, 100.0)
+        s2 = BucklingAnalysis.euler_critical_stress_MPa(200.0, 100.0)
+        assert s2 == pytest.approx(2.0 * s1, rel=1e-6)
+
+    def test_euler_stress_positive(self):
+        s = BucklingAnalysis.euler_critical_stress_MPa(200.0, 80.0)
+        assert s > 0
+
+    def test_transition_slenderness_formula(self, lib):
+        steel = lib.get("steel")
+        Sy = steel.yield_strength_MPa[0]
+        E = steel.youngs_modulus_GPa[0]
+        tr = BucklingAnalysis.transition_slenderness_ratio(Sy, E)
+        expected = math.sqrt(2.0 * math.pi**2 * E * 1000.0 / Sy)
+        assert tr == pytest.approx(expected, rel=1e-6)
+
+    def test_slenderness_ratio_formula(self):
+        # lambda = K*L / sqrt(I/A)
+        moi = BucklingAnalysis.rectangular_section_I_mm4(25.0, 25.0)
+        area = BucklingAnalysis.rectangular_section_area_mm2(25.0, 25.0)
+        sr = BucklingAnalysis.slenderness_ratio(600.0, 1.0, moi, area)
+        r = math.sqrt(moi / area)
+        assert sr == pytest.approx(600.0 / r, rel=1e-6)
+
+    def test_buckling_sf_returns_ratio(self):
+        sf = BucklingAnalysis.buckling_safety_factor(1000.0, 100.0)
+        assert sf == pytest.approx(10.0)
+
+    def test_euler_critical_load_shorter_column_higher(self):
+        moi = BucklingAnalysis.rectangular_section_I_mm4(25.0, 25.0)
+        P_short = BucklingAnalysis.euler_critical_load_N(200.0, moi, 300.0, 0.5)
+        P_long = BucklingAnalysis.euler_critical_load_N(200.0, moi, 600.0, 0.5)
+        assert P_short > P_long
+
+
+# ---------------------------------------------------------------------------
+# StressConcentration extended
+# ---------------------------------------------------------------------------
+
+
+class TestStressConcentrationExtended:
+    """Edge cases: smooth shaft, large fillet, clamping."""
+
+    def test_smooth_shaft_D_equals_d_returns_1(self):
+        # D == d: no step, Kt = 1.0 (guard in code)
+        Kt = StressConcentration.stepped_shaft(50.0, 50.0, 3.0)
+        assert Kt == pytest.approx(1.0)
+
+    def test_zero_diameter_returns_1(self):
+        Kt = StressConcentration.stepped_shaft(50.0, 0.0, 3.0)
+        assert Kt == pytest.approx(1.0)
+
+    def test_zero_radius_returns_1(self):
+        Kt = StressConcentration.stepped_shaft(60.0, 50.0, 0.0)
+        assert Kt == pytest.approx(1.0)
+
+    def test_larger_fillet_lower_Kt(self):
+        # Larger r/d -> smaller Kt (less stress concentration)
+        Kt_small_r = StressConcentration.stepped_shaft(75.0, 50.0, 2.0)
+        Kt_large_r = StressConcentration.stepped_shaft(75.0, 50.0, 10.0)
+        assert Kt_large_r < Kt_small_r
+
+    def test_kt_ge_1_always(self):
+        # Kt must never be less than 1.0 by construction
+        cases = [
+            (60.0, 50.0, 3.0),
+            (100.0, 50.0, 2.0),
+            (55.0, 50.0, 15.0),
+            (200.0, 50.0, 0.5),
+        ]
+        for D, d, r in cases:
+            assert StressConcentration.stepped_shaft(D, d, r) >= 1.0
+
+    def test_keyway_bending_constant(self):
+        assert StressConcentration.keyway_bending() == pytest.approx(2.14)
+
+    def test_keyway_torsion_constant(self):
+        assert StressConcentration.keyway_torsion() == pytest.approx(3.0)
+
+    def test_keyway_torsion_gt_bending(self):
+        assert StressConcentration.keyway_torsion() > StressConcentration.keyway_bending()
+
+
+# ---------------------------------------------------------------------------
+# DynamicLoadFactor extended
+# ---------------------------------------------------------------------------
+
+
+class TestDynamicLoadFactorExtended:
+    """Pitch velocity formula, quality number effect, Kv monotonicity."""
+
+    def test_pitch_velocity_formula(self):
+        # V = pi * (d_mm/304.8) * rpm (ft/min)
+        V = DynamicLoadFactor.pitch_velocity_ft_min(50.0, 60.0)
+        d_ft = 50.0 / 304.8
+        expected = math.pi * d_ft * 60.0
+        assert pytest.approx(expected, rel=1e-6) == V
+
+    def test_pitch_velocity_proportional_to_rpm(self):
+        v1 = DynamicLoadFactor.pitch_velocity_ft_min(50.0, 30.0)
+        v2 = DynamicLoadFactor.pitch_velocity_ft_min(50.0, 60.0)
+        assert v2 == pytest.approx(2.0 * v1, rel=1e-6)
+
+    def test_pitch_velocity_proportional_to_diameter(self):
+        v1 = DynamicLoadFactor.pitch_velocity_ft_min(50.0, 30.0)
+        v2 = DynamicLoadFactor.pitch_velocity_ft_min(100.0, 30.0)
+        assert v2 == pytest.approx(2.0 * v1, rel=1e-6)
+
+    def test_kv_returns_float(self):
+        kv = DynamicLoadFactor.agma_Kv(50.0)
+        assert isinstance(kv, float)
+
+    def test_kv_positive(self):
+        kv = DynamicLoadFactor.agma_Kv(100.0)
+        assert kv > 0
+
+    def test_higher_quality_lower_Kv(self):
+        # Higher quality number -> smaller Kv (closer to 1)
+        kv_low_q = DynamicLoadFactor.agma_Kv(200.0, quality_number=3)
+        kv_high_q = DynamicLoadFactor.agma_Kv(200.0, quality_number=9)
+        assert kv_high_q < kv_low_q
+
+    def test_agma_bending_stress_positive(self):
+        sigma = DynamicLoadFactor.agma_bending_stress_MPa(10.0, 1.05)
+        assert sigma > 0
+
+    def test_agma_bending_equals_product(self):
+        sigma = DynamicLoadFactor.agma_bending_stress_MPa(10.0, 1.2)
+        assert sigma == pytest.approx(12.0)
+
+
+# ---------------------------------------------------------------------------
+# ShaftCriticalSpeed extended
+# ---------------------------------------------------------------------------
+
+
+class TestShaftCriticalSpeedExtended:
+    """RPM conversion, density effect, margin formula."""
+
+    def test_rpm_conversion_formula(self):
+        omega = 100.0  # rad/s
+        rpm = ShaftCriticalSpeed.critical_speed_rpm(omega)
+        assert rpm == pytest.approx(omega * 60.0 / (2.0 * math.pi), rel=1e-6)
+
+    def test_higher_density_lower_critical_speed(self):
+        omega_steel = ShaftCriticalSpeed.first_critical_speed_rad_s(
+            200.0, 50.0, 500.0, 7850.0
+        )
+        # Denser material (lead-like) -> lower critical speed
+        omega_dense = ShaftCriticalSpeed.first_critical_speed_rad_s(
+            200.0, 50.0, 500.0, 11340.0
+        )
+        assert omega_dense < omega_steel
+
+    def test_critical_speed_positive(self):
+        omega = ShaftCriticalSpeed.first_critical_speed_rad_s(
+            200.0, 50.0, 500.0, 7850.0
+        )
+        assert omega > 0
+
+    def test_margin_formula(self):
+        margin = ShaftCriticalSpeed.critical_speed_margin(3000.0, 30.0)
+        assert margin == pytest.approx(100.0)
+
+    def test_margin_zero_operating_rpm_returns_inf(self):
+        margin = ShaftCriticalSpeed.critical_speed_margin(3000.0, 0.0)
+        assert margin == float("inf")
+
+    def test_margin_increases_with_critical_rpm(self):
+        m1 = ShaftCriticalSpeed.critical_speed_margin(1000.0, 30.0)
+        m2 = ShaftCriticalSpeed.critical_speed_margin(2000.0, 30.0)
+        assert m2 > m1
+
+    def test_larger_diameter_higher_critical_speed(self):
+        # I proportional to d^4, A to d^2: omega ~ sqrt(I/A) ~ d
+        omega_small = ShaftCriticalSpeed.first_critical_speed_rad_s(
+            200.0, 25.0, 500.0, 7850.0
+        )
+        omega_large = ShaftCriticalSpeed.first_critical_speed_rad_s(
+            200.0, 50.0, 500.0, 7850.0
+        )
+        assert omega_large > omega_small
+
+
+# ---------------------------------------------------------------------------
+# NotchSensitivity extended
+# ---------------------------------------------------------------------------
+
+
+class TestNotchSensitivityExtended:
+    """Neuber constant, q limiting behavior, Kf edge cases."""
+
+    def test_neuber_constant_clamped_at_low_Su(self):
+        # Su below 345 gets clamped; result is still valid
+        a = NotchSensitivity.neuber_constant_mm(200.0)
+        assert a > 0
+
+    def test_neuber_constant_clamped_at_high_Su(self):
+        a = NotchSensitivity.neuber_constant_mm(2000.0)
+        assert a > 0
+
+    def test_neuber_constant_is_positive(self):
+        # Neuber constant always positive (floor at 0.001)
+        for su in [400.0, 600.0, 900.0, 1400.0]:
+            assert NotchSensitivity.neuber_constant_mm(su) > 0
+
+    def test_q_approaches_1_for_large_radius(self):
+        # q = 1/(1+a/r): large r -> q -> 1
+        a = NotchSensitivity.neuber_constant_mm(500.0)
+        q = NotchSensitivity.notch_sensitivity_q(1000.0, a)
+        assert q > 0.99
+
+    def test_q_returns_float(self):
+        a = NotchSensitivity.neuber_constant_mm(500.0)
+        q = NotchSensitivity.notch_sensitivity_q(2.0, a)
+        assert isinstance(q, float)
+
+    def test_Kf_equals_1_when_q_zero(self):
+        # q=0 -> insensitive to notch -> Kf = 1
+        Kf = NotchSensitivity.fatigue_concentration_Kf(3.0, 0.0)
+        assert Kf == pytest.approx(1.0)
+
+    def test_corrected_Se_unchanged_for_Kf_1(self):
+        Se = 200.0
+        Se_corr = NotchSensitivity.corrected_endurance_limit_MPa(Se, 1.0)
+        assert Se_corr == pytest.approx(Se)
+
+    def test_corrected_Se_for_high_Kf(self):
+        # Kf=2 halves endurance limit
+        Se_corr = NotchSensitivity.corrected_endurance_limit_MPa(200.0, 2.0)
+        assert Se_corr == pytest.approx(100.0)
+
+    def test_corrected_Se_zero_for_zero_Kf(self):
+        Se_corr = NotchSensitivity.corrected_endurance_limit_MPa(200.0, 0.0)
+        assert Se_corr == pytest.approx(0.0)
+
+
+# ---------------------------------------------------------------------------
+# CumulativeFatigue (Miner's Rule)
+# ---------------------------------------------------------------------------
+
+
+class TestCumulativeFatigue:
+    """Initial state, damage accumulation, failure criterion."""
+
+    def test_initial_damage_zero(self):
+        cf = CumulativeFatigue()
+        assert cf.damage == pytest.approx(0.0)
+
+    def test_initial_not_failed(self):
+        cf = CumulativeFatigue()
+        assert not cf.is_failed()
+
+    def test_initial_remaining_life_is_one(self):
+        cf = CumulativeFatigue()
+        assert cf.remaining_life_fraction() == pytest.approx(1.0)
+
+    def test_below_endurance_no_damage(self):
+        cf = CumulativeFatigue()
+        # Stress amplitude below Se -> no damage
+        cf.add_cycles(1000000, stress_amplitude_MPa=50.0, Se_MPa=100.0, Su_MPa=500.0)
+        assert cf.damage == pytest.approx(0.0)
+
+    def test_above_endurance_accumulates_damage(self):
+        cf = CumulativeFatigue()
+        cf.add_cycles(100000, stress_amplitude_MPa=200.0, Se_MPa=100.0, Su_MPa=500.0)
+        assert cf.damage > 0.0
+
+    def test_damage_accumulates_with_more_cycles(self):
+        cf1 = CumulativeFatigue()
+        cf2 = CumulativeFatigue()
+        cf1.add_cycles(100, stress_amplitude_MPa=200.0, Se_MPa=100.0, Su_MPa=500.0)
+        cf2.add_cycles(1000, stress_amplitude_MPa=200.0, Se_MPa=100.0, Su_MPa=500.0)
+        assert cf2.damage > cf1.damage
+
+    def test_failure_when_damage_reaches_1(self):
+        cf = CumulativeFatigue()
+        # Force damage > 1 by adding many cycles at high stress
+        cf.add_cycles(10**8, stress_amplitude_MPa=450.0, Se_MPa=100.0, Su_MPa=500.0)
+        assert cf.is_failed()
+
+    def test_remaining_life_decreases_with_damage(self):
+        cf = CumulativeFatigue()
+        cf.add_cycles(10000, stress_amplitude_MPa=200.0, Se_MPa=100.0, Su_MPa=500.0)
+        assert cf.remaining_life_fraction() < 1.0
+
+    def test_remaining_life_never_negative(self):
+        cf = CumulativeFatigue()
+        cf.add_cycles(10**9, stress_amplitude_MPa=400.0, Se_MPa=100.0, Su_MPa=500.0)
+        assert cf.remaining_life_fraction() >= 0.0
+
+    def test_cycle_log_records_entries(self):
+        cf = CumulativeFatigue()
+        cf.add_cycles(100, stress_amplitude_MPa=200.0, Se_MPa=100.0, Su_MPa=500.0)
+        assert len(cf.cycle_log) == 1
+
+    def test_below_endurance_does_not_log(self):
+        cf = CumulativeFatigue()
+        # Below Se -> returns early, does not append to cycle_log
+        cf.add_cycles(100, stress_amplitude_MPa=50.0, Se_MPa=100.0, Su_MPa=500.0)
+        assert len(cf.cycle_log) == 0
+
+    def test_multiple_stress_levels_additive(self):
+        cf = CumulativeFatigue()
+        cf.add_cycles(1000, stress_amplitude_MPa=150.0, Se_MPa=100.0, Su_MPa=500.0)
+        d_after_first = cf.damage
+        cf.add_cycles(1000, stress_amplitude_MPa=250.0, Se_MPa=100.0, Su_MPa=500.0)
+        assert cf.damage > d_after_first
+
+    def test_zero_Se_returns_no_damage(self):
+        cf = CumulativeFatigue()
+        cf.add_cycles(1000, stress_amplitude_MPa=200.0, Se_MPa=0.0, Su_MPa=500.0)
+        assert cf.damage == pytest.approx(0.0)
+
+    def test_zero_Su_returns_no_damage(self):
+        cf = CumulativeFatigue()
+        cf.add_cycles(1000, stress_amplitude_MPa=200.0, Se_MPa=100.0, Su_MPa=0.0)
+        assert cf.damage == pytest.approx(0.0)

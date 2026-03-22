@@ -677,3 +677,186 @@ class TestDebuggerEdgeCases:
         state2 = debugger.get_current_state()
         # Cycle should have incremented
         assert state2["cycle"] >= state1["cycle"]
+
+
+# ============================================================================
+# SymbolTable extended coverage
+# ============================================================================
+
+
+class TestSymbolTableExtended:
+    """Additional SymbolTable tests: history, boundary, and reset semantics."""
+
+    def test_read_returns_correct_value(self) -> None:
+        st = SymbolTable()
+        st.define_symbol("v", 7.5)
+        assert st.read_symbol("v", cycle=0) == 7.5
+
+    def test_write_then_read_returns_updated_value(self) -> None:
+        st = SymbolTable()
+        st.define_symbol("x", 0.0)
+        st.write_symbol("x", 99.0, cycle=1)
+        assert st.read_symbol("x", cycle=2) == 99.0
+
+    def test_stats_has_read_count(self) -> None:
+        st = SymbolTable()
+        st.define_symbol("x", 1.0)
+        st.read_symbol("x", cycle=0)
+        st.read_symbol("x", cycle=1)
+        stats = st.get_symbol_stats("x")
+        assert stats["read_count"] >= 2
+
+    def test_stats_has_write_count(self) -> None:
+        st = SymbolTable()
+        st.define_symbol("x", 1.0)
+        st.write_symbol("x", 2.0, cycle=1)
+        st.write_symbol("x", 3.0, cycle=2)
+        stats = st.get_symbol_stats("x")
+        assert stats["write_count"] >= 2
+
+    def test_reset_restores_initial_values(self) -> None:
+        """reset() restores initial values but keeps symbols in the table."""
+        st = SymbolTable()
+        st.define_symbol("a", 1.0)
+        st.define_symbol("b", 2.0)
+        st.write_symbol("a", 99.0, cycle=1)
+        st.reset()
+        # Symbols remain but values are restored to initial
+        assert st.get_symbol("a") == pytest.approx(1.0)
+        assert st.get_symbol("b") == pytest.approx(2.0)
+
+    def test_symbol_names_preserved_in_all_symbols(self) -> None:
+        st = SymbolTable()
+        st.define_symbol("alpha", 1.0)
+        st.define_symbol("beta", 2.0)
+        syms = st.get_all_symbols()
+        assert "alpha" in syms
+        assert "beta" in syms
+
+    def test_float_value_precision(self) -> None:
+        st = SymbolTable()
+        st.define_symbol("pi", 3.14159265358979)
+        assert st.get_symbol("pi") == pytest.approx(3.14159265358979)
+
+    def test_read_symbol_raises_for_unknown(self) -> None:
+        st = SymbolTable()
+        with pytest.raises((KeyError, ValueError)):
+            st.read_symbol("unknown", cycle=0)
+
+    def test_write_symbol_raises_for_unknown(self) -> None:
+        st = SymbolTable()
+        with pytest.raises((KeyError, ValueError)):
+            st.write_symbol("unknown", 5.0, cycle=0)
+
+
+# ============================================================================
+# BreakpointManager extended coverage
+# ============================================================================
+
+
+class TestBreakpointManagerExtended:
+    """Additional BreakpointManager tests: list, reset, edge cases."""
+
+    def test_phase_breakpoint_info_has_phase_target(self) -> None:
+        bm = BreakpointManager()
+        bp_id = bm.set_breakpoint(BreakpointType.PHASE, phase_target=MechanicalPhase.CARRY)
+        info = bm.get_breakpoint_info(bp_id)
+        assert "phase_target" in info
+
+    def test_breakpoint_starts_enabled(self) -> None:
+        bm = BreakpointManager()
+        bp_id = bm.set_breakpoint(BreakpointType.CYCLE, cycle_target=10)
+        info = bm.get_breakpoint_info(bp_id)
+        assert info["enabled"] is True
+
+    def test_disabled_breakpoint_info_shows_disabled(self) -> None:
+        bm = BreakpointManager()
+        bp_id = bm.set_breakpoint(BreakpointType.CYCLE, cycle_target=5)
+        bm.disable_breakpoint(bp_id)
+        info = bm.get_breakpoint_info(bp_id)
+        assert info["enabled"] is False
+
+    def test_re_enable_breakpoint(self) -> None:
+        bm = BreakpointManager()
+        bp_id = bm.set_breakpoint(BreakpointType.CYCLE, cycle_target=5)
+        bm.disable_breakpoint(bp_id)
+        bm.enable_breakpoint(bp_id)
+        info = bm.get_breakpoint_info(bp_id)
+        assert info["enabled"] is True
+
+    def test_remove_nonexistent_is_silent(self) -> None:
+        bm = BreakpointManager()
+        # Removing an ID that doesn't exist should not raise
+        bm.remove_breakpoint(9999)  # Should not raise
+
+    def test_hundred_breakpoints_all_unique_ids(self) -> None:
+        bm = BreakpointManager()
+        ids = [bm.set_breakpoint(BreakpointType.CYCLE, cycle_target=i) for i in range(100)]
+        assert len(set(ids)) == 100
+
+
+# ============================================================================
+# Debugger high-level API extended coverage
+# ============================================================================
+
+
+class TestDebuggerHighLevel:
+    """High-level Debugger API tests for variable and breakpoint management."""
+
+    def test_get_current_state_has_cycle_key(self) -> None:
+        machine = DEMachine()
+        debugger = Debugger(machine)
+        state = debugger.get_current_state()
+        assert "cycle" in state
+
+    def test_get_current_state_has_variables_key(self) -> None:
+        machine = DEMachine()
+        debugger = Debugger(machine)
+        state = debugger.get_current_state()
+        assert "variables" in state
+
+    def test_list_variables_empty_at_start(self) -> None:
+        machine = DEMachine()
+        debugger = Debugger(machine)
+        assert debugger.list_variables() == {}
+
+    def test_define_multiple_variables(self) -> None:
+        machine = DEMachine()
+        debugger = Debugger(machine)
+        debugger.define_variable("a", 1.0)
+        debugger.define_variable("b", 2.0)
+        debugger.define_variable("c", 3.0)
+        vs = debugger.list_variables()
+        assert len(vs) == 3
+
+    def test_set_then_get_variable(self) -> None:
+        machine = DEMachine()
+        debugger = Debugger(machine)
+        debugger.define_variable("x", 0.0)
+        debugger.set_variable("x", 42.0)
+        assert debugger.get_variable("x") == pytest.approx(42.0)
+
+    def test_list_breakpoints_empty_initially(self) -> None:
+        machine = DEMachine()
+        debugger = Debugger(machine)
+        assert debugger.list_breakpoints() == []
+
+    def test_set_cycle_breakpoint_appears_in_list(self) -> None:
+        machine = DEMachine()
+        debugger = Debugger(machine)
+        debugger.set_cycle_breakpoint(5)
+        bps = debugger.list_breakpoints()
+        assert len(bps) == 1
+
+    def test_remove_breakpoint_empties_list(self) -> None:
+        machine = DEMachine()
+        debugger = Debugger(machine)
+        bp_id = debugger.set_cycle_breakpoint(5)
+        debugger.remove_breakpoint(bp_id)
+        assert debugger.list_breakpoints() == []
+
+    def test_step_returns_none_or_breakpoint(self) -> None:
+        machine = DEMachine()
+        debugger = Debugger(machine)
+        result = debugger.step_cycle()
+        assert result is None or isinstance(result, (int, list))

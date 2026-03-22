@@ -987,6 +987,232 @@ def test_conditional_branches_have_consistent_timing():
     """All conditional branch opcodes have the same timing cost as JMP."""
     branches = ["JZ", "JNZ", "JLT", "JGT", "JLE", "JGE"]
     for branch in branches:
-        assert (
-            TIMING_TABLE[branch] == TIMING_TABLE["JMP"]
-        ), f"{branch} timing {TIMING_TABLE[branch]} != JMP timing {TIMING_TABLE['JMP']}"
+        assert TIMING_TABLE[branch] == TIMING_TABLE["JMP"], (
+            f"{branch} timing {TIMING_TABLE[branch]} != JMP timing {TIMING_TABLE['JMP']}"
+        )
+
+
+# ============================================================================
+# Class-based tests: Engine register/flag state
+# ============================================================================
+
+
+class TestEngineInitialState:
+    """Engine starts with all registers zero and flags clear."""
+
+    def test_registers_a_b_c_d_zero(self) -> None:
+        eng = Engine()
+        for reg in ("A", "B", "C", "D"):
+            assert eng.registers[reg].to_decimal() == 0.0
+
+    def test_memory_size_is_2000(self) -> None:
+        eng = Engine()
+        assert len(eng.memory) == 2000
+
+    def test_all_memory_zero(self) -> None:
+        eng = Engine()
+        for cell in eng.memory:
+            assert cell.to_decimal() == 0.0
+
+    def test_flags_all_false(self) -> None:
+        eng = Engine()
+        for v in eng.flags.values():
+            assert v is False
+
+    def test_pc_starts_at_zero(self) -> None:
+        eng = Engine()
+        assert eng.PC == 0
+
+    def test_clock_time_starts_zero(self) -> None:
+        eng = Engine()
+        assert eng.clock_time == 0
+
+    def test_result_cards_empty(self) -> None:
+        eng = Engine()
+        assert eng.result_cards == []
+
+    def test_instruction_cards_empty(self) -> None:
+        eng = Engine()
+        assert eng.instruction_cards == []
+
+    def test_return_stack_empty(self) -> None:
+        eng = Engine()
+        assert eng.return_stack == []
+
+    def test_data_stack_empty(self) -> None:
+        eng = Engine()
+        assert eng.data_stack == []
+
+
+class TestEngineALU:
+    """Arithmetic instructions update register A correctly."""
+
+    def test_load_immediate(self) -> None:
+        eng = Engine()
+        eng.execute_instruction(Instruction("LOAD", ["A", "42"]))
+        assert eng.registers["A"].to_decimal() == 42.0
+
+    def test_add_immediate(self) -> None:
+        eng = Engine()
+        eng.execute_instruction(Instruction("LOAD", ["A", "10"]))
+        eng.execute_instruction(Instruction("ADD", ["A", "5"]))
+        assert eng.registers["A"].to_decimal() == 15.0
+
+    def test_sub_immediate(self) -> None:
+        eng = Engine()
+        eng.execute_instruction(Instruction("LOAD", ["A", "20"]))
+        eng.execute_instruction(Instruction("SUB", ["A", "8"]))
+        assert eng.registers["A"].to_decimal() == 12.0
+
+    def test_mult_immediate(self) -> None:
+        eng = Engine()
+        eng.execute_instruction(Instruction("LOAD", ["A", "6"]))
+        eng.execute_instruction(Instruction("MULT", ["A", "7"]))
+        assert eng.registers["A"].to_decimal() == 42.0
+
+    def test_div_immediate(self) -> None:
+        eng = Engine()
+        eng.execute_instruction(Instruction("LOAD", ["A", "100"]))
+        eng.execute_instruction(Instruction("DIV", ["A", "4"]))
+        assert eng.registers["A"].to_decimal() == pytest.approx(25.0)
+
+    def test_neg_instruction(self) -> None:
+        eng = Engine()
+        eng.execute_instruction(Instruction("LOAD", ["A", "5"]))
+        eng.execute_instruction(Instruction("NEG", ["A"]))
+        assert eng.registers["A"].to_decimal() == pytest.approx(-5.0)
+
+    def test_abs_instruction_positive(self) -> None:
+        eng = Engine()
+        eng.execute_instruction(Instruction("LOAD", ["A", "7"]))
+        eng.execute_instruction(Instruction("ABS", ["A"]))
+        assert eng.registers["A"].to_decimal() == pytest.approx(7.0)
+
+    def test_abs_instruction_negative(self) -> None:
+        eng = Engine()
+        eng.execute_instruction(Instruction("LOAD", ["A", "-3"]))
+        eng.execute_instruction(Instruction("ABS", ["A"]))
+        assert eng.registers["A"].to_decimal() == pytest.approx(3.0)
+
+
+class TestEngineCMPFlags:
+    """CMP sets GREATER/LESS/EQUAL flags correctly."""
+
+    def test_cmp_equal_sets_equal_flag(self) -> None:
+        eng = Engine()
+        eng.execute_instruction(Instruction("LOAD", ["A", "5"]))
+        eng.execute_instruction(Instruction("CMP", ["A", "5"]))
+        assert eng.flags["EQUAL"] is True
+        assert eng.flags["LESS"] is False
+        assert eng.flags["GREATER"] is False
+
+    def test_cmp_greater_sets_greater_flag(self) -> None:
+        eng = Engine()
+        eng.execute_instruction(Instruction("LOAD", ["A", "10"]))
+        eng.execute_instruction(Instruction("CMP", ["A", "3"]))
+        assert eng.flags["GREATER"] is True
+        assert eng.flags["EQUAL"] is False
+        assert eng.flags["LESS"] is False
+
+    def test_cmp_less_sets_less_flag(self) -> None:
+        eng = Engine()
+        eng.execute_instruction(Instruction("LOAD", ["A", "2"]))
+        eng.execute_instruction(Instruction("CMP", ["A", "8"]))
+        assert eng.flags["LESS"] is True
+        assert eng.flags["EQUAL"] is False
+        assert eng.flags["GREATER"] is False
+
+    def test_zero_flag_set_after_sub_to_zero(self) -> None:
+        eng = Engine()
+        eng.execute_instruction(Instruction("LOAD", ["A", "5"]))
+        eng.execute_instruction(Instruction("SUB", ["A", "5"]))
+        assert eng.flags["ZERO"] is True
+
+
+class TestEngineCMPZ:
+    """CMPZ compares A against zero."""
+
+    def test_cmpz_zero_sets_equal(self) -> None:
+        eng = Engine()
+        eng.execute_instruction(Instruction("LOAD", ["A", "0"]))
+        eng.execute_instruction(Instruction("CMPZ", ["A"]))
+        assert eng.flags["EQUAL"] is True
+
+    def test_cmpz_positive_sets_greater(self) -> None:
+        eng = Engine()
+        eng.execute_instruction(Instruction("LOAD", ["A", "5"]))
+        eng.execute_instruction(Instruction("CMPZ", ["A"]))
+        assert eng.flags["GREATER"] is True
+
+    def test_cmpz_negative_sets_less(self) -> None:
+        eng = Engine()
+        eng.execute_instruction(Instruction("LOAD", ["A", "-3"]))
+        eng.execute_instruction(Instruction("CMPZ", ["A"]))
+        assert eng.flags["LESS"] is True
+
+
+class TestEngineCLR:
+    """CLR zeroes a register."""
+
+    def test_clr_zeroes_a(self) -> None:
+        eng = Engine()
+        eng.execute_instruction(Instruction("LOAD", ["A", "99"]))
+        eng.execute_instruction(Instruction("CLR", ["A"]))
+        assert eng.registers["A"].to_decimal() == 0.0
+
+    def test_clr_sets_zero_flag(self) -> None:
+        eng = Engine()
+        eng.execute_instruction(Instruction("LOAD", ["A", "7"]))
+        eng.execute_instruction(Instruction("CLR", ["A"]))
+        assert eng.flags["ZERO"] is True
+
+
+class TestEngineSTEPAndPRINT:
+    """STEP is a NOP; PRINT routes to result_cards."""
+
+    def test_step_does_not_raise(self) -> None:
+        eng = Engine()
+        eng.execute_instruction(Instruction("STEP", []))
+
+    def test_print_adds_to_result_cards(self) -> None:
+        eng = Engine()
+        eng.execute_instruction(Instruction("LOAD", ["A", "42"]))
+        eng.execute_instruction(Instruction("PRINT", ["A"]))
+        assert len(eng.result_cards) >= 1
+
+    def test_wrprn_also_adds_to_result_cards(self) -> None:
+        eng = Engine()
+        eng.execute_instruction(Instruction("LOAD", ["A", "7"]))
+        eng.execute_instruction(Instruction("WRPRN", ["A"]))
+        assert len(eng.result_cards) >= 1
+
+
+class TestEngineMOV:
+    """MOV copies between registers."""
+
+    def test_mov_reg_to_reg(self) -> None:
+        eng = Engine()
+        eng.execute_instruction(Instruction("LOAD", ["A", "77"]))
+        eng.execute_instruction(Instruction("MOV", ["B", "A"]))
+        assert eng.registers["B"].to_decimal() == 77.0
+
+    def test_mov_immediate(self) -> None:
+        eng = Engine()
+        eng.execute_instruction(Instruction("MOV", ["C", "33"]))
+        assert eng.registers["C"].to_decimal() == 33.0
+
+
+class TestEngineSHLSHR:
+    """SHL/SHR shift A left/right by N decimal places."""
+
+    def test_shl_multiplies_by_ten(self) -> None:
+        eng = Engine()
+        eng.execute_instruction(Instruction("LOAD", ["A", "5"]))
+        eng.execute_instruction(Instruction("SHL", ["A", "1"]))
+        assert eng.registers["A"].to_decimal() == pytest.approx(50.0)
+
+    def test_shr_divides_by_ten(self) -> None:
+        eng = Engine()
+        eng.execute_instruction(Instruction("LOAD", ["A", "50"]))
+        eng.execute_instruction(Instruction("SHR", ["A", "1"]))
+        assert eng.registers["A"].to_decimal() == pytest.approx(5.0)

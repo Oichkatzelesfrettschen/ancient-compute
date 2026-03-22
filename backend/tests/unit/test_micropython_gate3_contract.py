@@ -64,11 +64,11 @@ class TestMicroPythonContract:
 
     def test_while_loop(self):
         """While loop with accumulator."""
-        _ok("s = 0\n" "i = 1\n" "while i <= 10:\n" "    s += i\n" "    i += 1\n" "print(s)")
+        _ok("s = 0\ni = 1\nwhile i <= 10:\n    s += i\n    i += 1\nprint(s)")
 
     def test_for_range_loop(self):
         """For loop over range()."""
-        _ok("total = 0\n" "for i in range(5):\n" "    total += i\n" "print(total)")
+        _ok("total = 0\nfor i in range(5):\n    total += i\nprint(total)")
 
     def test_recursive_factorial(self):
         """Recursive factorial."""
@@ -86,7 +86,7 @@ class TestMicroPythonContract:
 
     def test_generator(self):
         """Generator function with yield."""
-        _ok("def gen(n):\n" "    for i in range(n):\n" "        yield i\n" "print(list(gen(4)))")
+        _ok("def gen(n):\n    for i in range(n):\n        yield i\nprint(list(gen(4)))")
 
     def test_closure(self):
         """Closure capturing outer variable."""
@@ -166,3 +166,66 @@ class TestMicroPythonRejectedPrograms:
 
         r = _run("x = 1")
         assert r.status == ExecutionStatus.SUCCESS
+
+
+class TestMicroPythonContractExtended:
+    """Additional MicroPython program patterns that must succeed."""
+
+    def test_string_concatenation(self) -> None:
+        _ok('print("hello" + " " + "world")')
+
+    def test_integer_floor_division(self) -> None:
+        _ok("print(7 // 2)")
+
+    def test_boolean_and_expression(self) -> None:
+        _ok("print(True and False)")
+
+    def test_tuple_indexing(self) -> None:
+        _ok("t = (10, 20, 30)\nprint(t[1])")
+
+    def test_dict_access(self) -> None:
+        _ok('d = {"key": 42}\nprint(d["key"])')
+
+    def test_list_len(self) -> None:
+        _ok("lst = [1, 2, 3, 4, 5]\nprint(len(lst))")
+
+    def test_power_operator(self) -> None:
+        _ok("print(2 ** 10)")
+
+
+class TestMicroPythonOutputValues:
+    """Verify correct stdout values from MicroPython programs."""
+
+    def test_string_concat_output(self) -> None:
+        r = _run('print("foo" + "bar")')
+        assert "foobar" in r.stdout
+
+    def test_floor_division_result(self) -> None:
+        r = _run("print(7 // 2)")
+        assert "3" in r.stdout
+
+    def test_power_result_1024(self) -> None:
+        r = _run("print(2 ** 10)")
+        assert "1024" in r.stdout
+
+    def test_tuple_index_result(self) -> None:
+        r = _run("t = (10, 20, 30)\nprint(t[1])")
+        assert "20" in r.stdout
+
+    def test_dict_access_result(self) -> None:
+        r = _run('d = {"x": 99}\nprint(d["x"])')
+        assert "99" in r.stdout
+
+    def test_recursive_fibonacci_8_is_21(self) -> None:
+        r = _run(
+            "def fib(n):\n"
+            "    if n < 2:\n"
+            "        return n\n"
+            "    return fib(n-1) + fib(n-2)\n"
+            "print(fib(8))"
+        )
+        assert "21" in r.stdout
+
+    def test_list_sum_15(self) -> None:
+        r = _run("s = 0\nfor x in [1, 2, 3, 4, 5]:\n    s += x\nprint(s)")
+        assert "15" in r.stdout

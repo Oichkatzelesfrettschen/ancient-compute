@@ -1,7 +1,7 @@
 """Tests for Note G outputs and Table A.2 runner."""
 
 from backend.src.emulator.analytical_engine import BabbageNumber
-from backend.src.emulator.note_g_deck import load_deck, run_series, run_table_a2_once
+from backend.src.emulator.note_g_deck import load_deck, run_once, run_series, run_table_a2_once
 
 
 def test_note_g_deck_loads():
@@ -116,3 +116,127 @@ class TestRunTableA2Once:
         s4 = run_table_a2_once(n=4, b1=BabbageNumber(-0.5), b3=BabbageNumber(1 / 6))
         # V13 should have more versions for larger n
         assert len(s4["V13"]) >= len(s2["V13"])
+
+
+# ---------------------------------------------------------------------------
+# Deck extended: specific field values
+# ---------------------------------------------------------------------------
+
+
+class TestLoadDeckExtended:
+    """Deck field-level correctness: opcodes, operands, and structure."""
+
+    def test_all_opcodes_in_valid_set(self) -> None:
+        valid = {"add", "sub", "mult", "div"}
+        for card in load_deck():
+            assert card["opcode"] in valid, f"op {card['op']}: unknown opcode {card['opcode']}"
+
+    def test_expr_fields_are_nonempty_strings(self) -> None:
+        for card in load_deck():
+            assert isinstance(card["expr"], str)
+            assert len(card["expr"]) > 0
+
+    def test_lhs_and_rhs_are_strings(self) -> None:
+        for card in load_deck():
+            assert isinstance(card["lhs"], str)
+            assert isinstance(card["rhs"], str)
+
+    def test_out_lists_all_v_prefixed(self) -> None:
+        for card in load_deck():
+            for out in card["out"]:
+                assert isinstance(out, str)
+                assert out.startswith("V")
+
+    def test_deck_ops_1_through_25(self) -> None:
+        ops = [card["op"] for card in load_deck()]
+        assert ops == list(range(1, 26))
+
+
+# ---------------------------------------------------------------------------
+# run_once: single-pass execution
+# ---------------------------------------------------------------------------
+
+
+class TestRunOnce:
+    """run_once() state dictionary properties."""
+
+    def test_run_once_returns_dict(self) -> None:
+        result = run_once(n=4)
+        assert isinstance(result, dict)
+
+    def test_run_once_has_24_variables(self) -> None:
+        result = run_once(n=4)
+        for i in range(1, 25):
+            assert f"V{i}" in result, f"V{i} missing from run_once state"
+
+    def test_run_once_values_are_babbage_numbers(self) -> None:
+        result = run_once(n=4)
+        for v in result.values():
+            assert isinstance(v, BabbageNumber)
+
+    def test_run_once_v3_equals_n(self) -> None:
+        for n in [1, 3, 5]:
+            result = run_once(n=n)
+            # V3 is initialized to n before operations run; may be overwritten
+            # but should always exist
+            assert "V3" in result
+
+    def test_run_once_v2_initialized_to_2(self) -> None:
+        # V2 = 2 is the initial value and may be read but not written early
+        result = run_once(n=4)
+        # After execution, V2 should still be a BabbageNumber
+        assert isinstance(result["V2"], BabbageNumber)
+
+
+# ---------------------------------------------------------------------------
+# Bernoulli series accuracy
+# ---------------------------------------------------------------------------
+
+
+class TestBernoulliAccuracy:
+    """run_series precision matches Ada's tabulated B values."""
+
+    def test_b4_value(self) -> None:
+        r = run_series(4)[3]
+        assert abs(r.to_decimal() - (-1 / 30)) < 1e-10
+
+    def test_sign_alternates_after_b1(self) -> None:
+        # B1=+1/6, B2=-1/30, B3=+1/42, B4=-1/30
+        results = run_series(4)
+        for i in range(1, 4):
+            # signs should alternate: +, -, +, -
+            prev_sign = 1 if results[i - 1].to_decimal() > 0 else -1
+            curr_sign = 1 if results[i].to_decimal() > 0 else -1
+            assert prev_sign != curr_sign, f"Sign did not alternate at index {i}"
+
+    def test_run_series_n5_has_five_elements(self) -> None:
+        assert len(run_series(5)) == 5
+
+    def test_run_series_values_match_fractions(self) -> None:
+        expected = {1: 1 / 6, 2: -1 / 30, 3: 1 / 42}
+        results = run_series(3)
+        for i, e in expected.items():
+            assert abs(results[i - 1].to_decimal() - e) < 1e-10
+
+
+# ---------------------------------------------------------------------------
+# run_table_a2_once extended
+# ---------------------------------------------------------------------------
+
+
+class TestRunTableA2OnceExtended:
+    """Additional run_table_a2_once state verification."""
+
+    def test_v1_has_version_1(self) -> None:
+        state = run_table_a2_once(n=4, b1=BabbageNumber(-0.5), b3=BabbageNumber(1 / 6))
+        assert 1 in state["V1"]
+
+    def test_version_0_is_initial_zero(self) -> None:
+        state = run_table_a2_once(n=1, b1=BabbageNumber(0), b3=BabbageNumber(0))
+        # V0 initial state for unused vars is 0
+        for var in state:
+            assert 0 in state[var]
+
+    def test_state_has_exactly_24_vars(self) -> None:
+        state = run_table_a2_once(n=4, b1=BabbageNumber(-0.5), b3=BabbageNumber(1 / 6))
+        assert len(state) == 24

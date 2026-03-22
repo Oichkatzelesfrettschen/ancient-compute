@@ -274,3 +274,32 @@ class TestEngineMemoryOps:
         engine.execute_instruction(Instruction("LOAD", ["A", "42"]))
         assert engine.registers["A"].to_decimal() == 42.0
         assert engine.memory[0].to_decimal() == 0.0
+
+
+class TestEngineStackOps:
+    """PUSH/POP stack behavior and register independence."""
+
+    def test_push_single_value_stack_length_one(self) -> None:
+        engine = Engine()
+        engine.registers["A"] = BabbageNumber(55)
+        engine.execute_instruction(Instruction("PUSH", ["A"]))
+        assert len(engine.data_stack) == 1
+
+    def test_pop_to_different_register(self) -> None:
+        engine = Engine()
+        engine.registers["A"] = BabbageNumber(88)
+        engine.execute_instruction(Instruction("PUSH", ["A"]))
+        engine.execute_instruction(Instruction("POP", ["D"]))
+        assert engine.registers["D"].to_decimal() == 88.0
+
+    def test_nop_does_not_change_registers(self) -> None:
+        engine = Engine()
+        engine.registers["A"] = BabbageNumber(12)
+        engine.execute_instruction(Instruction("NOP"))
+        assert engine.registers["A"].to_decimal() == 12.0
+
+    def test_load_zero_clears_register(self) -> None:
+        engine = Engine()
+        engine.registers["A"] = BabbageNumber(999)
+        engine.execute_instruction(Instruction("LOAD", ["A", "0"]))
+        assert engine.registers["A"].to_decimal() == 0.0

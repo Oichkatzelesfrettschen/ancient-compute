@@ -157,3 +157,152 @@ class TestQuipuEmulatorStateConsistency:
         emu.encode_number("debt", -50)
         assert emu.decode_number("debt") == [-50]
         assert emu.sum_by_category("debt") == -50
+
+
+class TestQuipuEdgeCases:
+    """Edge cases: special category names, extreme values, many records."""
+
+    def test_category_with_spaces(self) -> None:
+        emu = QuipuEmulator()
+        emu.encode_number("llama wool", 42)
+        assert emu.decode_number("llama wool") == [42]
+
+    def test_category_with_numbers(self) -> None:
+        emu = QuipuEmulator()
+        emu.encode_number("row_1", 5)
+        assert emu.decode_number("row_1") == [5]
+
+    def test_encode_many_records_same_category(self) -> None:
+        emu = QuipuEmulator()
+        for i in range(50):
+            emu.encode_number("K", i)
+        vals = emu.decode_number("K")
+        assert len(vals) == 50
+        assert vals == list(range(50))
+
+    def test_encode_large_positive(self) -> None:
+        emu = QuipuEmulator()
+        emu.encode_number("tribute", 999_999_999)
+        assert emu.sum_by_category("tribute") == 999_999_999
+
+    def test_encode_large_negative(self) -> None:
+        emu = QuipuEmulator()
+        emu.encode_number("debt", -999_999_999)
+        assert emu.sum_by_category("debt") == -999_999_999
+
+    def test_mixed_sign_sum(self) -> None:
+        emu = QuipuEmulator()
+        emu.encode_number("balance", 100)
+        emu.encode_number("balance", -30)
+        emu.encode_number("balance", 50)
+        assert emu.sum_by_category("balance") == 120
+
+    def test_many_categories_do_not_interfere(self) -> None:
+        emu = QuipuEmulator()
+        categories = [f"cat_{i}" for i in range(20)]
+        for i, cat in enumerate(categories):
+            emu.encode_number(cat, i * 10)
+        for i, cat in enumerate(categories):
+            assert emu.sum_by_category(cat) == i * 10
+
+    def test_state_records_count_matches_encode_count(self) -> None:
+        emu = QuipuEmulator()
+        n = 15
+        for i in range(n):
+            emu.encode_number("X", i)
+        assert len(emu.state()["records"]) == n
+
+    def test_decode_empty_after_reset_all_categories(self) -> None:
+        emu = QuipuEmulator()
+        for c in ["A", "B", "C"]:
+            emu.encode_number(c, 1)
+        emu.reset()
+        for c in ["A", "B", "C"]:
+            assert emu.decode_number(c) == []
+
+
+class TestQuipuStateCopy:
+    """Verify state() returns a snapshot, not a live reference."""
+
+    def test_state_records_is_independent_copy(self) -> None:
+        emu = QuipuEmulator()
+        emu.encode_number("X", 1)
+        snapshot = emu.state()["records"]
+        # Mutate the snapshot; internal state should be unaffected.
+        snapshot.append({"category": "INJECT", "value": 999})
+        assert len(emu.state()["records"]) == 1
+
+    def test_state_record_dict_structure(self) -> None:
+        emu = QuipuEmulator()
+        emu.encode_number("corn", 7)
+        rec = emu.state()["records"][0]
+        assert set(rec.keys()) >= {"category", "value"}
+
+    def test_state_record_category_is_string(self) -> None:
+        emu = QuipuEmulator()
+        emu.encode_number("wool", 3)
+        rec = emu.state()["records"][0]
+        assert isinstance(rec["category"], str)
+
+    def test_state_record_value_matches_encoded(self) -> None:
+        emu = QuipuEmulator()
+        emu.encode_number("tribute", 77)
+        rec = emu.state()["records"][0]
+        assert int(rec["value"]) == 77
+
+    def test_fresh_state_after_reset(self) -> None:
+        emu = QuipuEmulator()
+        emu.encode_number("A", 5)
+        emu.encode_number("B", 10)
+        emu.reset()
+        s = emu.state()
+        assert s["records"] == []
+
+
+class TestQuipuSumProperties:
+    """Sum semantics: empty, independent categories, order independence."""
+
+    def test_sum_no_records_is_zero(self) -> None:
+        emu = QuipuEmulator()
+        assert emu.sum_by_category("any") == 0
+
+    def test_sum_single_record(self) -> None:
+        emu = QuipuEmulator()
+        emu.encode_number("gold", 42)
+        assert emu.sum_by_category("gold") == 42
+
+    def test_sum_two_categories_independent(self) -> None:
+        emu = QuipuEmulator()
+        emu.encode_number("gold", 10)
+        emu.encode_number("silver", 20)
+        assert emu.sum_by_category("gold") == 10
+        assert emu.sum_by_category("silver") == 20
+
+    def test_sum_sequence_1_to_100(self) -> None:
+        emu = QuipuEmulator()
+        for i in range(1, 101):
+            emu.encode_number("seq", i)
+        assert emu.sum_by_category("seq") == 5050
+
+    def test_sum_all_zeros_is_zero(self) -> None:
+        emu = QuipuEmulator()
+        for _ in range(5):
+            emu.encode_number("z", 0)
+        assert emu.sum_by_category("z") == 0
+
+    def test_decode_length_matches_encode_count(self) -> None:
+        emu = QuipuEmulator()
+        for i in range(8):
+            emu.encode_number("cat", i)
+        assert len(emu.decode_number("cat")) == 8
+
+    def test_sum_after_many_mixed_categories(self) -> None:
+        emu = QuipuEmulator()
+        emu.encode_number("A", 3)
+        emu.encode_number("B", 7)
+        emu.encode_number("A", 4)
+        emu.encode_number("C", 10)
+        emu.encode_number("A", 3)
+        assert emu.sum_by_category("A") == 10
+        assert emu.sum_by_category("B") == 7
+        assert emu.sum_by_category("C") == 10

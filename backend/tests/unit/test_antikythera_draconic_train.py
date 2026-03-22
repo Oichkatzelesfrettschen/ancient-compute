@@ -168,3 +168,77 @@ class TestDraconicModelComposition:
         train = draconic_pointer_train_from_arxiv_2104_06181()
         angles = train.propagate(1.0, "b1")
         assert "s1" not in angles  # b1 only reaches a1 via first stage
+
+
+class TestDraconicTrainGearNames:
+    """Structural and naming properties of the draconic train edges."""
+
+    def test_factory_returns_gear_train_instance(self) -> None:
+        train = draconic_pointer_train_from_arxiv_2104_06181()
+        assert isinstance(train, GearTrain)
+
+    def test_edges_attribute_is_list(self) -> None:
+        train = draconic_pointer_train_from_arxiv_2104_06181()
+        assert isinstance(train.edges, list)
+
+    def test_all_edge_sources_are_strings(self) -> None:
+        train = draconic_pointer_train_from_arxiv_2104_06181()
+        for edge in train.edges:
+            assert isinstance(edge.src, str)
+
+    def test_all_edge_destinations_are_strings(self) -> None:
+        train = draconic_pointer_train_from_arxiv_2104_06181()
+        for edge in train.edges:
+            assert isinstance(edge.dst, str)
+
+    def test_all_edge_ratios_are_numeric(self) -> None:
+        train = draconic_pointer_train_from_arxiv_2104_06181()
+        for edge in train.edges:
+            assert isinstance(edge.ratio, (int, float))
+
+    def test_b1_to_a1_edge_exists(self) -> None:
+        train = draconic_pointer_train_from_arxiv_2104_06181()
+        b1_to_a1 = [e for e in train.edges if e.src == "b1" and e.dst == "a1"]
+        assert len(b1_to_a1) == 1
+
+    def test_r1_to_s1_edge_exists(self) -> None:
+        train = draconic_pointer_train_from_arxiv_2104_06181()
+        r1_to_s1 = [e for e in train.edges if e.src == "r1" and e.dst == "s1"]
+        assert len(r1_to_s1) == 1
+
+
+class TestDraconicModelConsistency:
+    """Additional consistency and linearity properties of AntikytheraDraconicModel."""
+
+    def test_half_revolution_gives_half_draconic_pointer(self) -> None:
+        m = AntikytheraDraconicModel()
+        full = m.draconic_pointer_rotations_per_b1_rotation()
+        train = draconic_pointer_train_from_arxiv_2104_06181()
+        a1_half = train.propagate(0.5, "b1")["a1"]
+        s1_half = abs(train.propagate(a1_half, "r1")["s1"])
+        assert math.isclose(s1_half, full / 2.0, rel_tol=1e-9)
+
+    def test_b1_to_a1_ratio_greater_than_one(self) -> None:
+        train = draconic_pointer_train_from_arxiv_2104_06181()
+        angles = train.propagate(1.0, "b1")
+        assert angles["a1"] > 1.0
+
+    def test_r1_propagation_does_not_reach_a1(self) -> None:
+        train = draconic_pointer_train_from_arxiv_2104_06181()
+        angles = train.propagate(1.0, "r1")
+        assert "a1" not in angles
+
+    def test_b1_propagation_does_not_reach_s1(self) -> None:
+        train = draconic_pointer_train_from_arxiv_2104_06181()
+        angles = train.propagate(1.0, "b1")
+        assert "s1" not in angles
+
+    def test_b1_propagation_result_has_two_gears(self) -> None:
+        train = draconic_pointer_train_from_arxiv_2104_06181()
+        angles = train.propagate(1.0, "b1")
+        assert len(angles) == 2  # b1 and a1 only
+
+    def test_r1_propagation_result_has_two_gears(self) -> None:
+        train = draconic_pointer_train_from_arxiv_2104_06181()
+        angles = train.propagate(1.0, "r1")
+        assert len(angles) == 2  # r1 and s1 only

@@ -169,3 +169,94 @@ async def test_python_service_returns_status() -> None:
     executor = get_executor("python")
     result = await executor.execute("x = 42")
     assert result.status is not None
+
+
+class TestGetExecutorExtended:
+    """Additional factory coverage: all aliases, edge cases."""
+
+    def test_c_executor_type(self) -> None:
+        assert isinstance(get_executor("c"), CService)
+
+    def test_python_executor_type(self) -> None:
+        assert isinstance(get_executor("python"), PythonService)
+
+    def test_haskell_executor_type(self) -> None:
+        assert isinstance(get_executor("haskell"), HaskellService)
+
+    def test_lisp_executor_type(self) -> None:
+        assert isinstance(get_executor("lisp"), LISPService)
+
+    def test_idris_executor_type(self) -> None:
+        assert isinstance(get_executor("idris"), IDRISService)
+
+    def test_systemf_executor_type(self) -> None:
+        assert isinstance(get_executor("systemf"), SystemFService)
+
+    def test_java_executor_type(self) -> None:
+        assert isinstance(get_executor("java"), JavaService)
+
+    def test_uppercase_c_returns_c_service(self) -> None:
+        assert isinstance(get_executor("C"), CService)
+
+    def test_uppercase_python_returns_python_service(self) -> None:
+        assert isinstance(get_executor("PYTHON"), PythonService)
+
+    def test_none_not_returned_for_known_langs(self) -> None:
+        supported = (
+            "c", "python", "haskell", "lisp", "idris", "idris2", "systemf", "system-f", "java"
+        )
+        for lang in supported:
+            assert get_executor(lang) is not None, f"Expected non-None for {lang!r}"
+
+    def test_get_executor_unknown_returns_none(self) -> None:
+        for lang in ("fortran", "ada", "cobol", "perl", "ruby"):
+            assert get_executor(lang) is None, f"Expected None for {lang!r}"
+
+    def test_executor_has_execute_attribute(self) -> None:
+        for lang in ("c", "python", "haskell"):
+            svc = get_executor(lang)
+            assert hasattr(svc, "execute"), f"{lang} executor missing .execute()"
+
+    def test_system_f_aliases_same_class(self) -> None:
+        e1 = get_executor("systemf")
+        e2 = get_executor("system-f")
+        assert type(e1) is type(e2)
+
+    def test_idris_and_idris2_same_class(self) -> None:
+        e1 = get_executor("idris")
+        e2 = get_executor("idris2")
+        assert type(e1) is type(e2)
+
+
+class TestExecutorServiceInterface:
+    """All executors expose a consistent async execute() interface."""
+
+    def test_c_executor_has_execute_coroutine(self) -> None:
+        import inspect
+
+        svc = get_executor("c")
+        assert inspect.iscoroutinefunction(svc.execute)
+
+    def test_python_executor_has_execute_coroutine(self) -> None:
+        import inspect
+
+        svc = get_executor("python")
+        assert inspect.iscoroutinefunction(svc.execute)
+
+    def test_haskell_executor_has_execute_coroutine(self) -> None:
+        import inspect
+
+        svc = get_executor("haskell")
+        assert inspect.iscoroutinefunction(svc.execute)
+
+    def test_lisp_executor_has_execute_coroutine(self) -> None:
+        import inspect
+
+        svc = get_executor("lisp")
+        assert inspect.iscoroutinefunction(svc.execute)
+
+    def test_java_executor_has_execute_coroutine(self) -> None:
+        import inspect
+
+        svc = get_executor("java")
+        assert inspect.iscoroutinefunction(svc.execute)

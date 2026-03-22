@@ -204,3 +204,99 @@ class TestExecutionCacheEviction:
 
 # pytest import needed for approx
 import pytest  # noqa: E402 -- must follow class definitions
+
+
+class TestCacheEntryEdgeCases:
+    def test_age_seconds_positive_for_old_entry(self) -> None:
+        entry = CacheEntry(result=_result(), created_at=time.time() - 10, ttl_seconds=60)
+        assert entry.age_seconds() >= 10
+
+    def test_not_expired_before_ttl_boundary(self) -> None:
+        entry = CacheEntry(result=_result(), created_at=time.time() - 59, ttl_seconds=60)
+        assert entry.is_expired() is False
+
+    def test_expired_after_ttl_boundary(self) -> None:
+        entry = CacheEntry(result=_result(), created_at=time.time() - 61, ttl_seconds=60)
+        assert entry.is_expired() is True
+
+    def test_entry_stores_result_stdout(self) -> None:
+        r = _result(stdout="expected_output")
+        entry = CacheEntry(result=r, created_at=time.time(), ttl_seconds=60)
+        assert entry.result.stdout == "expected_output"
+
+    def test_very_old_entry_is_expired(self) -> None:
+        entry = CacheEntry(result=_result(), created_at=time.time() - 86400, ttl_seconds=3600)
+        assert entry.is_expired() is True
+
+    def test_age_seconds_near_zero_for_fresh_entry(self) -> None:
+        entry = CacheEntry(result=_result(), created_at=time.time(), ttl_seconds=60)
+        assert entry.age_seconds() < 5
+
+
+class TestExecutionCacheCrossLanguage:
+    def test_same_code_different_languages_independent(self) -> None:
+        cache = ExecutionCache()
+        cache.set("python", "x = 1", _result(stdout="py"))
+        cache.set("c", "x = 1", _result(stdout="c"))
+        assert cache.get("python", "x = 1").stdout == "py"
+        assert cache.get("c", "x = 1").stdout == "c"
+
+    def test_input_data_differentiates_cache_entries(self) -> None:
+        cache = ExecutionCache()
+        cache.set("c", "code", _result(stdout="a"), input_data="a")
+        cache.set("c", "code", _result(stdout="b"), input_data="b")
+        assert cache.get("c", "code", input_data="a").stdout == "a"
+        assert cache.get("c", "code", input_data="b").stdout == "b"
+
+    def test_get_stats_includes_entries_key(self) -> None:
+        cache = ExecutionCache()
+        cache.set("python", "a", _result())
+        cache.set("python", "b", _result())
+        stats = cache.get_stats()
+        assert "entries" in stats
+        assert stats["entries"] == 2
+
+    def test_stats_total_requests_counts_all_operations(self) -> None:
+        cache = ExecutionCache()
+        cache.set("python", "code", _result())
+        cache.get("python", "code")   # hit
+        cache.get("python", "other")  # miss
+        cache.get("python", "third")  # miss
+        assert cache.get_stats()["total_requests"] == 3
+
+    def test_cache_entries_zero_after_clear(self) -> None:
+        cache = ExecutionCache()
+        cache.set("python", "x", _result())
+        cache.clear()
+        assert cache.get_stats()["entries"] == 0
+
+    def test_repeated_gets_return_consistent_result(self) -> None:
+        cache = ExecutionCache()
+        cache.set("python", "stable", _result(stdout="stable"))
+        for _ in range(5):
+            r = cache.get("python", "stable")
+            assert r is not None
+            assert r.stdout == "stable"
+
+    def test_set_overwrites_previous_entry(self) -> None:
+        cache = ExecutionCache()
+        cache.set("python", "code", _result(stdout="v1"))
+        cache.set("python", "code", _result(stdout="v2"))
+        r = cache.get("python", "code")
+        assert r is not None
+        assert r.stdout == "v2"
+
+    def test_get_returns_none_after_clear(self) -> None:
+        cache = ExecutionCache()
+        cache.set("python", "code", _result())
+        cache.clear()
+        assert cache.get("python", "code") is None
+
+    def test_three_languages_cache_independently(self) -> None:
+        cache = ExecutionCache()
+        for lang in ("python", "c", "haskell"):
+            cache.set(lang, "code", _result(stdout=lang))
+        for lang in ("python", "c", "haskell"):
+            r = cache.get(lang, "code")
+            assert r is not None
+            assert r.stdout == lang

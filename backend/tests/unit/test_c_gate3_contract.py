@@ -92,25 +92,11 @@ class TestCFreestandingContract:
 
     def test_while_countdown(self):
         """While loop decrementing a parameter."""
-        _ok(
-            "int countdown(int n) {\n"
-            "  while (n > 0) {\n"
-            "    n = n - 1;\n"
-            "  }\n"
-            "  return n;\n"
-            "}"
-        )
+        _ok("int countdown(int n) {\n  while (n > 0) {\n    n = n - 1;\n  }\n  return n;\n}")
 
     def test_recursive_factorial(self):
         """Recursive factorial (tail recursion via parameter arithmetic)."""
-        _ok(
-            "int fact(int n) {\n"
-            "  if (n <= 1) {\n"
-            "    return 1;\n"
-            "  }\n"
-            "  return n * fact(n - 1);\n"
-            "}"
-        )
+        _ok("int fact(int n) {\n  if (n <= 1) {\n    return 1;\n  }\n  return n * fact(n - 1);\n}")
 
     def test_recursive_fibonacci(self):
         """Double recursion Fibonacci."""
@@ -191,7 +177,7 @@ class TestCFreestandingAdditional:
     """Additional C freestanding programs."""
 
     def test_max_function(self) -> None:
-        _ok("int max2(int a, int b) {\n" "  if (a > b) { return a; }\n" "  return b;\n" "}")
+        _ok("int max2(int a, int b) {\n  if (a > b) { return a; }\n  return b;\n}")
 
     def test_recursive_power(self) -> None:
         _ok(
@@ -212,3 +198,64 @@ class TestCFreestandingAdditional:
             "  return ack(m - 1, ack(m, n - 1));\n"
             "}"
         )
+
+
+class TestCFreestandingLocalVarRejected:
+    """Local variable declarations inside C function bodies must produce COMPILE_ERROR."""
+
+    def test_local_int_decl_rejected(self) -> None:
+        _err("int f(int x) { int y = 5; return x + y; }")
+
+    def test_local_float_decl_rejected(self) -> None:
+        _err("float f(float x) { float y = 1.0; return x + y; }")
+
+    def test_local_loop_counter_decl_rejected(self) -> None:
+        _err(
+            "int sum(int n) {\n"
+            "  int s = 0;\n"
+            "  int i = 1;\n"
+            "  while (i <= n) { s = s + i; i = i + 1; }\n"
+            "  return s;\n"
+            "}"
+        )
+
+    def test_local_decl_in_if_branch_rejected(self) -> None:
+        _err("int f(int x) { if (x > 0) { int pos = x; return pos; } return 0; }")
+
+
+class TestCFreestandingReturnExpressions:
+    """Various return expression patterns that must compile successfully."""
+
+    def test_return_constant_zero(self) -> None:
+        _ok("int zero() { return 0; }")
+
+    def test_return_constant_negative_one(self) -> None:
+        _ok("int neg() { return -1; }")
+
+    def test_return_param_times_constant(self) -> None:
+        _ok("int double_val(int x) { return x * 2; }")
+
+    def test_return_division_by_two(self) -> None:
+        _ok("int half(int x) { return x / 2; }")
+
+    def test_return_param_minus_param(self) -> None:
+        _ok("int diff(int a, int b) { return a - b; }")
+
+
+class TestCFreestandingComparisonOps:
+    """All comparison operators compile correctly in if-branch conditions."""
+
+    def test_not_equal_compiles(self) -> None:
+        _ok("int neq(int a, int b) { if (a != b) { return 1; } return 0; }")
+
+    def test_less_than_compiles(self) -> None:
+        _ok("int lt(int a, int b) { if (a < b) { return 1; } return 0; }")
+
+    def test_greater_equal_compiles(self) -> None:
+        _ok("int ge(int a, int b) { if (a >= b) { return 1; } return 0; }")
+
+    def test_less_equal_compiles(self) -> None:
+        _ok("int le(int a, int b) { if (a <= b) { return 1; } return 0; }")
+
+    def test_equal_equal_compiles(self) -> None:
+        _ok("int eq(int a, int b) { if (a == b) { return 1; } return 0; }")

@@ -140,15 +140,15 @@ class TestLISPContract:
 
     def test_lisp_cond_multi_clause(self):
         """cond with four clauses including nested comparison."""
-        _ok_lisp("(defun classify (x)" " (cond ((> x 100) 3) ((> x 10) 2) ((> x 0) 1) (t 0)))")
+        _ok_lisp("(defun classify (x) (cond ((> x 100) 3) ((> x 10) 2) ((> x 0) 1) (t 0)))")
 
     def test_lisp_nested_if(self):
         """Nested if-else (equivalent to cond, tests deep nesting)."""
-        _ok_lisp("(defun max2 (a b)" " (if (> a b) a b))")
+        _ok_lisp("(defun max2 (a b) (if (> a b) a b))")
 
     def test_lisp_recursive_fib(self):
         """Fibonacci via double recursion -- two recursive calls."""
-        _ok_lisp("(defun fib (n)" " (if (< n 2) n" "   (+ (fib (- n 1)) (fib (- n 2)))))")
+        _ok_lisp("(defun fib (n) (if (< n 2) n   (+ (fib (- n 1)) (fib (- n 2)))))")
 
     def test_lisp_lambda_in_mapcar(self):
         """Lambda expression passed to mapcar (higher-order function call)."""
@@ -156,9 +156,7 @@ class TestLISPContract:
 
     def test_lisp_multi_expr_body(self):
         """defun body with multiple expressions; last is return value."""
-        _ok_lisp(
-            "(defun compute (x)" " (let ((a (* x 2)))" "   (let ((b (+ a 1)))" "     (- b 1))))"
-        )
+        _ok_lisp("(defun compute (x) (let ((a (* x 2)))   (let ((b (+ a 1)))     (- b 1))))")
 
     def test_lisp_rejected_bare_symbol(self):
         """A bare symbol with no enclosing defun is not a compile error
@@ -182,11 +180,11 @@ class TestHaskellContract:
 
     def test_haskell_pattern_match_base_case(self):
         """Factorial with 0-pattern base case and recursive case."""
-        _ok_haskell("fact :: Int -> Int\n" "fact 0 = 1\n" "fact n = n * fact (n - 1)")
+        _ok_haskell("fact :: Int -> Int\nfact 0 = 1\nfact n = n * fact (n - 1)")
 
     def test_haskell_higher_order_function(self):
         """applyTwice takes a function and applies it twice."""
-        _ok_haskell("applyTwice :: (Int -> Int) -> Int -> Int\n" "applyTwice f x = f (f x)")
+        _ok_haskell("applyTwice :: (Int -> Int) -> Int -> Int\napplyTwice f x = f (f x)")
 
     def test_haskell_where_clause(self):
         """where clause introduces local bindings."""
@@ -420,3 +418,126 @@ class TestJavaContract:
             "    }\n"
             # missing closing brace for class
         )
+
+
+# =============================================================================
+# LISP -- additional paradigm coverage
+# =============================================================================
+
+
+class TestLISPContractExtended:
+    """Additional LISP programs testing more S-expression forms."""
+
+    def test_lisp_let_arithmetic(self):
+        """let binding used in arithmetic expression."""
+        _ok_lisp("(defun square (x) (let ((y (* x x))) y))")
+
+    def test_lisp_nested_call_via_let(self):
+        """Simulated quadruple via two let bindings (single defun)."""
+        _ok_lisp("(defun quad (x) (let ((d (* x 2))) (* d 2)))")
+
+    def test_lisp_simple_arithmetic(self):
+        """Simple arithmetic expressions compile."""
+        _ok_lisp("(defun calc (x) (+ (* x 2) (- x 1)))")
+
+    def test_lisp_cond_single_clause(self):
+        """cond with one test and no else (t clause omitted)."""
+        _ok_lisp("(defun positive-p (x) (cond ((> x 0) t)))")
+
+    def test_lisp_rejected_bad_parens(self):
+        """Mismatched parens produce a compile error."""
+        _err_lisp("(defun broken (x)")
+
+    def test_lisp_list_construction(self):
+        """list constructor used in function body."""
+        _ok_lisp("(defun make-pair (a b) (list a b))")
+
+    def test_lisp_passthrough_function(self):
+        """Passthrough function returns its argument unchanged (avoids CL name lock)."""
+        _ok_lisp("(defun my-id (x) x)")
+
+
+# =============================================================================
+# Haskell -- additional paradigm coverage
+# =============================================================================
+
+
+class TestHaskellContractExtended:
+    """Additional Haskell programs covering more pipeline stages."""
+
+    def test_haskell_sign_function(self):
+        """Sign function via nested if-then-else (guard syntax not supported)."""
+        _ok_haskell(
+            "classify :: Int -> Int\n"
+            "classify x = if x > 0 then 1 else if x < 0 then -1 else 0"
+        )
+
+    def test_haskell_list_comprehension_equivalent(self):
+        """Map over a range (functional list processing)."""
+        _ok_haskell(
+            "double :: Int -> Int\n"
+            "double x = x * 2\n\n"
+            "doubled :: [Int] -> [Int]\n"
+            "doubled xs = map double xs"
+        )
+
+    def test_haskell_let_in_expression(self):
+        """let-in expression inside a function body."""
+        _ok_haskell("f :: Int -> Int\nf x = let y = x * 2 in y + 1")
+
+    def test_haskell_if_then_else(self):
+        """Inline if-then-else expression."""
+        _ok_haskell("abs_val :: Int -> Int\nabs_val x = if x >= 0 then x else negate x")
+
+    def test_haskell_no_type_signature_still_compiles(self):
+        """Functions without type signatures also compile."""
+        _ok_haskell("add a b = a + b")
+
+    def test_haskell_rejected_system_process(self):
+        """System.Process import is blocked."""
+        _err_haskell("import System.Process\nmain = pure ()")
+
+    def test_haskell_rejected_system_exit(self):
+        """System.Exit import is blocked."""
+        _err_haskell("import System.Exit\nmain = pure ()")
+
+
+# =============================================================================
+# System F -- additional programs
+# =============================================================================
+
+
+class TestSystemFContractExtended:
+    """Additional System F programs testing more polymorphic forms."""
+
+    def test_systemf_church_true(self):
+        """Church-encoded true: selects first of two arguments."""
+        _ok_systemf("/\\A => /\\B => \\t:A => \\f:B => t")
+
+    def test_systemf_church_false(self):
+        """Church-encoded false: selects second of two arguments."""
+        _ok_systemf("/\\A => /\\B => \\t:A => \\f:B => f")
+
+    def test_systemf_deep_abstraction(self):
+        """Four nested type abstractions compile correctly."""
+        _ok_systemf("/\\A => /\\B => /\\C => /\\D => \\x:A => x")
+
+    def test_systemf_literal_int(self):
+        """Integer literal is a valid top-level expression."""
+        _ok_systemf("42")
+
+    def test_systemf_literal_bool_true(self):
+        """Boolean literal true is a valid expression."""
+        _ok_systemf("true")
+
+    def test_systemf_literal_bool_false(self):
+        """Boolean literal false is a valid expression."""
+        _ok_systemf("false")
+
+    def test_systemf_if_nested(self):
+        """Nested if-then-else in a let binding."""
+        _ok_systemf("if true then (if false then 0 else 1) else 2")
+
+    def test_systemf_rejected_missing_arrow(self):
+        """Type abstraction with missing body arrow is rejected."""
+        _err_systemf("/\\A")

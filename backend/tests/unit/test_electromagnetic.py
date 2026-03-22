@@ -41,7 +41,7 @@ class TestEddyCurrentLoss:
             rpm=30,
             resistivity_ohm_m=steel.electrical_resistivity_ohm_m,
         )
-        assert p < 0.001, f"Shaft eddy loss {p*1000:.3f} mW should be << 1 mW"
+        assert p < 0.001, f"Shaft eddy loss {p * 1000:.3f} mW should be << 1 mW"
 
     def test_gear_loss_negligible(self, lib):
         brass = lib.get("brass")
@@ -51,7 +51,7 @@ class TestEddyCurrentLoss:
             rpm=30,
             resistivity_ohm_m=brass.electrical_resistivity_ohm_m,
         )
-        assert p < 0.001, f"Gear eddy loss {p*1000:.3f} mW should be << 1 mW"
+        assert p < 0.001, f"Gear eddy loss {p * 1000:.3f} mW should be << 1 mW"
 
     def test_loss_proportional_to_rpm_squared(self, lib):
         steel = lib.get("steel")
@@ -121,7 +121,7 @@ class TestEddyCurrentLoss:
                 30,
                 brass.electrical_resistivity_ohm_m,
             )
-        assert total < 0.01, f"Total EM loss {total*1000:.3f} mW should be << 10 mW"
+        assert total < 0.01, f"Total EM loss {total * 1000:.3f} mW should be << 10 mW"
 
 
 # -- Galvanic Corrosion Matrix --
@@ -204,3 +204,180 @@ class TestEMvsfriction:
         friction_estimate_W = 10.0  # Conservative lower bound
         ratio = p_eddy / friction_estimate_W
         assert ratio < 1e-4, f"Eddy/friction ratio {ratio:.2e} too high"
+
+
+# -- Eddy Current Model extended --
+
+
+class TestEddyCurrentLossExtended:
+    """eddy_loss_W raw method and shaft/gear monotonicity."""
+
+    def test_eddy_loss_zero_resistivity_returns_inf(self):
+        p = EddyCurrentModel.eddy_loss_W(50e-6, 0.05, 0.5, 1e-3, 0.0)
+        assert p == float("inf")
+
+    def test_shaft_loss_at_zero_rpm_is_zero(self, lib):
+        steel = lib.get("steel")
+        p = EddyCurrentModel.shaft_eddy_loss_W(50, 1500, 0, steel.electrical_resistivity_ohm_m)
+        assert p == 0.0
+
+    def test_shaft_loss_increases_with_diameter(self, lib):
+        steel = lib.get("steel")
+        p_small = EddyCurrentModel.shaft_eddy_loss_W(
+            25, 1500, 30, steel.electrical_resistivity_ohm_m
+        )
+        p_large = EddyCurrentModel.shaft_eddy_loss_W(
+            50, 1500, 30, steel.electrical_resistivity_ohm_m
+        )
+        assert p_large > p_small
+
+    def test_shaft_loss_increases_with_length(self, lib):
+        steel = lib.get("steel")
+        p_short = EddyCurrentModel.shaft_eddy_loss_W(
+            50, 500, 30, steel.electrical_resistivity_ohm_m
+        )
+        p_long = EddyCurrentModel.shaft_eddy_loss_W(
+            50, 1500, 30, steel.electrical_resistivity_ohm_m
+        )
+        assert p_long > p_short
+
+    def test_gear_loss_positive(self, lib):
+        brass = lib.get("brass")
+        p = EddyCurrentModel.gear_eddy_loss_W(150, 15, 30, brass.electrical_resistivity_ohm_m)
+        assert p > 0
+
+    def test_gear_loss_at_zero_rpm_is_zero(self, lib):
+        brass = lib.get("brass")
+        p = EddyCurrentModel.gear_eddy_loss_W(150, 15, 0, brass.electrical_resistivity_ohm_m)
+        assert p == 0.0
+
+    def test_gear_loss_proportional_to_rpm_squared(self, lib):
+        brass = lib.get("brass")
+        p30 = EddyCurrentModel.gear_eddy_loss_W(
+            150, 15, 30, brass.electrical_resistivity_ohm_m
+        )
+        p60 = EddyCurrentModel.gear_eddy_loss_W(
+            150, 15, 60, brass.electrical_resistivity_ohm_m
+        )
+        assert p60 == pytest.approx(4.0 * p30, rel=0.01)
+
+    def test_eddy_loss_returns_float(self, lib):
+        steel = lib.get("steel")
+        p = EddyCurrentModel.shaft_eddy_loss_W(50, 1500, 30, steel.electrical_resistivity_ohm_m)
+        assert isinstance(p, float)
+
+
+# -- GalvanicPair dataclass --
+
+
+class TestGalvanicPair:
+    """GalvanicPair frozen dataclass fields and immutability."""
+
+    def test_galvanic_pair_is_frozen(self):
+        from backend.src.emulator.electromagnetic import GalvanicPair
+        pair = GalvanicPair("steel", "brass", 0.30, "high", "Isolate with washer.")
+        with pytest.raises((AttributeError, TypeError)):
+            pair.risk_level = "low"  # type: ignore[misc]
+
+    def test_anodic_field_stored(self):
+        from backend.src.emulator.electromagnetic import GalvanicPair
+        pair = GalvanicPair("steel", "brass", 0.30, "high", "Isolate.")
+        assert pair.material_anodic == "steel"
+
+    def test_cathodic_field_stored(self):
+        from backend.src.emulator.electromagnetic import GalvanicPair
+        pair = GalvanicPair("steel", "brass", 0.30, "high", "Isolate.")
+        assert pair.material_cathodic == "brass"
+
+    def test_potential_difference_field_nonnegative(self, galvanic):
+        for pair in galvanic.full_matrix():
+            assert pair.potential_difference_V >= 0.0
+
+    def test_risk_level_field_is_valid_string(self, galvanic):
+        valid = {"low", "moderate", "high"}
+        for pair in galvanic.full_matrix():
+            assert pair.risk_level in valid
+
+    def test_mitigation_field_is_nonempty(self, galvanic):
+        for pair in galvanic.full_matrix():
+            assert len(pair.mitigation) > 0
+
+
+# -- GalvanicCorrosionMatrix extended --
+
+
+class TestGalvanicCorrosionMatrixExtended:
+    """Potential differences, risk classification, and custom potentials."""
+
+    def test_same_material_zero_potential_difference(self, galvanic):
+        assert galvanic.potential_difference_V("brass", "brass") == 0.0
+
+    def test_phosphor_bronze_steel_high(self, galvanic):
+        # |(-0.25) - (-0.60)| = 0.35 > 0.25 -> high
+        risk = galvanic.risk_level("phosphor_bronze", "steel")
+        assert risk == "high"
+
+    def test_risk_level_low_with_small_difference(self):
+        # 0.10V < 0.15 -> low
+        from backend.src.emulator.electromagnetic import GalvanicCorrosionMatrix
+        gal = GalvanicCorrosionMatrix({"mat_a": 0.0, "mat_b": -0.10})
+        assert gal.risk_level("mat_a", "mat_b") == "low"
+
+    def test_risk_level_moderate_with_medium_difference(self):
+        # 0.20V (0.15 <= 0.20 < 0.25) -> moderate
+        from backend.src.emulator.electromagnetic import GalvanicCorrosionMatrix
+        gal = GalvanicCorrosionMatrix({"mat_a": 0.0, "mat_b": -0.20})
+        assert gal.risk_level("mat_a", "mat_b") == "moderate"
+
+    def test_risk_level_high_with_large_difference(self):
+        # 0.40V >= 0.25 -> high
+        from backend.src.emulator.electromagnetic import GalvanicCorrosionMatrix
+        gal = GalvanicCorrosionMatrix({"mat_a": 0.0, "mat_b": -0.40})
+        assert gal.risk_level("mat_a", "mat_b") == "high"
+
+    def test_evaluate_pair_returns_galvanic_pair_instance(self, galvanic):
+        from backend.src.emulator.electromagnetic import GalvanicPair
+        pair = galvanic.evaluate_pair("brass", "steel")
+        assert isinstance(pair, GalvanicPair)
+
+    def test_mitigation_reflects_low_risk(self):
+        from backend.src.emulator.electromagnetic import GalvanicCorrosionMatrix
+        gal = GalvanicCorrosionMatrix({"a": 0.0, "b": -0.05})
+        mitigation = gal.mitigation("a", "b")
+        assert "No action" in mitigation
+
+    def test_mitigation_reflects_moderate_risk(self):
+        from backend.src.emulator.electromagnetic import GalvanicCorrosionMatrix
+        gal = GalvanicCorrosionMatrix({"a": 0.0, "b": -0.20})
+        mitigation = gal.mitigation("a", "b")
+        assert "oil" in mitigation.lower() or "barrier" in mitigation.lower()
+
+
+# -- Static charge extended --
+
+
+class TestStaticChargeExtended:
+    """StaticChargeModel: area proportionality, capacity limits, edge cases."""
+
+    def test_discharge_energy_proportional_to_charge_squared(self):
+        e1 = StaticChargeModel.discharge_energy_J(1.0, capacitance_pF=100.0)
+        e4 = StaticChargeModel.discharge_energy_J(2.0, capacitance_pF=100.0)
+        # E = Q^2 / (2C), doubling charge -> 4x energy
+        assert e4 == pytest.approx(4.0 * e1, rel=1e-6)
+
+    def test_discharge_energy_zero_capacitance_returns_zero(self):
+        e = StaticChargeModel.discharge_energy_J(5.0, capacitance_pF=0.0)
+        assert e == 0.0
+
+    def test_dry_charge_proportional_to_area(self):
+        q1 = StaticChargeModel.triboelectric_charge_nC(10.0, 1.0, is_lubricated=False)
+        q2 = StaticChargeModel.triboelectric_charge_nC(20.0, 1.0, is_lubricated=False)
+        assert q2 == pytest.approx(2.0 * q1, rel=1e-6)
+
+    def test_lubricated_always_zero_regardless_of_area(self):
+        for area in [0.0, 1.0, 100.0, 1000.0]:
+            assert StaticChargeModel.triboelectric_charge_nC(area, 1.0, True) == 0.0
+
+    def test_dry_charge_zero_area_is_zero(self):
+        q = StaticChargeModel.triboelectric_charge_nC(0.0, 1.0, is_lubricated=False)
+        assert q == 0.0

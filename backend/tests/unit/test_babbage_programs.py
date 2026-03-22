@@ -185,3 +185,51 @@ class TestAEProgramRepeatability:
         r1 = _run("exp_series.ae")
         r2 = _run("exp_series.ae")
         assert abs(r1 - r2) < 1e-12
+
+
+class TestAEEngineState:
+    """Engine state properties after running standard programs."""
+
+    def test_result_cards_is_non_empty_after_run(self) -> None:
+        engine = Engine()
+        engine.load_program(str(_PROGRAMS / "babbage_addition.ae"))
+        engine.run()
+        assert len(engine.result_cards) > 0
+
+    def test_instruction_cards_loaded_from_file(self) -> None:
+        engine = Engine()
+        engine.load_program(str(_PROGRAMS / "babbage_addition.ae"))
+        assert len(engine.instruction_cards) > 0
+
+    def test_engine_pc_resets_to_zero_on_load(self) -> None:
+        engine = Engine()
+        engine.load_program(str(_PROGRAMS / "babbage_addition.ae"))
+        assert engine.PC == 0
+
+    def test_two_separate_engines_give_same_sin(self) -> None:
+        e1 = Engine()
+        e1.load_program(str(_PROGRAMS / "sin_series.ae"))
+        e1.run()
+        e2 = Engine()
+        e2.load_program(str(_PROGRAMS / "sin_series.ae"))
+        e2.run()
+        assert abs(
+            e1.result_cards[-1]["value"].to_decimal()
+            - e2.result_cards[-1]["value"].to_decimal()
+        ) < 1e-12
+
+
+class TestAEResultPrecision:
+    """Numerical accuracy of transcendental programs."""
+
+    def test_exp_greater_than_two(self) -> None:
+        assert _run("exp_series.ae") > 2.0
+
+    def test_exp_less_than_three(self) -> None:
+        assert _run("exp_series.ae") < 3.0
+
+    def test_addition_result_is_five(self) -> None:
+        assert _run("babbage_addition.ae") == 5.0
+
+    def test_triangular_result_is_fifteen(self) -> None:
+        assert _run("triangular_number.ae") == 15.0

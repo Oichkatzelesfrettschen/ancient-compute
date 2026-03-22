@@ -385,3 +385,378 @@ class TestCompoundProgram:
         assert abs(snap["accumulator"] - 7.0) < 1e-3
         assert snap["halted"] is True
         assert snap["cycle_count"] == 2
+
+
+# ---------------------------------------------------------------------------
+# Z3Op enumeration
+# ---------------------------------------------------------------------------
+
+
+class TestZ3Op:
+    """Z3Op StrEnum: all 10 opcodes present and string-valued."""
+
+    def test_all_ten_ops_defined(self) -> None:
+        ops = {op.value for op in Z3Op}
+        expected = {"LOAD", "STORE", "ADD", "SUB", "MULT", "DIV", "SQRT", "READ", "PRINT", "HALT"}
+        assert ops == expected
+
+    def test_ops_are_string_values(self) -> None:
+        for op in Z3Op:
+            assert isinstance(op.value, str)
+
+    def test_no_conditional_branch_in_ops(self) -> None:
+        ops = {op.value for op in Z3Op}
+        assert not any(s in ops for s in ("BRANCH", "JMP", "BRZ", "BEQ", "COND"))
+
+    def test_load_str_value(self) -> None:
+        assert Z3Op.LOAD == "LOAD"
+
+    def test_halt_str_value(self) -> None:
+        assert Z3Op.HALT == "HALT"
+
+    def test_sqrt_str_value(self) -> None:
+        assert Z3Op.SQRT == "SQRT"
+
+
+# ---------------------------------------------------------------------------
+# Z3Instruction extended
+# ---------------------------------------------------------------------------
+
+
+class TestZ3InstructionExtended:
+    """Address validation edge cases and no-address instructions."""
+
+    def test_max_valid_address_63(self) -> None:
+        i = Z3Instruction(Z3Op.LOAD, 63)
+        assert i.address == 63
+
+    def test_address_default_zero(self) -> None:
+        i = Z3Instruction(Z3Op.HALT)
+        assert i.address == 0
+
+    def test_address_exactly_64_raises(self) -> None:
+        with pytest.raises(ValueError):
+            Z3Instruction(Z3Op.LOAD, 64)
+
+    def test_address_exactly_minus_1_raises(self) -> None:
+        with pytest.raises(ValueError):
+            Z3Instruction(Z3Op.STORE, -1)
+
+    def test_read_does_not_validate_address(self) -> None:
+        # READ/PRINT/SQRT/HALT do not use address -- any value accepted
+        i = Z3Instruction(Z3Op.READ, 0)
+        assert i.op == Z3Op.READ
+
+    def test_print_instruction_created(self) -> None:
+        i = Z3Instruction(Z3Op.PRINT)
+        assert i.op == Z3Op.PRINT
+
+    def test_add_address_zero_valid(self) -> None:
+        i = Z3Instruction(Z3Op.ADD, 0)
+        assert i.address == 0
+
+    def test_store_max_valid_address(self) -> None:
+        i = Z3Instruction(Z3Op.STORE, 63)
+        assert i.address == 63
+
+
+# ---------------------------------------------------------------------------
+# Memory extended
+# ---------------------------------------------------------------------------
+
+
+class TestMemoryExtended:
+    """Memory address boundaries, precision, and default values."""
+
+    def test_memory_63_valid(self) -> None:
+        z3 = ZuseZ3()
+        z3.load_memory(63, 9.0)
+        assert abs(z3.get_memory(63) - 9.0) < 1e-3
+
+    def test_get_memory_63_valid(self) -> None:
+        z3 = ZuseZ3()
+        assert z3.get_memory(63) == 0.0
+
+    def test_get_memory_negative_index_raises(self) -> None:
+        z3 = ZuseZ3()
+        with pytest.raises(IndexError):
+            z3.get_memory(-1)
+
+    def test_load_memory_64_raises(self) -> None:
+        z3 = ZuseZ3()
+        with pytest.raises(IndexError):
+            z3.load_memory(64, 1.0)
+
+    def test_all_memory_initially_zero(self) -> None:
+        z3 = ZuseZ3()
+        for i in range(64):
+            assert z3.get_memory(i) == 0.0
+
+    def test_memory_precision_14_bit_mantissa(self) -> None:
+        # 22-bit float (14-bit mantissa) gives ~4 significant decimal digits
+        z3 = ZuseZ3()
+        z3.load_memory(0, 3.14159)
+        result = z3.get_memory(0)
+        assert abs(result - 3.14159) < 0.01  # ~4 decimal digits
+
+    def test_negative_value_stored(self) -> None:
+        z3 = ZuseZ3()
+        z3.load_memory(0, -7.5)
+        assert abs(z3.get_memory(0) - (-7.5)) < 1e-3
+
+
+# ---------------------------------------------------------------------------
+# Accumulator and initial state
+# ---------------------------------------------------------------------------
+
+
+class TestAccumulatorInitial:
+    """Accumulator starts at 0; reset() clears it."""
+
+    def test_initial_accumulator_zero(self) -> None:
+        z3 = ZuseZ3()
+        assert z3.get_accumulator() == 0.0
+
+    def test_accumulator_after_reset(self) -> None:
+        z3 = _run([Z3Instruction(Z3Op.LOAD, 0), Z3Instruction(Z3Op.HALT)], memory={0: 42.0})
+        z3.reset()
+        assert z3.get_accumulator() == 0.0
+
+    def test_reset_clears_program(self) -> None:
+        z3 = ZuseZ3()
+        z3.load_memory(0, 1.0)
+        z3.load_program([Z3Instruction(Z3Op.LOAD, 0), Z3Instruction(Z3Op.HALT)])
+        z3.reset()
+        # After reset, step() should immediately return False (no program)
+        assert z3.step() is False
+
+    def test_reset_clears_output_tape(self) -> None:
+        z3 = _run(
+            [Z3Instruction(Z3Op.LOAD, 0), Z3Instruction(Z3Op.PRINT), Z3Instruction(Z3Op.HALT)],
+            memory={0: 1.0},
+        )
+        z3.reset()
+        assert z3.state.output_tape == []
+
+    def test_reset_clears_cycle_count(self) -> None:
+        z3 = _run([Z3Instruction(Z3Op.HALT)], {})
+        z3.reset()
+        assert z3.state.cycle_count == 0
+
+    def test_reset_unhalt(self) -> None:
+        z3 = _run([Z3Instruction(Z3Op.HALT)], {})
+        assert z3.state.halted is True
+        z3.reset()
+        assert z3.state.halted is False
+
+
+# ---------------------------------------------------------------------------
+# Arithmetic extended
+# ---------------------------------------------------------------------------
+
+
+class TestArithmeticExtended:
+    """Edge cases for ADD/SUB/MULT/DIV/SQRT."""
+
+    def test_add_negative_values(self) -> None:
+        z3 = _run(
+            [Z3Instruction(Z3Op.LOAD, 0), Z3Instruction(Z3Op.ADD, 1), Z3Instruction(Z3Op.HALT)],
+            memory={0: -5.0, 1: -3.0},
+        )
+        assert abs(z3.get_accumulator() - (-8.0)) < 1e-3
+
+    def test_sub_negative_result(self) -> None:
+        z3 = _run(
+            [Z3Instruction(Z3Op.LOAD, 0), Z3Instruction(Z3Op.SUB, 1), Z3Instruction(Z3Op.HALT)],
+            memory={0: 3.0, 1: 10.0},
+        )
+        assert abs(z3.get_accumulator() - (-7.0)) < 1e-3
+
+    def test_mult_by_zero(self) -> None:
+        z3 = _run(
+            [Z3Instruction(Z3Op.LOAD, 0), Z3Instruction(Z3Op.MULT, 1), Z3Instruction(Z3Op.HALT)],
+            memory={0: 99.0, 1: 0.0},
+        )
+        assert abs(z3.get_accumulator()) < 1e-6
+
+    def test_mult_by_negative_one(self) -> None:
+        z3 = _run(
+            [Z3Instruction(Z3Op.LOAD, 0), Z3Instruction(Z3Op.MULT, 1), Z3Instruction(Z3Op.HALT)],
+            memory={0: 5.0, 1: -1.0},
+        )
+        assert abs(z3.get_accumulator() - (-5.0)) < 1e-3
+
+    def test_div_result_less_than_one(self) -> None:
+        z3 = _run(
+            [Z3Instruction(Z3Op.LOAD, 0), Z3Instruction(Z3Op.DIV, 1), Z3Instruction(Z3Op.HALT)],
+            memory={0: 1.0, 1: 4.0},
+        )
+        assert abs(z3.get_accumulator() - 0.25) < 1e-3
+
+    def test_sqrt_zero(self) -> None:
+        z3 = _run(
+            [Z3Instruction(Z3Op.LOAD, 0), Z3Instruction(Z3Op.SQRT), Z3Instruction(Z3Op.HALT)],
+            memory={0: 0.0},
+        )
+        assert abs(z3.get_accumulator()) < 1e-6
+
+    def test_sqrt_one(self) -> None:
+        z3 = _run(
+            [Z3Instruction(Z3Op.LOAD, 0), Z3Instruction(Z3Op.SQRT), Z3Instruction(Z3Op.HALT)],
+            memory={0: 1.0},
+        )
+        assert abs(z3.get_accumulator() - 1.0) < 1e-3
+
+    def test_chain_add_sub_net_zero(self) -> None:
+        z3 = _run(
+            [
+                Z3Instruction(Z3Op.LOAD, 0),
+                Z3Instruction(Z3Op.ADD, 1),
+                Z3Instruction(Z3Op.SUB, 1),
+                Z3Instruction(Z3Op.HALT),
+            ],
+            memory={0: 7.0, 1: 3.0},
+        )
+        assert abs(z3.get_accumulator() - 7.0) < 1e-3
+
+
+# ---------------------------------------------------------------------------
+# I/O tape extended
+# ---------------------------------------------------------------------------
+
+
+class TestIOExtended:
+    """Multiple READs from tape; input_pointer advancement; PRINT accumulation."""
+
+    def test_multiple_reads_advance_pointer(self) -> None:
+        z3 = _run(
+            [Z3Instruction(Z3Op.READ), Z3Instruction(Z3Op.READ), Z3Instruction(Z3Op.HALT)],
+            input_tape=[10.0, 20.0],
+        )
+        assert z3.state.input_pointer == 2
+        assert abs(z3.get_accumulator() - 20.0) < 1e-3
+
+    def test_read_then_store_then_load_other(self) -> None:
+        # READ -> acc=5; STORE 0; LOAD 1 (6.0); ADD 0 (=11)
+        z3 = ZuseZ3()
+        z3.load_memory(1, 6.0)
+        z3.load_input_tape([5.0])
+        z3.load_program(
+            [
+                Z3Instruction(Z3Op.READ),
+                Z3Instruction(Z3Op.STORE, 0),
+                Z3Instruction(Z3Op.LOAD, 1),
+                Z3Instruction(Z3Op.ADD, 0),
+                Z3Instruction(Z3Op.HALT),
+            ]
+        )
+        z3.run()
+        assert abs(z3.get_accumulator() - 11.0) < 1e-3
+
+    def test_print_adds_to_output_tape(self) -> None:
+        z3 = _run(
+            [Z3Instruction(Z3Op.LOAD, 0), Z3Instruction(Z3Op.PRINT), Z3Instruction(Z3Op.HALT)],
+            memory={0: 2.5},
+        )
+        assert len(z3.state.output_tape) == 1
+        assert abs(z3.state.output_tape[0] - 2.5) < 1e-3
+
+    def test_output_tape_order_preserved(self) -> None:
+        z3 = _run(
+            [
+                Z3Instruction(Z3Op.LOAD, 0),
+                Z3Instruction(Z3Op.PRINT),
+                Z3Instruction(Z3Op.LOAD, 1),
+                Z3Instruction(Z3Op.PRINT),
+                Z3Instruction(Z3Op.LOAD, 2),
+                Z3Instruction(Z3Op.PRINT),
+                Z3Instruction(Z3Op.HALT),
+            ],
+            memory={0: 1.0, 1: 2.0, 2: 3.0},
+        )
+        assert len(z3.state.output_tape) == 3
+        assert all(
+            abs(v - e) < 1e-3 for v, e in zip(z3.state.output_tape, [1.0, 2.0, 3.0], strict=True)
+        )
+
+    def test_initial_input_pointer_zero(self) -> None:
+        z3 = ZuseZ3()
+        assert z3.state.input_pointer == 0
+
+    def test_load_input_tape_resets_pointer(self) -> None:
+        z3 = ZuseZ3()
+        z3.load_input_tape([1.0, 2.0])
+        z3.load_input_tape([3.0])
+        assert z3.state.input_pointer == 0
+        assert z3.state.input_tape == [3.0]
+
+
+# ---------------------------------------------------------------------------
+# Control extended
+# ---------------------------------------------------------------------------
+
+
+class TestControlExtended:
+    """PC tracking, step() semantics, and load_program resets."""
+
+    def test_load_program_resets_pc_to_zero(self) -> None:
+        z3 = ZuseZ3()
+        z3.load_memory(0, 1.0)
+        z3.load_program([Z3Instruction(Z3Op.LOAD, 0), Z3Instruction(Z3Op.HALT)])
+        z3.step()  # PC now 1
+        z3.load_program([Z3Instruction(Z3Op.HALT)])  # reload resets PC
+        assert z3.state.program_counter == 0
+
+    def test_step_on_already_halted_returns_false(self) -> None:
+        z3 = _run([Z3Instruction(Z3Op.HALT)], {})
+        assert z3.state.halted is True
+        assert z3.step() is False
+
+    def test_step_increments_pc(self) -> None:
+        z3 = ZuseZ3()
+        z3.load_memory(0, 1.0)
+        z3.load_program([Z3Instruction(Z3Op.LOAD, 0), Z3Instruction(Z3Op.HALT)])
+        z3.step()
+        assert z3.state.program_counter == 1
+
+    def test_step_increments_cycle_count(self) -> None:
+        z3 = ZuseZ3()
+        z3.load_memory(0, 1.0)
+        z3.load_program([Z3Instruction(Z3Op.LOAD, 0), Z3Instruction(Z3Op.HALT)])
+        z3.step()
+        assert z3.state.cycle_count == 1
+
+    def test_state_snapshot_has_all_keys(self) -> None:
+        z3 = ZuseZ3()
+        snap = z3.state_snapshot()
+        expected_keys = {
+            "accumulator",
+            "program_counter",
+            "cycle_count",
+            "halted",
+            "output_tape",
+            "input_pointer",
+            "overflow",
+        }
+        assert expected_keys <= set(snap.keys())
+
+    def test_state_snapshot_output_tape_is_copy(self) -> None:
+        z3 = _run(
+            [Z3Instruction(Z3Op.LOAD, 0), Z3Instruction(Z3Op.PRINT), Z3Instruction(Z3Op.HALT)],
+            memory={0: 1.0},
+        )
+        snap = z3.state_snapshot()
+        snap_tape = snap["output_tape"]
+        assert isinstance(snap_tape, list)
+        assert len(snap_tape) == 1
+
+    def test_program_counter_after_halt(self) -> None:
+        z3 = ZuseZ3()
+        z3.load_memory(0, 1.0)
+        z3.load_program([Z3Instruction(Z3Op.LOAD, 0), Z3Instruction(Z3Op.HALT)])
+        z3.run()
+        assert z3.state.program_counter == 2  # incremented past HALT
+
+    def test_overflow_flag_initially_false(self) -> None:
+        z3 = ZuseZ3()
+        assert z3.state.overflow is False

@@ -105,9 +105,9 @@ class TestPVAnalysis:
         # 4 bearings, 500 kg machine -> ~1225 N per bearing
         load = 500 * 9.81 / 4
         pv = PVAnalysis.pv_product_MPa_m_s(load, 50.0, 60.0, 30.0)
-        assert PVAnalysis.is_within_limit(
-            pv
-        ), f"PV={pv:.3f} exceeds limit {PV_LIMIT_BRONZE_ON_STEEL_LUBRICATED}"
+        assert PVAnalysis.is_within_limit(pv), (
+            f"PV={pv:.3f} exceeds limit {PV_LIMIT_BRONZE_ON_STEEL_LUBRICATED}"
+        )
 
     def test_pv_proportional_to_rpm(self):
         pv30 = PVAnalysis.pv_product_MPa_m_s(1000.0, 50.0, 60.0, 30.0)
@@ -282,6 +282,18 @@ class TestTimeToFailure:
         )
         assert t > 100.0, f"Bearing life {t:.0f}h < 100h"
 
+    def test_ttf_returns_positive_float(self, lib):
+        pb = lib.get("phosphor_bronze")
+        t = TimeToFailure.bearing_hours_to_clearance_limit(
+            0.15, 0.05, 50.0, 60.0,
+            ARCHARD_K_LUBRICATED_BRONZE_ON_STEEL,
+            500.0,
+            WearModel.hardness_HB_to_MPa(pb.hardness_HB[0]),
+            30.0,
+        )
+        assert isinstance(t, float)
+        assert t > 0
+
     def test_life_inversely_proportional_to_load(self, lib):
         pb = lib.get("phosphor_bronze")
         base_load = 500.0
@@ -306,3 +318,140 @@ class TestTimeToFailure:
             30.0,
         )
         assert t2 == pytest.approx(t1 / 2.0, rel=0.01)
+
+
+# ---------------------------------------------------------------------------
+# WearModel edge cases
+# ---------------------------------------------------------------------------
+
+
+class TestWearModelEdgeCases:
+    """Archard zero conditions, proportionality, and constant sanity."""
+
+    def test_volume_zero_when_zero_force(self):
+        v = WearModel.archard_volume_mm3(1e-6, 0.0, 1000.0, 500.0)
+        assert v == 0.0
+
+    def test_volume_zero_when_zero_sliding_distance(self):
+        v = WearModel.archard_volume_mm3(1e-6, 1000.0, 0.0, 500.0)
+        assert v == 0.0
+
+    def test_sliding_distance_proportional_to_diameter(self):
+        s25 = WearModel.sliding_distance_per_hour_mm(25.0, 30.0)
+        s50 = WearModel.sliding_distance_per_hour_mm(50.0, 30.0)
+        assert s50 == pytest.approx(2.0 * s25, rel=0.01)
+
+    def test_sliding_distance_proportional_to_rpm(self):
+        s30 = WearModel.sliding_distance_per_hour_mm(50.0, 30.0)
+        s60 = WearModel.sliding_distance_per_hour_mm(50.0, 60.0)
+        assert s60 == pytest.approx(2.0 * s30, rel=0.01)
+
+    def test_hb_to_mpa_linear(self):
+        assert WearModel.hardness_HB_to_MPa(200) == pytest.approx(1962.0, rel=0.01)
+        assert WearModel.hardness_HB_to_MPa(50) == pytest.approx(490.5, rel=0.01)
+
+    def test_archard_constants_positive(self):
+        assert ARCHARD_K_LUBRICATED_BRONZE_ON_STEEL > 0
+        assert ARCHARD_K_LUBRICATED_BRASS_ON_STEEL > 0
+
+    def test_lubricated_K_less_than_dry(self):
+        from backend.src.emulator.tribology import ARCHARD_K_DRY_STEEL_ON_STEEL
+        assert ARCHARD_K_LUBRICATED_BRONZE_ON_STEEL < ARCHARD_K_DRY_STEEL_ON_STEEL
+
+
+# ---------------------------------------------------------------------------
+# PVAnalysis extended
+# ---------------------------------------------------------------------------
+
+
+class TestPVAnalysisExtended:
+    """PV product proportionality and zero boundary."""
+
+    def test_pressure_proportional_to_force(self):
+        p1 = PVAnalysis.bearing_pressure_MPa(500.0, 50.0, 60.0)
+        p2 = PVAnalysis.bearing_pressure_MPa(1000.0, 50.0, 60.0)
+        assert p2 == pytest.approx(2.0 * p1, rel=0.01)
+
+    def test_velocity_proportional_to_rpm(self):
+        v30 = PVAnalysis.surface_velocity_m_s(50.0, 30.0)
+        v60 = PVAnalysis.surface_velocity_m_s(50.0, 60.0)
+        assert v60 == pytest.approx(2.0 * v30, rel=0.01)
+
+    def test_velocity_proportional_to_diameter(self):
+        v25 = PVAnalysis.surface_velocity_m_s(25.0, 30.0)
+        v50 = PVAnalysis.surface_velocity_m_s(50.0, 30.0)
+        assert v50 == pytest.approx(2.0 * v25, rel=0.01)
+
+    def test_pv_zero_at_zero_rpm(self):
+        pv = PVAnalysis.pv_product_MPa_m_s(1000.0, 50.0, 60.0, 0.0)
+        assert pv == 0.0
+
+    def test_pv_limit_constant_positive(self):
+        assert PV_LIMIT_BRONZE_ON_STEEL_LUBRICATED > 0
+
+
+# ---------------------------------------------------------------------------
+# Lubrication film extended
+# ---------------------------------------------------------------------------
+
+
+class TestLubricationFilmExtended:
+    """Film thickness monotonicity and regime boundary conditions."""
+
+    def test_film_thickness_increases_with_viscosity(self):
+        h1 = LubricationModel.minimum_film_thickness_um(0.05, 0.08, 25.0, 110.0, 20.0)
+        h2 = LubricationModel.minimum_film_thickness_um(0.10, 0.08, 25.0, 110.0, 20.0)
+        assert h2 > h1
+
+    def test_film_thickness_increases_with_velocity(self):
+        h1 = LubricationModel.minimum_film_thickness_um(0.059, 0.04, 25.0, 110.0, 20.0)
+        h2 = LubricationModel.minimum_film_thickness_um(0.059, 0.08, 25.0, 110.0, 20.0)
+        assert h2 > h1
+
+    def test_lambda_decreases_with_roughness(self):
+        lam_smooth = LubricationModel.lambda_ratio(5.0, 0.4, 0.4)
+        lam_rough = LubricationModel.lambda_ratio(5.0, 1.6, 1.6)
+        assert lam_smooth > lam_rough
+
+    def test_regime_boundary_lambda_3(self):
+        # At exactly 3, should be full_film
+        assert LubricationModel.regime(3.0) == "full_film"
+
+    def test_all_surface_finish_components_nonempty(self):
+        for spec in PERIOD_SURFACE_FINISHES:
+            assert spec.component
+
+    def test_surface_finishes_have_method_string(self):
+        for spec in PERIOD_SURFACE_FINISHES:
+            assert hasattr(spec, "method") or hasattr(spec, "Ra_um")
+
+
+# ---------------------------------------------------------------------------
+# RunningInWear extended
+# ---------------------------------------------------------------------------
+
+
+class TestRunningInWearExtended:
+    """K values, wear proportionality, and zero-distance edge case."""
+
+    def test_K_initial_greater_than_steady(self):
+        K_init = 1e-5
+        K_ss = 1e-6
+        # At s=0, K should equal K_init
+        K = RunningInWear.wear_coefficient(0.0, K_init, K_ss, 1e6)
+        assert K_ss <= K
+
+    def test_cumulative_wear_zero_at_zero_distance(self):
+        V = RunningInWear.cumulative_wear_volume_mm3(100.0, 500.0, 1e-5, 1e-6, 1e6, 0.0)
+        assert pytest.approx(0.0) == V
+
+    def test_cumulative_wear_proportional_to_force(self):
+        V1 = RunningInWear.cumulative_wear_volume_mm3(100.0, 500.0, 1e-5, 1e-6, 1e6, 1e7)
+        V2 = RunningInWear.cumulative_wear_volume_mm3(200.0, 500.0, 1e-5, 1e-6, 1e6, 1e7)
+        # Doubling force should roughly double wear
+        assert pytest.approx(2.0 * V1, rel=0.01) == V2
+
+    def test_K_at_large_distance_near_steady_state(self):
+        K_ss = 1e-6
+        K = RunningInWear.wear_coefficient(1e12, 1e-5, K_ss, 1e6)
+        assert abs(K - K_ss) / K_ss < 0.001  # Within 0.1% of steady state

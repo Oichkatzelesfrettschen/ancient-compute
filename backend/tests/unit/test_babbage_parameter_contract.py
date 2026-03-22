@@ -181,3 +181,82 @@ class TestCitationsFile:
 
     def test_no_tbd_in_citations(self) -> None:
         assert "TBD" not in self._text().upper()
+
+
+class TestSimSchemaMaterialProperties:
+    """Each material entry must have the minimum required property fields."""
+
+    def _schema(self) -> dict:
+        return yaml.safe_load(SIM_SCHEMA.read_text(encoding="utf-8"))
+
+    def _materials(self) -> list:
+        return self._schema()["materials"]
+
+    def test_all_materials_have_name(self) -> None:
+        for mat in self._materials():
+            assert "name" in mat
+
+    def test_all_materials_have_density(self) -> None:
+        for mat in self._materials():
+            assert "density_kg_m3" in mat, f"{mat.get('name')} missing density"
+
+    def test_density_values_are_positive(self) -> None:
+        for mat in self._materials():
+            d = mat.get("density_kg_m3", 0)
+            if d is not None:
+                assert float(d) > 0, f"{mat.get('name')} density <= 0"
+
+    def test_brass_has_youngs_modulus(self) -> None:
+        by_name = {m["name"]: m for m in self._materials()}
+        assert "youngs_modulus_GPa" in by_name["brass"]
+
+    def test_cast_iron_present(self) -> None:
+        names = [m["name"] for m in self._materials()]
+        assert "cast_iron" in names
+
+    def test_steel_present(self) -> None:
+        names = [m["name"] for m in self._materials()]
+        assert "steel" in names
+
+    def test_mercury_present(self) -> None:
+        names = [m["name"] for m in self._materials()]
+        assert "mercury" in names
+
+    def test_organic_fiber_present(self) -> None:
+        names = [m["name"] for m in self._materials()]
+        assert "organic_fiber" in names
+
+    def test_no_duplicate_material_names(self) -> None:
+        names = [m["name"] for m in self._materials()]
+        assert len(names) == len(set(names)), "Duplicate material names"
+
+
+class TestSimSchemaConfigValues:
+    """Verify config section values are physically plausible."""
+
+    def _schema(self) -> dict:
+        return yaml.safe_load(SIM_SCHEMA.read_text(encoding="utf-8"))
+
+    def test_gear_module_is_fractional_mm(self) -> None:
+        val = self._schema()["tolerances"]["gear_module_mm"]
+        assert 0.1 <= val <= 5.0, f"gear_module_mm out of range: {val}"
+
+    def test_backlash_is_small_positive(self) -> None:
+        val = self._schema()["tolerances"]["backlash_mm"]
+        assert 0 <= val < 0.5
+
+    def test_lubrication_viscosity_realistic(self) -> None:
+        val = self._schema()["lubrication"]["viscosity_cSt_40C"]
+        assert 1 <= val <= 1000, f"viscosity out of range: {val}"
+
+    def test_card_feed_rate_realistic(self) -> None:
+        val = self._schema()["mechanisms"]["card_feed"]["feed_rate_cards_per_min"]
+        assert 10 <= val <= 1000, f"feed_rate out of plausible range: {val}"
+
+    def test_cutoff_pct_in_0_to_100(self) -> None:
+        val = self._schema()["valve_gear_params"]["cutoff_pct"]
+        assert 0 < val <= 100
+
+    def test_jam_rate_non_negative(self) -> None:
+        val = self._schema()["mechanisms"]["card_feed"]["jam_rate_per_1k"]
+        assert val >= 0
