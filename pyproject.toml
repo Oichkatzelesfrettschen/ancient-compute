@@ -1,22 +1,5 @@
 # Ancient Compute - Python Project Configuration
-
-[tool.black]
-line-length = 100
-target-version = ['py311']
-include = '\.pyi?$'
-extend-exclude = '''
-/(
-  # directories
-  \.eggs
-  | \.git
-  | \.hg
-  | \.mypy_cache
-  | \.tox
-  | \.venv
-  | build
-  | dist
-)/
-'''
+# Formatter: ruff format (Black-compatible, single tool -- black removed)
 
 [tool.ruff]
 line-length = 100
@@ -31,11 +14,18 @@ exclude = [
     ".backup_*",
 ]
 
+[tool.ruff.format]
+# Ruff formatter settings (Black-compatible; replaces black)
+line-ending = "lf"
+indent-style = "space"
+quote-style = "double"
+skip-magic-trailing-comma = false
+
 [tool.ruff.lint]
 # E/W: pycodestyle, F: pyflakes, I: isort, UP: pyupgrade, B: flake8-bugbear, SIM: flake8-simplify
 select = ["E", "F", "W", "I", "UP", "B", "SIM"]
 ignore = [
-    "E203",   # whitespace before ':', conflicts with black
+    "E203",   # whitespace before ':' (Ruff formatter handles this)
     "B008",   # do not perform function calls in default arguments (FastAPI Depends)
     "SIM108", # ternary operator -- style preference
 ]
@@ -81,7 +71,8 @@ addopts = "-v --tb=short"
 
 [tool.coverage.run]
 source = ["backend/src"]
-omit = ["*/tests/*", "*/test_*.py"]
+branch = true
+omit = ["*/tests/*", "*/test_*.py", "*/venv/*"]
 
 [tool.coverage.report]
 exclude_lines = [
@@ -91,3 +82,17 @@ exclude_lines = [
     "raise NotImplementedError",
     "if __name__ == .__main__.:",
 ]
+show_missing = true
+
+[tool.pytest.ini_options.benchmark]
+# pytest-benchmark: disable by default so unit runs stay fast
+# Run with: pytest --benchmark-only tests/benchmarks/
+disable_gc = true
+min_rounds = 5
+
+[tool.deptry]
+# WHY: detect unused imports and missing/transitive dependency mistakes early
+# Ignore backend venv path and generated files
+ignore_notebooks = true
+exclude = ["venv", ".venv", "backend/venv", "experiments", "build", "dist"]
+known_first_party = ["backend"]

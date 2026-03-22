@@ -1,8 +1,8 @@
 # Project Status Dashboard
 
-**Auto-generated**: 2026-03-21 17:56 UTC
+**Auto-generated**: 2026-03-21 20:14 UTC
 **Branch**: `main`
-**Last commit**: `603df6a test: test coverage sprint -- expand 33 test files to full class-based suites (3063 unit tests)`
+**Last commit**: `add104f chore: fix ruff/black violations, add test_performance.py, regenerate STATUS.md (3282 unit tests, 2026-03-21)`
 
 > Regenerate with: `make status`
 
@@ -12,10 +12,10 @@
 
 | Metric | Value |
 |--------|-------|
-| Unit tests collected | 3701 |
+| Unit tests collected | 3947 |
 | Collection errors | 0 |
-| Python source lines (backend/src/) | 46,451 |
-| Active docs (non-archive .md) | 200 |
+| Python source lines (backend/src/) | 47,555 |
+| Active docs (non-archive .md) | 201 |
 
 ## Phase Status
 

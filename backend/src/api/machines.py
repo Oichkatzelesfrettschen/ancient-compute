@@ -383,6 +383,9 @@ def _apply_load(
             adapter.load_deck(punched)  # type: ignore[attr-defined]
 
     elif pit == "none":
+        # ALGOL68 abacus: accept a list of bead operations run through abacus.a68
+        if "operations" in payload and hasattr(adapter, "execute_algol68_ops"):
+            adapter.execute_algol68_ops(list(payload["operations"]))  # type: ignore[union-attr]
         # Calculators: optionally set input value
         if "input" in payload:
             val = int(payload["input"])

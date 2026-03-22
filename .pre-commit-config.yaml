@@ -29,18 +29,12 @@ repos:
         args: ['--severity=style', '--enable=all', '--shell=sh']
         # Warnings as errors - fail on any issue
 
-  # Python formatting and linting
-  - repo: https://github.com/psf/black
-    rev: 23.12.1
-    hooks:
-      - id: black
-        language_version: python3
-        args: ['--line-length=100', '--check']
-        # Fail if not formatted
-
+  # Python formatting and linting (ruff is the sole formatter; black removed)
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.9.10
     hooks:
+      - id: ruff-format
+        # Ruff formatter check (Black-compatible; replaces black hook)
       - id: ruff
         args: ['--fix']
         # Lint + import sort (replaces flake8, isort, pylint per ADR 0001)

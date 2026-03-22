@@ -80,11 +80,11 @@ class SimulationBridge:
 
     @property
     def failed(self) -> bool:
-        return self._engine.failed
+        return bool(self._engine.failed)
 
     @property
     def failure_reason(self) -> str:
-        return self._engine.failure_reason
+        return str(self._engine.failure_reason)
 
     def run(self, end_time_s: float) -> None:
         """Advance physics to the given absolute time.
@@ -123,7 +123,7 @@ class SimulationBridge:
         if time_s > 0:
             self._engine.run(self._engine.state.time_s + time_s)
 
-        return time_s
+        return float(time_s)
 
     def snapshot(self) -> PhysicsSnapshot:
         """Capture current physics state for logging."""

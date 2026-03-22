@@ -265,3 +265,101 @@ class TestHeapEdgeCases:
         heap.free(ptr)
         with pytest.raises(KeyError):
             heap.free(ptr)
+
+
+class TestMemoryHeapChunkedAlloc:
+    """Multiple allocations and interaction tests."""
+
+    def test_two_separate_allocs_different_ptrs(self) -> None:
+        heap = MemoryHeap()
+        p1 = heap.malloc(4)
+        p2 = heap.malloc(4)
+        assert p1 != p2
+
+    def test_write_to_second_alloc_no_overlap(self) -> None:
+        heap = MemoryHeap()
+        p1 = heap.malloc(4)
+        p2 = heap.malloc(4)
+        heap.write(p1, 0, 1.0)
+        heap.write(p2, 0, 2.0)
+        assert heap.read(p1, 0) == 1.0
+        assert heap.read(p2, 0) == 2.0
+
+    def test_allocated_count_tracks_allocs(self) -> None:
+        heap = MemoryHeap()
+        heap.malloc(4)
+        heap.malloc(8)
+        assert heap.allocated_count == 2
+
+    def test_free_decrements_count(self) -> None:
+        heap = MemoryHeap()
+        p = heap.malloc(4)
+        heap.free(p)
+        assert heap.allocated_count == 0
+
+    def test_malloc_size_zero_raises(self) -> None:
+        """malloc(0) is invalid and raises ValueError."""
+        heap = MemoryHeap()
+        with pytest.raises(ValueError):
+            heap.malloc(0)
+
+    def test_large_alloc_and_full_write(self) -> None:
+        heap = MemoryHeap()
+        size = 100
+        p = heap.malloc(size)
+        for i in range(size):
+            heap.write(p, i, float(i))
+        for i in range(size):
+            assert heap.read(p, i) == float(i)
+
+
+class TestMemoryHeapGC:
+    """Mark-and-sweep (via sweep()) GC safety tests."""
+
+    def test_mark_prevents_sweep_collection(self) -> None:
+        heap = MemoryHeap()
+        p = heap.malloc(4)
+        heap.write(p, 0, 99.0)
+        heap.mark(p)
+        heap.sweep()
+        # Marked allocation survives -- still readable
+        assert heap.read(p, 0) == 99.0
+
+    def test_unmarked_alloc_swept(self) -> None:
+        heap = MemoryHeap()
+        heap.malloc(4)
+        heap.sweep()
+        # Unmarked memory collected
+        assert heap.allocated_count == 0
+
+    def test_sweep_returns_none(self) -> None:
+        heap = MemoryHeap()
+        heap.malloc(4)
+        result = heap.sweep()
+        assert result is None
+
+    def test_mark_two_sweep_one_leaves_two(self) -> None:
+        heap = MemoryHeap()
+        p1 = heap.malloc(4)
+        p2 = heap.malloc(4)
+        heap.malloc(4)
+        heap.mark(p1)
+        heap.mark(p2)
+        heap.sweep()
+        assert heap.allocated_count == 2
+
+    def test_mark_then_sweep_leaves_one(self) -> None:
+        heap = MemoryHeap()
+        p1 = heap.malloc(4)
+        heap.malloc(4)
+        heap.mark(p1)
+        heap.sweep()
+        assert heap.allocated_count == 1
+
+    def test_double_mark_is_safe(self) -> None:
+        heap = MemoryHeap()
+        p = heap.malloc(4)
+        heap.mark(p)
+        heap.mark(p)
+        heap.sweep()
+        assert heap.allocated_count == 1

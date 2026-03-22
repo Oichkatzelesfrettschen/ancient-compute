@@ -368,3 +368,28 @@ class TestQueryCacheInvalidationExtended:
         cache = QueryCache()
         cache._store("k", "v")
         assert cache.cleanup_expired() == 0
+
+
+class TestQueryCacheStoreGet:
+    """_store and _cache round-trip and miss semantics."""
+
+    def test_stored_value_in_cache(self) -> None:
+        cache = QueryCache()
+        cache._store("mykey", "myval")
+        assert "mykey" in cache._cache
+
+    def test_missing_key_not_in_cache(self) -> None:
+        cache = QueryCache()
+        assert "nonexistent" not in cache._cache
+
+    def test_overwrite_replaces_value(self) -> None:
+        cache = QueryCache()
+        cache._store("k", "first")
+        cache._store("k", "second")
+        assert cache._cache["k"].data == "second"
+
+    def test_cache_len_grows_with_stores(self) -> None:
+        cache = QueryCache()
+        for i in range(5):
+            cache._store(f"key_{i}", i)
+        assert len(cache._cache) == 5

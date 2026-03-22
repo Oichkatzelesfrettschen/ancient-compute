@@ -242,3 +242,100 @@ class TestDraconicModelConsistency:
         train = draconic_pointer_train_from_arxiv_2104_06181()
         angles = train.propagate(1.0, "r1")
         assert len(angles) == 2  # r1 and s1 only
+
+
+class TestDraconicTrainNumerics:
+    """Numerical precision for individual gear stages."""
+
+    def test_b1_to_a1_ratio_float(self) -> None:
+        train = draconic_pointer_train_from_arxiv_2104_06181()
+        angles = train.propagate(1.0, "b1")
+        assert isinstance(angles["a1"], float)
+
+    def test_r1_to_s1_ratio_float(self) -> None:
+        train = draconic_pointer_train_from_arxiv_2104_06181()
+        angles = train.propagate(1.0, "r1")
+        assert isinstance(angles["s1"], float)
+
+
+class TestDraconicTrainEdgeProperties:
+    """GearEdge attribute tests."""
+
+    def test_gear_edge_ratio_is_positive(self) -> None:
+        train = draconic_pointer_train_from_arxiv_2104_06181()
+        for edge in train.edges:
+            assert edge.ratio > 0
+
+    def test_gear_edge_src_and_dst_differ(self) -> None:
+        train = draconic_pointer_train_from_arxiv_2104_06181()
+        for edge in train.edges:
+            assert edge.src != edge.dst
+
+    def test_b1_a1_edge_numerator_224(self) -> None:
+        # The b1->a1 ratio is 224/50; check numerator encodes 224 teeth
+        b1_edge = next(
+            e for e in draconic_pointer_train_from_arxiv_2104_06181().edges
+            if e.src == "b1"
+        )
+        # ratio = 224/50 = 4.48; numerator proportional test
+        assert math.isclose(b1_edge.ratio * 50, 224.0, rel_tol=1e-9)
+
+    def test_r1_s1_edge_ratio_equals_three(self) -> None:
+        r1_edge = next(
+            e for e in draconic_pointer_train_from_arxiv_2104_06181().edges
+            if e.src == "r1"
+        )
+        assert math.isclose(r1_edge.ratio, 3.0, rel_tol=1e-9)
+
+    def test_propagate_with_fractional_input(self) -> None:
+        train = draconic_pointer_train_from_arxiv_2104_06181()
+        angles = train.propagate(0.25, "b1")
+        assert math.isclose(angles["a1"], 0.25 * (224.0 / 50.0), rel_tol=1e-9)
+
+    def test_gear_train_has_no_duplicate_edges(self) -> None:
+        train = draconic_pointer_train_from_arxiv_2104_06181()
+        pairs = [(e.src, e.dst) for e in train.edges]
+        assert len(pairs) == len(set(pairs))
+
+    def test_propagate_negative_input_reflects_sign(self) -> None:
+        # Negative rotation -> negative output
+        train = draconic_pointer_train_from_arxiv_2104_06181()
+        pos = train.propagate(1.0, "b1")["a1"]
+        neg = train.propagate(-1.0, "b1")["a1"]
+        assert math.isclose(neg, -pos, rel_tol=1e-9)
+
+    def test_zero_b1_gives_zero_a1(self) -> None:
+        train = draconic_pointer_train_from_arxiv_2104_06181()
+        angles = train.propagate(0.0, "b1")
+        assert angles["a1"] == 0.0
+
+    def test_negative_b1_gives_negative_a1(self) -> None:
+        train = draconic_pointer_train_from_arxiv_2104_06181()
+        angles = train.propagate(-1.0, "b1")
+        # ratio is positive, so negative input gives negative output
+        assert angles["a1"] < 0.0
+
+    def test_large_b1_scales_a1_proportionally(self) -> None:
+        train = draconic_pointer_train_from_arxiv_2104_06181()
+        a1_1 = train.propagate(1.0, "b1")["a1"]
+        a1_100 = train.propagate(100.0, "b1")["a1"]
+        assert math.isclose(a1_100, 100.0 * a1_1, rel_tol=1e-9)
+
+    def test_draconic_model_ratio_matches_compound(self) -> None:
+        """Model result = (b1->a1 ratio) * (r1->s1 ratio)."""
+        train = draconic_pointer_train_from_arxiv_2104_06181()
+        a1_per_b1 = train.propagate(1.0, "b1")["a1"]
+        s1_per_r1 = train.propagate(1.0, "r1")["s1"]
+        compound = abs(a1_per_b1) * abs(s1_per_r1)
+        model = AntikytheraDraconicModel()
+        assert math.isclose(compound, model.draconic_pointer_rotations_per_b1_rotation(), rel_tol=1e-9)
+
+    def test_b1_a1_ratio_is_224_over_50(self) -> None:
+        train = draconic_pointer_train_from_arxiv_2104_06181()
+        angles = train.propagate(1.0, "b1")
+        assert math.isclose(angles["a1"], 224.0 / 50.0, rel_tol=1e-9)
+
+    def test_r1_s1_ratio_is_3(self) -> None:
+        train = draconic_pointer_train_from_arxiv_2104_06181()
+        angles = train.propagate(1.0, "r1")
+        assert math.isclose(angles["s1"], 3.0, rel_tol=1e-9)

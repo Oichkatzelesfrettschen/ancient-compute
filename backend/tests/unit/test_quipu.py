@@ -306,3 +306,36 @@ class TestQuipuSumProperties:
         assert emu.sum_by_category("A") == 10
         assert emu.sum_by_category("B") == 7
         assert emu.sum_by_category("C") == 10
+
+
+class TestQuipuEncodeDecodeProperties:
+    """Encode/decode round-trip and category isolation properties."""
+
+    def test_decode_empty_category_returns_empty_list(self) -> None:
+        emu = QuipuEmulator()
+        assert emu.decode_number("missing") == []
+
+    def test_encode_then_decode_preserves_order(self) -> None:
+        emu = QuipuEmulator()
+        vals = [5, 3, 9, 1, 2]
+        for v in vals:
+            emu.encode_number("x", v)
+        assert emu.decode_number("x") == vals
+
+    def test_two_categories_decode_independently(self) -> None:
+        emu = QuipuEmulator()
+        emu.encode_number("alpha", 100)
+        emu.encode_number("beta", 200)
+        assert emu.decode_number("alpha") == [100]
+        assert emu.decode_number("beta") == [200]
+
+    def test_sum_missing_category_is_zero(self) -> None:
+        emu = QuipuEmulator()
+        emu.encode_number("present", 1)
+        assert emu.sum_by_category("absent") == 0
+
+    def test_large_value_roundtrips(self) -> None:
+        emu = QuipuEmulator()
+        emu.encode_number("big", 999_999)
+        assert emu.decode_number("big") == [999_999]
+        assert emu.sum_by_category("big") == 999_999

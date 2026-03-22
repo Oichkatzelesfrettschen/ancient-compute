@@ -295,3 +295,12 @@ class TestAbacusEdgeCases:
         emu.set_value(42)
         emu.reset()
         assert emu.state()["value"] == 0
+
+
+class TestAbacusStateShape:
+    """state() dict properties."""
+
+    def test_state_has_value_key(self) -> None:
+        from backend.src.emulator.abacus import AbacusEmulator
+        emu = AbacusEmulator()
+        assert "value" in emu.state()

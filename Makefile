@@ -1,7 +1,7 @@
 # Ancient Compute - Makefile
 # Common development tasks for cross-platform development
 
-.PHONY: help setup dev test build clean install-hooks lint format docker-up docker-down test-active test-unit test-physics verify-simulation links-check links-check-full archive-audit db-init db-migrate db-rollback db-reset verify docs-check status twin-verify bom-validate mypy-strict mypy-report
+.PHONY: help setup dev test build clean install-hooks lint format docker-up docker-down test-active test-unit test-physics verify-simulation links-check links-check-full archive-audit db-init db-migrate db-rollback db-reset verify docs-check status twin-verify bom-validate mypy-strict mypy-report benchmark deptry pyright
 
 # Default target
 help:
@@ -149,9 +149,9 @@ lint:
 
 format:
 	@echo "Formatting code..."
-	@echo "Formatting backend..."
+	@echo "Formatting backend (ruff format + ruff lint --fix)..."
+	cd backend && ruff format src/ tests/
 	cd backend && ruff check --fix src/ tests/
-	cd backend && black src/ tests/
 	@echo "Formatting frontend..."
 	cd frontend && pnpm format
 
@@ -325,23 +325,23 @@ physics-envelope:
 verify:
 	@echo "=== Local CI Verification ==="
 	@echo ""
-	@echo "[1/9] Backend linting (ruff)..."
+	@echo "[1/10] Backend linting (ruff)..."
 	@cd backend && ruff check src/ tests/ 2>&1 || (echo "FAIL: ruff"; exit 1)
-	@echo "[2/9] Backend formatting (black)..."
-	@cd backend && python3 -m black --check --diff src/ tests/ 2>&1 || (echo "FAIL: black"; exit 1)
-	@echo "[3/9] Backend tests..."
+	@echo "[2/10] Backend formatting (ruff format --check)..."
+	@cd backend && ruff format --check src/ tests/ 2>&1 || (echo "FAIL: ruff format"; exit 1)
+	@echo "[3/10] Backend tests..."
 	@cd backend && python3 -m pytest tests/unit/ -q \
 	  --ignore=backend/tests/integration/test_cross_language.py \
 	  --ignore=backend/tests/integration/test_phase4_w1_api.py \
 	  2>&1 || (echo "FAIL: pytest"; exit 1)
-	@echo "[4/9] Shell scripts (shellcheck)..."
+	@echo "[4/10] Shell scripts (shellcheck)..."
 	@find . -name "*.sh" -not -path "./.git/*" -not -path "./venv/*" \
 	  -exec shellcheck --severity=warning {} + 2>&1 || (echo "WARN: shellcheck issues"; true)
-	@echo "[5/9] BOM validation..."
+	@echo "[5/10] BOM validation..."
 	@PYTHONPATH=. python3 tools/validate_bom.py 2>&1 || (echo "FAIL: BOM validation"; exit 1)
-	@echo "[6/9] Opcode sync check..."
+	@echo "[6/10] Opcode sync check..."
 	@PYTHONPATH=. python3 tools/validate_opcodes.py 2>&1 || (echo "FAIL: opcode sync"; exit 1)
-	@echo "[7/9] Dockerfile linting (hadolint)..."
+	@echo "[7/10] Dockerfile linting (hadolint)..."
 	@hadolint backend/Dockerfile \
 	  backend/src/services/containers/base/Dockerfile \
 	  backend/src/services/containers/python/Dockerfile \
@@ -350,7 +350,7 @@ verify:
 	  frontend/Dockerfile \
 	  services/lisp/Dockerfile \
 	  2>&1 || (echo "WARN: hadolint issues"; true)
-	@echo "[8/9] YAML linting (yamllint)..."
+	@echo "[8/10] YAML linting (yamllint)..."
 	@yamllint -c .yamllint.yaml \
 	  docs/hardware/OPCODES.yaml \
 	  docs/simulation/sim_schema.yaml \
@@ -364,11 +364,15 @@ verify:
 	  .pre-commit-config.yaml \
 	  docker-compose.yml \
 	  2>&1 || (echo "WARN: yamllint issues"; true)
-	@echo "[9/9] pip-audit (dependencies)..."
+	@echo "[9/10] pip-audit (dependencies)..."
 	@pip-audit -r backend/requirements.txt -q 2>&1 | grep -v "^WARNING" || (echo "WARN: pip-audit issues"; true)
+	@echo "[10/10] Dependency hygiene (deptry)..."
+	@cd backend && deptry . 2>&1 || (echo "WARN: deptry issues (transitive/unused deps)"; true)
 	@echo ""
 	@echo "--- mypy summary (non-blocking) ---"
 	@python3 -m mypy backend/src/ 2>&1 | tail -1 || true
+	@echo "--- pyright summary (non-blocking) ---"
+	@cd backend && python3 -m pyright src/ 2>&1 | tail -1 || true
 	@echo "--- bandit summary (non-blocking) ---"
 	@bandit -r backend/src/ -q --severity-level medium 2>&1 | tail -6 || true
 	@echo ""
@@ -409,4 +413,20 @@ mypy-report:
 	@echo "=== mypy full report ==="
 	@cd backend && python3 -m mypy src/ --strict --ignore-missing-imports 2>&1 | \
 	  grep -E '^src/|Found [0-9]+ error' | sort | uniq -c | sort -rn | head -40 || true
+
+# --- Benchmarks ---
+benchmark:
+	@echo "=== Emulator benchmarks ==="
+	@cd backend && python3 -m pytest tests/unit/test_benchmarks.py --benchmark-only \
+	  --benchmark-sort=mean --benchmark-columns=min,mean,max,rounds -q 2>&1 || true
+
+# --- Dependency hygiene ---
+deptry:
+	@echo "=== Dependency hygiene (deptry) ==="
+	@cd backend && deptry . 2>&1 || true
+
+# --- Pyright type checker ---
+pyright:
+	@echo "=== Pyright type checker ==="
+	@cd backend && python3 -m pyright src/ 2>&1 | tail -20 || true
 

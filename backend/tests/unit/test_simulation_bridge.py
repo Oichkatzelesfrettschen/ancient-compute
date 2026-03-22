@@ -324,3 +324,100 @@ class TestSimulationBridgeConfig:
         report = bridge.physics_report()
         for op in ("ADD", "SUB", "MULT", "DIV"):
             assert report["opcode_counts"].get(op, 0) >= 1
+
+
+class TestSimulationBridgeOpcodeCounts:
+    """opcode_advance() accumulation and report structure tests."""
+
+    def _make_bridge(self) -> "SimulationBridge":
+        from backend.src.emulator.simulation.bridge import SimulationBridge
+        from backend.src.emulator.simulation.engine import SimulationEngine
+        from backend.src.emulator.simulation.state import SimulationConfig
+        cfg = SimulationConfig(rpm=30.0)
+        return SimulationBridge(SimulationEngine(cfg))
+
+    def test_single_add_counted(self) -> None:
+        bridge = self._make_bridge()
+        bridge.opcode_advance("ADD")
+        assert bridge.physics_report()["opcode_counts"].get("ADD", 0) >= 1
+
+    def test_ten_mult_counted(self) -> None:
+        bridge = self._make_bridge()
+        for _ in range(10):
+            bridge.opcode_advance("MULT")
+        assert bridge.physics_report()["opcode_counts"].get("MULT", 0) >= 10
+
+    def test_reset_clears_opcode_counts(self) -> None:
+        bridge = self._make_bridge()
+        bridge.opcode_advance("DIV")
+        bridge.reset()
+        assert bridge.physics_report()["opcode_counts"].get("DIV", 0) == 0
+
+    def test_report_has_temperature_key(self) -> None:
+        bridge = self._make_bridge()
+        bridge.opcode_advance("ADD")
+        report = bridge.physics_report()
+        assert "temperature_C" in report or "temperature" in report
+
+    def test_report_has_simulated_time_key(self) -> None:
+        bridge = self._make_bridge()
+        bridge.opcode_advance("ADD")
+        report = bridge.physics_report()
+        assert "simulated_time_s" in report
+
+    def test_no_opcodes_zero_counts(self) -> None:
+        bridge = self._make_bridge()
+        counts = bridge.physics_report()["opcode_counts"]
+        assert len(counts) == 0 or all(v == 0 for v in counts.values())
+
+
+class TestPhysicsSnapshotExtra:
+    """Additional PhysicsSnapshot attribute tests."""
+
+    def _snap(self) -> "PhysicsSnapshot":
+        cfg = SimulationConfig(rpm=30.0)
+        from backend.src.emulator.simulation.engine import SimulationEngine
+        from backend.src.emulator.simulation.bridge import SimulationBridge
+        bridge = SimulationBridge(SimulationEngine(cfg))
+        bridge.opcode_advance("ADD")
+        return bridge.snapshot()
+
+    def test_snapshot_temperature_nonnegative(self) -> None:
+        assert self._snap().temperature_C >= 0
+
+    def test_snapshot_time_nonnegative(self) -> None:
+        assert self._snap().time_s >= 0
+
+    def test_snapshot_shaft_deflection_nonneg(self) -> None:
+        assert self._snap().shaft_deflection_mm >= 0
+
+    def test_snapshot_energy_nonneg(self) -> None:
+        assert self._snap().energy_consumed_J >= 0
+
+    def test_two_snapshots_independent(self) -> None:
+        from backend.src.emulator.simulation.engine import SimulationEngine
+        from backend.src.emulator.simulation.bridge import SimulationBridge
+        cfg = SimulationConfig(rpm=30.0)
+        b1 = SimulationBridge(SimulationEngine(cfg))
+        b2 = SimulationBridge(SimulationEngine(cfg))
+        b1.opcode_advance("MULT")
+        s1 = b1.snapshot()
+        s2 = b2.snapshot()
+        # b2 has no opcodes -- time should be <= b1
+        assert s2.time_s <= s1.time_s
+
+
+class TestSimulationBridgeSnapshotTypes:
+    """PhysicsSnapshot returned by bridge.snapshot() field types."""
+
+    def test_snapshot_time_s_is_float(self) -> None:
+        cfg = SimulationConfig(rpm=30.0)
+        bridge = SimulationBridge(SimulationEngine(cfg))
+        snap = bridge.snapshot()
+        assert isinstance(snap.time_s, float)
+
+    def test_snapshot_temperature_is_float(self) -> None:
+        cfg = SimulationConfig(rpm=30.0)
+        bridge = SimulationBridge(SimulationEngine(cfg))
+        snap = bridge.snapshot()
+        assert isinstance(snap.temperature_C, float)

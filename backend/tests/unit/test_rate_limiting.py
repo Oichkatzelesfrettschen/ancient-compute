@@ -9,6 +9,8 @@ from __future__ import annotations
 import time
 from unittest.mock import MagicMock
 
+import pytest
+
 from backend.src.rate_limiting import RateLimiter, RateLimitMiddleware
 
 # ---------------------------------------------------------------------------
@@ -287,9 +289,65 @@ class TestRateLimitMiddlewareExtended:
         max_default, _ = self.mw._get_rate_limit("/unknown/path")
         assert max_default > max_exec
 
+
+class TestRateLimiterTokenBucketSemantics:
+    """Token bucket fill/drain model verification."""
+
+    def test_initial_bucket_has_full_capacity(self) -> None:
+        rl = RateLimiter()
+        # After first request, tokens should be max - 1
+        rl.is_allowed("a", "/x", 5, 60)
+        key = rl._get_key("a", "/x")
+        tokens, _ = rl.buckets[key]
+        assert tokens == pytest.approx(4, abs=1)
+
+    def test_deny_after_exactly_limit_requests(self) -> None:
+        rl = RateLimiter()
+        for _ in range(5):
+            a, _ = rl.is_allowed("z", "/p", 5, 60)
+        # 6th should be denied
+        allowed, retry = rl.is_allowed("z", "/p", 5, 60)
+        assert allowed is False
+        assert retry is not None
+
+    def test_limit_of_one_denies_on_second(self) -> None:
+        rl = RateLimiter()
+        rl.is_allowed("x", "/q", 1, 60)
+        allowed, _ = rl.is_allowed("x", "/q", 1, 60)
+        assert allowed is False
+
+    def test_two_routes_same_ip_total_independent(self) -> None:
+        rl = RateLimiter()
+        for _ in range(3):
+            rl.is_allowed("1.1.1.1", "/a", 3, 60)
+        # /a exhausted; /b still has capacity
+        a_result, _ = rl.is_allowed("1.1.1.1", "/a", 3, 60)
+        b_result, _ = rl.is_allowed("1.1.1.1", "/b", 3, 60)
+        assert a_result is False
+        assert b_result is True
+
+    def test_key_format_is_deterministic(self) -> None:
+        rl = RateLimiter()
+        k1 = rl._get_key("1.2.3.4", "/api")
+        k2 = rl._get_key("1.2.3.4", "/api")
+        assert k1 == k2
+
+    def test_large_limit_allows_many_requests(self) -> None:
+        rl = RateLimiter()
+        for i in range(100):
+            a, _ = rl.is_allowed("bulk", "/fast", 100, 60)
+            assert a is True, f"Request {i + 1} was denied unexpectedly"
+
     def test_auth_window_longer_than_execute_window(self) -> None:
-        _, exec_window = self.mw._get_rate_limit("/api/v1/execute")
-        _, auth_window = self.mw._get_rate_limit("/api/v1/auth/login")
+        mw = RateLimitMiddleware.__new__(RateLimitMiddleware)
+        mw.limiter = RateLimiter()
+        mw.route_limits = {
+            "/api/v1/execute": (10, 60),
+            "/api/v1/auth/login": (5, 300),
+            "default": (100, 60),
+        }
+        _, exec_window = mw._get_rate_limit("/api/v1/execute")
+        _, auth_window = mw._get_rate_limit("/api/v1/auth/login")
         assert auth_window > exec_window
 
     def test_client_identifier_returns_non_empty_string(self) -> None:
@@ -311,7 +369,10 @@ class TestRateLimitMiddlewareExtended:
         assert identifier == "1.1.1.1"
 
     def test_unknown_path_uses_default_limit(self) -> None:
-        max_req, window = self.mw._get_rate_limit("/completely/unknown/path")
+        mw = RateLimitMiddleware.__new__(RateLimitMiddleware)
+        mw.limiter = RateLimiter()
+        mw.route_limits = {"default": (100, 60)}
+        max_req, window = mw._get_rate_limit("/completely/unknown/path")
         assert max_req == 100
         assert window == 60
 

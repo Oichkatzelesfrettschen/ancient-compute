@@ -312,3 +312,44 @@ class TestPythonRejectedExtendedTwo:
 
     def test_rejected_with_statement(self) -> None:
         _err("def f():\n    with open('test') as fh:\n        return 1")
+
+
+class TestPythonMachineCodeShape:
+    """machine_code field type and content tests."""
+
+    def test_machine_code_is_string(self) -> None:
+        r = _run("def f(x):\n    return x + 1")
+        from backend.src.services.languages.python_service import ExecutionStatus
+        assert r.status == ExecutionStatus.SUCCESS
+        assert isinstance(r.machine_code, str)
+
+    def test_machine_code_non_empty_for_valid_function(self) -> None:
+        r = _run("def add(a, b):\n    return a + b")
+        from backend.src.services.languages.python_service import ExecutionStatus
+        assert r.status == ExecutionStatus.SUCCESS
+        assert len(r.machine_code) > 0
+
+    def test_machine_code_contains_hex(self) -> None:
+        r = _run("def f(x):\n    return x")
+        from backend.src.services.languages.python_service import ExecutionStatus
+        if r.status == ExecutionStatus.SUCCESS:
+            # machine_code is a hex dump string; check it looks hexadecimal
+            import re
+            assert re.search(r"[0-9a-f]", r.machine_code, re.IGNORECASE)
+
+    def test_compile_error_gives_empty_machine_code(self) -> None:
+        r = _run("class Foo:\n    pass")
+        from backend.src.services.languages.python_service import ExecutionStatus
+        assert r.status == ExecutionStatus.COMPILE_ERROR
+        # machine_code should be falsy on failure
+        assert not r.machine_code
+
+    def test_result_has_machine_code_attribute(self) -> None:
+        r = _run("def f():\n    return 0")
+        assert hasattr(r, "machine_code")
+
+    def test_two_function_program_gives_machine_code(self) -> None:
+        _ok(
+            "def double(x):\n    return x * 2\n\n"
+            "def triple(x):\n    return x * 3"
+        )

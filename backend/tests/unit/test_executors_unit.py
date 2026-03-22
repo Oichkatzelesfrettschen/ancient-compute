@@ -335,3 +335,27 @@ class TestGetExecutorCapabilities:
         svc = get_executor("haskell")
         caps = asyncio.run(svc.get_capabilities())
         assert len(caps) > 0
+
+
+class TestExecutorServiceTypes:
+    """Service factory returns correct concrete types."""
+
+    def test_get_python_returns_python_service(self) -> None:
+        svc = get_executor("python")
+        assert isinstance(svc, PythonService)
+
+    def test_get_c_returns_c_service(self) -> None:
+        svc = get_executor("c")
+        assert isinstance(svc, CService)
+
+    def test_get_haskell_returns_haskell_service(self) -> None:
+        svc = get_executor("haskell")
+        assert isinstance(svc, HaskellService)
+
+    def test_get_lisp_returns_lisp_service(self) -> None:
+        svc = get_executor("lisp")
+        assert isinstance(svc, LISPService)
+
+    def test_get_idris_returns_idris_service(self) -> None:
+        svc = get_executor("idris")
+        assert isinstance(svc, IDRISService)

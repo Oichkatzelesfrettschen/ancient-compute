@@ -429,3 +429,26 @@ class TestAntikytheraMechanismPointerAccuracy:
         am_ref = AntikytheraMechanism()
         am_ref.set_input_date(6.0)
         assert abs(am.pointers["Saros"] - am_ref.pointers["Saros"]) < 0.001
+
+
+class TestAntikytheraMechanismPointerKeys:
+    """Verify all expected pointer keys are present in the output."""
+
+    def test_sun_key_present(self) -> None:
+        from backend.src.emulator.antikythera import AntikytheraMechanism
+        am = AntikytheraMechanism()
+        am.set_input_date(1.0)
+        assert "Sun" in am.pointers
+
+    def test_saros_key_present(self) -> None:
+        from backend.src.emulator.antikythera import AntikytheraMechanism
+        am = AntikytheraMechanism()
+        am.set_input_date(1.0)
+        assert "Saros" in am.pointers
+
+    def test_all_pointer_values_are_floats(self) -> None:
+        from backend.src.emulator.antikythera import AntikytheraMechanism
+        am = AntikytheraMechanism()
+        am.set_input_date(2.5)
+        for v in am.pointers.values():
+            assert isinstance(v, float)

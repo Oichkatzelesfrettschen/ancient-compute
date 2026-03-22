@@ -167,7 +167,7 @@ class LinearScanAllocator:
     def _furthest_next_use(self, interval: LiveInterval) -> int:
         """Get position of furthest next use (for spill selection)"""
         # Returns the end position (furthest use in interval)
-        return interval.end
+        return int(interval.end)
 
     def _allocate_stack_slot(self) -> int:
         """Allocate stack space for spilled value"""
@@ -196,7 +196,7 @@ class LinearScanAllocator:
             if live_count >= len(self.PHYSICAL_REGISTERS):
                 at_capacity_count += 1
 
-        return at_capacity_count / total_instructions
+        return float(at_capacity_count) / float(total_instructions)
 
     def print_allocation(self, allocation: AllocationMap) -> str:
         """Print allocation results"""

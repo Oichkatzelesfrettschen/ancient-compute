@@ -338,3 +338,21 @@ class TestCGate3RecursionAndMultiFunc:
             "    return n;\n"
             "}\n"
         )
+
+
+class TestCGate3ContractMachineCodeShape:
+    """machine_code field properties for valid C programs."""
+
+    def test_machine_code_is_string(self) -> None:
+        from backend.src.services.languages.c_service import ExecutionStatus
+        r = _run("int f(int x) { return x; }")
+        if r.status == ExecutionStatus.SUCCESS:
+            assert isinstance(r.machine_code, str)
+
+    def test_machine_code_non_empty(self) -> None:
+        r = _run("int add(int a, int b) { return a + b; }")
+        assert r.machine_code
+
+    def test_compile_error_gives_falsy_machine_code(self) -> None:
+        r = _run("int bad {}")
+        assert not r.machine_code

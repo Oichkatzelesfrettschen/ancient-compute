@@ -5,6 +5,8 @@ High-performance wrapper around ExecutionOrchestrator with integrated
 result caching and database query optimization.
 """
 
+from __future__ import annotations
+
 from typing import Any
 
 try:

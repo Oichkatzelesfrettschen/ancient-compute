@@ -101,7 +101,7 @@ class SimulationEngine:
 
     def _total_gravity_load_N(self) -> float:
         """Dead weight of the machine [N]."""
-        return self.config.machine_mass_kg * 9.81
+        return float(self.config.machine_mass_kg * 9.81)
 
     # ------------------------------------------------------------------
     # Single Step
@@ -338,11 +338,11 @@ class SimulationEngine:
 
         regime = self.state.lubrication_regime
         if regime == "full_film":
-            return base_mu * 0.05  # ~95% reduction
+            return float(base_mu * 0.05)  # ~95% reduction
         elif regime == "mixed":
-            return base_mu * 0.3  # ~70% reduction
+            return float(base_mu * 0.3)  # ~70% reduction
         else:
-            return base_mu  # boundary/dry
+            return float(base_mu)  # boundary/dry
 
     def _update_lubrication(self) -> tuple[float, str]:
         """Compute lambda ratio and lubrication regime.

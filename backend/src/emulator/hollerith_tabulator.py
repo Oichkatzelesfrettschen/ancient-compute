@@ -159,7 +159,7 @@ class HollerithTabulator:
     def aux_counter(self, index: int) -> CounterDial:
         """Return auxiliary counter by index (0..MAX_COUNTERS-1)."""
         if not 0 <= index < MAX_COUNTERS:
-            raise IndexError(f"Aux counter index {index} out of range [0, {MAX_COUNTERS-1}]")
+            raise IndexError(f"Aux counter index {index} out of range [0, {MAX_COUNTERS - 1}]")
         return self._aux_counters[index]
 
     def read_card(self, card: PunchedCard) -> dict[tuple[int, int], int]:
@@ -206,7 +206,7 @@ class HollerithTabulator:
             Dict mapping bin number -> list of cards sorted into that bin.
         """
         if not 0 <= sort_column < CARD_COLS:
-            raise IndexError(f"Sort column {sort_column} out of range [0, {CARD_COLS-1}]")
+            raise IndexError(f"Sort column {sort_column} out of range [0, {CARD_COLS - 1}]")
         bins: dict[int, list[PunchedCard]] = {i: [] for i in range(SORT_BINS)}
         for card in cards:
             punched_rows = card.holes_in_col(sort_column)

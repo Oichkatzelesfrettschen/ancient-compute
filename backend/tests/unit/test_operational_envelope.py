@@ -263,3 +263,60 @@ class TestSimulationStateFields:
         engine = SimulationEngine(config)
         engine.run(3600.0)  # 1 hour
         assert engine.state.oil_age_hours > 0.0
+
+
+class TestSimulationStepResultExtra:
+    """Additional StepResult field type and range tests."""
+
+    def _step(self) -> StepResult:
+        cfg = SimulationConfig(rpm=30.0)
+        return SimulationEngine(cfg).step()
+
+    def test_time_s_is_float(self) -> None:
+        assert isinstance(self._step().time_s, float)
+
+    def test_temperature_is_float(self) -> None:
+        assert isinstance(self._step().temperature_C, float)
+
+    def test_shaft_deflection_is_float(self) -> None:
+        assert isinstance(self._step().shaft_deflection_mm, float)
+
+    def test_friction_coeff_is_float(self) -> None:
+        assert isinstance(self._step().friction_coeff, float)
+
+    def test_lubrication_regime_is_str(self) -> None:
+        assert isinstance(self._step().lubrication_regime, str)
+
+    def test_lambda_ratio_nonneg(self) -> None:
+        assert self._step().lambda_ratio >= 0.0
+
+    def test_wear_volume_nonneg(self) -> None:
+        assert self._step().max_wear_volume_mm3 >= 0.0
+
+    def test_temperature_gt_zero(self) -> None:
+        assert self._step().temperature_C > 0.0
+
+    def test_shaft_deflection_nonneg(self) -> None:
+        assert self._step().shaft_deflection_mm >= 0.0
+
+
+class TestSimulationEngineRunExtra:
+    """Additional SimulationEngine.run() result tests."""
+
+    def test_run_returns_sim_result(self) -> None:
+        from backend.src.emulator.simulation.engine import SimulationResult
+        cfg = SimulationConfig(rpm=30.0)
+        result = SimulationEngine(cfg).run(10.0)
+        assert isinstance(result, SimulationResult)
+
+    def test_run_10s_records_produced(self) -> None:
+        from backend.src.emulator.simulation.engine import SimulationResult
+        cfg = SimulationConfig(rpm=30.0)
+        result = SimulationEngine(cfg).run(120.0, record_interval_s=60.0)
+        assert hasattr(result, "history")
+
+    def test_run_oil_age_positive(self) -> None:
+        cfg = SimulationConfig(rpm=30.0)
+        engine = SimulationEngine(cfg)
+        engine.run(7200.0)  # 2 hours
+        assert engine.state.oil_age_hours > 0.0

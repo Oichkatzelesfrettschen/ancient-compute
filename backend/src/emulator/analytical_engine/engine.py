@@ -1425,10 +1425,10 @@ class Engine:
 PC: {self.PC}
 Clock: {self.clock_time}s
 Registers:
-  A: {self.registers['A'].to_decimal()}
-  B: {self.registers['B'].to_decimal()}
-  C: {self.registers['C'].to_decimal()}
-  D: {self.registers['D'].to_decimal()}
+  A: {self.registers["A"].to_decimal()}
+  B: {self.registers["B"].to_decimal()}
+  C: {self.registers["C"].to_decimal()}
+  D: {self.registers["D"].to_decimal()}
 Flags: {self.flags}
 Return Stack: {self.return_stack}
 Memory (first 10 words):
@@ -1446,7 +1446,7 @@ Memory (first 10 words):
                 operands = ", ".join(result_data["operands"])
                 clock_time = result_data["clock_time"]
 
-                f.write(f"# RESULT CARD {i+1}\n")
+                f.write(f"# RESULT CARD {i + 1}\n")
                 f.write(f"# Instruction: {opcode} {operands}\n")
                 f.write(f"# Value: {value.to_decimal()}\n")
                 f.write(f"# Timestamp: Clock {clock_time}s\n")

@@ -165,31 +165,31 @@ class HarvardMarkI:
     def set_counter(self, index: int, value: Decimal) -> None:
         """Set accumulator counter (index 0..71)."""
         if not 0 <= index < _NUM_COUNTERS:
-            raise IndexError(f"Counter index {index} out of range [0, {_NUM_COUNTERS-1}]")
+            raise IndexError(f"Counter index {index} out of range [0, {_NUM_COUNTERS - 1}]")
         self.state.storage[index] = value
 
     def get_counter(self, index: int) -> Decimal:
         """Read accumulator counter (index 0..71)."""
         if not 0 <= index < _NUM_COUNTERS:
-            raise IndexError(f"Counter index {index} out of range [0, {_NUM_COUNTERS-1}]")
+            raise IndexError(f"Counter index {index} out of range [0, {_NUM_COUNTERS - 1}]")
         return self.state.storage[index]
 
     def set_constant(self, index: int, value: Decimal) -> None:
         """Set read-only constant register (index 0..59, maps to storage 72..131)."""
         if not 0 <= index < _NUM_CONSTANTS:
-            raise IndexError(f"Constant index {index} out of range [0, {_NUM_CONSTANTS-1}]")
+            raise IndexError(f"Constant index {index} out of range [0, {_NUM_CONSTANTS - 1}]")
         self.state.storage[_NUM_COUNTERS + index] = value
 
     def get_constant(self, index: int) -> Decimal:
         """Read constant register (index 0..59)."""
         if not 0 <= index < _NUM_CONSTANTS:
-            raise IndexError(f"Constant index {index} out of range [0, {_NUM_CONSTANTS-1}]")
+            raise IndexError(f"Constant index {index} out of range [0, {_NUM_CONSTANTS - 1}]")
         return self.state.storage[_NUM_COUNTERS + index]
 
     def _read(self, addr: int) -> Decimal:
         """Read any storage address (counter or constant)."""
         if not 0 <= addr < _TOTAL_STORAGE:
-            raise IndexError(f"Storage address {addr} out of range [0, {_TOTAL_STORAGE-1}]")
+            raise IndexError(f"Storage address {addr} out of range [0, {_TOTAL_STORAGE - 1}]")
         return self.state.storage[addr]
 
     def _write(self, addr: int, value: Decimal) -> None:
@@ -197,7 +197,7 @@ class HarvardMarkI:
         if addr >= _NUM_COUNTERS:
             raise PermissionError(f"Storage address {addr} is a read-only constant register")
         if not 0 <= addr < _NUM_COUNTERS:
-            raise IndexError(f"Counter address {addr} out of range [0, {_NUM_COUNTERS-1}]")
+            raise IndexError(f"Counter address {addr} out of range [0, {_NUM_COUNTERS - 1}]")
         self.state.storage[addr] = value
         self.state.last_result = value
 

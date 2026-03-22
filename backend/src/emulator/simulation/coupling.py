@@ -162,15 +162,17 @@ class CouplingFunctions:
         )
         h_total = config.h_convection_W_m2K + h_rad
 
-        return TransientThermalSolver.crank_nicolson_step(
-            state.temperature_C,
-            Q_total_W,
-            h_total,
-            config.surface_area_m2,
-            config.machine_mass_kg,
-            460.0,  # c_p for steel/cast iron frame [J/(kg.K)]
-            config.ambient_temperature_C,
-            config.dt_s,
+        return float(
+            TransientThermalSolver.crank_nicolson_step(
+                state.temperature_C,
+                Q_total_W,
+                h_total,
+                config.surface_area_m2,
+                config.machine_mass_kg,
+                460.0,  # c_p for steel/cast iron frame [J/(kg.K)]
+                config.ambient_temperature_C,
+                config.dt_s,
+            )
         )
 
     # -- Tribology-Structural Coupling --
@@ -254,12 +256,14 @@ class CouplingFunctions:
         """Current shaft deflection from bearing loads [mm]."""
         shaft_mat = lib.get(config.shaft_material)
         total_load = sum(state.bearing_loads_N)
-        return ShaftAnalysis.max_deflection_multi_support_mm(
-            total_load,
-            config.shaft_length_mm,
-            config.bearing_count,
-            shaft_mat.youngs_modulus_GPa[0],
-            config.shaft_diameter_mm,
+        return float(
+            ShaftAnalysis.max_deflection_multi_support_mm(
+                total_load,
+                config.shaft_length_mm,
+                config.bearing_count,
+                shaft_mat.youngs_modulus_GPa[0],
+                config.shaft_diameter_mm,
+            )
         )
 
     @staticmethod

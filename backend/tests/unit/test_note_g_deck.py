@@ -240,3 +240,64 @@ class TestRunTableA2OnceExtended:
     def test_state_has_exactly_24_vars(self) -> None:
         state = run_table_a2_once(n=4, b1=BabbageNumber(-0.5), b3=BabbageNumber(1 / 6))
         assert len(state) == 24
+
+
+class TestLoadDeckStructureExtra:
+    """Additional load_deck() field tests."""
+
+    def test_deck_has_25_ops(self) -> None:
+        deck = load_deck()
+        assert len(deck) == 25
+
+    def test_op_numbers_end_at_25(self) -> None:
+        deck = load_deck()
+        assert deck[-1]["op"] == 25
+
+    def test_each_op_has_opcode_key(self) -> None:
+        deck = load_deck()
+        for item in deck:
+            assert "opcode" in item
+
+    def test_opcodes_are_strings(self) -> None:
+        deck = load_deck()
+        for item in deck:
+            assert isinstance(item["opcode"], str)
+
+
+class TestRunOnceResultsExtra:
+    """Additional run_once() output shape tests."""
+
+    def test_run_once_returns_dict(self) -> None:
+        result = run_once(n=1)
+        assert isinstance(result, dict)
+
+    def test_run_once_result_has_v24(self) -> None:
+        result = run_once(n=1)
+        assert "V24" in result
+
+    def test_run_once_result_values_are_babbage_numbers(self) -> None:
+        result = run_once(n=1)
+        for v in result.values():
+            assert isinstance(v, BabbageNumber)
+
+    def test_run_once_n1_v24_is_positive(self) -> None:
+        result = run_once(n=1)
+        # B_1 = 1/6 > 0
+        assert float(result["V24"].to_decimal()) > 0
+
+    def test_run_series_first_element_is_b1(self) -> None:
+        results = run_series(1)
+        assert abs(float(results[0].to_decimal()) - 1 / 6) < 1e-9
+
+
+class TestNoteGDeckLoadDeck:
+    """load_deck() structural properties."""
+
+    def test_load_deck_returns_list(self) -> None:
+        from backend.src.emulator.note_g_deck import load_deck
+        deck = load_deck()
+        assert isinstance(deck, list)
+
+    def test_load_deck_non_empty(self) -> None:
+        from backend.src.emulator.note_g_deck import load_deck
+        assert len(load_deck()) > 0

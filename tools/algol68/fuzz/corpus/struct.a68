@@ -1,0 +1,5 @@
+BEGIN
+  MODE POINT = STRUCT(INT x, y);
+  POINT p = (3, 4);
+  print((x OF p + y OF p, newline))
+END

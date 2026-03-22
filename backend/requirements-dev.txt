@@ -9,12 +9,20 @@ pytest-mock>=3.14,<4.0
 pytest-xdist>=3.5,<4.0
 pytest-timeout>=2.3,<3.0
 hypothesis>=6.100,<7.0
+pytest-benchmark>=4.0,<5.0
 
 # Code Quality
-black>=24.0,<25.0
 ruff==0.9.10
 mypy>=1.10,<2.0
+deptry>=0.20,<1.0
+pyright>=1.1,<2.0
+# Note: black removed; ruff format is the sole formatter (ruff is Black-compatible)
 # Note: flake8, isort, and pylint replaced by ruff (ADR 0001)
+
+# Runtime contracts & numerical tools
+beartype>=0.18,<1.0
+mpmath>=1.3,<2.0
+pint>=0.23,<1.0
 
 # Measurement & Profiling
 psutil>=6.0,<7.0

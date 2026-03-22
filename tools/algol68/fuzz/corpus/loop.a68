@@ -1,0 +1,5 @@
+BEGIN
+  INT s := 0;
+  FOR i FROM 1 TO 100 DO s +:= i OD;
+  print((s, newline))
+END

@@ -399,3 +399,28 @@ class TestEngineArithmeticChain:
         assert engine.registers["A"].to_decimal() == 10.0
         assert engine.registers["B"].to_decimal() == 20.0
         assert engine.registers["C"].to_decimal() == 30.0
+
+
+class TestEngineMemoryOperations:
+    """STOR/LOAD memory round-trips."""
+
+    def test_stor_load_roundtrip(self) -> None:
+        from backend.src.emulator.analytical_engine import Engine
+        engine = Engine()
+        engine.load_program_from_text("MOV A, 77\nSTOR A, 5\nCLR A\nLOAD A, 5\nHALT\n")
+        engine.run()
+        assert engine.registers["A"].to_decimal() == 77.0
+
+    def test_stor_to_multiple_addresses(self) -> None:
+        from backend.src.emulator.analytical_engine import Engine
+        engine = Engine()
+        engine.load_program_from_text(
+            "MOV A, 10\nSTOR A, 1\nMOV A, 20\nSTOR A, 2\nLOAD A, 1\nHALT\n"
+        )
+        engine.run()
+        assert engine.registers["A"].to_decimal() == 10.0
+
+    def test_initial_memory_all_zero(self) -> None:
+        from backend.src.emulator.analytical_engine import Engine, BabbageNumber
+        engine = Engine()
+        assert all(engine.memory[i] == BabbageNumber(0) for i in range(10))

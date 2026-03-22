@@ -43,7 +43,7 @@ class ExecutionResponse(BaseModel):
 
 def _to_execution_response(result: Any) -> ExecutionResponse:
     """Normalize mixed executor result shapes into the API response schema."""
-    status = getattr(result, "status", "runtime_error")
+    status: Any = getattr(result, "status", "runtime_error")
     status_value = status.value if hasattr(status, "value") else str(status)
 
     stdout = getattr(result, "stdout", getattr(result, "output", ""))

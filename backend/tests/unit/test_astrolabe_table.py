@@ -264,3 +264,90 @@ class TestAstrolabeQueryExtended:
     def test_negative_latitude_stored(self) -> None:
         q = AstrolabeQuery(latitude_deg=-33.9, date="2026-01-01", time="12:00", target="sun")
         assert q.latitude_deg == -33.9
+
+
+class TestAstrolabeQueryEdgeCases:
+    """AstrolabeQuery field validation and emulator edge cases."""
+
+    def _alt(self, lat: float, date: str, time: str = "12:00") -> float:
+        emu = AstrolabeEmulator()
+        q = AstrolabeQuery(latitude_deg=lat, date=date, time=time, target="sun")
+        return emu.read_altitude(q)
+
+    def test_high_latitude_noon_equinox_positive(self) -> None:
+        # Oslo (59.9N) noon vernal equinox: sun above horizon
+        assert self._alt(59.9, "2026-03-20") > 0.0
+
+    def test_equator_noon_summer_solstice_high(self) -> None:
+        alt = self._alt(0.0, "2026-06-21")
+        assert alt > 60.0
+
+    def test_south_pole_noon_equinox_below_horizon(self) -> None:
+        alt = self._alt(-90.0, "2026-03-20")
+        assert alt < 5.0  # near horizon or below
+
+    def test_altitude_is_float(self) -> None:
+        alt = self._alt(0.0, "2026-03-20")
+        assert isinstance(alt, float)
+
+    def test_altitude_never_exceeds_ninety(self) -> None:
+        alt = self._alt(0.0, "2026-06-21")
+        assert alt <= 90.0
+
+    def test_query_target_field(self) -> None:
+        q = AstrolabeQuery(latitude_deg=51.5, date="2026-03-20", time="12:00", target="sun")
+        assert q.target == "sun"
+
+    def test_query_latitude_stored(self) -> None:
+        q = AstrolabeQuery(latitude_deg=23.5, date="2026-12-21", time="12:00", target="sun")
+        assert q.latitude_deg == pytest.approx(23.5)
+
+
+class TestAstrolabeSeasonalVariation:
+    """Seasonal altitude variation at fixed latitude."""
+
+    def _alt(self, date: str, lat: float = 51.5) -> float:
+        emu = AstrolabeEmulator()
+        q = AstrolabeQuery(latitude_deg=lat, date=date, time="12:00", target="sun")
+        return emu.read_altitude(q)
+
+    def test_summer_solstice_higher_than_equinox(self) -> None:
+        equinox = self._alt("2026-03-20")
+        summer = self._alt("2026-06-21")
+        assert summer > equinox
+
+    def test_winter_solstice_lower_than_equinox(self) -> None:
+        equinox = self._alt("2026-03-20")
+        winter = self._alt("2026-12-21")
+        assert winter < equinox
+
+    def test_equinoxes_approximately_equal(self) -> None:
+        vernal = self._alt("2026-03-20")
+        autumnal = self._alt("2026-09-22")
+        assert abs(vernal - autumnal) < 3.0  # within 3 degrees
+
+    def test_noon_altitude_positive_at_mid_latitude_summer(self) -> None:
+        assert self._alt("2026-07-01") > 30.0
+
+    def test_altitude_numerical_stability(self) -> None:
+        # Multiple calls with same args give same result
+        a1 = self._alt("2026-03-20")
+        a2 = self._alt("2026-03-20")
+        assert math.isclose(a1, a2)
+
+
+class TestAstrolabeQueryDefaults:
+    """AstrolabeQuery field types and defaults."""
+
+    def test_latitude_stored(self) -> None:
+        q = AstrolabeQuery(latitude_deg=45.0, date="2026-06-01", time="12:00", target="sun")
+        assert q.latitude_deg == 45.0
+
+    def test_target_stored(self) -> None:
+        q = AstrolabeQuery(latitude_deg=0.0, date="2026-01-01", time="12:00", target="moon")
+        assert q.target == "moon"
+
+    def test_altitude_result_is_float(self) -> None:
+        emu = AstrolabeEmulator()
+        q = AstrolabeQuery(latitude_deg=51.5, date="2026-06-21", time="12:00", target="sun")
+        assert isinstance(emu.read_altitude(q), float)

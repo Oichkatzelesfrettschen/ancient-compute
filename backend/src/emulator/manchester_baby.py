@@ -150,7 +150,7 @@ class ManchesterBaby:
 
     def _check_addr(self, address: int) -> None:
         if not 0 <= address < _STORE_SIZE:
-            raise IndexError(f"Store address {address} out of range [0, {_STORE_SIZE-1}]")
+            raise IndexError(f"Store address {address} out of range [0, {_STORE_SIZE - 1}]")
 
     # ------------------------------------------------------------------
     # Program loading

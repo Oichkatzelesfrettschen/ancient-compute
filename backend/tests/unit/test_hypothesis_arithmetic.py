@@ -343,3 +343,122 @@ class TestThomasArithmometerProperties:
         q, r = t.divide(product, b)
         assert q == a
         assert r == 0
+
+
+# ---------------------------------------------------------------------------
+# Additional property tests
+# ---------------------------------------------------------------------------
+
+_POS_SMALL = st.integers(1, 1000)
+_NONNEG_SMALL = st.integers(0, 1000)
+
+
+class TestBabbageNumberHypothesisExtra:
+    """Additional BabbageNumber property invariants."""
+
+    @given(_NONNEG_SMALL)
+    def test_zero_is_additive_identity(self, n: int) -> None:
+        a = BabbageNumber(n)
+        z = BabbageNumber(0)
+        assert (a + z).to_decimal() == a.to_decimal()
+
+    @given(_POS_SMALL)
+    def test_value_minus_itself_is_zero(self, n: int) -> None:
+        a = BabbageNumber(n)
+        result = a - a
+        assert result.to_decimal() == 0
+
+    @given(_POS_SMALL, _POS_SMALL)
+    def test_product_ge_larger_factor(self, a: int, b: int) -> None:
+        """a * b >= max(a, b) for positive a, b >= 1."""
+        ba = BabbageNumber(a)
+        bb = BabbageNumber(b)
+        product = ba * bb
+        assert product.to_decimal() >= max(a, b)
+
+
+class TestPascalineHypothesisExtra:
+    """Additional Pascaline invariants."""
+
+    @given(st.integers(2, 1000), st.integers(1, 999))
+    def test_add_then_subtract_smaller_gives_difference(self, a: int, b: int) -> None:
+        """add(a) then subtract(b) gives a - b when a > b."""
+        assume(a > b)
+        p = PascalineEmulator()
+        p.add(a)
+        p.set_nines_complement_mode(True)
+        result = p.subtract(b)
+        assert result == a - b
+
+    @given(st.integers(1, 9999))
+    def test_add_result_bounded_by_max(self, n: int) -> None:
+        p = PascalineEmulator()
+        p.add(n)
+        max_val = 10**8 - 1  # 8-digit machine
+        assert p.get_value() <= max_val
+
+
+class TestLeibnizHypothesisExtra:
+    """Additional Leibniz Reckoner invariants."""
+
+    @given(_POS_SMALL, _POS_SMALL)
+    def test_multiply_two_values_correct(self, a: int, b: int) -> None:
+        """multiply(a, b) == a * b for small values."""
+        assume(a * b < 10**6)
+        m = LeibnizReckonerEmulator()
+        assert m.multiply(a, b) == a * b
+
+    @given(_POS_SMALL)
+    def test_reset_gives_zero_accumulator(self, a: int) -> None:
+        """After set_input + crank_turn + reset, accumulator is 0."""
+        m = LeibnizReckonerEmulator()
+        m.set_input(a)
+        m.crank_turn()
+        m.reset()
+        assert m.get_accumulator_value() == 0
+
+
+_NON_ZERO = st.integers(1, 50)
+_INT_SMALL = st.integers(0, 50)
+
+
+class TestBabbageNumberHypothesisExtra:
+    """Additional BabbageNumber algebraic properties."""
+
+    @given(_INT_SMALL)
+    def test_value_roundtrip_via_decimal(self, n: int) -> None:
+        b = BabbageNumber(n)
+        assert float(b.to_decimal()) == float(n)
+
+    @given(_NON_ZERO)
+    def test_sub_zero_is_identity(self, n: int) -> None:
+        b = BabbageNumber(n)
+        zero = BabbageNumber(0)
+        assert float((b - zero).to_decimal()) == float(n)
+
+    @given(_NON_ZERO, _NON_ZERO)
+    def test_subtraction_reverses_addition(self, a: int, b: int) -> None:
+        ba = BabbageNumber(a)
+        bb = BabbageNumber(b)
+        result = (ba + bb) - bb
+        assert float(result.to_decimal()) == float(a)
+
+
+class TestThomasArithHypothesisExtra:
+    """Additional Thomas Arithmometer property tests."""
+
+    @given(_NON_ZERO)
+    def test_multiply_by_one_is_identity(self, a: int) -> None:
+        t = ThomasArithmometer()
+        assert t.multiply(a, 1) == a
+
+    @given(_NON_ZERO)
+    def test_multiply_by_zero_is_zero(self, a: int) -> None:
+        t = ThomasArithmometer()
+        assert t.multiply(a, 0) == 0
+
+    @given(_NON_ZERO, _NON_ZERO)
+    def test_divide_quotient_satisfies_dividend_equation(self, a: int, b: int) -> None:
+        t = ThomasArithmometer()
+        q, r = t.divide(a, b)
+        assert q * b + r == a

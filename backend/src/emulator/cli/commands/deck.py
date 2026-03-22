@@ -53,7 +53,7 @@ def _run_note_g(n_count: int, *, physics: bool = False) -> None:
     console.print(f"[bold green]Note G:[/] Computing {n_count} Bernoulli number(s)")
     results = run_note_g_exact(n_count)
     for i, b in enumerate(results, 1):
-        console.print(f"  B_{2*i - 1} = [cyan]{b}[/]")
+        console.print(f"  B_{2 * i - 1} = [cyan]{b}[/]")
 
 
 def _run_lovelace_note(note: str, n: int) -> None:

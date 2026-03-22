@@ -295,3 +295,75 @@ class TestNoteGExactResults:
     def test_run_note_g_invalid_n_raises(self) -> None:
         with pytest.raises(ValueError):
             run_note_g(-1)
+
+
+class TestRunNoteGProperties:
+    """Additional run_note_g() output properties."""
+
+    def test_n3_all_values_finite(self) -> None:
+        results = run_note_g(3)
+        for r in results:
+            assert abs(float(r.to_decimal())) < 1e10
+
+    def test_n4_fourth_is_b4(self) -> None:
+        results = run_note_g(4)
+        # B_4 = -1/30
+        assert abs(float(results[3].to_decimal()) - (-1 / 30)) < 1e-9
+
+    def test_run_note_g_matches_series_for_n4(self) -> None:
+        from backend.src.emulator.note_g_deck import run_series
+        rg = run_note_g(4)
+        rs = run_series(4)
+        for a, b in zip(rg, rs):
+            assert abs(a.to_decimal() - b.to_decimal()) < 1e-9
+
+    def test_n1_result_is_list_of_one(self) -> None:
+        assert len(run_note_g(1)) == 1
+
+    def test_first_value_positive(self) -> None:
+        assert run_note_g(1)[0].to_decimal() > 0
+
+
+class TestRunNoteGExactProperties:
+    """Additional run_note_g_exact() output properties."""
+
+    def test_n3_output_length(self) -> None:
+        assert len(run_note_g_exact(3)) == 3
+
+    def test_n5_first_matches_run_note_g(self) -> None:
+        # run_note_g_exact returns Fraction; run_note_g returns BabbageNumber
+        exact = run_note_g_exact(5)
+        rg = run_note_g(5)
+        for a, b in zip(exact, rg):
+            assert abs(float(a) - float(b.to_decimal())) < 1e-9
+
+    def test_all_n2_values_nonzero(self) -> None:
+        # run_note_g_exact returns Fraction objects
+        results = run_note_g_exact(2)
+        for r in results:
+            assert float(r) != 0
+
+
+class TestBernoulliOracleProperties:
+    """ada_lovelace_bernoulli_series and bernoulli_numbers properties."""
+
+    def test_oracle_n4_length(self) -> None:
+        assert len(ada_lovelace_bernoulli_series(4)) == 4
+
+    def test_oracle_n1_is_b1(self) -> None:
+        series = ada_lovelace_bernoulli_series(1)
+        assert abs(float(series[0]) - 1 / 6) < 1e-10
+
+    def test_oracle_n2_is_b3(self) -> None:
+        series = ada_lovelace_bernoulli_series(2)
+        assert abs(float(series[1]) - (-1 / 30)) < 1e-10
+
+    def test_bernoulli_numbers_n6(self) -> None:
+        # bernoulli_numbers(n) returns B_0..B_n inclusive (n+1 items)
+        bn = bernoulli_numbers(6)
+        assert len(bn) >= 6
+
+    def test_bernoulli_numbers_are_fractions(self) -> None:
+        bn = bernoulli_numbers(3)
+        for b in bn:
+            assert isinstance(b, Fraction)

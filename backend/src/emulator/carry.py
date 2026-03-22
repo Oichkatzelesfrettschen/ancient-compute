@@ -291,4 +291,4 @@ class CarryPropagationUnit:
 
     def __repr__(self) -> str:
         """String representation for debugging."""
-        return f"CarryPropagationUnit(mode={self.mode}, " f"step_count={self.step_count})"
+        return f"CarryPropagationUnit(mode={self.mode}, step_count={self.step_count})"

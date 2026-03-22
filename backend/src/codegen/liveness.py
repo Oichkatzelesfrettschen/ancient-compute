@@ -63,9 +63,9 @@ class LivenessAnalyzer:
         self.function = function
         self.intervals: dict[str, LiveInterval] = {}
         self.definitions: dict[str, int] = {}  # Variable name → instruction index where defined
-        self.uses: dict[str, list[int]] = (
-            {}
-        )  # Variable name → list of instruction indices where used
+        self.uses: dict[
+            str, list[int]
+        ] = {}  # Variable name → list of instruction indices where used
         self.instr_index = 0  # Current instruction index
         self.parameters_live = True  # Parameters live from function entry
 

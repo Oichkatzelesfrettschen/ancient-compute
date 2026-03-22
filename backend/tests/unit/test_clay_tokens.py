@@ -293,6 +293,78 @@ class TestClayTokensErrors:
         else:
             raise AssertionError("Expected ValueError")
 
+    def test_add_negative_qty_removes(self) -> None:
+        emu = ClayTokensEmulator()
+        emu.add_token("sheep", 5)
+        emu.add_token("sheep", -2)
+        assert emu.state()["tokens"].get("sheep", 0) == 3
+
+    def test_remove_default_qty_is_one(self) -> None:
+        emu = ClayTokensEmulator()
+        emu.add_token("grain", 3)
+        emu.remove_token("grain")
+        assert emu.state()["tokens"].get("grain", 0) == 2
+
+
+class TestClayTokensStateInvariant:
+    """State dict invariants across operations."""
+
+    def test_state_returns_new_dict_each_call(self) -> None:
+        emu = ClayTokensEmulator()
+        emu.add_token("oil", 1)
+        s1 = emu.state()
+        s2 = emu.state()
+        s1["tokens"]["oil"] = 999
+        assert emu.state()["tokens"].get("oil", 0) != 999
+
+    def test_impression_independent_of_tokens_after_seal(self) -> None:
+        emu = ClayTokensEmulator()
+        emu.add_token("cattle", 5)
+        emu.seal()
+        # Post-seal tokens dict should not change
+        # (and impression captures the snapshot)
+        imp = emu.state()["impression"]
+        tok = emu.state()["tokens"]
+        assert imp == {"cattle": 5}
+        assert tok == {"cattle": 5}
+
+    def test_reset_returns_to_initial_state(self) -> None:
+        emu = ClayTokensEmulator()
+        emu.add_token("X", 10)
+        emu.add_token("Y", 20)
+        emu.seal()
+        emu.reset()
+        s = emu.state()
+        assert s["tokens"] == {}
+        assert s["sealed"] is False
+        assert s["impression"] == {}
+
+    def test_multiple_resets_idempotent(self) -> None:
+        emu = ClayTokensEmulator()
+        emu.add_token("grain", 3)
+        emu.reset()
+        emu.reset()
+        emu.reset()
+        assert emu.state()["tokens"] == {}
+
+    def test_state_tokens_key_is_dict(self) -> None:
+        emu = ClayTokensEmulator()
+        assert isinstance(emu.state()["tokens"], dict)
+
+    def test_state_impression_key_is_dict(self) -> None:
+        emu = ClayTokensEmulator()
+        assert isinstance(emu.state()["impression"], dict)
+
+    def test_state_sealed_key_is_bool(self) -> None:
+        emu = ClayTokensEmulator()
+        assert isinstance(emu.state()["sealed"], bool)
+
+    def test_two_independent_emulators_no_shared_state(self) -> None:
+        a = ClayTokensEmulator()
+        b = ClayTokensEmulator()
+        a.add_token("wheat", 7)
+        assert b.state()["tokens"] == {}
+
     def test_remove_nonexistent_unsealed_is_noop(self) -> None:
         emu = ClayTokensEmulator()
         # Should not raise; graceful no-op.

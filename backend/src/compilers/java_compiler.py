@@ -83,6 +83,7 @@ class JavaCompiler:
         """Compile method to IR"""
         params = [p.name for p in method_decl.parameters]
         self.ir_builder = IRBuilder(method_decl.name, params)
+        assert self.ir_builder is not None
         self.ir_builder.function.local_variables = {p: IRType.DEC50 for p in params}
         self.ir_builder.new_block("entry")
 
@@ -101,7 +102,7 @@ class JavaCompiler:
 
         self.program.add_function(self.ir_builder.finalize())
 
-    def _compile_stmt(self, stmt: object) -> None:
+    def _compile_stmt(self, stmt: Any) -> None:
         """Compile statement to IR"""
         assert self.ir_builder is not None
         if isinstance(stmt, VarDeclStmt):

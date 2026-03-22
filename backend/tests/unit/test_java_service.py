@@ -530,3 +530,113 @@ class TestAdditionalHappyPath:
         assert r.status == ExecutionStatus.SUCCESS
         assert "line1" in r.stdout
         assert "line3" in r.stdout
+
+
+_RECURSIVE_FIB = """\
+public class Main {
+    static int fib(int n) {
+        if (n <= 1) return n;
+        return fib(n - 1) + fib(n - 2);
+    }
+    public static void main(String[] args) {
+        System.out.println(fib(10));
+    }
+}
+"""
+
+_WHILE_LOOP = """\
+public class Main {
+    public static void main(String[] args) {
+        int s = 0, i = 1;
+        while (i <= 10) { s += i++; }
+        System.out.println(s);
+    }
+}
+"""
+
+_STRING_LENGTH_UPPER = """\
+public class Main {
+    public static void main(String[] args) {
+        String s = "Hello";
+        System.out.println(s.length() + " " + s.toUpperCase());
+    }
+}
+"""
+
+_ARRAY_TOTAL = """\
+public class Main {
+    public static void main(String[] args) {
+        int[] arr = {1, 2, 3, 4, 5};
+        int sum = 0;
+        for (int x : arr) sum += x;
+        System.out.println(sum);
+    }
+}
+"""
+
+
+class TestJavaServiceArithmetic:
+    """Arithmetic and control flow via Java service."""
+
+    def test_fibonacci_10(self) -> None:
+        r = _run(_RECURSIVE_FIB)
+        from backend.src.services.languages.java_service import ExecutionStatus
+        assert r.status == ExecutionStatus.SUCCESS
+        assert "55" in r.stdout
+
+    def test_while_loop_sum_1_to_10(self) -> None:
+        r = _run(_WHILE_LOOP)
+        from backend.src.services.languages.java_service import ExecutionStatus
+        assert r.status == ExecutionStatus.SUCCESS
+        assert "55" in r.stdout
+
+    def test_string_operations(self) -> None:
+        r = _run(_STRING_LENGTH_UPPER)
+        from backend.src.services.languages.java_service import ExecutionStatus
+        assert r.status == ExecutionStatus.SUCCESS
+        assert "HELLO" in r.stdout
+
+    def test_array_sum(self) -> None:
+        r = _run(_ARRAY_TOTAL)
+        from backend.src.services.languages.java_service import ExecutionStatus
+        assert r.status == ExecutionStatus.SUCCESS
+        assert "15" in r.stdout
+
+
+class TestJavaServiceResultShape:
+    """ExecutionResult shape and field tests."""
+
+    def test_result_has_status(self) -> None:
+        r = _run("public class Main { public static void main(String[] a) {} }")
+        assert hasattr(r, "status")
+
+    def test_result_has_stdout(self) -> None:
+        r = _run("public class Main { public static void main(String[] a) {} }")
+        assert hasattr(r, "stdout")
+
+    def test_result_has_stderr(self) -> None:
+        r = _run("public class Main { public static void main(String[] a) {} }")
+        assert hasattr(r, "stderr")
+
+    def test_compile_error_non_empty_stderr(self) -> None:
+        r = _run("public class Main { NOT VALID CODE }")
+        assert len(r.stderr) > 0
+
+    def test_success_stdout_is_string(self) -> None:
+        code = "public class Main { public static void main(String[] a) { System.out.println(1); } }"
+        r = _run(code)
+        assert isinstance(r.stdout, str)
+
+    def test_success_stderr_is_string(self) -> None:
+        code = "public class Main { public static void main(String[] a) {} }"
+        r = _run(code)
+        assert isinstance(r.stderr, str)
+
+
+class TestJavaServiceResultShape:
+    """Result object attributes."""
+
+    def test_result_has_status_attr(self) -> None:
+        code = "public class Main { public static void main(String[] a) {} }"
+        r = _run(code)
+        assert hasattr(r, "status")

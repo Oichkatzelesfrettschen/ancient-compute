@@ -311,3 +311,12 @@ class TestNoteCNativePrecision:
 
     def test_note_c_n7_is_twenty_eight(self) -> None:
         assert _close(run_note_c_native(7), 28.0)
+
+
+class TestNoteCSumFormulaExtended:
+    """run_note_c_native(n) additional values."""
+
+    def test_note_c_n8_is_thirty_six(self) -> None:
+        from backend.src.emulator.lovelace_notes import run_note_c_native
+        result = run_note_c_native(8)
+        assert abs(float(result.to_decimal()) - 36.0) < 1e-6

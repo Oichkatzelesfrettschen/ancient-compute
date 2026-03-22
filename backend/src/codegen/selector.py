@@ -181,7 +181,7 @@ class InstructionSelector:
             ">=": "SUB",
         }
 
-        mnemonic = mnemonic_map.get(instr.op, instr.op.upper())
+        mnemonic = mnemonic_map.get(instr.op) or instr.op.upper()
 
         if instr.op in ["sqrt", "abs", "neg"]:
             # Unary operations: only one operand

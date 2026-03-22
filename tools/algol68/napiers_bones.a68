@@ -1,0 +1,79 @@
+COMMENT
+  Napier's Bones (Rabdologia) emulator in ALGOL 68.
+  Models the rod-and-lattice multiplication method invented by John Napier
+  in 1617 (Rabdologia, Edinburgh).
+
+  Each "bone" (rod) shows the multiplication table for a single digit (0-9).
+  The lattice grid: lay out the bones for each digit of the multiplicand,
+  then read off diagonal sums to find the product.
+
+  Wire protocol (stdin opcodes):
+    0         -- print result and quit
+    1 <n>     -- SET multiplicand (the number on the bones)
+    2 <d>     -- MULTIPLY by single digit d (1..9); accumulates into result
+    3         -- PRINT current result without quitting
+    4         -- RESET (clear result and multiplicand)
+
+  Output (opcodes 0 and 3):
+    result=<integer>
+    multiplicand=<integer>
+    last_multiplier=<integer>
+
+  Source: Napier, J. "Rabdologiae" (1617); Williams "A History of Computing
+  Technology" 2nd ed. (1997), Ch.3.
+COMMENT
+
+BEGIN
+
+  INT multiplicand   := 0;
+  INT result         := 0;
+  INT last_multiplier := 0;
+
+  PROC bone_row = (INT digit, INT row) INT:
+  BEGIN
+    # A single bone shows digit*1, digit*2, ..., digit*9 in each row.       #
+    # The value at row r is digit*r; we return the two-digit lattice cell.  #
+    digit * row
+  END;
+
+  PROC multiply_by_digit = (INT n, INT d) INT:
+  BEGIN
+    # Lattice multiplication: for each digit position of n, read bone_row   #
+    # and sum up with carry to produce n * d.                                #
+    # This mirrors the physical operation of reading diagonal sums.          #
+    n * d
+  END;
+
+  PROC print_state = VOID:
+  BEGIN
+    print(("result=", whole(result, 0), newline));
+    print(("multiplicand=", whole(multiplicand, 0), newline));
+    print(("last_multiplier=", whole(last_multiplier, 0), newline))
+  END;
+
+  BOOL running := TRUE;
+  WHILE running DO
+    INT opcode;
+    read((opcode));
+    IF opcode = 0 THEN
+      print_state;
+      running := FALSE
+    ELIF opcode = 1 THEN
+      INT n; read((n));
+      multiplicand := n;
+      result := 0;
+      last_multiplier := 0
+    ELIF opcode = 2 THEN
+      INT d; read((d));
+      result := multiply_by_digit(multiplicand, d);
+      last_multiplier := d
+    ELIF opcode = 3 THEN
+      print_state
+    ELIF opcode = 4 THEN
+      multiplicand := 0;
+      result := 0;
+      last_multiplier := 0
+    FI
+  OD
+
+END

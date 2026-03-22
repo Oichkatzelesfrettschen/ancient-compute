@@ -339,3 +339,84 @@ class TestBarrelTimingBridge:
             # We don't assert equality here because Timing is abstract units,
             # but we check if it's non-zero.
             assert BarrelTimingBridge.total_degrees(name) > 0
+
+
+class TestBarrelNamesAndStructure:
+    """All barrel names present and rows are non-empty."""
+
+    def test_all_expected_barrels_present(self) -> None:
+        ctrl = BarrelController()
+        for name in ("ADD", "SUB", "MULT", "DIV", "SQRT", "LOAD", "STOR"):
+            assert name in ctrl.barrels
+
+    def test_each_barrel_has_rows(self) -> None:
+        ctrl = BarrelController()
+        for name, barrel in ctrl.barrels.items():
+            assert len(barrel.rows) > 0, f"{name} barrel has no rows"
+
+    def test_barrel_name_attribute(self) -> None:
+        ctrl = BarrelController()
+        barrel = ctrl.barrels["ADD"]
+        assert barrel.name == "ADD"
+
+    def test_load_barrel_has_more_rows_than_mult(self) -> None:
+        ctrl = BarrelController()
+        # LOAD=5 rows (fetch+lift, connect+drop, lift ingress, advance mill, drop+lift egress)
+        # MULT=4 rows; LOAD requires more store-bus micro-ops
+        assert len(ctrl.barrels["LOAD"].rows) > len(ctrl.barrels["MULT"].rows)
+
+    def test_each_barrel_rows_is_list(self) -> None:
+        ctrl = BarrelController()
+        for barrel in ctrl.barrels.values():
+            assert isinstance(barrel.rows, list)
+
+    def test_all_rows_are_barrel_row_objects(self) -> None:
+        from backend.src.emulator.barrels import BarrelRow
+        ctrl = BarrelController()
+        for barrel in ctrl.barrels.values():
+            for row in barrel.rows:
+                assert isinstance(row, BarrelRow)
+
+
+class TestBarrelControllerSequencing:
+    """select_barrel -> step() sequencing tests."""
+
+    def test_step_returns_list(self) -> None:
+        ctrl = BarrelController()
+        ctrl.select_barrel("ADD")
+        result = ctrl.step()
+        assert isinstance(result, list)
+
+    def test_step_returns_microops(self) -> None:
+        ctrl = BarrelController()
+        ctrl.select_barrel("ADD")
+        result = ctrl.step()
+        for item in result:
+            assert isinstance(item, MicroOp)
+
+    def test_add_completes_all_steps(self) -> None:
+        ctrl = BarrelController()
+        barrel = ctrl.barrels["ADD"]
+        ctrl.select_barrel("ADD")
+        all_ops = []
+        for _ in range(len(barrel.rows)):
+            all_ops.extend(ctrl.step())
+        assert len(all_ops) > 0
+
+    def test_select_different_barrel_resets_step_index(self) -> None:
+        ctrl = BarrelController()
+        ctrl.select_barrel("ADD")
+        ctrl.step()  # advance to step 1
+        ctrl.select_barrel("SUB")  # re-select different barrel
+        ops = ctrl.step()
+        # First step of SUB should equal first step of fresh SUB
+        ctrl2 = BarrelController()
+        ctrl2.select_barrel("SUB")
+        ops2 = ctrl2.step()
+        assert ops == ops2
+
+    def test_stor_barrel_has_steps(self) -> None:
+        ctrl = BarrelController()
+        ctrl.select_barrel("STOR")
+        result = ctrl.step()
+        assert len(result) > 0

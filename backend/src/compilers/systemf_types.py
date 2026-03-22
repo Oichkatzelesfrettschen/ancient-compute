@@ -128,9 +128,9 @@ class SystemFTypeSystem:
     def _types_equal(self, t1: Type, t2: Type) -> bool:
         """Check if two types are equal"""
         if isinstance(t1, BaseType) and isinstance(t2, BaseType):
-            return t1.name == t2.name
+            return bool(t1.name == t2.name)
         if isinstance(t1, TypeVar) and isinstance(t2, TypeVar):
-            return t1.name == t2.name
+            return bool(t1.name == t2.name)
         if isinstance(t1, FunctionType) and isinstance(t2, FunctionType):
             return self._types_equal(t1.arg_type, t2.arg_type) and self._types_equal(
                 t1.return_type, t2.return_type

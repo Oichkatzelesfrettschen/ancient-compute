@@ -132,7 +132,7 @@ class IdrisCompiler:
             if isinstance(alt, tuple) and len(alt) == 2:
                 pat, body = alt
             elif hasattr(alt, "pattern") and hasattr(alt, "body"):
-                pat, body = alt.pattern, alt.body
+                pat, body = alt.pattern, alt.body  # type: ignore[union-attr]
             else:
                 continue
 
@@ -242,11 +242,11 @@ class IdrisCompiler:
 class IDRIS2Compiler(IdrisCompiler):
     """Extended Idris compiler that accepts source strings (lex+parse+compile)."""
 
-    def compile(self, source_or_ast: object) -> Program:
-        if isinstance(source_or_ast, str):
+    def compile(self, ast: object) -> Program:
+        if isinstance(ast, str):
             from .idris_parser import IdrisParser
 
-            parser = IdrisParser(source_or_ast)
-            ast = parser.parse()
-            return super().compile(ast)
-        return super().compile(source_or_ast)
+            parser = IdrisParser(ast)
+            parsed = parser.parse()
+            return super().compile(parsed)
+        return super().compile(ast)

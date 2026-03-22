@@ -290,3 +290,17 @@ class TestFourmilabToInstructionsExtended:
         cards = parse_fourmilab_deck("N000 +1\nP")
         instrs = fourmilab_to_instructions(cards)
         assert isinstance(instrs, list)
+
+
+class TestFourmlabParseEdgeCases:
+    """Edge cases in Fourmilab deck parsing."""
+
+    def test_empty_string_parses_without_error(self) -> None:
+        from backend.src.emulator.fourmilab_compat import parse_fourmilab_deck
+        cards = parse_fourmilab_deck("")
+        assert isinstance(cards, list)
+
+    def test_blank_lines_ignored(self) -> None:
+        from backend.src.emulator.fourmilab_compat import parse_fourmilab_deck
+        cards = parse_fourmilab_deck("\n\n")
+        assert isinstance(cards, list)

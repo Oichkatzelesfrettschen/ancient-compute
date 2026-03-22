@@ -259,3 +259,28 @@ class TestQuipuKFGEmulatorAPI:
     def test_ur001_total_value_is_numeric(self) -> None:
         emu = self._emu("UR001.json")
         assert isinstance(emu.total_value(), (int, float))
+
+
+class TestQuipuKFGSummaryFields:
+    """QuipuSummary field type and value invariants."""
+
+    def _emu(self, filename: str) -> "QuipuKFGEmulator":
+        a = load_kfg_normalized(_KFG_DIR / filename)
+        return QuipuKFGEmulator(a)
+
+    def test_cord_count_is_non_negative_int(self) -> None:
+        s = self._emu("QU001.json").summarize()
+        assert isinstance(s.cord_count, int)
+        assert s.cord_count >= 0
+
+    def test_investigator_num_is_string(self) -> None:
+        s = self._emu("QU001.json").summarize()
+        assert isinstance(s.investigator_num, str)
+
+    def test_total_value_is_numeric(self) -> None:
+        s = self._emu("QU001.json").summarize()
+        assert isinstance(s.total_value, (int, float))
+
+    def test_ur001_investigator_num_not_empty(self) -> None:
+        s = self._emu("UR001.json").summarize()
+        assert len(s.investigator_num) > 0

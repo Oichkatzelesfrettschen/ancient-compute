@@ -188,6 +188,7 @@ async def execute_polynomial(
     try:
         results = []
         emu = state.emulator
+        assert emu is not None
         for x in range(request.x_range[0], request.x_range[1] + 1):
             temp_results = emu.evaluate_polynomial(request.coefficients, (x, x))
             result = temp_results[0] if temp_results else 0

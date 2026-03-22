@@ -1,0 +1,9 @@
+BEGIN
+  INT n := 1;
+  INT p := 1;
+  WHILE n <= 10 DO
+    p *:= n;
+    n +:= 1
+  OD;
+  print((p, newline))
+END

@@ -91,7 +91,7 @@ class BaseExecutor:
             return
         try:
             self.client.images.get(self.docker_image)
-        except docker.errors.ImageNotFound:
+        except docker.errors.ImageNotFound:  # type: ignore[attr-defined]
             logger.info("Building %s...", self.docker_image)
             self._build_image()
 
@@ -175,7 +175,7 @@ class BaseExecutor:
 
             try:
                 container = self.client.containers.run(**self._get_container_config(tmpdir))
-            except docker.errors.ImageNotFound:
+            except docker.errors.ImageNotFound:  # type: ignore[attr-defined]
                 return ExecutionResult(
                     status=ExecutionStatus.RUNTIME_ERROR,
                     stdout="",
@@ -186,7 +186,7 @@ class BaseExecutor:
                     ),
                     execution_time=time.time() - start_time,
                 )
-            except docker.errors.APIError as exc:
+            except docker.errors.APIError as exc:  # type: ignore[attr-defined]
                 return ExecutionResult(
                     status=ExecutionStatus.RUNTIME_ERROR,
                     stdout="",

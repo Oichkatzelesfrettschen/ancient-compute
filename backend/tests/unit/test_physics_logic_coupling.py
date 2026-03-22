@@ -396,6 +396,45 @@ class TestSimulationConfigDefaultsExtended:
         config = SimulationConfig()
         assert config.ambient_temperature_C == pytest.approx(20.0)
 
+
+class TestSimulationEngineStepDirect:
+    """Single step() call properties."""
+
+    def test_step_returns_step_result_object(self) -> None:
+        from backend.src.emulator.simulation.engine import StepResult
+        config = SimulationConfig(rpm=30.0)
+        sim = SimulationEngine(config)
+        result = sim.step()
+        assert isinstance(result, StepResult)
+
+    def test_step_time_s_positive(self) -> None:
+        from backend.src.emulator.simulation.engine import StepResult
+        config = SimulationConfig(rpm=30.0)
+        sim = SimulationEngine(config)
+        result = sim.step()
+        assert result.time_s > 0.0
+
+    def test_step_temperature_above_zero(self) -> None:
+        from backend.src.emulator.simulation.engine import StepResult
+        config = SimulationConfig(rpm=30.0)
+        sim = SimulationEngine(config)
+        result = sim.step()
+        assert result.temperature_C > 0.0
+
+    def test_step_wear_nonneg(self) -> None:
+        from backend.src.emulator.simulation.engine import StepResult
+        config = SimulationConfig(rpm=30.0)
+        sim = SimulationEngine(config)
+        result = sim.step()
+        assert result.max_wear_volume_mm3 >= 0.0
+
+    def test_step_lubrication_regime_is_string(self) -> None:
+        from backend.src.emulator.simulation.engine import StepResult
+        config = SimulationConfig(rpm=30.0)
+        sim = SimulationEngine(config)
+        result = sim.step()
+        assert isinstance(result.lubrication_regime, str)
+
     def test_config_can_be_constructed_with_rpm(self) -> None:
         config = SimulationConfig(rpm=60.0)
         assert config.rpm == pytest.approx(60.0)

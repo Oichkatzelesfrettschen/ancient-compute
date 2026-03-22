@@ -207,10 +207,10 @@ class IDRISTypeSystem:
     def _types_equal(self, t1: Type, t2: Type) -> bool:
         """Check if two types are equal"""
         if isinstance(t1, BaseType) and isinstance(t2, BaseType):
-            return t1.name == t2.name
+            return bool(t1.name == t2.name)
 
         if isinstance(t1, TypeVariable) and isinstance(t2, TypeVariable):
-            return t1.name == t2.name
+            return bool(t1.name == t2.name)
 
         if isinstance(t1, FunctionType) and isinstance(t2, FunctionType):
             return self._types_equal(t1.param_type, t2.param_type) and self._types_equal(

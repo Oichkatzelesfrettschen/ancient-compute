@@ -339,3 +339,15 @@ class TestCFreestandingExecutionAdditional:
     def test_machine_code_contains_address_column(self) -> None:
         r = _execute("int f(int x) { return x; }")
         assert "Address" in r.machine_code or "00000000" in r.machine_code
+
+
+class TestCFreestandingResultShape:
+    """Result object shape for valid C programs."""
+
+    def test_result_has_stderr_attr(self) -> None:
+        r = _execute("int f(int x) { return x; }")
+        assert hasattr(r, "stderr")
+
+    def test_result_status_is_success_for_valid(self) -> None:
+        r = _execute("int g(int n) { return n * 2; }")
+        assert r.status == ExecutionStatus.SUCCESS

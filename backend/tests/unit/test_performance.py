@@ -281,3 +281,90 @@ class TestGenerateSuggestions:
             pa.record_step(_make_instr("MULT"))
         suggestions = pa._generate_suggestions()
         assert all(isinstance(s, str) for s in suggestions)
+
+
+class TestPerformanceAnalyzerReport:
+    """get_report() structure tests."""
+
+    def test_report_has_total_cycles_key(self) -> None:
+        pa = PerformanceAnalyzer(_make_adapter())
+        assert "total_cycles" in pa.get_report()
+
+    def test_report_has_instruction_frequency_key(self) -> None:
+        pa = PerformanceAnalyzer(_make_adapter())
+        assert "instruction_frequency" in pa.get_report()
+
+    def test_report_has_hot_spots_key(self) -> None:
+        pa = PerformanceAnalyzer(_make_adapter())
+        assert "hot_spots" in pa.get_report()
+
+    def test_report_has_suggestions_key(self) -> None:
+        pa = PerformanceAnalyzer(_make_adapter())
+        assert "suggestions" in pa.get_report()
+
+    def test_total_cycles_zero_initially(self) -> None:
+        pa = PerformanceAnalyzer(_make_adapter())
+        assert pa.get_report()["total_cycles"] == 0
+
+    def test_instruction_frequency_is_dict(self) -> None:
+        pa = PerformanceAnalyzer(_make_adapter())
+        assert isinstance(pa.get_report()["instruction_frequency"], dict)
+
+    def test_hot_spots_is_dict(self) -> None:
+        pa = PerformanceAnalyzer(_make_adapter())
+        assert isinstance(pa.get_report()["hot_spots"], dict)
+
+
+class TestPerformanceAnalyzerRecordSteps:
+    """record_step() frequency tracking."""
+
+    def test_record_add_increments_frequency(self) -> None:
+        pa = PerformanceAnalyzer(_make_adapter())
+        pa.record_step(_make_instr("ADD"))
+        pa.record_step(_make_instr("ADD"))
+        assert pa.get_report()["instruction_frequency"].get("ADD", 0) == 2
+
+    def test_record_multiple_opcodes(self) -> None:
+        pa = PerformanceAnalyzer(_make_adapter())
+        for op in ("ADD", "SUB", "MULT", "ADD"):
+            pa.record_step(_make_instr(op))
+        freq = pa.get_report()["instruction_frequency"]
+        assert freq.get("ADD", 0) == 2
+        assert freq.get("MULT", 0) == 1
+
+    def test_history_tracks_all_steps(self) -> None:
+        pa = PerformanceAnalyzer(_make_adapter())
+        for _ in range(5):
+            pa.record_step(_make_instr("NOP"))
+        freq = pa.get_report()["instruction_frequency"]
+        assert freq.get("NOP", 0) == 5
+
+    def test_metrics_object_is_performance_metrics(self) -> None:
+        pa = PerformanceAnalyzer(_make_adapter())
+        assert isinstance(pa.metrics, PerformanceMetrics)
+
+
+class TestPerformanceAnalyzerFrequencyProperties:
+    """Frequency accumulation properties for instruction_frequency."""
+
+    def test_fifty_nops_counted_correctly(self) -> None:
+        pa = PerformanceAnalyzer(_make_adapter())
+        for _ in range(50):
+            pa.record_step(_make_instr("NOP"))
+        assert pa.get_report()["instruction_frequency"].get("NOP", 0) == 50
+
+    def test_different_opcodes_independent_counts(self) -> None:
+        pa = PerformanceAnalyzer(_make_adapter())
+        for _ in range(3):
+            pa.record_step(_make_instr("ADD"))
+        for _ in range(7):
+            pa.record_step(_make_instr("LOAD"))
+        freq = pa.get_report()["instruction_frequency"]
+        assert freq.get("ADD", 0) == 3
+        assert freq.get("LOAD", 0) == 7
+
+    def test_suggestions_is_list(self) -> None:
+        pa = PerformanceAnalyzer(_make_adapter())
+        pa.record_step(_make_instr("MULT"))
+        report = pa.get_report()
+        assert isinstance(report.get("suggestions", []), list)

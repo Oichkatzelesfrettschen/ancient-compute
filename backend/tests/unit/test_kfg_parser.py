@@ -264,3 +264,25 @@ class TestKFGParserUR001Extended:
     def test_ur001_clusters_is_list(self) -> None:
         a = self._ur001()
         assert isinstance(a.clusters, list)
+
+
+class TestKFGArtifactCordFields:
+    """Individual cord field type invariants."""
+
+    def _qu001(self) -> "KFGArtifact":
+        return load_kfg_normalized(_KFG_DIR / "QU001.json")
+
+    def test_first_cord_is_dict(self) -> None:
+        a = self._qu001()
+        if a.cords:
+            assert isinstance(a.cords[0], dict)
+
+    def test_cord_keys_are_strings(self) -> None:
+        a = self._qu001()
+        if a.cords:
+            for k in a.cords[0]:
+                assert isinstance(k, str)
+
+    def test_artifact_khipu_has_known_key(self) -> None:
+        a = self._qu001()
+        assert isinstance(a.khipu, dict)

@@ -23,5 +23,5 @@ def test_babbage_parameter_verifier_passes() -> None:
     )
 
     assert result.returncode == 0, (
-        "verifier failed\n" f"stdout:\n{result.stdout}\n" f"stderr:\n{result.stderr}\n"
+        f"verifier failed\nstdout:\n{result.stdout}\nstderr:\n{result.stderr}\n"
     )

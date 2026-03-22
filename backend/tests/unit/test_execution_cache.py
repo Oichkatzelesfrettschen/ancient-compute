@@ -233,6 +233,60 @@ class TestCacheEntryEdgeCases:
         assert entry.age_seconds() < 5
 
 
+class TestExecutionCacheMultiLanguage:
+    """Cache correctly namespaces by language."""
+
+    def test_same_code_different_languages_independent(self) -> None:
+        cache = ExecutionCache()
+        r_py = _result(stdout="py")
+        r_c = _result(stdout="c")
+        cache.set("python", "x=1", r_py)
+        cache.set("c", "x=1", r_c)
+        assert cache.get("python", "x=1").stdout == "py"
+        assert cache.get("c", "x=1").stdout == "c"
+
+    def test_cache_miss_on_wrong_language(self) -> None:
+        cache = ExecutionCache()
+        cache.set("haskell", "main = return ()", _result())
+        assert cache.get("python", "main = return ()") is None
+
+    def test_multiple_language_entries_independent(self) -> None:
+        cache = ExecutionCache()
+        for lang in ("python", "c", "java", "haskell"):
+            cache.set(lang, "code", _result(stdout=lang))
+        for lang in ("python", "c", "java", "haskell"):
+            assert cache.get(lang, "code").stdout == lang
+
+    def test_clear_removes_all_languages(self) -> None:
+        cache = ExecutionCache()
+        cache.set("python", "x", _result())
+        cache.set("c", "x", _result())
+        cache.clear()
+        assert cache.get("python", "x") is None
+        assert cache.get("c", "x") is None
+
+
+class TestExecutionCacheResultPreservation:
+    """Cached result fields are preserved exactly."""
+
+    def test_stdout_preserved(self) -> None:
+        cache = ExecutionCache()
+        cache.set("python", "print(42)", _result(stdout="42\n"))
+        assert cache.get("python", "print(42)").stdout == "42\n"
+
+    def test_stderr_empty_preserved(self) -> None:
+        cache = ExecutionCache()
+        cache.set("python", "x", ExecutionResult(status=_OK, stdout="ok", stderr=""))
+        r = cache.get("python", "x")
+        assert r.stderr == ""
+
+    def test_status_preserved(self) -> None:
+        cache = ExecutionCache()
+        cache.set("python", "good", _result(status=_OK))
+        r = cache.get("python", "good")
+        assert r.status == _OK
+
+
 class TestExecutionCacheCrossLanguage:
     def test_same_code_different_languages_independent(self) -> None:
         cache = ExecutionCache()
@@ -300,3 +354,58 @@ class TestExecutionCacheCrossLanguage:
             r = cache.get(lang, "code")
             assert r is not None
             assert r.stdout == lang
+
+
+class TestExecutionCacheMultipleLanguages:
+    """Cross-language, multi-entry cache operations."""
+
+    def test_five_different_languages_cached(self) -> None:
+        cache = ExecutionCache()
+        for lang in ("python", "c", "haskell", "lisp", "assembly"):
+            cache.set(lang, "code", _result(stdout=lang))
+        assert len(cache._cache) == 5
+
+    def test_all_five_languages_retrievable(self) -> None:
+        cache = ExecutionCache()
+        for lang in ("python", "c", "haskell", "lisp", "assembly"):
+            cache.set(lang, "code", _result(stdout=lang))
+        for lang in ("python", "c", "haskell", "lisp", "assembly"):
+            r = cache.get(lang, "code")
+            assert r is not None
+            assert r.stdout == lang
+
+    def test_total_requests_increments_on_each_get(self) -> None:
+        cache = ExecutionCache()
+        for _ in range(5):
+            cache.get("python", "missing")
+        assert cache.get_stats()["total_requests"] == 5
+
+    def test_hits_and_misses_sum_to_total(self) -> None:
+        cache = ExecutionCache()
+        cache.set("python", "code", _result())
+        cache.get("python", "code")   # hit
+        cache.get("python", "other")  # miss
+        stats = cache.get_stats()
+        assert stats["hits"] + stats["misses"] == stats["total_requests"]
+
+    def test_key_generation_is_deterministic(self) -> None:
+        for _ in range(10):
+            k = ExecutionCache._generate_key("python", "code")
+            assert k == ExecutionCache._generate_key("python", "code")
+
+    def test_cache_entry_count_in_stats(self) -> None:
+        cache = ExecutionCache()
+        cache.set("python", "a", _result())
+        cache.set("python", "b", _result())
+        assert cache.get_stats()["entries"] == 2
+
+    def test_cleanup_returns_count_of_removed(self) -> None:
+        cache = ExecutionCache()
+        cache.set("python", "stale", _result())
+        key = ExecutionCache._generate_key("python", "stale")
+        cache._cache[key] = CacheEntry(
+            result=_result(), created_at=time.time() - 7200, ttl_seconds=3600
+        )
+        removed = cache.cleanup_expired()
+        assert isinstance(removed, int)
+        assert removed >= 1

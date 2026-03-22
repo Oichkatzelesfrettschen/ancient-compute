@@ -54,7 +54,7 @@ async def list_modules(db: Session = Depends(get_db)) -> Any:
                 "id": m.slug,
                 "title": m.title,
                 "description": m.description,
-                "era": m.era_enum.value if m.era_enum else None,
+                "era": m.era_enum.value if m.era_enum else None,  # type: ignore[truthy-function]
                 "start_year": m.start_year,
                 "end_year": m.end_year,
                 "estimated_hours": m.estimated_hours,

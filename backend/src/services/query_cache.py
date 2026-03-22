@@ -5,9 +5,11 @@ Implements caching and eager loading for frequently accessed database queries
 to reduce query count and improve response times.
 """
 
+from __future__ import annotations
+
 import time
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 
 try:
     # Only needed at runtime when DB paths are used
@@ -64,7 +66,7 @@ class QueryCache:
         params = "|".join(f"{k}={v}" for k, v in sorted(kwargs.items()))
         return f"{query_type}:{params}"
 
-    def get_exercise_with_relations(self, db: Session, exercise_id: int) -> Optional["Exercise"]:
+    def get_exercise_with_relations(self, db: Session, exercise_id: int) -> Exercise | None:
         """
         Get exercise with eagerly loaded relations.
 
@@ -76,7 +78,7 @@ class QueryCache:
             entry = self._cache[key]
             if not entry.is_expired():
                 self.hits += 1
-                return entry.data
+                return entry.data  # type: ignore[no-any-return]
             else:
                 del self._cache[key]
 
@@ -100,7 +102,7 @@ class QueryCache:
 
         return exercise
 
-    def get_module_with_exercises(self, db: Session, module_id: int) -> Optional["Module"]:
+    def get_module_with_exercises(self, db: Session, module_id: int) -> Module | None:
         """
         Get module with all exercises eagerly loaded.
 
@@ -112,7 +114,7 @@ class QueryCache:
             entry = self._cache[key]
             if not entry.is_expired():
                 self.hits += 1
-                return entry.data
+                return entry.data  # type: ignore[no-any-return]
             else:
                 del self._cache[key]
 
@@ -139,7 +141,7 @@ class QueryCache:
 
     def get_exercise_progress_with_submissions(
         self, db: Session, user_id: int, exercise_id: int
-    ) -> Optional["ExerciseProgress"]:
+    ) -> ExerciseProgress | None:
         """
         Get exercise progress with latest submissions eagerly loaded.
 
@@ -151,7 +153,7 @@ class QueryCache:
             entry = self._cache[key]
             if not entry.is_expired():
                 self.hits += 1
-                return entry.data
+                return entry.data  # type: ignore[no-any-return]
             else:
                 del self._cache[key]
 
@@ -178,7 +180,7 @@ class QueryCache:
 
         return progress
 
-    def list_exercises_by_module(self, db: Session, module_id: int) -> list["Exercise"]:
+    def list_exercises_by_module(self, db: Session, module_id: int) -> list[Exercise]:
         """
         List all exercises for a module with eager loading.
 

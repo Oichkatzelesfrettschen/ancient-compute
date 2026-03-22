@@ -141,8 +141,8 @@ class LorenzSZ42:
         key must have entries: 'chi_1'..'chi_5', 'psi_1'..'psi_5',
         'mu_37', 'mu_61'.  Each value is a list of 0/1 cam settings.
         """
-        chi = [LorenzWheel.from_pattern(key[f"chi_{i+1}"]) for i in range(5)]
-        psi = [LorenzWheel.from_pattern(key[f"psi_{i+1}"]) for i in range(5)]
+        chi = [LorenzWheel.from_pattern(key[f"chi_{i + 1}"]) for i in range(5)]
+        psi = [LorenzWheel.from_pattern(key[f"psi_{i + 1}"]) for i in range(5)]
         mu = [
             LorenzWheel.from_pattern(key["mu_37"]),
             LorenzWheel.from_pattern(key["mu_61"]),

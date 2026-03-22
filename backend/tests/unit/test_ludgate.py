@@ -320,3 +320,56 @@ class TestStepAndProgram:
         # Each add(1, 0) sets acc=1; last step leaves acc=1
         assert m.state.accumulator == 1
         assert m.state.cycle_count == 5
+
+
+class TestLudgateStateDict:
+    """state_dict() key/value properties."""
+
+    def test_state_dict_returns_dict(self) -> None:
+        m = LudgateMachine()
+        assert isinstance(m.state_dict(), dict)
+
+    def test_state_dict_has_required_keys(self) -> None:
+        m = LudgateMachine()
+        d = m.state_dict()
+        for key in ("accumulator", "cycle_count", "output_tape", "store_size"):
+            assert key in d, f"{key} missing from state_dict"
+
+    def test_state_dict_accumulator_tracks_add(self) -> None:
+        m = LudgateMachine()
+        m.add(7, 3)
+        assert m.state_dict()["accumulator"] == 10
+
+    def test_state_dict_cycle_count_tracks_steps(self) -> None:
+        # cycle_count increments via step(), not direct add()/multiply()
+        m = LudgateMachine()
+        m.load_program([("add", 1, 2), ("mult", 3, 4)])
+        m.step()
+        m.step()
+        assert m.state_dict()["cycle_count"] >= 2
+
+    def test_reset_zeroes_state_dict_fields(self) -> None:
+        m = LudgateMachine()
+        m.add(5, 5)
+        m.reset()
+        d = m.state_dict()
+        assert d["accumulator"] == 0
+        assert d["cycle_count"] == 0
+
+    def test_load_program_sets_program_pointer_to_zero(self) -> None:
+        m = LudgateMachine()
+        m.load_program([("add", 1, 2), ("mult", 3, 4)])
+        # program_pointer lives on state object, not state_dict
+        assert m.state.program_pointer == 0
+
+    def test_step_increments_program_pointer_in_state(self) -> None:
+        m = LudgateMachine()
+        m.load_program([("add", 1, 1)])
+        m.step()
+        assert m.state.program_pointer == 1
+
+    def test_output_tape_empty_after_arithmetic_only(self) -> None:
+        m = LudgateMachine()
+        m.add(3, 4)
+        m.multiply(5, 6)
+        assert m.state.output_tape == []

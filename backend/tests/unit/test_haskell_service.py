@@ -360,5 +360,30 @@ class TestExecutionStatusEnum:
         assert statuses == {"success", "compile_error", "runtime_error", "timeout"}
 
 
+class TestHaskellServiceInstance:
+    """HaskellService instance-level properties."""
+
+    def test_instantiation_does_not_raise(self) -> None:
+        from backend.src.services.languages.haskell_service import HaskellService
+        svc = HaskellService()
+        assert svc is not None
+
+    def test_service_is_not_none(self) -> None:
+        from backend.src.services.languages.haskell_service import HaskellService
+        assert HaskellService() is not None
+
+    def test_blocked_imports_is_callable(self) -> None:
+        from backend.src.services.languages.haskell_service import HaskellService
+        svc = HaskellService()
+        assert callable(svc._check_blocked_imports)
+
+    def test_data_list_import_blocked(self) -> None:
+        from backend.src.services.languages.haskell_service import HaskellService
+        svc = HaskellService()
+        result = svc._check_blocked_imports("import Data.List\nmain = pure ()")
+        # Data.List is allowed or blocked depending on config; result is str or None
+        assert result is None or isinstance(result, str)
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

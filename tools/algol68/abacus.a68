@@ -1,0 +1,147 @@
+COMMENT
+  Suanpan abacus emulator in ALGOL 68.
+  Models the Chinese suanpan: 9 decimal columns.
+  Each column has 1 heaven bead (value 5) and 4 earth beads (value 1 each).
+  Column value = heaven*5 + earth  (heaven in {0,1}, earth in 0..4).
+  Carry and borrow propagate left (column 1 = units, column 9 = ten-millions).
+
+  Wire protocol (stdin opcodes):
+    0         -- print state then quit
+    1 <n>     -- LOAD n (clear board and set to n)
+    2 <n>     -- ADD n to current value
+    3 <n>     -- SUB n from current value (floor at 0)
+    4         -- RESET (clear all columns)
+    5         -- PRINT state without quitting
+
+  Output (for opcodes 0 and 5):
+    total=<decimal integer>
+    heaven=<h1> <h2> ... <h9>   (column 1 = units)
+    earth=<e1> <e2> ... <e9>    (column 1 = units)
+
+  Source: Needham "Science and Civilisation in China" Vol.3 (1959).
+COMMENT
+
+BEGIN
+
+  INT ncols = 9;
+
+  # heaven[i]: 0 = resting, 1 = activated (pushed toward centre beam) #
+  # earth[i]:  0..4 = count of earth beads activated (pushed up)       #
+  [9] INT heaven;
+  [9] INT earth;
+
+  FOR i FROM 1 TO ncols DO heaven[i] := 0; earth[i] := 0 OD;
+
+  # Value encoded by column i (0..9) #
+  PROC column_val = (INT i) INT:
+    heaven[i] * 5 + earth[i];
+
+  # Write digit d (0..9) into column i using bead positions #
+  PROC set_col = (INT i, INT d) VOID:
+  BEGIN
+    INT v := d MOD 10;
+    heaven[i] := v OVER 5;
+    earth[i] := v MOD 5
+  END;
+
+  # Sum of all columns weighted by decimal place #
+  PROC board_total = INT:
+  BEGIN
+    INT s := 0;
+    INT place := 1;
+    FOR i FROM 1 TO ncols DO
+      s +:= column_val(i) * place;
+      place := place * 10
+    OD;
+    s
+  END;
+
+  # LOAD: decompose n into per-column digits (LSB to column 1) #
+  PROC do_load = (INT n) VOID:
+  BEGIN
+    INT val := ABS n;
+    FOR i FROM 1 TO ncols DO
+      set_col(i, val MOD 10);
+      val := val OVER 10
+    OD
+  END;
+
+  # ADD n with carry propagation through columns #
+  PROC do_add = (INT n) VOID:
+  BEGIN
+    INT val := ABS n;
+    INT carry := 0;
+    FOR i FROM 1 TO ncols DO
+      INT digit := val MOD 10;
+      val := val OVER 10;
+      INT cur := column_val(i) + digit + carry;
+      carry := cur OVER 10;
+      set_col(i, cur MOD 10)
+    OD
+  END;
+
+  # SUB n with borrow propagation; result floors at 0 on underflow #
+  PROC do_sub = (INT n) VOID:
+  BEGIN
+    INT val := ABS n;
+    INT borrow := 0;
+    FOR i FROM 1 TO ncols DO
+      INT digit := val MOD 10;
+      val := val OVER 10;
+      INT cur := column_val(i) - digit - borrow;
+      IF cur < 0 THEN
+        borrow := 1;
+        cur +:= 10
+      ELSE
+        borrow := 0
+      FI;
+      set_col(i, cur MOD 10)
+    OD;
+    IF borrow > 0 THEN
+      FOR i FROM 1 TO ncols DO heaven[i] := 0; earth[i] := 0 OD
+    FI
+  END;
+
+  # PRINT: write board state to stdout using whole() for clean integers #
+  PROC print_state = VOID:
+  BEGIN
+    print(("total=", whole(board_total, 0), newline));
+    print("heaven=");
+    FOR i FROM 1 TO ncols DO
+      print(whole(heaven[i], 0));
+      IF i < ncols THEN print(" ") FI
+    OD;
+    print(newline);
+    print("earth=");
+    FOR i FROM 1 TO ncols DO
+      print(whole(earth[i], 0));
+      IF i < ncols THEN print(" ") FI
+    OD;
+    print(newline)
+  END;
+
+  # Main dispatch loop: read opcode, dispatch, loop until opcode 0 #
+  BOOL running := TRUE;
+  WHILE running DO
+    INT opcode;
+    read((opcode));
+    IF opcode = 0 THEN
+      print_state;
+      running := FALSE
+    ELIF opcode = 1 THEN
+      INT operand; read((operand));
+      do_load(operand)
+    ELIF opcode = 2 THEN
+      INT operand; read((operand));
+      do_add(operand)
+    ELIF opcode = 3 THEN
+      INT operand; read((operand));
+      do_sub(operand)
+    ELIF opcode = 4 THEN
+      FOR i FROM 1 TO ncols DO heaven[i] := 0; earth[i] := 0 OD
+    ELIF opcode = 5 THEN
+      print_state
+    FI
+  OD
+
+END

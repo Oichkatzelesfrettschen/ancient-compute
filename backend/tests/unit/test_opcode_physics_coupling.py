@@ -393,6 +393,41 @@ class TestBridgeStateFieldsExtended:
         report = bridge.physics_report()
         assert "simulated_time_s" in report
 
+
+class TestBridgeSnapshotFields:
+    """PhysicsSnapshot returned by bridge.snapshot()."""
+
+    def test_snapshot_time_is_float(self) -> None:
+        _, bridge = _make_physics_engine()
+        snap = bridge.snapshot()
+        assert isinstance(snap.time_s, float)
+
+    def test_snapshot_temperature_in_range(self) -> None:
+        _, bridge = _make_physics_engine()
+        snap = bridge.snapshot()
+        assert 0.0 < snap.temperature_C < 500.0
+
+    def test_snapshot_shaft_deflection_nonneg(self) -> None:
+        _, bridge = _make_physics_engine()
+        snap = bridge.snapshot()
+        assert snap.shaft_deflection_mm >= 0.0
+
+    def test_snapshot_energy_nonneg(self) -> None:
+        _, bridge = _make_physics_engine()
+        snap = bridge.snapshot()
+        assert snap.energy_consumed_J >= 0.0
+
+    def test_snapshot_after_add_has_nonzero_time(self) -> None:
+        engine, bridge = _make_physics_engine()
+        engine.execute_instruction(_add(0))
+        snap = bridge.snapshot()
+        assert snap.time_s > 0.0
+
+    def test_snapshot_gear_backlash_nonneg(self) -> None:
+        _, bridge = _make_physics_engine()
+        snap = bridge.snapshot()
+        assert snap.gear_backlash_mm >= 0.0
+
     def test_bridge_failed_is_false_initially(self) -> None:
         _, bridge = _make_physics_engine()
         assert bridge.failed is False

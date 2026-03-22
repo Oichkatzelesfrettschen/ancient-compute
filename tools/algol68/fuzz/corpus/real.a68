@@ -1,0 +1,5 @@
+BEGIN
+  REAL pi := 3.14159265;
+  REAL r := 5.0;
+  print((pi * r * r, newline))
+END

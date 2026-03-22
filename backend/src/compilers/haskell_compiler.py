@@ -187,6 +187,7 @@ class HaskellCompiler:
 
         # Create builder for this function
         self.builder = IRBuilder(func_def.name, [])
+        assert self.builder is not None
         entry_block = self.builder.new_block("entry")
 
         # Push new scope
@@ -364,7 +365,9 @@ class HaskellCompiler:
         params = (
             list(expr.params)
             if hasattr(expr, "params")
-            else [expr.param] if hasattr(expr, "param") else []
+            else [expr.param]
+            if hasattr(expr, "param")
+            else []
         )
 
         # Save current builder state
@@ -372,6 +375,7 @@ class HaskellCompiler:
         old_table = self.symbol_table
 
         self.builder = IRBuilder(func_name, params)
+        assert self.builder is not None
         entry_block = self.builder.new_block("entry")
         self.symbol_table = SymbolTable(parent=old_table)
 

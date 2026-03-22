@@ -381,3 +381,37 @@ class TestStaticChargeExtended:
     def test_dry_charge_zero_area_is_zero(self):
         q = StaticChargeModel.triboelectric_charge_nC(0.0, 1.0, is_lubricated=False)
         assert q == 0.0
+
+
+class TestEddyCurrentMaterialVariants:
+    """EddyCurrentModel.eddy_loss_W direct parameter tests."""
+
+    def test_eddy_loss_positive_for_nonzero_b(self):
+        loss = EddyCurrentModel.eddy_loss_W(
+            B_T=5e-5, thickness_m=0.01, frequency_Hz=0.5, volume_m3=1e-4, resistivity_ohm_m=7e-8
+        )
+        assert loss >= 0.0
+
+    def test_eddy_loss_zero_b_field_gives_zero(self):
+        loss = EddyCurrentModel.eddy_loss_W(
+            B_T=0.0, thickness_m=0.01, frequency_Hz=0.5, volume_m3=1e-4, resistivity_ohm_m=7e-8
+        )
+        assert loss == 0.0
+
+    def test_higher_frequency_gives_more_loss(self):
+        low = EddyCurrentModel.eddy_loss_W(
+            B_T=5e-5, thickness_m=0.01, frequency_Hz=0.5, volume_m3=1e-4, resistivity_ohm_m=7e-8
+        )
+        high = EddyCurrentModel.eddy_loss_W(
+            B_T=5e-5, thickness_m=0.01, frequency_Hz=5.0, volume_m3=1e-4, resistivity_ohm_m=7e-8
+        )
+        assert high >= low
+
+    def test_larger_volume_gives_more_loss(self):
+        small = EddyCurrentModel.eddy_loss_W(
+            B_T=5e-5, thickness_m=0.01, frequency_Hz=0.5, volume_m3=1e-5, resistivity_ohm_m=7e-8
+        )
+        large = EddyCurrentModel.eddy_loss_W(
+            B_T=5e-5, thickness_m=0.01, frequency_Hz=0.5, volume_m3=1e-3, resistivity_ohm_m=7e-8
+        )
+        assert large >= small

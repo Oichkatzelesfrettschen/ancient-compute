@@ -149,7 +149,7 @@ class EDSACInstruction:
             raise ValueError(f"Unknown EDSAC function: {self.function!r}")
         self.function = f
         if not 0 <= self.address < _STORE_SIZE:
-            raise ValueError(f"Address {self.address} out of range [0, {_STORE_SIZE-1}]")
+            raise ValueError(f"Address {self.address} out of range [0, {_STORE_SIZE - 1}]")
 
     def encode(self) -> int:
         """Encode this instruction to a 17-bit word."""
@@ -221,7 +221,7 @@ class EDSAC:
 
     def _check_addr(self, address: int) -> None:
         if not 0 <= address < _STORE_SIZE:
-            raise IndexError(f"Store address {address} out of range [0, {_STORE_SIZE-1}]")
+            raise IndexError(f"Store address {address} out of range [0, {_STORE_SIZE - 1}]")
 
     def store_instructions(self, start: int, instructions: list[EDSACInstruction]) -> None:
         """Encode and store a list of EDSAC instructions starting at address ``start``."""

@@ -318,6 +318,94 @@ def test_adapter_get_memory_value_returns_row():
     assert adapter.get_memory_value(0) == [1, 0, 1, 0]
 
 
+# ---------------------------------------------------------------------------
+# Extended: JacquardLoom structural properties
+# ---------------------------------------------------------------------------
+
+
+class TestJacquardLoomExtended:
+    """Additional JacquardLoom state and step properties."""
+
+    def test_num_hooks_attribute(self) -> None:
+        loom = JacquardLoom(num_hooks=12)
+        assert loom.num_hooks == 12
+
+    def test_step_sequence_reads_all_cards(self) -> None:
+        cards = [[1, 0, 1, 0], [0, 1, 0, 1], [1, 1, 0, 0]]
+        loom = JacquardLoom(num_hooks=4)
+        loom.load_deck(cards)
+        seen = [loom.step() for _ in range(3)]
+        assert seen == cards
+
+    def test_step_past_end_card_index_stays(self) -> None:
+        loom = JacquardLoom(num_hooks=4)
+        loom.load_deck([[1, 0, 1, 0]])
+        loom.step()
+        loom.step()  # past end
+        assert loom.card_index == 1
+
+    def test_state_dict_deck_size_updates_on_load(self) -> None:
+        loom = JacquardLoom(num_hooks=4)
+        loom.load_deck([[1, 0, 1, 0], [0, 1, 0, 1]])
+        assert loom.state_dict()["deck_size"] == 2
+
+    def test_get_pattern_empty_before_steps(self) -> None:
+        loom = JacquardLoom(num_hooks=4)
+        loom.load_deck([[1, 0, 1, 0]])
+        assert loom.get_pattern() == []
+
+    def test_read_card_does_not_advance_index(self) -> None:
+        loom = JacquardLoom(num_hooks=4)
+        loom.load_deck([[1, 0, 1, 0]])
+        loom.read_card([1, 0, 1, 0])
+        assert loom.card_index == 0
+
+    def test_load_deck_validates_all_cards(self) -> None:
+        loom = JacquardLoom(num_hooks=4)
+        with pytest.raises(ValueError):
+            loom.load_deck([[1, 0, 1, 0], [1, 0]])  # second card too short
+
+    def test_weft_count_matches_successful_steps(self) -> None:
+        loom = JacquardLoom(num_hooks=4)
+        cards = [[i % 2, (i + 1) % 2, i % 2, (i + 1) % 2] for i in range(5)]
+        loom.load_deck(cards)
+        for _ in range(4):
+            loom.step()
+        assert loom.weft_count == 4
+
+
+class TestJacquardAdapterExtended:
+    """JacquardAdapter extended property tests."""
+
+    def _make_adapter(self, hooks: int = 4, cards: list | None = None):
+        from backend.src.emulator.adapter import JacquardAdapter
+        loom = JacquardLoom(num_hooks=hooks)
+        if cards is not None:
+            loom.load_deck(cards)
+        return JacquardAdapter(loom)
+
+    def test_get_operation_time_ms_returns_dict(self) -> None:
+        adapter = self._make_adapter()
+        t = adapter.get_operation_time_ms()
+        assert isinstance(t, dict)
+
+    def test_get_operation_time_ms_step_key(self) -> None:
+        adapter = self._make_adapter()
+        t = adapter.get_operation_time_ms()
+        assert "step" in t
+
+    def test_get_register_values_has_deck_size(self) -> None:
+        adapter = self._make_adapter(cards=[[1, 0, 1, 0], [0, 1, 0, 1]])
+        regs = adapter.get_register_values()
+        assert regs["deck_size"] == 2
+
+    def test_step_advances_cycle_count(self) -> None:
+        adapter = self._make_adapter(cards=[[1, 0, 1, 0], [0, 1, 0, 1]])
+        adapter.step()
+        adapter.step()
+        assert adapter.get_cycle_count() == 2
+
+
 def test_adapter_get_memory_out_of_range_returns_zeros():
     from backend.src.emulator.adapter import JacquardAdapter
 

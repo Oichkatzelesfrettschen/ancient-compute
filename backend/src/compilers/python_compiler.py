@@ -151,7 +151,9 @@ class PythonCompiler:
         for stmt in module.body:
             if isinstance(stmt, FunctionDef):
                 self.symbol_table.define(
-                    stmt.name, PythonType.any(), scope="global"  # Functions don't have simple types
+                    stmt.name,
+                    PythonType.any(),
+                    scope="global",  # Functions don't have simple types
                 )
 
     def _generate_ir_module(self, module: Module) -> Program:
@@ -173,6 +175,7 @@ class PythonCompiler:
 
         # Create new builder for this function
         self.builder = IRBuilder(func_def.name, func_def.args)
+        assert self.builder is not None
 
         # Create entry block
         entry_block = self.builder.new_block("entry")

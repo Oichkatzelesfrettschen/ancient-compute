@@ -116,7 +116,7 @@ async def submit_exercise_code(
         raise HTTPException(
             status_code=400,
             detail=f"Language {request.language} not supported for this exercise. "
-            f"Supported: {', '.join(exercise.languages_supported)}",
+            f"Supported: {', '.join(exercise.languages_supported)}",  # type: ignore[arg-type]
         )
 
     # Execute code
@@ -244,7 +244,7 @@ async def validate_exercise_code(
         raise HTTPException(
             status_code=400,
             detail=f"Language {request.language} not supported for this exercise. "
-            f"Supported: {', '.join(exercise.languages_supported)}",
+            f"Supported: {', '.join(exercise.languages_supported)}",  # type: ignore[arg-type]
         )
 
     # Execute code

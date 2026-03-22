@@ -229,3 +229,75 @@ class TestMicroPythonOutputValues:
     def test_list_sum_15(self) -> None:
         r = _run("s = 0\nfor x in [1, 2, 3, 4, 5]:\n    s += x\nprint(s)")
         assert "15" in r.stdout
+
+
+class TestMicroPythonResultProperties:
+    """Result object properties for MicroPython execution."""
+
+    def test_result_has_status_field(self) -> None:
+        r = _run("print(1)")
+        assert hasattr(r, "status")
+
+    def test_result_has_stdout_field(self) -> None:
+        r = _run("print(42)")
+        assert hasattr(r, "stdout")
+
+    def test_result_has_stderr_field(self) -> None:
+        r = _run("print(0)")
+        assert hasattr(r, "stderr")
+
+    def test_success_status_on_valid_code(self) -> None:
+        from backend.src.services.languages.micropython_service import ExecutionStatus
+        r = _run("print(1)")
+        assert r.status == ExecutionStatus.SUCCESS
+
+    def test_compile_error_on_syntax_error(self) -> None:
+        from backend.src.services.languages.micropython_service import ExecutionStatus
+        r = _run("def bad(:\n    pass")
+        assert r.status in (
+            ExecutionStatus.COMPILE_ERROR, ExecutionStatus.RUNTIME_ERROR
+        )
+
+    def test_output_printed_to_stdout(self) -> None:
+        r = _run("print('hello world')")
+        assert "hello world" in r.stdout
+
+
+class TestMicroPythonArithmetic:
+    """Arithmetic expressions execute correctly in MicroPython."""
+
+    def test_integer_addition(self) -> None:
+        r = _run("print(3 + 4)")
+        assert "7" in r.stdout
+
+    def test_integer_multiplication(self) -> None:
+        r = _run("print(6 * 7)")
+        assert "42" in r.stdout
+
+    def test_floor_division(self) -> None:
+        r = _run("print(10 // 3)")
+        assert "3" in r.stdout
+
+    def test_modulo(self) -> None:
+        r = _run("print(17 % 5)")
+        assert "2" in r.stdout
+
+    def test_power_operator(self) -> None:
+        r = _run("print(2 ** 10)")
+        assert "1024" in r.stdout
+
+    def test_negative_subtraction(self) -> None:
+        r = _run("print(5 - 8)")
+        assert "-3" in r.stdout
+
+    def test_chained_arithmetic(self) -> None:
+        r = _run("print(2 + 3 * 4 - 1)")
+        assert "13" in r.stdout
+
+
+class TestMicropythonResultShape:
+    """Result object has expected attributes."""
+
+    def test_result_has_status_attr(self) -> None:
+        r = _run("print(1)")
+        assert hasattr(r, "status")

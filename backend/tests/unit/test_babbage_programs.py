@@ -298,3 +298,20 @@ class TestAEMultipleOutputPrograms:
         r1 = _run("exp_series.ae")
         r2 = _run("exp_series.ae")
         assert abs(float(r1) - float(r2)) < 1e-30
+
+
+class TestBabbageProgramEngineState:
+    """Engine state properties after program execution."""
+
+    def test_running_program_leaves_engine_halted(self) -> None:
+        from backend.src.emulator.analytical_engine import Engine
+        from pathlib import Path
+        eng = Engine()
+        ae_dir = Path(__file__).resolve().parents[3] / "docs" / "simulation" / "programs"
+        eng.load_program_from_text((ae_dir / "babbage_addition.ae").read_text())
+        eng.run()
+        assert not eng.running
+
+    def test_sin_result_in_valid_range(self) -> None:
+        result = _run("sin_series.ae")
+        assert -2.0 <= result <= 2.0

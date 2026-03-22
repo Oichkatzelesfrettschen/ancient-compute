@@ -137,8 +137,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                 content={
                     "error": "Rate limit exceeded",
                     "message": (
-                        f"Too many requests. Maximum {max_requests} requests"
-                        f" per {window} seconds."
+                        f"Too many requests. Maximum {max_requests} requests per {window} seconds."
                     ),
                     "retry_after": retry_after,
                 },

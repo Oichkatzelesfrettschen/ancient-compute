@@ -188,6 +188,7 @@ class CCompiler:
         # Create IR builder for this function
         params = [param.name for param in func.parameters]
         self.builder = IRBuilder(func.name, params)
+        assert self.builder is not None
 
         # Create function scope
         func_scope = self.global_symbols.push_scope()

@@ -196,5 +196,5 @@ class GrantDifferenceEngine:
     def get_register(self, index: int) -> Decimal:
         """Return the current value of register D[index]."""
         if not 0 <= index < _MAX_REGISTERS:
-            raise IndexError(f"Register index {index} out of range [0, {_MAX_REGISTERS-1}]")
+            raise IndexError(f"Register index {index} out of range [0, {_MAX_REGISTERS - 1}]")
         return self.state.registers[index]

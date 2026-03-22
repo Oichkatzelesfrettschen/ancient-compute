@@ -188,8 +188,7 @@ class AEExecutionService:
                     status=AEExecutionStatus.RUNTIME_ERROR,
                     stdout="\n".join(output_lines),
                     stderr=(
-                        f"Execution exceeded {self.step_limit} step limit"
-                        " (possible infinite loop)."
+                        f"Execution exceeded {self.step_limit} step limit (possible infinite loop)."
                     ),
                     register_state=self._snapshot_registers(engine),
                     clock_cycles=engine.clock_time,

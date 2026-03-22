@@ -9,6 +9,7 @@ Coordinates all code generation phases to produce Babbage assembly.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import cast
 
 from backend.src.codegen.emitter import AssemblyOutput, CodeEmitter
 from backend.src.codegen.liveness import LivenessAnalyzer
@@ -29,11 +30,11 @@ class CodeGenResult:
 
     def get_assembly_text(self) -> str:
         """Get generated assembly"""
-        return self.assembly_output.assembly_text
+        return str(self.assembly_output.assembly_text)
 
     def get_label_map(self) -> dict[str, int]:
         """Get label to address mapping"""
-        return self.assembly_output.label_map
+        return cast(dict[str, int], self.assembly_output.label_map)
 
 
 class CodeGenerator:

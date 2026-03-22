@@ -165,7 +165,7 @@ class ENIAC:
 
     def _check_acc(self, index: int) -> None:
         if not 0 <= index < _NUM_ACCUMULATORS:
-            raise IndexError(f"Accumulator {index} out of range [0, {_NUM_ACCUMULATORS-1}]")
+            raise IndexError(f"Accumulator {index} out of range [0, {_NUM_ACCUMULATORS - 1}]")
 
     def load_program(self, instructions: list[ENIACInstruction]) -> None:
         """Load program (replaces physical cable rewiring)."""

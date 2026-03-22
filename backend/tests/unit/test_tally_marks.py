@@ -263,3 +263,25 @@ class TestTallyMarksRunBehavior:
         emu = TallyMarksEmulator()
         emu.run([3, 4])
         assert len(emu.render()) == 7
+
+
+class TestTallyMarksStateProperties:
+    """state() dict keys and value invariants."""
+
+    def test_state_has_count_key(self) -> None:
+        emu = TallyMarksEmulator()
+        assert "count" in emu.state()
+
+    def test_state_count_zero_on_init(self) -> None:
+        emu = TallyMarksEmulator()
+        assert emu.state()["count"] == 0
+
+    def test_state_count_matches_render_length(self) -> None:
+        emu = TallyMarksEmulator()
+        emu.step(9)
+        assert emu.state()["count"] == len(emu.render())
+
+    def test_state_count_non_negative_after_clamping(self) -> None:
+        emu = TallyMarksEmulator()
+        emu.step(-100)
+        assert emu.state()["count"] >= 0

@@ -362,3 +362,12 @@ class TestSimSchemaCoreProperties:
             if mat.name not in non_structural:
                 e_min, e_max = mat.youngs_modulus_Pa
                 assert e_min > 0, f"{mat.name} has non-positive E_min"
+
+
+class TestMaterialLibraryStructuralKeys:
+    """Material library has expected material keys."""
+
+    def test_brass_material_exists(self) -> None:
+        from backend.src.emulator.materials import MaterialLibrary
+        lib = MaterialLibrary()
+        assert lib.get("brass") is not None

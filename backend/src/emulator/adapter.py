@@ -550,6 +550,12 @@ class NapierAdapter(MachineAdapter):
     """
 
     _TIMING_MS: dict[str, float] = {"multiply": 15000.0}
+    _A68_SOURCE: str = str(
+        __import__("pathlib").Path(__file__).resolve().parents[3]
+        / "tools"
+        / "algol68"
+        / "napiers_bones.a68"
+    )
 
     def get_operation_time_ms(self) -> dict[str, float]:
         return self._TIMING_MS
@@ -593,6 +599,89 @@ class NapierAdapter(MachineAdapter):
             "last_result": self._last_result,
             "operations": self._operations,
         }
+
+    def execute_algol68_ops(
+        self, operations: list[dict[str, Any]]
+    ) -> dict[str, Any]:
+        """Run Napier's Bones operations through the ALGOL68 napiers_bones.a68 backend.
+
+        Supported operation shapes:
+          {"op": "set_multiplicand", "value": <int>}  -- set bones for a number
+          {"op": "multiply", "digit": <1-9>}          -- multiply by single digit
+          {"op": "reset"}                              -- clear bones and result
+          {"op": "print"}                              -- emit current state (opcode 3)
+
+        Returns {"result": int, "multiplicand": int, "last_multiplier": int}.
+        Raises RuntimeError if a68g is unavailable or returns a non-zero exit code.
+        """
+        import subprocess
+
+        _OP_MAP = {
+            "set_multiplicand": lambda d: f"1 {int(d.get('value', 0))}",
+            "multiply": lambda d: f"2 {int(d.get('digit', 1))}",
+            "reset": lambda _: "4",
+            "print": lambda _: "3",
+        }
+        lines: list[str] = []
+        for op_dict in operations:
+            op = str(op_dict.get("op", "")).lower()
+            encoder = _OP_MAP.get(op)
+            if encoder is not None:
+                lines.append(encoder(op_dict))
+        lines.append("0")  # print final state + quit
+        stdin_data = "\n".join(lines) + "\n"
+
+        try:
+            proc = subprocess.run(
+                ["/usr/bin/a68g", self._A68_SOURCE],
+                input=stdin_data,
+                capture_output=True,
+                text=True,
+                timeout=5,
+            )
+        except FileNotFoundError as exc:
+            raise RuntimeError("a68g not found at /usr/bin/a68g") from exc
+        except subprocess.TimeoutExpired as exc:
+            raise RuntimeError("ALGOL68 napiers_bones timed out") from exc
+
+        if proc.returncode != 0:
+            raise RuntimeError(f"ALGOL68 napiers_bones error: {proc.stderr.strip()}")
+
+        parsed = _parse_napier_a68_output(proc.stdout)
+        # Sync the Python emulator so step() calls remain consistent
+        if parsed["multiplicand"] > 0:
+            self.machine.load_number(parsed["multiplicand"])
+        self._last_result = parsed["result"]
+        self._operations += len(operations)
+        return parsed
+
+
+def _parse_napier_a68_output(output: str) -> dict[str, Any]:
+    """Parse napiers_bones.a68 print_state output.
+
+    Expected format (last block wins if PRINT opcode was used multiple times):
+      result=<int>
+      multiplicand=<int>
+      last_multiplier=<int>
+
+    Returns {"result": int, "multiplicand": int, "last_multiplier": int}.
+    """
+    import contextlib
+
+    result = 0
+    multiplicand = 0
+    last_multiplier = 0
+    for line in output.splitlines():
+        if line.startswith("result="):
+            with contextlib.suppress(ValueError):
+                result = int(line.split("=", 1)[1].strip())
+        elif line.startswith("multiplicand="):
+            with contextlib.suppress(ValueError):
+                multiplicand = int(line.split("=", 1)[1].strip())
+        elif line.startswith("last_multiplier="):
+            with contextlib.suppress(ValueError):
+                last_multiplier = int(line.split("=", 1)[1].strip())
+    return {"result": result, "multiplicand": multiplicand, "last_multiplier": last_multiplier}
 
 
 class ThomasArithometerAdapter(MachineAdapter):
@@ -1305,9 +1394,24 @@ class AbacusAdapter(MachineAdapter):
 
     One step = one bead push (adds 1 to the current value).
     Demonstrates bead-column arithmetic; columns represent decimal digits.
+
+    ALGOL 68 backend (execute_algol68_ops):
+      For sequences of add/sub/load/reset operations, the adapter can delegate
+      to the ALGOL68 suanpan program (tools/algol68/abacus.a68) which models
+      the physical bead state (heaven/earth columns) in addition to the total.
+      The Python AbacusEmulator is then synced to the ALGOL68 result so that
+      subsequent step() calls remain consistent.
     """
 
-    _TIMING_MS: dict[str, float] = {"step": 300.0}
+    _TIMING_MS: dict[str, float] = {"step": 300.0, "add": 300.0, "sub": 300.0}
+
+    # Path to the resident ALGOL68 suanpan program
+    _A68_SOURCE: str = str(
+        __import__("pathlib").Path(__file__).resolve().parents[3]
+        / "tools"
+        / "algol68"
+        / "abacus.a68"
+    )
 
     def get_operation_time_ms(self) -> dict[str, float]:
         return self._TIMING_MS
@@ -1315,6 +1419,9 @@ class AbacusAdapter(MachineAdapter):
     def __init__(self, machine: AbacusEmulator) -> None:
         self.machine = machine
         self._ops = 0
+        # Full bead-state from the last ALGOL68 execution (None until first run)
+        self._heaven: list[int] | None = None
+        self._earth: list[int] | None = None
 
     def get_cycle_count(self) -> int:
         return self._ops
@@ -1327,7 +1434,12 @@ class AbacusAdapter(MachineAdapter):
         return self.machine._digits()  # noqa: SLF001
 
     def get_register_values(self) -> dict[str, Any]:
-        return {"value": self.machine.state()["value"]}
+        rv: dict[str, Any] = {"value": self.machine.state()["value"]}
+        if self._heaven is not None:
+            rv["heaven"] = self._heaven
+        if self._earth is not None:
+            rv["earth"] = self._earth
+        return rv
 
     def get_memory_value(self, address: int) -> Any:
         digits = self.machine._digits()  # noqa: SLF001
@@ -1338,13 +1450,115 @@ class AbacusAdapter(MachineAdapter):
     def step(self) -> None:
         self.machine.add(1)
         self._ops += 1
+        # Invalidate the ALGOL68 bead state since Python stepped it independently
+        self._heaven = None
+        self._earth = None
+
+    def execute_algol68_ops(
+        self, operations: list[dict[str, Any]]
+    ) -> dict[str, Any]:
+        """Run a sequence of operations through the ALGOL68 suanpan backend.
+
+        Each operation: {"op": "load"|"add"|"sub"|"reset", "value": <int>}
+        The "value" key is required for load/add/sub; ignored for reset.
+
+        Encodes the sequence as the abacus.a68 wire protocol (int opcode pairs),
+        runs a68g synchronously, parses output, syncs the internal AbacusEmulator,
+        and returns the parsed bead state.
+
+        Returns {"total": int, "heaven": list[int], "earth": list[int]}.
+        Raises RuntimeError if a68g is not found or the program fails.
+        """
+        import subprocess
+
+        _OP_CODES = {"load": 1, "add": 2, "sub": 3, "reset": 4}
+        lines: list[str] = []
+        # If the first operation is not a "load" or "reset", seed the board
+        # with the current machine value so that sequential calls compose.
+        # A leading "load" or "reset" in the operations list is authoritative.
+        first_op = str(operations[0].get("op", "")).lower() if operations else ""
+        if first_op not in ("load", "reset"):
+            lines.append(f"1 {self.machine.state()['value']}")
+        for op_dict in operations:
+            op = str(op_dict.get("op", "")).lower()
+            code = _OP_CODES.get(op)
+            if code is None:
+                continue
+            if op == "reset":
+                lines.append("4")
+            else:
+                val = int(op_dict.get("value", 0))
+                lines.append(f"{code} {val}")
+        lines.append("0")  # print + quit
+        stdin_data = "\n".join(lines) + "\n"
+
+        try:
+            result = subprocess.run(
+                ["/usr/bin/a68g", self._A68_SOURCE],
+                input=stdin_data,
+                capture_output=True,
+                text=True,
+                timeout=5,
+            )
+        except FileNotFoundError as exc:
+            raise RuntimeError("a68g not found at /usr/bin/a68g") from exc
+        except subprocess.TimeoutExpired as exc:
+            raise RuntimeError("ALGOL68 abacus timed out") from exc
+
+        if result.returncode != 0:
+            raise RuntimeError(
+                f"ALGOL68 abacus error: {result.stderr.strip()}"
+            )
+
+        parsed = _parse_abacus_a68_output(result.stdout)
+        # Sync the Python emulator so step() calls remain consistent
+        self.machine.set_value(parsed["total"])
+        self._heaven = parsed["heaven"]
+        self._earth = parsed["earth"]
+        self._ops += len(operations)
+        return parsed
 
     def get_snapshot(self) -> Any:
-        return {
+        snap: dict[str, Any] = {
             "value": self.machine.state()["value"],
             "digits": self.machine.state()["digits"],
             "operations": self._ops,
         }
+        if self._heaven is not None:
+            snap["heaven"] = self._heaven
+        if self._earth is not None:
+            snap["earth"] = self._earth
+        return snap
+
+
+def _parse_abacus_a68_output(output: str) -> dict[str, Any]:
+    """Parse the abacus.a68 print_state output into a Python dict.
+
+    Expected format (3 lines):
+      total=<int>
+      heaven=<h1> <h2> ... <h9>
+      earth=<e1> <e2> ... <e9>
+
+    Returns {"total": int, "heaven": list[int], "earth": list[int]}.
+    Only the LAST total= block is returned (in case multiple PRINT ops ran).
+    """
+    total = 0
+    heaven: list[int] = []
+    earth: list[int] = []
+    import contextlib
+
+    for line in output.splitlines():
+        line = line.strip()
+        if line.startswith("total="):
+            with contextlib.suppress(ValueError):
+                total = int(line[6:])
+        elif line.startswith("heaven="):
+            with contextlib.suppress(ValueError):
+                heaven = [int(x) for x in line[7:].split()]
+        elif line.startswith("earth="):
+            with contextlib.suppress(ValueError):
+                earth = [int(x) for x in line[6:].split()]
+    return {"total": total, "heaven": heaven, "earth": earth}
 
 
 class SlideRuleAdapter(MachineAdapter):
@@ -1355,6 +1569,12 @@ class SlideRuleAdapter(MachineAdapter):
     """
 
     _TIMING_MS: dict[str, float] = {"multiply": 3000.0, "divide": 3000.0}
+    _A68_SOURCE: str = str(
+        __import__("pathlib").Path(__file__).resolve().parents[3]
+        / "tools"
+        / "algol68"
+        / "slide_rule.a68"
+    )
 
     def get_operation_time_ms(self) -> dict[str, float]:
         return self._TIMING_MS
@@ -1390,6 +1610,93 @@ class SlideRuleAdapter(MachineAdapter):
             "result": self._result,
             "operations": self._ops,
         }
+
+    def execute_algol68_ops(
+        self, operations: list[dict[str, Any]]
+    ) -> dict[str, Any]:
+        """Run slide rule operations through the ALGOL68 slide_rule.a68 backend.
+
+        Supported operation shapes:
+          {"op": "multiply", "a": <float>, "b": <float>}   -- a * b via log addition
+          {"op": "divide",   "a": <float>, "b": <float>}   -- a / b via log subtraction
+          {"op": "power",    "a": <float>, "n": <int>}     -- a^n via repeated log addition
+          {"op": "sqrt",     "a": <float>}                  -- sqrt(a) via log halving
+          {"op": "print"}                                    -- emit current state (opcode 5)
+
+        Returns {"result": float, "ops": int}.
+        Raises RuntimeError if a68g is unavailable or returns a non-zero exit code.
+        """
+        import subprocess
+
+        lines: list[str] = []
+        for op_dict in operations:
+            op = str(op_dict.get("op", "")).lower()
+            if op == "multiply":
+                a = float(op_dict.get("a", 1.0))
+                b = float(op_dict.get("b", 1.0))
+                lines.append(f"1 {a} {b}")
+            elif op == "divide":
+                a = float(op_dict.get("a", 1.0))
+                b = float(op_dict.get("b", 1.0))
+                lines.append(f"2 {a} {b}")
+            elif op == "power":
+                a = float(op_dict.get("a", 1.0))
+                n = int(op_dict.get("n", 1))
+                lines.append(f"3 {a} {n}")
+            elif op == "sqrt":
+                a = float(op_dict.get("a", 1.0))
+                lines.append(f"4 {a}")
+            elif op == "print":
+                lines.append("5")
+        lines.append("0")  # print final state + quit
+        stdin_data = "\n".join(lines) + "\n"
+
+        try:
+            proc = subprocess.run(
+                ["/usr/bin/a68g", self._A68_SOURCE],
+                input=stdin_data,
+                capture_output=True,
+                text=True,
+                timeout=5,
+            )
+        except FileNotFoundError as exc:
+            raise RuntimeError("a68g not found at /usr/bin/a68g") from exc
+        except subprocess.TimeoutExpired as exc:
+            raise RuntimeError("ALGOL68 slide_rule timed out") from exc
+
+        if proc.returncode != 0:
+            raise RuntimeError(f"ALGOL68 slide_rule error: {proc.stderr.strip()}")
+
+        parsed = _parse_slide_rule_a68_output(proc.stdout)
+        # Sync the adapter state so step() and get_snapshot() remain consistent
+        self._result = parsed["result"]
+        self._ops = parsed["ops"]
+        return parsed
+
+
+def _parse_slide_rule_a68_output(output: str) -> dict[str, Any]:
+    """Parse slide_rule.a68 print_state output.
+
+    Expected format (last block wins if PRINT opcode was used multiple times):
+      result=<REAL>    -- a68g REAL format e.g. "+4.20000000000000e  +1"
+      ops=<int>
+
+    Returns {"result": float, "ops": int}.
+    """
+    import contextlib
+
+    result = 0.0
+    ops = 0
+    for line in output.splitlines():
+        if line.startswith("result="):
+            with contextlib.suppress(ValueError):
+                # a68g REAL output: "+4.20000000000000e  +1"; collapse whitespace
+                raw = line.split("=", 1)[1]
+                result = float("".join(raw.split()))
+        elif line.startswith("ops="):
+            with contextlib.suppress(ValueError):
+                ops = int(line.split("=", 1)[1].strip())
+    return {"result": result, "ops": ops}
 
 
 class QuipuAdapter(MachineAdapter):

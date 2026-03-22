@@ -225,3 +225,20 @@ class TestAdaLovelaceSeriesExtended:
         s1 = ada_lovelace_bernoulli_series(5)
         s2 = ada_lovelace_bernoulli_series(5)
         assert s1 == s2
+
+
+class TestAdaLovelaceSeriesProperties:
+    """Mathematical properties of the Ada Lovelace series."""
+
+    def test_all_values_are_fractions(self) -> None:
+        series = ada_lovelace_bernoulli_series(4)
+        for v in series:
+            assert isinstance(v, Fraction)
+
+    def test_first_value_positive(self) -> None:
+        # B_2 = 1/6 > 0
+        assert ada_lovelace_bernoulli_series(1)[0] > 0
+
+    def test_second_value_negative(self) -> None:
+        # B_4 = -1/30 < 0
+        assert ada_lovelace_bernoulli_series(2)[1] < 0

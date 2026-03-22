@@ -291,3 +291,125 @@ class TestLivenessAnalyzer:
         analyzer = LivenessAnalyzer(fn)
         intervals = analyzer.analyze()
         assert "a" in intervals
+
+
+class TestAssemblyOutputExtra:
+    """AssemblyOutput dataclass field tests."""
+
+    def _make_ao(
+        self,
+        text: str = "",
+        labels: dict | None = None,
+        count: int = 0,
+    ) -> AssemblyOutput:
+        return AssemblyOutput(
+            assembly_text=text, label_map=labels or {}, instruction_count=count
+        )
+
+    def test_assembly_text_stored(self) -> None:
+        ao = self._make_ao(text="MOV A, B\nHALT")
+        assert "MOV A, B" in ao.assembly_text
+
+    def test_instruction_count_stored(self) -> None:
+        ao = self._make_ao(count=7)
+        assert ao.instruction_count == 7
+
+    def test_label_map_stored(self) -> None:
+        ao = self._make_ao(labels={"main": 0, "loop": 3})
+        assert ao.label_map["main"] == 0
+        assert ao.label_map["loop"] == 3
+
+    def test_spill_count_default_zero(self) -> None:
+        ao = self._make_ao()
+        assert ao.spill_count == 0
+
+    def test_comment_default_empty(self) -> None:
+        ao = self._make_ao()
+        assert ao.comment == ""
+
+    def test_custom_comment(self) -> None:
+        ao = AssemblyOutput(
+            assembly_text="NOP", label_map={}, instruction_count=1, comment="test"
+        )
+        assert ao.comment == "test"
+
+
+class TestCodeEmitterExtra:
+    """CodeEmitter add/emit pipeline tests."""
+
+    def _instr(self, mnemonic: str, *vals: str) -> AsmInstruction:
+        return AsmInstruction(
+            mnemonic=mnemonic,
+            operands=[AsmOperand(operand_type="reg", value=v) for v in vals],
+        )
+
+    def test_add_two_instructions_count_two(self) -> None:
+        ce = CodeEmitter()
+        ce.add_instruction(self._instr("NOP"))
+        ce.add_instruction(self._instr("NOP"))
+        ao = ce.emit()
+        assert ao.instruction_count == 2
+
+    def test_emit_includes_instruction_text(self) -> None:
+        ce = CodeEmitter()
+        ce.add_instruction(self._instr("HALT"))
+        ao = ce.emit()
+        assert "HALT" in ao.assembly_text
+
+    def test_emit_label_appears_in_label_map(self) -> None:
+        ce = CodeEmitter()
+        ce.add_label("entry")
+        ce.add_instruction(self._instr("NOP"))
+        ao = ce.emit()
+        assert "entry" in ao.label_map
+
+    def test_spill_count_propagated(self) -> None:
+        ce = CodeEmitter()
+        ce.add_instruction(self._instr("NOP"))
+        ao = ce.emit(spill_count=5)
+        assert ao.spill_count == 5
+
+    def test_global_main_in_output(self) -> None:
+        ce = CodeEmitter()
+        ce.add_instruction(self._instr("RET"))
+        ao = ce.emit()
+        assert ".global main" in ao.assembly_text
+
+    def test_multiple_labels_all_in_map(self) -> None:
+        ce = CodeEmitter()
+        ce.add_label("a")
+        ce.add_instruction(self._instr("NOP"))
+        ce.add_label("b")
+        ce.add_instruction(self._instr("NOP"))
+        ao = ce.emit()
+        assert "a" in ao.label_map
+        assert "b" in ao.label_map
+
+
+class TestLivenessAnalyzerExtra:
+    """Additional LivenessAnalyzer tests."""
+
+    def test_analyze_returns_dict(self) -> None:
+        fn = Function(name="f", parameters=["x"])
+        bb = BasicBlock(label="entry")
+        bb.set_terminator(ReturnTerminator(value=VariableValue("x")))
+        fn.add_block(bb)
+        intervals = LivenessAnalyzer(fn).analyze()
+        assert isinstance(intervals, dict)
+
+    def test_parameter_gets_interval(self) -> None:
+        fn = Function(name="f", parameters=["a", "b"])
+        bb = BasicBlock(label="entry")
+        bb.set_terminator(ReturnTerminator(value=VariableValue("a")))
+        fn.add_block(bb)
+        intervals = LivenessAnalyzer(fn).analyze()
+        assert "a" in intervals
+
+    def test_interval_values_are_live_intervals(self) -> None:
+        fn = Function(name="f", parameters=["x"])
+        bb = BasicBlock(label="entry")
+        bb.set_terminator(ReturnTerminator(value=VariableValue("x")))
+        fn.add_block(bb)
+        intervals = LivenessAnalyzer(fn).analyze()
+        for iv in intervals.values():
+            assert isinstance(iv, LiveInterval)

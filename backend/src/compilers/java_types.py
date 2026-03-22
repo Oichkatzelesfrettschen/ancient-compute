@@ -208,7 +208,7 @@ class JavaTypeSystem:
     def _is_string_type(self, type_: Type) -> bool:
         """Check if type is String"""
         if isinstance(type_, ReferenceType):
-            return type_.name == "String"
+            return bool(type_.name == "String")
         return False
 
     def is_assignable_to(self, from_type: Type, to_type: Type) -> bool:
@@ -246,14 +246,14 @@ class JavaTypeSystem:
             # Simplified: only check for exact match or Object supertype
             if to_type.name == "Object":
                 return True
-            return from_type.name == to_type.name
+            return bool(from_type.name == to_type.name)
 
         return False
 
     def _types_equal(self, t1: Type, t2: Type) -> bool:
         """Check if two types are equal"""
         if isinstance(t1, PrimitiveType) and isinstance(t2, PrimitiveType):
-            return t1.name == t2.name
+            return bool(t1.name == t2.name)
 
         if isinstance(t1, ReferenceType) and isinstance(t2, ReferenceType):
             if t1.name != t2.name:

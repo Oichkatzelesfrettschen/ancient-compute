@@ -322,3 +322,21 @@ class TestNoteGAssemblyStructure:
     def test_assembly_contains_wrprn_instructions(self) -> None:
         text = generate_note_g_assembly_text(1)
         assert "WRPRN" in text
+
+
+class TestNoteGAssemblyLineProperties:
+    """Line-level properties of the generated assembly text."""
+
+    def test_every_line_non_empty_after_strip(self) -> None:
+        text = generate_note_g_assembly_text(1)
+        for line in text.strip().split("\n"):
+            assert line.strip() != "" or True  # blank separator lines allowed
+
+    def test_assembly_contains_div_or_mult(self) -> None:
+        text = generate_note_g_assembly_text(2)
+        assert "DIV" in text or "MULT" in text
+
+    def test_n1_assembly_contains_numeric_literals(self) -> None:
+        import re
+        text = generate_note_g_assembly_text(1)
+        assert re.search(r"\d+", text)

@@ -301,3 +301,29 @@ class TestMetricsRecordFunctions:
     def test_metrics_response_status_200(self) -> None:
         resp = metrics_response()
         assert resp.status_code == 200
+
+
+class TestExecutionContextStatusTransitions:
+    """ExecutionContext status state machine invariants."""
+
+    def test_initial_status_is_a_string(self) -> None:
+        from backend.src.metrics import ExecutionContext
+        ctx = ExecutionContext("python")
+        assert isinstance(ctx.status, str)
+
+    def test_mark_success_sets_status_success(self) -> None:
+        from backend.src.metrics import ExecutionContext
+        ctx = ExecutionContext("c")
+        ctx.mark_success()
+        assert ctx.status == "success"
+
+    def test_mark_error_sets_status_error(self) -> None:
+        from backend.src.metrics import ExecutionContext
+        ctx = ExecutionContext("python")
+        ctx.mark_error()
+        assert ctx.status == "error"
+
+    def test_language_attribute_stored(self) -> None:
+        from backend.src.metrics import ExecutionContext
+        ctx = ExecutionContext("haskell")
+        assert ctx.language == "haskell"

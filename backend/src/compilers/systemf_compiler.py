@@ -56,6 +56,7 @@ class SystemFCompiler:
         # Phase 4: IR Generation
         # For simplicity, we treat the sequence of expressions as a main function body
         self.ir_builder = IRBuilder("main", [])
+        assert self.ir_builder is not None
         self.ir_builder.new_block("entry")
 
         last_val: Any = Constant(0)
@@ -93,6 +94,7 @@ class SystemFCompiler:
             old_symbols = self.symbol_table.copy()
 
             self.ir_builder = IRBuilder(func_name, params)
+            assert self.ir_builder is not None
             self.ir_builder.function.local_variables = {expr.param_name: IRType.DEC50}
             self.ir_builder.new_block("entry")
             self.symbol_table = {expr.param_name: VariableValue(expr.param_name)}

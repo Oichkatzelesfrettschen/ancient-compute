@@ -257,3 +257,84 @@ class TestSimulationConfigFieldTypes:
         assert cfg.valve_lap_mm == 5.0
         assert cfg.valve_lead_mm == 2.0
         assert cfg.valve_cutoff_pct == 55.0
+
+
+class TestSimulationConfigValveParameters:
+    """Valve timing parameter validation and construction."""
+
+    def test_valve_lap_default_is_numeric(self) -> None:
+        cfg = SimulationConfig()
+        assert isinstance(cfg.valve_lap_mm, (int, float))
+
+    def test_valve_lead_default_is_numeric(self) -> None:
+        cfg = SimulationConfig()
+        assert isinstance(cfg.valve_lead_mm, (int, float))
+
+    def test_custom_rpm_overrides_default(self) -> None:
+        cfg = SimulationConfig(rpm=60.0)
+        assert cfg.rpm == 60.0
+
+    def test_ambient_temperature_default_is_20(self) -> None:
+        cfg = SimulationConfig()
+        assert cfg.ambient_temperature_C == pytest.approx(20.0)
+
+    def test_dt_s_default_positive(self) -> None:
+        cfg = SimulationConfig()
+        assert cfg.dt_s > 0
+
+    def test_config_equality_same_defaults(self) -> None:
+        c1 = SimulationConfig()
+        c2 = SimulationConfig()
+        assert c1 == c2
+
+    def test_config_inequality_different_rpm(self) -> None:
+        c1 = SimulationConfig(rpm=30.0)
+        c2 = SimulationConfig(rpm=60.0)
+        assert c1 != c2
+
+
+class TestTimingYamlStructure:
+    """TIMING_PROVISIONAL.yaml structural validation."""
+
+    def _load(self) -> dict:
+        import yaml
+        with open(TIMING_YAML) as f:
+            return yaml.safe_load(f)
+
+    def test_yaml_has_engine_key_or_is_dict(self) -> None:
+        data = self._load()
+        assert isinstance(data, dict)
+
+    def test_yaml_non_empty(self) -> None:
+        data = self._load()
+        assert len(data) > 0
+
+    def test_yaml_values_are_not_all_null(self) -> None:
+        data = self._load()
+        # At least one value should be non-None
+        all_vals = list(data.values())
+        assert any(v is not None for v in all_vals)
+
+
+class TestSimulationConfigExtended:
+    """SimulationConfig additional field defaults."""
+
+    def test_temperature_limit_is_positive(self) -> None:
+        from backend.src.emulator.simulation.state import SimulationConfig
+        cfg = SimulationConfig()
+        assert cfg.temperature_limit_C > 0
+
+    def test_rpm_default_positive(self) -> None:
+        from backend.src.emulator.simulation.state import SimulationConfig
+        cfg = SimulationConfig()
+        assert cfg.rpm > 0
+
+    def test_machine_mass_default_positive(self) -> None:
+        from backend.src.emulator.simulation.state import SimulationConfig
+        cfg = SimulationConfig()
+        assert cfg.machine_mass_kg > 0
+
+    def test_surface_area_default_positive(self) -> None:
+        from backend.src.emulator.simulation.state import SimulationConfig
+        cfg = SimulationConfig()
+        assert cfg.surface_area_m2 > 0

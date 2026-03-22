@@ -130,7 +130,6 @@ __all__ = [
     "ZuseZ1",
     "ZuseZ3",
     "ada_lovelace_bernoulli_series",
-    "analytical_engine_bernoulli_algorithm",
     "bernoulli_number",
     "fourmilab_to_instructions",
     "parse_fourmilab_deck",

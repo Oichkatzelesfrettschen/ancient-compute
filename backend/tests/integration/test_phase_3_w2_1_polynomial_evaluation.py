@@ -67,7 +67,7 @@ class TestPolynomialEvaluationIntegration:
         # Verify results match
         assert len(results) == len(expected)
         for i, (result, exp) in enumerate(zip(results, expected, strict=False)):
-            assert result == exp, f"f({i+1}) expected {exp}, got {result}"
+            assert result == exp, f"f({i + 1}) expected {exp}, got {result}"
 
     def test_polynomial_cycle_count(self):
         """Verify each polynomial evaluation executes one full mechanical cycle."""
@@ -127,9 +127,9 @@ class TestPolynomialEvaluationIntegration:
         ]
 
         for i, op in enumerate(history_tail):
-            assert (
-                op.operation == expected_phases[i]
-            ), f"Phase {i}: expected {expected_phases[i]}, got {op.operation}"
+            assert op.operation == expected_phases[i], (
+                f"Phase {i}: expected {expected_phases[i]}, got {op.operation}"
+            )
 
     def test_polynomial_snapshot_validity(self):
         """Verify snapshots are valid and consistent after polynomial eval."""

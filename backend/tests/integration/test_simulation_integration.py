@@ -55,9 +55,9 @@ class TestWarmupSimulation:
     def test_all_clearances_below_limit(self, warmup_result):
         eng, _ = warmup_result
         for i, c in enumerate(eng.state.bearing_clearances_mm):
-            assert (
-                c < eng.config.clearance_limit_mm
-            ), f"Bearing {i} clearance {c:.4f}mm exceeds limit"
+            assert c < eng.config.clearance_limit_mm, (
+                f"Bearing {i} clearance {c:.4f}mm exceeds limit"
+            )
 
     def test_bearing_loads_sum_correct(self, warmup_result):
         eng, _ = warmup_result
@@ -162,9 +162,9 @@ class TestMultiModuleCoupling:
         # Warm environment should produce at least as much wear
         # (lower viscosity -> thinner film -> higher friction)
         # Note: the effect may be small, so just check direction
-        assert (
-            wear_warm >= wear_cool * 0.9
-        ), f"Warm wear {wear_warm:.6e} < cool wear {wear_cool:.6e}"
+        assert wear_warm >= wear_cool * 0.9, (
+            f"Warm wear {wear_warm:.6e} < cool wear {wear_cool:.6e}"
+        )
 
     def test_load_clearance_coupling(self, lib):
         """Heavier machine -> more bearing load -> more deflection -> more wear."""

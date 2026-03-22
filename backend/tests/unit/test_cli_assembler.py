@@ -317,3 +317,29 @@ class TestParseSources:
         instrs = parse_source("start:\nNOP\nJMP start")
         jmp = next(i for i in instrs if i.opcode == "JMP")
         assert jmp.operands[0] == "0"
+
+
+class TestAssemblerInstructionObjects:
+    """Instruction object attribute invariants after parse_source."""
+
+    def test_nop_has_empty_operands(self) -> None:
+        instrs = parse_source("NOP")
+        assert instrs[0].operands == []
+
+    def test_halt_opcode_is_halt(self) -> None:
+        instrs = parse_source("HALT")
+        assert instrs[0].opcode == "HALT"
+
+    def test_load_instruction_has_two_operands(self) -> None:
+        instrs = parse_source("LOAD A, 5")
+        assert len(instrs[0].operands) == 2
+
+    def test_add_instruction_operands_preserved(self) -> None:
+        instrs = parse_source("ADD A, B")
+        assert instrs[0].operands[0] == "A"
+
+    def test_multiple_instructions_indexed_correctly(self) -> None:
+        instrs = parse_source("NOP\nHALT\nNOP")
+        assert instrs[0].opcode == "NOP"
+        assert instrs[1].opcode == "HALT"
+        assert instrs[2].opcode == "NOP"

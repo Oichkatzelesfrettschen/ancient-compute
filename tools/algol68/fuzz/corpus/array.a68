@@ -1,0 +1,7 @@
+BEGIN
+  [10] INT arr;
+  FOR i FROM 1 TO 10 DO arr[i] := i * i OD;
+  INT s := 0;
+  FOR i FROM 1 TO 10 DO s +:= arr[i] OD;
+  print((s, newline))
+END

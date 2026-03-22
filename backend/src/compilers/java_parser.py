@@ -885,9 +885,9 @@ class JavaParser:
         return excs
 
     def _parse_name(self) -> str:
-        name = self._expect(TokenType.IDENTIFIER, TokenType.TYPE_NAME).value
+        name = str(self._expect(TokenType.IDENTIFIER, TokenType.TYPE_NAME).value)
         while self._consume(TokenType.DOT):
-            name += "." + self._expect(TokenType.IDENTIFIER, TokenType.TYPE_NAME).value
+            name += "." + str(self._expect(TokenType.IDENTIFIER, TokenType.TYPE_NAME).value)
         return name
 
     def _expect(self, *types: TokenType) -> Token:

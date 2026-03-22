@@ -63,6 +63,7 @@ class HaskellParser:
     def parse(self) -> Module:
         """Parse module (top-level program)"""
         declarations = []
+        module_name: str | None = None
 
         while self.current_token.type != TokenType.EOF:
             # Skip newlines and indent/dedent markers at top level
@@ -91,9 +92,7 @@ class HaskellParser:
             if stmt:
                 declarations.append(stmt)
 
-        return Module(
-            name=module_name if "module_name" in locals() else None, declarations=declarations
-        )
+        return Module(name=module_name, declarations=declarations)
 
     def _advance(self) -> None:
         """Move to next token"""

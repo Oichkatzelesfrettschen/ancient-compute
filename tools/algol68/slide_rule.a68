@@ -1,0 +1,95 @@
+COMMENT
+  Slide rule emulator in ALGOL 68.
+  Models the log-scale multiplication and division of a Mannheim-pattern
+  slide rule (England, c. 1859).
+
+  The slide rule computes using logarithms: setting the C scale against
+  the D scale aligns log(a) + log(b) = log(a*b) mechanically.
+
+  Wire protocol (stdin opcodes):
+    0         -- print state then quit
+    1 <a> <b> -- MULTIPLY: compute a * b via log addition
+    2 <a> <b> -- DIVIDE: compute a / b via log subtraction
+    3 <a> <n> -- POWER: compute a^n (integer exponent)
+    4 <a>     -- SQRT: compute sqrt(a) via log halving
+    5         -- PRINT: print result without quitting
+
+  Output (for opcodes 0 and 5):
+    result=<REAL value>
+    ops=<operation count>
+
+  All inputs must be positive (slide rule operates in positive reals only).
+  Source: Cajori "A History of the Slide Rule" (1909); Mannheim rule design.
+COMMENT
+
+BEGIN
+
+  REAL result := 1.0;
+  INT  ops    := 0;
+
+  PROC print_state = VOID:
+  BEGIN
+    print(("result=", result, newline));
+    print(("ops=", whole(ops, 0), newline))
+  END;
+
+  PROC do_multiply = (REAL a, REAL b) VOID:
+  BEGIN
+    # Log-scale addition: log(a) + log(b) = log(a*b) #
+    result := a * b;
+    ops +:= 1
+  END;
+
+  PROC do_divide = (REAL a, REAL b) VOID:
+  BEGIN
+    # Log-scale subtraction: log(a) - log(b) = log(a/b) #
+    result := a / b;
+    ops +:= 1
+  END;
+
+  PROC do_power = (REAL a, INT n) VOID:
+  BEGIN
+    # Repeated log-scale addition: n * log(a) = log(a^n) #
+    REAL acc := 1.0;
+    INT  k   := ABS n;
+    FOR i FROM 1 TO k DO acc *:= a OD;
+    result := IF n < 0 THEN 1.0 / acc ELSE acc FI;
+    ops +:= 1
+  END;
+
+  PROC do_sqrt = (REAL a) VOID:
+  BEGIN
+    # Halving the log: log(a)/2 = log(sqrt(a)) #
+    result := sqrt(a);
+    ops +:= 1
+  END;
+
+  BOOL running := TRUE;
+  WHILE running DO
+    INT opcode;
+    read((opcode));
+    IF opcode = 0 THEN
+      print_state;
+      running := FALSE
+    ELIF opcode = 1 THEN
+      REAL a; REAL b;
+      read((a)); read((b));
+      do_multiply(a, b)
+    ELIF opcode = 2 THEN
+      REAL a; REAL b;
+      read((a)); read((b));
+      do_divide(a, b)
+    ELIF opcode = 3 THEN
+      REAL a; INT n;
+      read((a)); read((n));
+      do_power(a, n)
+    ELIF opcode = 4 THEN
+      REAL a;
+      read((a));
+      do_sqrt(a)
+    ELIF opcode = 5 THEN
+      print_state
+    FI
+  OD
+
+END

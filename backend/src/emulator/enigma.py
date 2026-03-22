@@ -146,7 +146,6 @@ class EnigmaMachine:
         ring_settings: list[int] | None = None,
         plugboard_connections: list[str] | None = None,
     ):
-
         if plugboard_connections is None:
             plugboard_connections = []
         if ring_settings is None:

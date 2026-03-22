@@ -269,3 +269,12 @@ class TestCapabilityEntryDetails:
 
     def test_normalize_system_f_alias(self) -> None:
         assert normalize_language_id("system-f") == "systemf"
+
+
+class TestLanguageRegistryIdNormalization:
+    """normalize_language_id edge cases."""
+
+    def test_algol68_alias(self) -> None:
+        from backend.src.services.languages import normalize_language_id
+        result = normalize_language_id("algol68")
+        assert isinstance(result, str)

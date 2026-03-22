@@ -249,6 +249,71 @@ class TestAssemblerBranchInstructions:
         assert result.error_count == 0
 
 
+class TestAssemblerArithmeticOpcodes:
+    """Arithmetic opcode assembly and machine word count."""
+
+    def _src(self, *body: str) -> str:
+        lines = ".global main\n.text\nmain:\n"
+        lines += "\n".join(f"  {l}" for l in body)
+        return lines
+
+    def test_add_instruction_assembles(self) -> None:
+        r = Assembler(self._src("LOAD A, 3", "LOAD B, 4", "ADD A, B", "RET")).assemble()
+        assert r.error_count == 0
+        assert len(r.machine_code) == 4
+
+    def test_sub_instruction_assembles(self) -> None:
+        r = Assembler(self._src("LOAD A, 10", "LOAD B, 3", "SUB A, B", "RET")).assemble()
+        assert r.error_count == 0
+        assert len(r.machine_code) == 4
+
+    def test_mult_instruction_assembles(self) -> None:
+        r = Assembler(self._src("LOAD A, 5", "LOAD B, 6", "MULT A, B", "RET")).assemble()
+        assert r.error_count == 0
+        assert len(r.machine_code) == 4
+
+    def test_div_instruction_assembles(self) -> None:
+        r = Assembler(self._src("LOAD A, 20", "LOAD B, 4", "DIV A, B", "RET")).assemble()
+        assert r.error_count == 0
+        assert len(r.machine_code) == 4
+
+    def test_wrprn_instruction_assembles(self) -> None:
+        r = Assembler(self._src("LOAD A, 7", "WRPRN A", "RET")).assemble()
+        assert r.error_count == 0
+        assert len(r.machine_code) == 3
+
+    def test_cmp_instruction_assembles(self) -> None:
+        r = Assembler(self._src("LOAD A, 5", "CMP A, 3", "RET")).assemble()
+        assert r.error_count == 0
+        assert len(r.machine_code) == 3
+
+    def test_stor_instruction_assembles(self) -> None:
+        r = Assembler(self._src("LOAD A, 42", "STOR A, 10", "RET")).assemble()
+        assert r.error_count == 0
+        assert len(r.machine_code) == 3
+
+    def test_machine_code_words_fit_in_48_bits(self) -> None:
+        r = Assembler(self._src("LOAD A, 1", "RET")).assemble()
+        for word in r.machine_code:
+            assert 0 <= word < (1 << 48)
+
+
+class TestLexerTokenValues:
+    """Lexer token value correctness."""
+
+    def test_immediate_integer_token(self) -> None:
+        from backend.src.assembler.assembler import Lexer
+        tokens = Lexer("LOAD A, 42").tokenize()
+        values = [t.value for t in tokens]
+        assert "42" in values or 42 in values or any("42" in str(v) for v in values)
+
+    def test_register_name_in_tokens(self) -> None:
+        from backend.src.assembler.assembler import Lexer
+        tokens = Lexer("LOAD A, 1").tokenize()
+        values = [t.value for t in tokens]
+        assert any("A" in str(v).upper() for v in values)
+
+
 class TestAssemblerExtendedOpcodes:
     """Tests for opcodes beyond the basics."""
 

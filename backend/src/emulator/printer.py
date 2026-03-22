@@ -296,7 +296,7 @@ class Stereotyper:
             ValueError: If position out of range
         """
         if x < 0 or x >= self.MOLD_WIDTH:
-            raise ValueError(f"X position {x} out of range [0,{self.MOLD_WIDTH-1}]")
+            raise ValueError(f"X position {x} out of range [0,{self.MOLD_WIDTH - 1}]")
         if self.y_position >= self.MOLD_HEIGHT:
             raise ValueError(f"Y position {self.y_position} exceeds mold height {self.MOLD_HEIGHT}")
         if digit < 0 or digit > 9:

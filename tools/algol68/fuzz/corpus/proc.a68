@@ -1,0 +1,5 @@
+BEGIN
+  PROC fact = (INT n) INT:
+    IF n <= 1 THEN 1 ELSE n * fact(n - 1) FI;
+  print((fact(5), newline))
+END

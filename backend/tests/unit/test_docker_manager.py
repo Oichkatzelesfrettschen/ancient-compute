@@ -441,3 +441,44 @@ class TestGetBackendForLanguageExtended:
     def test_empty_language_string_is_unavailable(self) -> None:
         mgr = self._make_manager(docker_ok=True, rp_ok=True)
         assert mgr.get_backend_for_language("") == ExecutionBackend.UNAVAILABLE
+
+
+class TestBackendInfoExtended:
+    """BackendInfo dataclass fields and helpers."""
+
+    def test_backend_info_available_field(self) -> None:
+        info = BackendInfo(ExecutionBackend.DOCKER, True, "docker running")
+        assert info.available is True
+
+    def test_backend_info_unavailable_field(self) -> None:
+        info = BackendInfo(ExecutionBackend.DOCKER, False, "docker not found")
+        assert info.available is False
+
+    def test_backend_info_reason_field(self) -> None:
+        info = BackendInfo(ExecutionBackend.RESTRICTED_PYTHON, True, "ok")
+        assert info.reason == "ok"
+
+    def test_backend_info_backend_type_field(self) -> None:
+        info = BackendInfo(ExecutionBackend.SUBPROCESS, True, "ok")
+        assert info.backend_type == ExecutionBackend.SUBPROCESS
+
+    def test_docker_backend_type_field(self) -> None:
+        info = BackendInfo(ExecutionBackend.DOCKER, True, "ok")
+        assert info.backend_type == ExecutionBackend.DOCKER
+
+    def test_all_enum_members_have_string_values(self) -> None:
+        for member in ExecutionBackend:
+            assert isinstance(member.value, str)
+
+    def test_backend_info_capabilities_empty_by_default(self) -> None:
+        info = BackendInfo(ExecutionBackend.DOCKER, False, "no docker")
+        assert info.capabilities == []
+
+    def test_backend_info_capabilities_set(self) -> None:
+        caps = ["python", "c"]
+        info = BackendInfo(ExecutionBackend.DOCKER, True, "ok", capabilities=caps)
+        assert info.capabilities == caps
+
+    def test_execution_backend_values_distinct(self) -> None:
+        values = [m.value for m in ExecutionBackend]
+        assert len(values) == len(set(values))

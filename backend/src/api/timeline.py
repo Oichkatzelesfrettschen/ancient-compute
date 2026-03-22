@@ -215,8 +215,8 @@ async def get_lesson_detail(lesson_id: int, db: Session = Depends(get_db)) -> An
         "starterCode": lesson.starter_code,
         "solutionCode": lesson.solution_code,
         "testCases": lesson.test_cases,
-        "createdAt": lesson.created_at.isoformat() if lesson.created_at else None,
-        "updatedAt": lesson.updated_at.isoformat() if lesson.updated_at else None,
+        "createdAt": lesson.created_at.isoformat() if lesson.created_at else None,  # type: ignore[truthy-function]
+        "updatedAt": lesson.updated_at.isoformat() if lesson.updated_at else None,  # type: ignore[truthy-function]
     }
 
 
@@ -257,8 +257,8 @@ async def get_exercise_detail(exercise_id: int, db: Session = Depends(get_db)) -
         "explanation": exercise.explanation,
         "timeLimitSeconds": exercise.time_limit_seconds,
         "memoryLimitMb": exercise.memory_limit_mb,
-        "createdAt": exercise.created_at.isoformat() if exercise.created_at else None,
-        "updatedAt": exercise.updated_at.isoformat() if exercise.updated_at else None,
+        "createdAt": exercise.created_at.isoformat() if exercise.created_at else None,  # type: ignore[truthy-function]
+        "updatedAt": exercise.updated_at.isoformat() if exercise.updated_at else None,  # type: ignore[truthy-function]
     }
 
 

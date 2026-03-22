@@ -193,9 +193,9 @@ class TestDE2ThermalFeasibility:
         expansion_mm = alpha * pitch_d_mm * delta_T
 
         # Expansion must be less than available backlash
-        assert (
-            expansion_mm < backlash_mm
-        ), f"Expansion {expansion_mm:.4f} mm exceeds backlash {backlash_mm} mm"
+        assert expansion_mm < backlash_mm, (
+            f"Expansion {expansion_mm:.4f} mm exceeds backlash {backlash_mm} mm"
+        )
 
     def test_bearing_clearance_survives_thermal(self, schema, materials):
         """Bearing clearance should remain positive at max operating temperature."""
@@ -312,9 +312,9 @@ class TestDE2TimingComparison:
         from backend.src.emulator.timing import CarryPropagationModel
 
         degrees = CarryPropagationModel.worst_case_degrees(31)
-        assert CarryPropagationModel.fits_within_phase(
-            degrees
-        ), f"31-digit carry needs {degrees:.1f} degrees, exceeds 45 degree phase"
+        assert CarryPropagationModel.fits_within_phase(degrees), (
+            f"31-digit carry needs {degrees:.1f} degrees, exceeds 45 degree phase"
+        )
 
     def test_add_completes_in_one_rotation(self):
         """ADD operation should fit within one shaft rotation (360 degrees).
@@ -377,9 +377,10 @@ class TestDE2SimulationFeasibility:
         eng = SimulationEngine(cfg, lib)
         # Run 1 hour warmup
         eng.run(3600.0, 600.0)
-        assert (
-            eng.state.temperature_C < cfg.temperature_limit_C
-        ), f"Steady-state T={eng.state.temperature_C:.1f}C exceeds limit {cfg.temperature_limit_C}C"
+        limit = cfg.temperature_limit_C
+        assert eng.state.temperature_C < limit, (
+            f"Steady-state T={eng.state.temperature_C:.1f}C exceeds limit {limit}C"
+        )
         assert not eng.failed
 
     def test_bearing_clearances_positive_after_warmup(self):
@@ -409,6 +410,6 @@ class TestDE2SimulationFeasibility:
         # Wear depth estimate: V/(pi*d*L)
         wear_depth = max_wear / (math.pi * cfg.shaft_diameter_mm * cfg.bearing_length_mm)
         # Wear depth should be << initial clearance after 1 hour
-        assert (
-            wear_depth < cfg.initial_clearance_mm * 0.1
-        ), f"Wear depth {wear_depth:.6f}mm > 10% of clearance {cfg.initial_clearance_mm}mm"
+        assert wear_depth < cfg.initial_clearance_mm * 0.1, (
+            f"Wear depth {wear_depth:.6f}mm > 10% of clearance {cfg.initial_clearance_mm}mm"
+        )

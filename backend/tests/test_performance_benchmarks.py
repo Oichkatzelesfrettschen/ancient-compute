@@ -311,7 +311,7 @@ def benchmark(request):
             func(*args, **kwargs)
         end = time.perf_counter()
         elapsed = (end - start) / 10  # Average time
-        print(f"\n{request.node.name}: {elapsed*1000:.2f}ms")
+        print(f"\n{request.node.name}: {elapsed * 1000:.2f}ms")
         return elapsed
 
     return wrapper

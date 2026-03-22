@@ -306,3 +306,100 @@ class TestCppContractModern:
 
     def test_rejected_undeclared_type(self) -> None:
         _err("int main() { NonExistentType x; return 0; }")
+
+
+class TestCppGate3ResultProperties:
+    """Result object properties for C++ Gate 3 compilation."""
+
+    def test_result_has_status_field(self) -> None:
+        r = _run("int main() { return 0; }")
+        assert hasattr(r, "status")
+
+    def test_result_has_stderr_field(self) -> None:
+        r = _run("int main() { return 0; }")
+        assert hasattr(r, "stderr")
+
+    def test_result_has_stdout_field(self) -> None:
+        r = _run("int main() { return 0; }")
+        assert hasattr(r, "stdout")
+
+    def test_result_has_exit_code_field(self) -> None:
+        r = _run("int main() { return 0; }")
+        assert hasattr(r, "exit_code")
+
+    def test_successful_compile_exit_code_zero(self) -> None:
+        from backend.src.services.languages.cpp_service import ExecutionStatus
+        r = _run("int main() { return 0; }")
+        assert r.status == ExecutionStatus.SUCCESS
+
+    def test_failed_compile_has_error_status(self) -> None:
+        from backend.src.services.languages.cpp_service import ExecutionStatus
+        r = _run("int main() { int x = ; return 0; }")
+        assert r.status == ExecutionStatus.COMPILE_ERROR
+
+    def test_successful_compile_no_stderr(self) -> None:
+        r = _run("int main() { return 0; }")
+        # Successful compilation should have no or minimal stderr
+        from backend.src.services.languages.cpp_service import ExecutionStatus
+        if r.status == ExecutionStatus.SUCCESS:
+            assert "error:" not in r.stderr.lower()
+
+
+class TestCppGate3CppFeatures:
+    """C++20 language features compile correctly."""
+
+    def test_auto_type_deduction(self) -> None:
+        _ok("int main() { auto x = 42; return x - 42; }")
+
+    def test_range_based_for(self) -> None:
+        _ok(
+            "#include <vector>\n"
+            "int main() {\n"
+            "    std::vector<int> v = {1, 2, 3};\n"
+            "    int s = 0;\n"
+            "    for (auto x : v) { s += x; }\n"
+            "    return 0;\n"
+            "}"
+        )
+
+    def test_lambda_expression(self) -> None:
+        _ok(
+            "int main() {\n"
+            "    auto add = [](int a, int b) { return a + b; };\n"
+            "    int r = add(3, 4);\n"
+            "    return r == 7 ? 0 : 1;\n"
+            "}"
+        )
+
+    def test_constexpr_function(self) -> None:
+        _ok(
+            "constexpr int square(int x) { return x * x; }\n"
+            "int main() { return square(0) - 0; }"
+        )
+
+    def test_template_function(self) -> None:
+        _ok(
+            "template<typename T>\n"
+            "T identity(T x) { return x; }\n"
+            "int main() { return identity(0); }"
+        )
+
+    def test_struct_with_method(self) -> None:
+        _ok(
+            "struct Point {\n"
+            "    int x, y;\n"
+            "    int sum() const { return x + y; }\n"
+            "};\n"
+            "int main() { Point p{3, 4}; return p.sum() - 7; }"
+        )
+
+    def test_rejected_unclosed_param_list(self) -> None:
+        _err("int foo( { return 1; }")
+
+
+class TestCppGate3ResultShape:
+    """Result object attributes for C++ compilation."""
+
+    def test_result_has_status_attr(self) -> None:
+        r = _run("int f(int x) { return x; }")
+        assert hasattr(r, "status")

@@ -328,7 +328,7 @@ class InstructionEncoder:
 
     REGISTER_MAP = {"A": 0, "B": 1, "C": 2, "D": 3}
 
-    def encode(self, mnemonic: str, operands: list[int], symbol_table: dict[str, int]) -> int:
+    def encode(self, mnemonic: str, operands: list[int | str], symbol_table: dict[str, int]) -> int:
         """Encode instruction to 50-bit machine word.
 
         50-bit instruction format:
@@ -514,7 +514,9 @@ class Assembler:
             # Encode instruction
             try:
                 machine_word = encoder.encode(
-                    instr.mnemonic, resolved_operands, self.symbol_table.symbols  # type: ignore[arg-type]
+                    instr.mnemonic,
+                    resolved_operands,
+                    self.symbol_table.symbols,  # type: ignore[arg-type]
                 )
                 self.machine_code.append(machine_word)
             except AssemblyError as e:
