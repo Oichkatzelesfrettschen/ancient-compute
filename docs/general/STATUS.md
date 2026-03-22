@@ -1,8 +1,8 @@
 # Project Status Dashboard
 
-**Auto-generated**: 2026-03-21 20:14 UTC
+**Auto-generated**: 2026-03-22 03:06 UTC
 **Branch**: `main`
-**Last commit**: `add104f chore: fix ruff/black violations, add test_performance.py, regenerate STATUS.md (3282 unit tests, 2026-03-21)`
+**Last commit**: `e6404a4 chore: fix 10 ruff violations introduced by thin-test expansion`
 
 > Regenerate with: `make status`
 
@@ -12,9 +12,9 @@
 
 | Metric | Value |
 |--------|-------|
-| Unit tests collected | 3947 |
+| Unit tests collected | 6432 |
 | Collection errors | 0 |
-| Python source lines (backend/src/) | 47,555 |
+| Python source lines (backend/src/) | 47,944 |
 | Active docs (non-archive .md) | 201 |
 
 ## Phase Status

@@ -189,12 +189,14 @@ def _ops_8_12(lines: list[str]) -> None:
 def _ops_13_23(lines: list[str], b_slot_addr: int) -> None:
     """Ops 13-23: one pass of the inner loop body.
 
-    Uses the B value at b_slot_addr for op 21. Caller must have already
-    copied the correct B into V22 (mem[21]) if b_slot_addr != mem[21].
+    Reads the B value directly from b_slot_addr in op 21.
 
-    WHY: The perforated cylinder would rotate to select the correct B
-    value card for this pass; in the unrolled assembly we emit an explicit
-    LOAD/STOR copy before each pass that needs a non-default B.
+    WHY: Each pass uses a different previously-computed B value.  Reading
+    directly from the permanent storage address avoids the staging-copy
+    bug: if a prior pass had written to V22 (mem[21]) as a staging slot,
+    subsequent passes would read the wrong B.  The perforated cylinder
+    would rotate to the correct B card; in the unrolled assembly we emit
+    a direct LOAD from the stored address.
     """
     # Op 13: V6 = V6 - V1
     lines += [
@@ -252,9 +254,9 @@ def _ops_13_23(lines: list[str], b_slot_addr: int) -> None:
         "MULT A, B",
         f"STOR A, [{_addr(11)}]",
     ]
-    # Op 21: V12 = V22 * V11  (V22 must hold the correct B for this pass)
+    # Op 21: V12 = B[pass] * V11  (load B directly from its permanent address)
     lines += [
-        f"LOAD A, [{_B_STORE[1]}]",  # A = V22 (current B for this pass)
+        f"LOAD A, [{b_slot_addr}]",  # A = B value for this pass
         f"LOAD B, [{_addr(11)}]",
         "MULT A, B",
         f"STOR A, [{_addr(12)}]",
@@ -341,19 +343,12 @@ def generate_note_g_assembly_text(n_target: int) -> str:
             _ops_8_12(lines)
 
         # Ops 13-23: inner loop, n-2 iterations
+        # Each pass reads its B value directly from _B_STORE[inner_i + 1] --
+        # no staging copy needed, which avoids overwriting earlier B slots.
         loop_count = max(0, n - 2)
         for inner_i in range(loop_count):
-            # Before each inner pass, load the correct B into V22 (mem[21]).
-            # B for pass inner_i is B_store[inner_i + 1].
             b_slot_index = inner_i + 1
             b_src_addr = _B_STORE[b_slot_index]
-            if b_src_addr != _B_STORE[1]:
-                # Need to copy B from extended slot to V22
-                lines += [
-                    f"# Copy B (pass {inner_i}) from mem[{b_src_addr}] to V22",
-                    f"LOAD A, [{b_src_addr}]",
-                    f"STOR A, [{_B_STORE[1]}]",
-                ]
             _ops_13_23(lines, b_src_addr)
 
         # Ops 24-25

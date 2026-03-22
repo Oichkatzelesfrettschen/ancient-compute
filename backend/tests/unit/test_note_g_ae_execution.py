@@ -225,6 +225,14 @@ class TestNoteGAEExtended:
         assert engine.memory[0].to_decimal() == 1.0, "V1 clobbered"
         assert engine.memory[1].to_decimal() == 2.0, "V2 clobbered"
 
+    def test_n5_matches_oracle(self) -> None:
+        """n=5 covers B1..B9 -- the full set Ada worked through in Note G."""
+        results = _run_note_g_on_ae(5)
+        oracle = ada_lovelace_bernoulli_series(5)
+        assert len(results) == len(oracle)
+        for i, (got, want) in enumerate(zip(results, oracle, strict=True)):
+            assert got == want, f"index {i} (B{2*i+1}): got {got}, want {want}"
+
     def test_outputs_alternate_sign(self) -> None:
         """Ada B1=+, B3=-, B5=+, B7=- ... alternating sign property."""
         from fractions import Fraction
