@@ -12,7 +12,7 @@ hypothesis>=6.100,<7.0
 pytest-benchmark>=4.0,<5.0
 
 # Code Quality
-ruff==0.9.10
+ruff==0.15.9
 mypy>=1.10,<2.0
 deptry>=0.20,<1.0
 pyright>=1.1,<2.0
