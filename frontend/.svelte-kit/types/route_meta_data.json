@@ -5,6 +5,8 @@
 	"/emulator/3d": [],
 	"/emulator/debug": [],
 	"/infra/minix": [],
+	"/machines": [],
+	"/machines/[id]": [],
 	"/modules": [],
 	"/timeline": []
 }
