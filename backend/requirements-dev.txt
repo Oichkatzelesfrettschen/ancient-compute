@@ -15,7 +15,7 @@ pytest-benchmark>=4.0,<5.0
 ruff==0.9.10
 mypy>=1.10,<2.0
 deptry>=0.20,<1.0
-pyright>=1.1,<2.0
+pyright>=1.1.409,<2.0
 # Note: black removed; ruff format is the sole formatter (ruff is Black-compatible)
 # Note: flake8, isort, and pylint replaced by ruff (ADR 0001)
 
